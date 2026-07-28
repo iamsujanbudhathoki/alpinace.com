@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Inter, Poppins } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import { siteConfig } from "@/lib/site-config";
-import { TopLoaderProvider } from "@/components/providers/top-loader";
+import { TopLoaderProvider } from "@/components/ui/top-loader";
 import "./globals.css";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({
   variable: "--font-inter",

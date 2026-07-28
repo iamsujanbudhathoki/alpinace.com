@@ -1,10 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Mountain, ShieldCheck, Award } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 
 export function Hero() {
+  const words = siteConfig.tagline.split(" ");
+  const highlight = words.pop();
+  const lead = words.join(" ");
+
   return (
-    <section className="relative isolate flex min-h-[92vh] flex-col items-center justify-center overflow-hidden bg-slate-950 px-6 text-center pt-20">
+    <section className="relative isolate flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-ink-950 px-6 text-center">
       {/* Background Video */}
       <video
         autoPlay
@@ -12,73 +16,38 @@ export function Hero() {
         muted
         playsInline
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover opacity-60"
+        className="absolute inset-0 h-full w-full object-cover"
       >
         <source src="/hero-video.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark overlay for rich contrast */}
+      {/* Soft, clean overlay gradient */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/40 to-slate-950/90"
+        className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-ink-950/75"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 flex max-w-4xl flex-col items-center space-y-6">
-        {/* Mountain Trust Pill */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-slate-900/80 px-4 py-1.5 backdrop-blur-md">
-          <Award className="h-4 w-4 text-amber-400" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-amber-300">
-            NTB Licensed • IFMGA Sherpa Guides
-          </span>
-        </div>
-
-        {/* Hero Title */}
-        <h1 className="font-heading text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl leading-tight">
-          Venture Beyond <br className="hidden sm:inline" />
-          <span className="text-amber-400">The Ordinary</span>
+      <div className="relative z-10 flex max-w-3xl flex-col items-center">
+        <h1 className="font-heading text-4xl leading-[1.05] font-medium text-stone-50 sm:text-5xl md:text-6xl lg:text-7xl drop-shadow-lg">
+          <span className="block">{lead}</span>
+          <span className="block text-copper-200 italic font-normal">{highlight}</span>
         </h1>
 
-        {/* Subtitle */}
-        <p className="max-w-2xl text-sm sm:text-base leading-relaxed text-slate-200 font-medium">
-          Experience Nepal&apos;s iconic trekking routes, historical tours, and elite 6,000m - 8,000m peak expeditions with multi-summit Sherpa leaders.
+        <p className="mt-6 max-w-2xl text-base leading-relaxed text-stone-100 sm:text-lg drop-shadow-md font-medium">
+          {siteConfig.description}
         </p>
 
-        {/* Hero Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-          <Link
-            href="/trekking"
-            className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-7 py-3.5 text-xs font-extrabold uppercase tracking-wider text-slate-950 transition-all hover:bg-amber-400 shadow-lg"
-          >
-            <span>Explore Treks</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-
+        {/* Clean Luxe Action Button */}
+        <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-7 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white backdrop-blur-sm transition-all hover:bg-white/20"
+            className="group relative inline-flex items-center gap-3 rounded-full bg-stone-50/95 hover:bg-white px-8 py-4 text-xs font-bold uppercase tracking-[0.16em] text-slate-900 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border border-stone-200/80 cursor-pointer"
           >
             <span>Plan My Trip</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-stone-50 transition-transform duration-300 group-hover:translate-x-0.5">
+              <ArrowRight className="h-3.5 w-3.5" />
+            </span>
           </Link>
-        </div>
-
-        {/* Key Mountain Stats Chips */}
-        <div className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-white text-xs font-semibold w-full max-w-2xl border-t border-white/15">
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-black text-amber-400">8,848m</span>
-            <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider">Mt. Everest</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-black text-amber-400">6,812m</span>
-            <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider">Ama Dablam</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-black text-amber-400">1:1</span>
-            <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider">Sherpa Ratio</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-black text-amber-400">100%</span>
-            <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider">Safety Record</span>
-          </div>
         </div>
       </div>
     </section>

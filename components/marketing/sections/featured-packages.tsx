@@ -75,16 +75,16 @@ export function FeaturedPackages() {
               <div className="p-6 pt-0 border-t border-slate-100 mt-2">
                 <div className="flex items-center justify-between pt-4">
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">From</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">Starting from</span>
                     <div className="text-base font-extrabold text-slate-900">
                       ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-slate-500">USD</span>
                     </div>
                   </div>
 
                   <Link href="/contact">
-                    <button className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2 rounded-xl transition-colors cursor-pointer flex items-center gap-1">
-                      <span>Book Now</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-gold-400" />
+                    <button className="bg-white border border-slate-300 text-slate-900 font-bold text-xs px-4 py-2 rounded-xl transition-all duration-200 hover:bg-gold-500 hover:text-slate-950 hover:border-gold-400 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1.5">
+                      <span>Book</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </Link>
                 </div>

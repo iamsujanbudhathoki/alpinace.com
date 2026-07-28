@@ -215,7 +215,7 @@ export default function TrekkingPage() {
                       </div>
                     </Link>
 
-                    {/* Footer Row with Details and Book Buttons */}
+                    {/* Footer Row with Details and Gold Book Button */}
                     <div className="p-4 pt-0 border-t border-slate-100 mt-2">
                       <div className="flex items-center justify-between pt-3">
                         <div>
@@ -233,7 +233,7 @@ export default function TrekkingPage() {
                           </Link>
 
                           <Link href="/contact">
-                            <button className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-300 text-slate-900 hover:bg-gold-500 hover:text-slate-950 hover:border-gold-400 transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1">
+                            <button className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gold-500 text-slate-950 border border-gold-400 hover:bg-gold-400 transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1">
                               <span>Book</span>
                               <ArrowRight className="w-3 h-3" />
                             </button>
@@ -260,7 +260,7 @@ export default function TrekkingPage() {
           </div>
 
           <Link href="/contact" className="shrink-0">
-            <button className="bg-white border border-slate-300 hover:bg-gold-500 hover:text-slate-950 hover:border-gold-400 text-slate-900 font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all shadow-xs hover:shadow-md">
+            <button className="bg-gold-500 hover:bg-gold-400 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-xl border border-gold-400 cursor-pointer transition-all shadow-xs hover:shadow-md">
               Contact Agency
             </button>
           </Link>

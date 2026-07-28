@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock, Mountain, ShieldCheck, MapPin, Calendar, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Clock, Mountain, ShieldCheck, Calendar, CheckCircle2 } from "lucide-react";
 import { initialTreksData } from "@/lib/trek-data";
 
 interface TrekDetailPageProps {
@@ -91,7 +91,7 @@ export default async function TrekDetailPage({ params }: TrekDetailPageProps) {
             </div>
 
             <Link href="/contact" className="block w-full">
-              <button className="w-full bg-slate-900 hover:bg-gold-500 hover:text-slate-950 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-xs cursor-pointer text-center">
+              <button className="w-full bg-gold-500 hover:bg-gold-400 text-slate-950 border border-gold-400 font-extrabold text-xs py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer text-center uppercase tracking-wider">
                 Book This Journey
               </button>
             </Link>

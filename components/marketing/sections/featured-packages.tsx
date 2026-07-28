@@ -39,7 +39,7 @@ export function FeaturedPackages() {
                     alt={pkg.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 right-3 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider">
+                  <div className="absolute top-3 right-3 bg-gold-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider border border-gold-400">
                     {pkg.category}
                   </div>
                   <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
@@ -89,7 +89,7 @@ export function FeaturedPackages() {
                     </Link>
 
                     <Link href="/contact">
-                      <button className="bg-white border border-slate-300 text-slate-900 font-bold text-xs px-3.5 py-1.5 rounded-xl transition-all duration-200 hover:bg-gold-500 hover:text-slate-950 hover:border-gold-400 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1">
+                      <button className="bg-gold-500 hover:bg-gold-400 text-slate-950 border border-gold-400 font-bold text-xs px-3.5 py-1.5 rounded-xl transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1">
                         <span>Book</span>
                         <ArrowRight className="w-3 h-3" />
                       </button>

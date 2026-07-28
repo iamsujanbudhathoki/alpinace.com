@@ -38,10 +38,12 @@ export interface Testimonial {
 export interface BlogPost {
   id: string;
   title: string;
+  slug: string;
   category: string;
   date: string;
   readTime: string;
   excerpt: string;
+  content: string;
   image: string;
   author: {
     name: string;
@@ -186,10 +188,12 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     id: "blog-1",
     title: "How to Prepare for High-Altitude Trekking in Nepal",
+    slug: "how-to-prepare-for-high-altitude-trekking-in-nepal",
     category: "EXPEDITION PREPARATION",
     date: "JULY 12, 2026",
     readTime: "6 MIN READ",
     excerpt: "Essential advice on cardiovascular training, altitude acclimatization schedules, and preventing AMS on the Everest trail.",
+    content: "Preparing for a Himalayan trek is as much mental as it is physical. Over our years of leading premium itineraries, we have found that high altitude readiness depends heavily on gradual pacing and proper hydration. Build cardiovascular fitness for at least 8 weeks before departure, prioritize acclimatization days at 3,000m and 4,000m, and watch for early symptoms of acute mountain sickness such as headache, nausea, and disrupted sleep. Ascending no more than 300-500m in sleeping altitude per day above 3,000m is the single most effective way to prevent AMS.",
     image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80",
     author: {
       name: "Mingma Sherpa",
@@ -200,10 +204,12 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     id: "blog-2",
     title: "Top 5 Essential Packing Items for Everest Base Camp",
+    slug: "top-5-essential-packing-items-for-everest-base-camp",
     category: "GEAR & EQUIPMENT",
     date: "JUNE 28, 2026",
     readTime: "4 MIN READ",
     excerpt: "Don't leave Kathmandu without these critical gear items — from thermal layering to down sleeping bags and solar power packs.",
+    content: "Don't leave Kathmandu without these critical gear items: a -20°C rated down sleeping bag, moisture-wicking thermal base layers, a reliable headlamp with spare batteries, a water filtration bottle to cut down on plastic waste, and a portable solar charging pack for keeping cameras and phones running above 4,000m where power is scarce. Quality trekking boots that are already broken in matter more than almost anything else on this list.",
     image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
     author: {
       name: "Sujan Budhathoki",
@@ -214,10 +220,12 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     id: "blog-3",
     title: "Understanding Sherpa Culture and Sacred Himalayan Peaks",
+    slug: "understanding-sherpa-culture-and-sacred-himalayan-peaks",
     category: "CULTURE & HERITAGE",
     date: "JUNE 15, 2026",
     readTime: "8 MIN READ",
     excerpt: "A deep dive into Tibetan Buddhism, Mani stones, prayer flags, and the spiritual respect guiding multi-summit Sherpas.",
+    content: "Many of the Himalaya's highest peaks are considered sacred by the Sherpa people, and mountaineers are expected to observe local customs before any expedition. Prayer flags carry mantras on the wind, Mani stones inscribed with Buddhist scripture line the trails, and basecamp Puja ceremonies ask for safe passage before a climbing season begins. Understanding this cultural context transforms a trek from a physical challenge into a much deeper journey through one of the world's most spiritually significant landscapes.",
     image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80",
     author: {
       name: "Passang Lhamu Sherpa",

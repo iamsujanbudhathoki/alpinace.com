@@ -34,13 +34,13 @@ export function SiteFooter() {
                   ALPINE ACE
                 </span>
                 <span className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mt-0.5">
-                  TREK &amp; EXPED
+                  Nepal Trekking &amp; Expeditions
                 </span>
               </span>
             </Link>
 
             <p className="text-slate-600 text-xs leading-relaxed font-normal">
-              Crafting bespoke luxury treks, cultural tours, and high-altitude mountaineering expeditions in Nepal. Built on local Sherpa expertise, supreme safety standards, and environmental stewardship.
+              We organize guided treks, cultural tours, and mountain expeditions in Nepal, led by experienced local Sherpa guides with a strong focus on safety and the environment.
             </p>
 
             {/* Certifications and Badges */}
@@ -74,37 +74,37 @@ export function SiteFooter() {
           {/* Column 2: Navigation Links */}
           <div className="space-y-4">
             <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
-              Explore Journeys
+              Quick Links
             </h3>
             <ul className="space-y-2.5 text-xs font-semibold text-slate-600">
               <li>
                 <Link href="/trekking" className="hover:text-gold-600 transition-colors">
-                  Himalayan Trekking
+                  Trekking in Nepal
                 </Link>
               </li>
               <li>
                 <Link href="/tours" className="hover:text-gold-600 transition-colors">
-                  Cultural &amp; Luxury Tours
+                  Nepal Tours
                 </Link>
               </li>
               <li>
                 <Link href="/expeditions" className="hover:text-gold-600 transition-colors">
-                  Peak Climbing &amp; Expeditions
+                  Peak Expeditions
                 </Link>
               </li>
               <li>
                 <Link href="/about" className="hover:text-gold-600 transition-colors">
-                  Our Mission &amp; Team
+                  About Us
                 </Link>
               </li>
               <li>
                 <Link href="/blog" className="hover:text-gold-600 transition-colors">
-                  Mountain Journals &amp; Tips
+                  Blog
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="hover:text-gold-600 transition-colors">
-                  Contact &amp; Custom Trips
+                  Contact Us
                 </Link>
               </li>
             </ul>
@@ -113,7 +113,7 @@ export function SiteFooter() {
           {/* Column 3: Contact Details */}
           <div className="space-y-4">
             <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
-              Headquarters
+              Contact Info
             </h3>
             <ul className="space-y-3.5 text-xs text-slate-600 font-medium">
               <li className="flex items-start gap-3">
@@ -141,15 +141,15 @@ export function SiteFooter() {
           {/* Column 4: Newsletter */}
           <div className="space-y-4">
             <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
-              The Dispatch
+              Newsletter
             </h3>
             <p className="text-slate-600 text-xs leading-relaxed font-normal">
-              Subscribe to receive high-altitude weather updates, expert gear lists, and exclusive early-booking benefits directly in your inbox.
+              Get travel tips, weather updates, and special offers for your next trip to Nepal.
             </p>
 
             {subscribed ? (
               <div className="bg-slate-50 border border-gold-500/40 text-slate-900 p-3 rounded-xl text-xs leading-relaxed font-semibold animate-in fade-in">
-                Thank you! You are now subscribed to our luxury travel journals dispatch.
+                Thank you for subscribing!
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
@@ -164,7 +164,7 @@ export function SiteFooter() {
                   />
                   <button
                     type="submit"
-                    className="absolute right-1.5 top-1.5 bg-slate-900 hover:bg-gold-500 hover:text-slate-950 text-white p-2 rounded-lg transition-colors cursor-pointer"
+                    className="absolute right-1.5 top-1.5 bg-gold-500 hover:bg-gold-400 text-slate-950 p-2 rounded-lg transition-colors cursor-pointer"
                     aria-label="Subscribe to newsletter"
                   >
                     <Send className="h-3.5 w-3.5" />

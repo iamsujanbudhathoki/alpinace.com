@@ -26,7 +26,7 @@ export function FeaturedBlogs() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {BLOG_POSTS.slice(0, 3).map((post) => (
-            <Link key={post.id} href="/blog">
+            <Link key={post.id} href={`/blog/${post.slug}`}>
               <div className="bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-slate-200 transition-all duration-300 flex flex-col h-full cursor-pointer group">
                 <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
                   <img

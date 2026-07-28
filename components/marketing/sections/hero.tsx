@@ -37,11 +37,11 @@ export function Hero() {
           {siteConfig.description}
         </p>
 
-        {/* Dynamic Hover Action Button */}
+        {/* Dynamic Hover Action Button with Custom Compass Cursor */}
         <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href="/contact"
-            className="group relative inline-flex items-center gap-3.5 rounded-full bg-stone-50 px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-900 shadow-lg border border-stone-200 cursor-pointer transition-all duration-300 hover:bg-copper-500 hover:text-slate-950 hover:border-copper-400 hover:shadow-2xl hover:scale-105 active:scale-95 hover:ring-4 hover:ring-copper-500/25"
+            className="group relative inline-flex items-center gap-3.5 rounded-full bg-stone-50 px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-900 shadow-lg border border-stone-200 cursor-compass transition-all duration-300 hover:bg-amber-500 hover:text-slate-950 hover:border-amber-400 hover:shadow-2xl hover:scale-105 active:scale-95 hover:ring-4 hover:ring-amber-500/25"
           >
             <span>Plan My Trip</span>
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-amber-400 transition-all duration-300 group-hover:bg-slate-950 group-hover:text-white group-hover:translate-x-1">

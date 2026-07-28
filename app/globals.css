@@ -126,6 +126,11 @@
   --sidebar-ring: oklch(0.6 0 0);
 }
 
+/* Custom adventure compass cursor */
+.cursor-compass {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='%230f172a' stroke='%23f59e0b' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10' fill='%230f172a'/%3E%3Cpolygon points='16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76' fill='%23f59e0b'/%3E%3C/svg%3E") 14 14, pointer !important;
+}
+
 /* Dark theme, following system preference */
 @media (prefers-color-scheme: dark) {
   :root {

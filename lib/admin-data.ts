@@ -38,8 +38,8 @@ export interface Guide {
   id: string;
   name: string;
   role: "Lead Expedition Leader" | "Senior Trekking Guide" | "High Altitude Sherpa" | "Cultural Tour Guide";
-  summitStats: string; // e.g., "14x Everest, 5x K2"
-  certifications: string[]; // e.g., ["NMA Certified", "IFMGA", "Wilderness First Responder"]
+  summitStats: string;
+  certifications: string[];
   status: "Available" | "On Mountain" | "On Leave";
   phone: string;
   email: string;
@@ -60,6 +60,18 @@ export interface Inquiry {
   createdAt: string;
   status: "New" | "Contacted" | "Quote Sent" | "Booked" | "Closed";
   notes?: string;
+}
+
+export interface BlogArticle {
+  id: string;
+  title: string;
+  slug: string;
+  category: "Expedition Prep" | "Trekking Guides" | "Sherpa Culture" | "Gear & Equipment";
+  author: string;
+  readTime: string;
+  status: "Published" | "Draft" | "Archived";
+  publishedDate: string;
+  views: number;
 }
 
 export const mockDashboardMetrics = {
@@ -367,5 +379,52 @@ export const mockInquiries: Inquiry[] = [
     createdAt: "2026-07-26 18:40",
     status: "Contacted",
     notes: "Clarified restricted permit regulations (min 2 trekkers, licensed Sherpa guide required).",
+  },
+];
+
+export const mockBlogArticles: BlogArticle[] = [
+  {
+    id: "blog-1",
+    title: "How to Prepare for High-Altitude Trekking in Nepal",
+    slug: "high-altitude-trekking-preparation",
+    category: "Expedition Prep",
+    author: "Mingma Sherpa",
+    readTime: "6 min read",
+    status: "Published",
+    publishedDate: "2026-07-12",
+    views: 1420,
+  },
+  {
+    id: "blog-2",
+    title: "Top 5 Essential Packing Items for Everest Base Camp",
+    slug: "packing-list-everest-base-camp",
+    category: "Gear & Equipment",
+    author: "Sujan Budhathoki",
+    readTime: "4 min read",
+    status: "Published",
+    publishedDate: "2026-06-28",
+    views: 980,
+  },
+  {
+    id: "blog-3",
+    title: "Understanding Sherpa Culture and Sacred Himalayan Peaks",
+    slug: "sherpa-culture-sacred-peaks",
+    category: "Sherpa Culture",
+    author: "Passang Lhamu Sherpa",
+    readTime: "8 min read",
+    status: "Published",
+    publishedDate: "2026-06-15",
+    views: 2150,
+  },
+  {
+    id: "blog-4",
+    title: "Ama Dablam vs Island Peak: Choosing Your First Peak Climb",
+    slug: "ama-dablam-vs-island-peak",
+    category: "Expedition Prep",
+    author: "Lakpa Tenzing Sherpa",
+    readTime: "5 min read",
+    status: "Draft",
+    publishedDate: "2026-07-25",
+    views: 0,
   },
 ];

@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  CalendarCheck,
+  Footprints,
   Compass,
+  Mountain,
+  CalendarCheck,
   Users,
+  FileText,
   MessageSquare,
   Settings,
-  Mountain,
   X,
 } from "lucide-react";
 import { mockDashboardMetrics } from "@/lib/admin-data";
@@ -22,21 +24,39 @@ const navItems = [
     badge: null,
   },
   {
+    title: "Treks",
+    href: "/admin/treks",
+    icon: Footprints,
+    badge: null,
+  },
+  {
+    title: "Tours",
+    href: "/admin/tours",
+    icon: Compass,
+    badge: null,
+  },
+  {
+    title: "Expeditions",
+    href: "/admin/expeditions",
+    icon: Mountain,
+    badge: null,
+  },
+  {
     title: "Bookings",
     href: "/admin/bookings",
     icon: CalendarCheck,
     badge: mockDashboardMetrics.pendingBookings,
   },
   {
-    title: "Packages",
-    href: "/admin/packages",
-    icon: Compass,
-    badge: null,
-  },
-  {
     title: "Guides",
     href: "/admin/guides",
     icon: Users,
+    badge: null,
+  },
+  {
+    title: "Blogs & Articles",
+    href: "/admin/blogs",
+    icon: FileText,
     badge: null,
   },
   {

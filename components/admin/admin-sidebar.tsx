@@ -10,7 +10,6 @@ import {
   MessageSquare,
   Settings,
   Mountain,
-  ChevronRight,
   X,
 } from "lucide-react";
 import { mockDashboardMetrics } from "@/lib/admin-data";
@@ -35,7 +34,7 @@ const navItems = [
     badge: null,
   },
   {
-    title: "Sherpa Guides",
+    title: "Guides",
     href: "/admin/guides",
     icon: Users,
     badge: null,
@@ -66,21 +65,16 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
   };
 
   return (
-    <aside className="w-64 bg-white text-slate-900 flex flex-col shrink-0 h-full overflow-y-auto">
+    <aside className="w-64 bg-white text-slate-900 flex flex-col shrink-0 h-full">
       {/* Brand Header */}
       <div className="h-16 px-6 flex items-center justify-between border-b border-slate-200 shrink-0">
-        <Link href="/admin" onClick={handleNavClick} className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 group-hover:scale-105 transition-transform shadow-xs">
-            <Mountain className="w-5 h-5" />
+        <Link href="/admin" onClick={handleNavClick} className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-slate-900 text-amber-400 flex items-center justify-center font-bold">
+            <Mountain className="w-4 h-4" />
           </div>
-          <div>
-            <span className="font-extrabold text-lg tracking-tight text-slate-900 block leading-none">
-              Alpine<span className="text-amber-600">Ace</span>
-            </span>
-            <span className="text-[10px] tracking-widest text-slate-500 font-bold uppercase block mt-1">
-              Admin Portal
-            </span>
-          </div>
+          <span className="font-bold text-base tracking-tight text-slate-900">
+            Alpine<span className="text-amber-600">Ace</span>
+          </span>
         </Link>
 
         {onCloseMobile && (
@@ -94,8 +88,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
-       \
+      <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -107,33 +100,31 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
               key={item.href}
               href={item.href}
               onClick={handleNavClick}
-              className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 isActive
-                  ? "bg-slate-900 text-white shadow-xs font-semibold"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
+                  ? "bg-slate-900 text-white font-semibold"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <Icon
                   className={`w-4 h-4 ${
-                    isActive ? "text-amber-400" : "text-slate-500"
+                    isActive ? "text-amber-400" : "text-slate-400"
                   }`}
                 />
                 <span>{item.title}</span>
               </div>
               {item.badge ? (
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                     isActive
                       ? "bg-amber-400 text-slate-950"
-                      : "bg-slate-100 text-slate-700 border border-slate-200"
+                      : "bg-slate-100 text-slate-600 border border-slate-200"
                   }`}
                 >
                   {item.badge}
                 </span>
-              ) : (
-                isActive && <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-              )}
+              ) : null}
             </Link>
           );
         })}

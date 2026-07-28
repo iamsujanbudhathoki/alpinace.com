@@ -42,7 +42,7 @@ export default function TrekkingPage() {
 
   return (
     <div className="min-h-screen bg-[#fafaf9] text-slate-900 pt-20 pb-20 font-sans">
-      {/* Clean Human Hero Header */}
+      {/* Clean Hero Header */}
       <section className="bg-white border-b border-slate-200 py-12 px-6 md:px-12">
         <div className="max-w-7xl mx-auto space-y-2">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">

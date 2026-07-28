@@ -95,9 +95,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
 
       {/* Navigation Links */}
       <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
-        <div className="px-3 pb-2 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-          Management
-        </div>
+       \
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =

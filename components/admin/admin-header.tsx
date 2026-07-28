@@ -7,9 +7,7 @@ import { useAdminAuth } from "@/lib/admin-auth-context";
 import {
   Search,
   Bell,
-  Plus,
   ExternalLink,
-  CloudSnow,
   X,
   Menu,
   LogOut,
@@ -70,12 +68,6 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
 
       {/* Right Side Widgets */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Weather Indicator */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-xs text-slate-600">
-          <CloudSnow className="w-4 h-4 text-sky-500 animate-pulse" />
-          <span>EBC Basecamp: <strong className="text-slate-900">-8°C Clear</strong></span>
-        </div>
-
         {/* Notifications */}
         <div className="relative">
           <button
@@ -122,16 +114,6 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
           )}
         </div>
 
-        {/* Quick Action Button */}
-        <Link
-          href="/admin/bookings"
-          className="flex items-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-all shadow-xs"
-        >
-          <Plus className="w-4 h-4 text-amber-400" />
-          <span className="hidden sm:inline">New Reservation</span>
-          <span className="sm:hidden">New</span>
-        </Link>
-
         {/* User Profile Dropdown Menu */}
         <div className="pl-1 border-l border-slate-200">
           <DropdownMenu>
@@ -150,19 +132,25 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden md:block" />
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200 shadow-xl rounded-xl p-1">
+            <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200 shadow-xl rounded-xl p-1 z-50">
               <DropdownMenuLabel className="font-semibold text-xs px-3 py-2">
                 <div className="font-bold text-slate-900">{user?.name || "Sujan Budhathoki"}</div>
                 <div className="text-[10px] text-slate-500 font-normal truncate">{user?.email || "admin@alpineace.com"}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-100" />
 
-              <DropdownMenuItem onClick={() => router.push("/admin/settings")} className="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer text-slate-700 hover:text-slate-900">
+              <DropdownMenuItem
+                onClick={() => router.push("/admin/settings")}
+                className="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 rounded-lg"
+              >
                 <Settings className="w-3.5 h-3.5 text-amber-600" />
                 <span>Account Settings</span>
               </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={() => window.open("/", "_blank")} className="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer text-slate-700 hover:text-slate-900">
+              <DropdownMenuItem
+                onClick={() => window.open("/", "_blank")}
+                className="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 rounded-lg"
+              >
                 <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
                 <span>Visit Marketing Site</span>
               </DropdownMenuItem>
@@ -171,7 +159,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
 
               <DropdownMenuItem
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-red-600 hover:bg-red-50"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-red-600 hover:bg-red-50 rounded-lg"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Sign Out</span>

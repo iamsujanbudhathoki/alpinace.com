@@ -8,7 +8,6 @@ import {
   Compass,
   Mountain,
   CalendarCheck,
-  Users,
   FileText,
   MessageSquare,
   Settings,
@@ -46,12 +45,6 @@ const navItems = [
     href: "/admin/bookings",
     icon: CalendarCheck,
     badge: mockDashboardMetrics.pendingBookings,
-  },
-  {
-    title: "Guides",
-    href: "/admin/guides",
-    icon: Users,
-    badge: null,
   },
   {
     title: "Blogs & Articles",

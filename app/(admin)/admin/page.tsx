@@ -9,7 +9,6 @@ import {
 import {
   mockDashboardMetrics,
   mockBookings,
-  mockGuides,
   mockPackages,
 } from "@/lib/admin-data";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
@@ -28,12 +27,12 @@ export default function AdminDashboardPage() {
         title="Dashboard Overview"
         description="AlpineAce mountaineering, treks, and permit operational status."
       >
-        <Link href="/admin/packages">
+        <Link href="/admin/treks">
           <Button
             variant="outline"
             className="bg-white text-slate-700 font-semibold border-slate-200"
           >
-            Manage Packages
+            Manage Treks
           </Button>
         </Link>
         <Link href="/admin/bookings">
@@ -84,7 +83,7 @@ export default function AdminDashboardPage() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Recent Bookings & Packages (2 cols) */}
+        {/* Recent Bookings (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6 bg-white border-slate-200 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
@@ -139,73 +138,32 @@ export default function AdminDashboardPage() {
               </table>
             </div>
           </Card>
-
-          {/* Popular Packages */}
-          <Card className="p-6 bg-white border-slate-200 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-900">Featured Expeditions</h2>
-              <Link href="/admin/packages" className="text-xs text-slate-900 font-semibold hover:text-amber-600 transition-colors">
-                Manage All
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {mockPackages.slice(0, 4).map((pkg) => (
-                <div
-                  key={pkg.id}
-                  className="p-4 rounded-xl bg-slate-50/50 border border-slate-200 hover:border-slate-300 transition-all flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <AdminStatusBadge status={pkg.category} />
-                      <span className="text-xs text-slate-600 font-medium">★ {pkg.rating} ({pkg.totalBookings})</span>
-                    </div>
-                    <h3 className="font-bold text-sm text-slate-900 mt-2 line-clamp-1">
-                      {pkg.title}
-                    </h3>
-                    <p className="text-xs text-slate-600 mt-1 font-medium">
-                      {pkg.durationDays} Days • {pkg.maxAltitudeMeters}m
-                    </p>
-                  </div>
-                  <div className="mt-4 pt-3 border-t border-slate-200/80 flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-900">${pkg.priceUSD} <span className="font-normal text-slate-500">/ person</span></span>
-                    <AdminStatusBadge status={pkg.status} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
 
-        {/* Right Column: Sherpa Guides (1 col) */}
+        {/* Right Column: Active Expeditions Quick View (1 col) */}
         <div className="space-y-6">
           <Card className="p-6 bg-white border-slate-200 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-base text-slate-900">Sherpa Guides</h3>
-                <p className="text-xs text-slate-600 font-medium">Summit leaders & mountain team</p>
+                <h3 className="font-bold text-base text-slate-900">Top Expeditions</h3>
+                <p className="text-xs text-slate-600 font-medium">Active mountain packages</p>
               </div>
-              <Link href="/admin/guides" className="text-xs font-semibold text-slate-900 hover:text-amber-600 transition-colors">
-                View Roster
+              <Link href="/admin/expeditions" className="text-xs font-semibold text-slate-900 hover:text-amber-600 transition-colors">
+                View All
               </Link>
             </div>
 
             <div className="space-y-3">
-              {mockGuides.map((guide) => (
+              {mockPackages.slice(0, 3).map((pkg) => (
                 <div
-                  key={guide.id}
-                  className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200 flex items-center justify-between gap-3"
+                  key={pkg.id}
+                  className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-400 font-bold text-xs flex items-center justify-center shrink-0">
-                      {guide.name.split(" ").map(n => n[0]).join("")}
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">{guide.name}</div>
-                      <div className="text-[10px] text-slate-600 font-medium">{guide.summitStats}</div>
-                    </div>
+                  <div>
+                    <div className="font-bold text-slate-900 line-clamp-1">{pkg.title}</div>
+                    <div className="text-[10px] text-slate-500 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters}m</div>
                   </div>
-
-                  <AdminStatusBadge status={guide.status} />
+                  <span className="font-bold text-slate-900 shrink-0">${pkg.priceUSD}</span>
                 </div>
               ))}
             </div>

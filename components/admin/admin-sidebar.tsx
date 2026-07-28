@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useAdminAuth } from "@/lib/admin-auth-context";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -11,7 +10,6 @@ import {
   MessageSquare,
   Settings,
   Mountain,
-  LogOut,
   ChevronRight,
   ShieldCheck,
   X,
@@ -63,14 +61,6 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, logout } = useAdminAuth();
-
-  const handleLogout = () => {
-    logout();
-    if (onCloseMobile) onCloseMobile();
-    router.push("/admin/login");
-  };
 
   const handleNavClick = () => {
     if (onCloseMobile) onCloseMobile();
@@ -152,7 +142,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
         })}
       </div>
 
-      {/* Operational Notice Box */}
+      {/* Operational Brief Footer */}
       <div className="p-4 mx-3 mb-4 rounded-xl bg-slate-50 border border-slate-200 text-xs shadow-xs">
         <div className="flex items-center gap-1.5 text-amber-700 font-bold mb-1">
           <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
@@ -161,30 +151,6 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
         <p className="text-slate-600 leading-relaxed text-[11px]">
           Morning flight window clear. 4 expeditions in transit to Namche.
         </p>
-      </div>
-
-      {/* Admin User Profile */}
-      <div className="p-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-400 font-bold text-xs flex items-center justify-center shadow-xs">
-            {user?.name ? user.name.split(" ").map(n => n[0]).join("") : "SB"}
-          </div>
-          <div className="overflow-hidden">
-            <div className="text-xs font-bold text-slate-900 truncate">
-              {user?.name || "Sujan Budhathoki"}
-            </div>
-            <div className="text-[10px] text-slate-500 truncate font-medium">
-              {user?.role || "Expedition Director"}
-            </div>
-          </div>
-        </div>
-        <button
-          onClick={handleLogout}
-          title="Sign Out of Admin"
-          className="text-slate-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-slate-200/60 transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-        </button>
       </div>
     </aside>
   );

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAdminAuth } from "@/lib/admin-auth-context";
 import {
   Search,
   Bell,
@@ -10,7 +12,18 @@ import {
   CloudSnow,
   X,
   Menu,
+  LogOut,
+  Settings,
+  ChevronDown,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AdminHeaderProps {
   onToggleMobileSidebar?: () => void;
@@ -18,6 +31,17 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
   const [showNotification, setShowNotification] = useState(false);
+  const { user, logout } = useAdminAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/admin/login");
+  };
+
+  const userInitials = user?.name
+    ? user.name.split(" ").map((n) => n[0]).join("")
+    : "SB";
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-3 sticky top-0 z-30 shadow-xs">
@@ -45,7 +69,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
       </div>
 
       {/* Right Side Widgets */}
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Weather Indicator */}
         <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-xs text-slate-600">
           <CloudSnow className="w-4 h-4 text-sky-500 animate-pulse" />
@@ -108,15 +132,53 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
           <span className="sm:hidden">New</span>
         </Link>
 
-        {/* External Link to Public Website */}
-        <Link
-          href="/"
-          target="_blank"
-          className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 transition-colors pl-2 border-l border-slate-200"
-        >
-          <span>View Site</span>
-          <ExternalLink className="w-3.5 h-3.5" />
-        </Link>
+        {/* User Profile Dropdown Menu */}
+        <div className="pl-1 border-l border-slate-200">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer">
+              <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-400 font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0">
+                {userInitials}
+              </div>
+              <div className="hidden md:block text-left">
+                <div className="text-xs font-bold text-slate-900 truncate leading-none">
+                  {user?.name || "Sujan Budhathoki"}
+                </div>
+                <div className="text-[10px] text-slate-500 truncate font-medium mt-0.5">
+                  {user?.role || "Expedition Director"}
+                </div>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden md:block" />
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200 shadow-xl rounded-xl p-1">
+              <DropdownMenuLabel className="font-semibold text-xs px-3 py-2">
+                <div className="font-bold text-slate-900">{user?.name || "Sujan Budhathoki"}</div>
+                <div className="text-[10px] text-slate-500 font-normal truncate">{user?.email || "admin@alpineace.com"}</div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-slate-100" />
+
+              <DropdownMenuItem onClick={() => router.push("/admin/settings")} className="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer text-slate-700 hover:text-slate-900">
+                <Settings className="w-3.5 h-3.5 text-amber-600" />
+                <span>Account Settings</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => window.open("/", "_blank")} className="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer text-slate-700 hover:text-slate-900">
+                <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
+                <span>Visit Marketing Site</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator className="bg-slate-100" />
+
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-red-600 hover:bg-red-50"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sign Out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

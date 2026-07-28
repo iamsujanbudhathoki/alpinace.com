@@ -30,7 +30,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
   const [openItineraryDay, setOpenItineraryDay] = useState<number>(1);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
   const [helicopterAddon, setHelicopterAddon] = useState<boolean>(true);
-  
+
   // Gallery state
   const gallery = [
     trek.image,
@@ -141,9 +141,9 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
   ];
 
   return (
-    <div className="pt-20 min-h-screen bg-[#fafaf9] text-slate-900 pb-24 font-sans">
+    <div className="pt-20 min-h-screen bg-stone-50 text-slate-900 pb-24 font-sans">
       {/* 1. HERO BANNER */}
-      <section className="relative h-[50vh] min-h-[360px] w-full overflow-hidden text-white">
+      <section className="relative h-96 sm:h-112 md:h-128 w-full overflow-hidden text-white">
         <div className="absolute inset-0 z-0">
           <img
             src={trek.image}
@@ -157,7 +157,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
         <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-6">
           <Link
             href="/trekking"
-            className="inline-flex items-center gap-2 bg-white/95 text-slate-900 hover:bg-white text-xs font-bold uppercase tracking-wider px-4.5 py-2.5 rounded-full border border-slate-200 shadow-sm transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 bg-white/95 text-slate-900 hover:bg-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full border border-slate-200 shadow-sm transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4 text-slate-700" />
             <span>Back to Trekking Catalog</span>
@@ -167,8 +167,8 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
         {/* Title Overlay */}
         <div className="absolute bottom-10 left-0 right-0 z-10">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="flex flex-wrap items-center gap-2.5 mb-3">
-              <span className="bg-gold-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-md">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="bg-gold-500 text-slate-950 text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-md">
                 {trek.region} REGION
               </span>
               <span className="bg-white/90 border border-slate-200 text-slate-900 text-xs px-3 py-1 rounded-md font-bold">
@@ -188,13 +188,13 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
       {/* 2. MAIN CONTENT LAYOUT */}
       <section className="py-12 max-w-7xl mx-auto px-6 md:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
+
           {/* Left Block */}
           <div className="lg:col-span-8 space-y-10">
-            
+
             {/* Gallery Showcase */}
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-              <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden bg-slate-100">
+              <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100">
                 <img
                   src={activePhoto}
                   alt="Trek Showcase View"
@@ -206,11 +206,10 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                   <button
                     key={i}
                     onClick={() => setActivePhoto(photo)}
-                    className={`relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
-                      activePhoto === photo
+                    className={`relative aspect-4/3 rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${activePhoto === photo
                         ? "border-gold-500 shadow-xs"
                         : "border-transparent opacity-75 hover:opacity-100"
-                    }`}
+                      }`}
                   >
                     <img src={photo} alt="Thumbnail" className="w-full h-full object-cover" />
                   </button>
@@ -221,19 +220,19 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
             {/* High-Contrast Quick Facts Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white text-slate-900 p-6 rounded-2xl border border-slate-200 shadow-xs">
               <div className="space-y-1 border-r border-slate-100 pr-4">
-                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading font-bold">Max Altitude</span>
+                <span className="text-xs text-slate-700 uppercase tracking-widest font-heading font-bold">Max Altitude</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-gold-600">5,364 meters</span>
               </div>
               <div className="space-y-1 sm:border-r border-slate-100 sm:px-4">
-                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading font-bold">Grade</span>
+                <span className="text-xs text-slate-700 uppercase tracking-widest font-heading font-bold">Grade</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900">{trek.difficulty}</span>
               </div>
               <div className="space-y-1 border-r border-slate-100 px-4">
-                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading font-bold">Best Season</span>
+                <span className="text-xs text-slate-700 uppercase tracking-widest font-heading font-bold">Best Season</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900 truncate">{trek.bestSeason}</span>
               </div>
               <div className="space-y-1 pl-4">
-                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading font-bold">Lodges</span>
+                <span className="text-xs text-slate-700 uppercase tracking-widest font-heading font-bold">Lodges</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900">Luxury Lodges</span>
               </div>
             </div>
@@ -244,11 +243,10 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-5 py-3 font-heading text-xs font-extrabold uppercase tracking-wider border-b-2 transition-colors cursor-pointer capitalize ${
-                    activeTab === tab
+                  className={`px-5 py-3 font-heading text-xs font-extrabold uppercase tracking-wider border-b-2 transition-colors cursor-pointer capitalize ${activeTab === tab
                       ? "border-gold-500 text-slate-900 font-extrabold"
                       : "border-transparent text-slate-700 hover:text-slate-950 font-bold"
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -257,7 +255,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
 
             {/* Active Tab Panel */}
             <div className="bg-white p-8 md:p-10 rounded-2xl border border-slate-200 shadow-xs leading-relaxed">
-              
+
               {/* TAB 1: OVERVIEW */}
               {activeTab === "overview" && (
                 <div className="space-y-6">
@@ -274,7 +272,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                       {trek.permitsRequired.map((permit, idx) => (
                         <span
                           key={idx}
-                          className="bg-slate-100 border border-slate-200 text-slate-900 text-xs font-bold px-3.5 py-1.5 rounded-lg"
+                          className="bg-slate-100 border border-slate-200 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-lg"
                         >
                           {permit}
                         </span>
@@ -308,9 +306,8 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                               {day.title}
                             </span>
                             <ChevronDown
-                              className={`h-4 w-4 text-slate-800 transition-transform duration-300 shrink-0 ${
-                                isOpen ? "rotate-180" : ""
-                              }`}
+                              className={`h-4 w-4 text-slate-800 transition-transform duration-300 shrink-0 ${isOpen ? "rotate-180" : ""
+                                }`}
                             />
                           </button>
 
@@ -391,7 +388,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               <h3 className="font-heading text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
                 Client Chronicles &amp; Reviews
               </h3>
-              
+
               <div className="space-y-6 divide-y divide-slate-100">
                 {reviews.map((rev, idx) => (
                   <div key={idx} className="pt-6 first:pt-0 space-y-3">
@@ -404,10 +401,10 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                         />
                         <div>
                           <h4 className="text-xs font-bold text-slate-900 leading-snug">{rev.author}</h4>
-                          <span className="text-[10px] text-slate-600 font-bold leading-none">{rev.country} &mdash; {rev.date}</span>
+                          <span className="text-xs text-slate-600 font-bold leading-none">{rev.country} &mdash; {rev.date}</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex gap-0.5 text-gold-500">
                         {[...Array(rev.rating)].map((_, i) => (
                           <Star key={i} className="h-3.5 w-3.5 fill-gold-500 text-gold-500" />
@@ -426,11 +423,11 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
 
           {/* Right Pure Interactive Calculator & Lead Inquiry Box */}
           <div className="lg:col-span-4 space-y-6 sticky top-24">
-            
+
             {/* Live Calculator Box */}
             <div className="bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="bg-gold-500 p-4.5 text-slate-950 border-b border-gold-400">
-                <span className="text-[10px] uppercase font-extrabold tracking-wider block">Bespoke Proposal Generator</span>
+              <div className="bg-gold-500 p-4 text-slate-950 border-b border-gold-400">
+                <span className="text-xs uppercase font-extrabold tracking-wider block">Bespoke Proposal Generator</span>
                 <h3 className="font-heading text-sm font-extrabold">
                   Trip Estimate &amp; Calculator
                 </h3>
@@ -473,7 +470,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     <span className="font-heading text-xs font-bold text-slate-900">
                       Helicopter Shuttle Return
                     </span>
-                    <p className="text-[10px] text-slate-700 leading-normal font-semibold">
+                    <p className="text-xs text-slate-700 leading-normal font-semibold">
                       Fly back from high camps directly to Kathmandu. (+$450/person)
                     </p>
                   </div>
@@ -488,14 +485,14 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 {/* Dynamic Price Display */}
                 <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
                   <div>
-                    <span className="text-[10px] text-slate-700 block font-heading font-extrabold tracking-wider">ESTIMATED TRIP PRICE</span>
-                    <span className="text-[10px] text-gold-700 block font-extrabold">Includes lodges &amp; Sherpa crew</span>
+                    <span className="text-xs text-slate-700 block font-heading font-extrabold tracking-wider">ESTIMATED TRIP PRICE</span>
+                    <span className="text-xs text-gold-700 block font-extrabold">Includes lodges &amp; Sherpa crew</span>
                   </div>
                   <div className="text-right">
                     <span className="font-heading text-2xl sm:text-3xl font-black text-slate-900">
                       ${totalPrice.toLocaleString()} <span className="text-xs font-normal text-slate-700">USD</span>
                     </span>
-                    <span className="text-[10px] text-slate-700 block font-bold">For {calculatorTravelers} travelers</span>
+                    <span className="text-xs text-slate-700 block font-bold">For {calculatorTravelers} travelers</span>
                   </div>
                 </div>
               </div>
@@ -517,7 +514,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 <form onSubmit={handleInquirySubmit} className="space-y-4">
                   <div className="space-y-1">
                     <h3 className="font-heading text-sm font-bold text-slate-900">Secure Booking Inquiry</h3>
-                    <p className="text-slate-800 text-[11px] leading-normal font-normal">
+                    <p className="text-slate-800 text-xs leading-normal font-normal">
                       Hold permits &amp; luxury lodges for {calculatorTravelers} hikers on this tour.
                     </p>
                   </div>
@@ -528,7 +525,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     placeholder="Your Full Name"
                     value={inquiryName}
                     onChange={(e) => setInquiryName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-gold-600"
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold-600"
                   />
 
                   <input
@@ -537,7 +534,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     placeholder="Email Address"
                     value={inquiryEmail}
                     onChange={(e) => setInquiryEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-gold-600"
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold-600"
                   />
 
                   <button
@@ -564,14 +561,14 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
             {relatedTreks.map((p) => (
               <Link key={p.id} href={`/trekking/${p.slug}`}>
-                <div className="bg-[#fafaf9] border border-slate-200 rounded-2xl p-5 flex gap-4 hover:border-slate-300 transition-all cursor-pointer group shadow-xs">
+                <div className="bg-stone-50 border border-slate-200 rounded-2xl p-5 flex gap-4 hover:border-slate-300 transition-all cursor-pointer group shadow-xs">
                   <img
                     src={p.image}
                     alt={p.title}
                     className="w-24 h-24 rounded-xl object-cover shrink-0"
                   />
                   <div className="space-y-1.5 flex-grow">
-                    <span className="text-gold-600 text-[10px] uppercase font-extrabold tracking-widest block">
+                    <span className="text-gold-600 text-xs uppercase font-extrabold tracking-widest block">
                       {p.region} REGION &bull; {p.durationDays} DAYS
                     </span>
                     <h4 className="font-heading text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-gold-600 transition-colors leading-snug">

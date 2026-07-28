@@ -7,13 +7,10 @@ import {
   Clock,
   Mountain,
   Calendar,
-  Star,
   DollarSign,
-  MapPin,
   Check,
   X,
   ChevronDown,
-  ShieldCheck,
   Sparkles,
   ArrowLeft,
   Send,
@@ -79,7 +76,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
     }
   };
 
-  // Mock day-by-day itinerary data
+  // Day-by-day itinerary data
   const itineraryDays = [
     {
       day: 1,
@@ -131,7 +128,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
   ];
 
   return (
-    <div className="pt-20 min-h-screen bg-[#fafaf9] text-slate-900 pb-20 font-sans">
+    <div className="pt-20 min-h-screen bg-[#fafaf9] text-slate-900 pb-24 font-sans">
       {/* 1. HERO BANNER WITH BACK LINK */}
       <section className="relative h-[55vh] min-h-[380px] w-full overflow-hidden text-white">
         <div className="absolute inset-0 z-0">
@@ -140,16 +137,16 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
             alt={trek.title}
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-black/25 to-transparent" />
         </div>
 
         {/* Back Link */}
         <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-6">
           <Link
             href="/trekking"
-            className="inline-flex items-center gap-2 bg-white/95 text-slate-900 hover:bg-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full border border-slate-200 shadow-sm transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 bg-white/95 text-slate-900 hover:bg-white text-xs font-bold uppercase tracking-wider px-4.5 py-2.5 rounded-full border border-slate-200 shadow-sm transition-all cursor-pointer"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4 text-slate-700" />
             <span>Back to Trekking Catalog</span>
           </Link>
         </div>
@@ -158,7 +155,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
         <div className="absolute bottom-10 left-0 right-0 z-10">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
             <div className="flex flex-wrap items-center gap-3 mb-3">
-              <span className="bg-gold-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-md">
+              <span className="bg-gold-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-md">
                 {trek.region} REGION
               </span>
               <span className="bg-white/90 border border-slate-200 text-slate-900 text-xs px-3 py-1 rounded-md font-bold">
@@ -177,13 +174,13 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
 
       {/* 2. SPLIT LAYOUT */}
       <section className="py-12 max-w-7xl mx-auto px-6 md:px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Left Main Content Block */}
           <div className="lg:col-span-8 space-y-10">
             
             {/* Gallery Showcase */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
               <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden bg-slate-100">
                 <img
                   src={activePhoto}
@@ -208,7 +205,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               </div>
             </div>
 
-            {/* Quick Facts Bar (Crisp Light Palette) */}
+            {/* Quick Facts Bar (Clean High-Contrast Palette) */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white text-slate-900 p-6 rounded-2xl border border-slate-200 shadow-xs">
               <div className="space-y-1 border-r border-slate-100 pr-4">
                 <span className="text-[10px] text-slate-500 uppercase tracking-widest font-mono font-semibold">Max Altitude</span>
@@ -246,12 +243,12 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
             </div>
 
             {/* Active Tab Panel */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-xs leading-relaxed">
+            <div className="bg-white p-8 md:p-10 rounded-2xl border border-slate-200 shadow-xs leading-relaxed">
               
               {/* TAB 1: OVERVIEW */}
               {activeTab === "overview" && (
                 <div className="space-y-6">
-                  <h2 className="font-heading text-lg font-bold text-slate-900">Expedition Overview</h2>
+                  <h2 className="font-heading text-xl font-bold text-slate-900">Expedition Overview</h2>
                   <p className="text-slate-600 text-sm font-normal leading-relaxed">
                     {trek.shortDesc} This luxury trekking experience combines world-famous Himalayan trails with handpicked mountain lodges featuring attached heated bathrooms, electric blankets, and organic dining prepared by expert chefs.
                   </p>
@@ -264,7 +261,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                       {trek.permitsRequired.map((permit, idx) => (
                         <span
                           key={idx}
-                          className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg"
+                          className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold px-3.5 py-1.5 rounded-lg"
                         >
                           <Check className="w-3.5 h-3.5 text-emerald-600" />
                           {permit}
@@ -278,7 +275,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               {/* TAB 2: ITINERARY ACCORDION */}
               {activeTab === "itinerary" && (
                 <div className="space-y-4">
-                  <h2 className="font-heading text-lg font-bold text-slate-900 mb-4">Detailed Day-By-Day Itinerary</h2>
+                  <h2 className="font-heading text-xl font-bold text-slate-900 mb-4">Detailed Day-By-Day Itinerary</h2>
 
                   <div className="space-y-3">
                     {itineraryDays.map((day) => {
@@ -329,7 +326,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                       <Check className="h-4 w-4 text-emerald-600" />
                       Cost Includes
                     </h3>
-                    <ul className="space-y-2.5 text-xs text-slate-600 font-normal">
+                    <ul className="space-y-2.5 text-xs text-slate-600 font-normal leading-relaxed">
                       {costIncludes.map((inc, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-emerald-600 font-bold">&check;</span>
@@ -344,7 +341,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                       <X className="h-4 w-4 text-rose-600" />
                       Cost Excludes
                     </h3>
-                    <ul className="space-y-2.5 text-xs text-slate-600 font-normal">
+                    <ul className="space-y-2.5 text-xs text-slate-600 font-normal leading-relaxed">
                       {costExclusions.map((exc, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-rose-600 font-bold">&times;</span>
@@ -359,7 +356,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               {/* TAB 4: EQUIPMENT */}
               {activeTab === "equipment" && (
                 <div className="space-y-4">
-                  <h2 className="font-heading text-lg font-bold text-slate-900">Recommended Gear List</h2>
+                  <h2 className="font-heading text-xl font-bold text-slate-900">Recommended Gear List</h2>
                   <p className="text-slate-600 text-xs leading-relaxed font-normal">
                     We supply heavy-duty down jackets, thermal sleeping bags, and duffle bags. Explorers are recommended to bring waterproof trekking boots, moisture-wicking layers, personal medications, and polarized sunglasses.
                   </p>
@@ -369,10 +366,10 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               {/* TAB 5: FAQS */}
               {activeTab === "faqs" && (
                 <div className="space-y-4">
-                  <h2 className="font-heading text-lg font-bold text-slate-900">Trip FAQs</h2>
+                  <h2 className="font-heading text-xl font-bold text-slate-900">Trip FAQs</h2>
                   <div className="space-y-3 text-xs text-slate-600 font-normal">
                     <p className="font-bold text-slate-900">Q: What is the medical safety coverage?</p>
-                    <p>A: All treks include 1:1 certified IFMGA Sherpas with pulse oximeter checks, medical oxygen, and 24/7 rescue helicopter standby coverage.</p>
+                    <p className="leading-relaxed">A: All treks include 1:1 certified IFMGA Sherpas with pulse oximeter checks, medical oxygen, and 24/7 rescue helicopter standby coverage.</p>
                   </div>
                 </div>
               )}
@@ -380,12 +377,12 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
             </div>
           </div>
 
-          {/* Right Interactive Trip Calculator & Lead Inquiry Box (Crisp Light Palette) */}
+          {/* Right Interactive Trip Calculator & Lead Inquiry Box */}
           <div className="lg:col-span-4 space-y-6 sticky top-24">
             
             {/* Live Calculator Box */}
             <div className="bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="bg-gold-500 p-4 text-slate-950 border-b border-gold-400">
+              <div className="bg-gold-500 p-4.5 text-slate-950 border-b border-gold-400">
                 <span className="text-[10px] uppercase font-extrabold tracking-wider block">Bespoke Proposal Generator</span>
                 <h3 className="font-heading text-sm font-extrabold flex items-center gap-1.5">
                   <Sparkles className="h-4 w-4 shrink-0" />

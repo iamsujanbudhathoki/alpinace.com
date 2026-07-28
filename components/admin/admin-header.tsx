@@ -13,6 +13,7 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  AlertTriangle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -22,6 +23,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface AdminHeaderProps {
   onToggleMobileSidebar?: () => void;
@@ -29,11 +39,13 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
   const [showNotification, setShowNotification] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { user, logout } = useAdminAuth();
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleConfirmLogout = () => {
     logout();
+    setShowLogoutConfirm(false);
     router.push("/admin/login");
   };
 
@@ -158,7 +170,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
               <DropdownMenuSeparator className="bg-slate-100" />
 
               <DropdownMenuItem
-                onClick={handleLogout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-red-600 hover:bg-red-50 rounded-lg"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -168,6 +180,43 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
           </DropdownMenu>
         </div>
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      {showLogoutConfirm && (
+        <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+          <DialogContent className="sm:max-w-md bg-white border-slate-200 p-6 space-y-4">
+            <DialogHeader className="space-y-2">
+              <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <DialogTitle className="text-lg font-bold text-slate-900">
+                Confirm Sign Out
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500 font-medium">
+                Are you sure you want to sign out of the AlpineAce Admin Portal? You will need to enter your staff credentials to log back in.
+              </DialogDescription>
+            </DialogHeader>
+
+            <DialogFooter className="flex items-center justify-end gap-3 pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="text-xs font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleConfirmLogout}
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs"
+              >
+                Sign Out
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </header>
   );
 }

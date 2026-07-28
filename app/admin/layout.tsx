@@ -1,5 +1,6 @@
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminAuthProvider } from "@/lib/admin-auth-context";
+import { AdminAuthGuard } from "@/components/admin/admin-auth-guard";
+import { AdminLayoutShell } from "@/components/admin/admin-layout-shell";
 
 export const metadata = {
   title: "Admin Dashboard | AlpineAce Nepal Expeditions",
@@ -11,14 +12,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-charcoal-950 text-offwhite-100 font-sans">
-      <AdminSidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader />
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto bg-charcoal-950">
-          {children}
-        </main>
-      </div>
-    </div>
+    <AdminAuthProvider>
+      <AdminAuthGuard>
+        <AdminLayoutShell>{children}</AdminLayoutShell>
+      </AdminAuthGuard>
+    </AdminAuthProvider>
   );
 }

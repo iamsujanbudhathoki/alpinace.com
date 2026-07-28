@@ -37,14 +37,14 @@ export function Hero() {
           {siteConfig.description}
         </p>
 
-        {/* Clean Luxe Action Button */}
+        {/* Dynamic Hover Action Button */}
         <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href="/contact"
-            className="group relative inline-flex items-center gap-3 rounded-full bg-stone-50/95 hover:bg-white px-8 py-4 text-xs font-bold uppercase tracking-[0.16em] text-slate-900 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border border-stone-200/80 cursor-pointer"
+            className="group relative inline-flex items-center gap-3.5 rounded-full bg-stone-50 px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-900 shadow-lg border border-stone-200 cursor-pointer transition-all duration-300 hover:bg-copper-500 hover:text-slate-950 hover:border-copper-400 hover:shadow-2xl hover:scale-105 active:scale-95 hover:ring-4 hover:ring-copper-500/25"
           >
             <span>Plan My Trip</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-stone-50 transition-transform duration-300 group-hover:translate-x-0.5">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-amber-400 transition-all duration-300 group-hover:bg-slate-950 group-hover:text-white group-hover:translate-x-1">
               <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>

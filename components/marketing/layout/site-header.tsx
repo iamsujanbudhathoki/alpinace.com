@@ -60,8 +60,8 @@ export function SiteHeader() {
                 href={link.href}
                 className={`py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
                   isActive
-                    ? "border-b-2 border-amber-600 text-amber-700 font-bold"
-                    : "border-b-2 border-transparent text-slate-700 hover:text-amber-700"
+                    ? "border-b-2 border-gold-500 text-gold-600 font-bold"
+                    : "border-b-2 border-transparent text-slate-700 hover:text-gold-600"
                 }`}
               >
                 {link.label}
@@ -104,7 +104,7 @@ export function SiteHeader() {
                   className={`px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
                     isActive
                       ? "bg-slate-900 text-gold-400 font-bold"
-                      : "text-slate-700 hover:bg-slate-100 hover:text-amber-700"
+                      : "text-slate-700 hover:bg-slate-100 hover:text-gold-600"
                   }`}
                 >
                   {link.label}

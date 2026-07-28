@@ -18,7 +18,7 @@ export function AdminPageHeader({
           {title}
         </h1>
         {description && (
-          <p className="text-xs text-slate-500 mt-1 font-medium">
+          <p className="text-xs text-slate-600 mt-1 font-medium">
             {description}
           </p>
         )}

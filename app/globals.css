@@ -1,26 +1,136 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Typography */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-poppins), var(--font-sans);
+
+  /* Palette */
+  --color-primary-950: #000000;
+  --color-primary-900: #0d0d0d;
+  --color-primary-800: #1a1a1a;
+  --color-primary-700: #262626;
+  --color-primary-600: #404040;
+  --color-primary-500: #737373;
+  --color-primary-400: #a3a3a3;
+
+  --color-gold-950: #211909;
+  --color-gold-900: #3f2f11;
+  --color-gold-800: #5e471a;
+  --color-gold-700: #7d5e23;
+  --color-gold-600: #9c752c;
+  --color-gold-500: #bb8d35;
+  --color-gold-400: #cca558;
+  --color-gold-300: #ddbc7c;
+  --color-gold-200: #eed49f;
+  --color-gold-100: #fefcf3;
+
+  --color-offwhite-50: #fafaf7;
+  --color-offwhite-100: #f4f4ec;
+  --color-offwhite-200: #eaeae0;
+  --color-offwhite-300: #dbdbcc;
+
+  --color-charcoal-950: #0a0a0a;
+  --color-charcoal-900: #141414;
+  --color-charcoal-800: #242424;
+  --color-charcoal-700: #3a3a3a;
+  --color-charcoal-600: #545454;
+  --color-charcoal-400: #888888;
+
+  /* Radius scale */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
 }
 
+/*
+ * Semantic tokens live in their own `@theme inline` block: they alias the
+ * light/dark CSS variables defined below, and `inline` keeps Tailwind from
+ * wrapping an already-indirect var() in another layer of indirection.
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-accent: var(--color-gold-500);
+  --color-accent-foreground: var(--color-gold-950);
 }
 
+/* Light theme (default) */
+:root {
+  --background: var(--color-offwhite-50);
+  --foreground: var(--color-charcoal-900);
+  --muted: var(--color-offwhite-200);
+  --muted-foreground: var(--color-charcoal-600);
+  --border: var(--color-offwhite-300);
+}
+
+/* Dark theme, following system preference */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--color-charcoal-950);
+    --foreground: var(--color-offwhite-100);
+    --muted: var(--color-charcoal-800);
+    --muted-foreground: var(--color-primary-400);
+    --border: var(--color-charcoal-700);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-300);
+    color: var(--color-gold-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted-foreground);
+  border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-foreground);
 }

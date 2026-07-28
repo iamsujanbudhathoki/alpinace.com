@@ -99,6 +99,26 @@
   --radius: 0.625rem;
 }
 
+/* Infinite Marquee Animation for X-Axis Slider */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 28s linear infinite;
+}
+
+.animate-marquee-track:hover {
+  animation-play-state: paused;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

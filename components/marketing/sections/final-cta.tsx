@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
 import { contact } from "@/lib/site-config";
 
 export function FinalCta() {
@@ -15,7 +14,7 @@ export function FinalCta() {
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <span className="text-amber-400 text-xs uppercase tracking-widest font-extrabold block">
+        <span className="text-gold-400 text-xs uppercase tracking-widest font-extrabold block">
           Are You Ready?
         </span>
         <h2 className="font-heading text-3xl sm:text-5xl font-extrabold text-white leading-tight">
@@ -28,9 +27,8 @@ export function FinalCta() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
           <Link
             href="/contact"
-            className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-heading text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-full shadow-lg transition-transform hover:scale-105 cursor-pointer flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-[#fafaf9] hover:bg-gold-500 hover:text-slate-950 text-slate-950 border border-white font-heading text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-full shadow-lg transition-all hover:scale-105 cursor-pointer flex items-center justify-center gap-2"
           >
-            <Sparkles className="h-4 w-4" />
             <span>Begin Bespoke Planning</span>
           </Link>
           <a
@@ -44,9 +42,9 @@ export function FinalCta() {
         </div>
 
         <div className="pt-4 text-xs font-mono text-slate-400 flex flex-wrap justify-center items-center gap-4">
-          <span>● 24/7 Rescue Standby</span>
-          <span>● Sustainable Operator</span>
-          <span>● Tailored Customization</span>
+          <span>&bull; 24/7 Rescue Standby</span>
+          <span>&bull; Sustainable Operator</span>
+          <span>&bull; Tailored Customization</span>
         </div>
       </div>
     </section>

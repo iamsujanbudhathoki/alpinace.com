@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { COMPANY_FAQS } from "@/lib/home-data";
 
 export function FaqsSection() {
@@ -38,8 +38,7 @@ export function FaqsSection() {
                   onClick={() => toggleFaq(faq.id)}
                   className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 focus:outline-none cursor-pointer"
                 >
-                  <span className="font-heading text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                    <HelpCircle className="h-4.5 w-4.5 text-amber-600 shrink-0" />
+                  <span className="font-heading text-sm sm:text-base font-bold text-slate-900">
                     {faq.question}
                   </span>
                   <ChevronDown

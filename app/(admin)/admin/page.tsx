@@ -31,16 +31,14 @@ export default function AdminDashboardPage() {
         <Link href="/admin/packages">
           <Button
             variant="outline"
-            size="sm"
-            className="bg-white text-slate-700 font-medium"
+            className="bg-white text-slate-700 font-semibold border-slate-200"
           >
             Manage Packages
           </Button>
         </Link>
         <Link href="/admin/bookings">
           <Button
-            size="sm"
-            className="bg-slate-900 hover:bg-slate-800 text-white font-medium"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold"
           >
             View Bookings
           </Button>
@@ -92,7 +90,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-base font-bold text-slate-900">Recent Bookings</h2>
-                <p className="text-xs text-slate-500 font-medium">Latest guest reservations and inquiries</p>
+                <p className="text-xs text-slate-600 font-medium">Latest guest reservations and inquiries</p>
               </div>
               <Link
                 href="/admin/bookings"
@@ -106,7 +104,7 @@ export default function AdminDashboardPage() {
             <div className="overflow-x-auto pt-1">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                  <tr className="border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider">
                     <th className="pb-3 pr-4">Guest</th>
                     <th className="pb-3 px-4">Package</th>
                     <th className="pb-3 px-4">Start Date</th>
@@ -117,22 +115,22 @@ export default function AdminDashboardPage() {
                 <tbody className="divide-y divide-slate-100">
                   {recentBookings.map((bkg) => (
                     <tr key={bkg.id} className="group hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3 pr-4">
+                      <td className="py-3.5 pr-4">
                         <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
                           {bkg.guestName}
                         </div>
-                        <div className="text-[10px] text-slate-400 font-medium">{bkg.reference} • {bkg.country}</div>
+                        <div className="text-[10px] text-slate-500 font-medium">{bkg.reference} • {bkg.country}</div>
                       </td>
-                      <td className="py-3 px-4 text-slate-700 font-medium max-w-[180px] truncate">
+                      <td className="py-3.5 px-4 text-slate-800 font-medium max-w-[180px] truncate">
                         {bkg.packageName}
                       </td>
-                      <td className="py-3 px-4 text-slate-500 font-medium">
+                      <td className="py-3.5 px-4 text-slate-600 font-medium">
                         {bkg.startDate}
                       </td>
-                      <td className="py-3 px-4 font-bold text-slate-900">
+                      <td className="py-3.5 px-4 font-bold text-slate-900">
                         ${bkg.totalAmountUSD.toLocaleString()}
                       </td>
-                      <td className="py-3 pl-4 text-right">
+                      <td className="py-3.5 pl-4 text-right">
                         <AdminStatusBadge status={bkg.bookingStatus} />
                       </td>
                     </tr>
@@ -159,12 +157,12 @@ export default function AdminDashboardPage() {
                   <div>
                     <div className="flex items-center justify-between gap-2">
                       <AdminStatusBadge status={pkg.category} />
-                      <span className="text-xs text-slate-500 font-medium">★ {pkg.rating} ({pkg.totalBookings})</span>
+                      <span className="text-xs text-slate-600 font-medium">★ {pkg.rating} ({pkg.totalBookings})</span>
                     </div>
                     <h3 className="font-bold text-sm text-slate-900 mt-2 line-clamp-1">
                       {pkg.title}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1 font-medium">
+                    <p className="text-xs text-slate-600 mt-1 font-medium">
                       {pkg.durationDays} Days • {pkg.maxAltitudeMeters}m
                     </p>
                   </div>
@@ -184,7 +182,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-base text-slate-900">Sherpa Guides</h3>
-                <p className="text-xs text-slate-500 font-medium">Summit leaders & mountain team</p>
+                <p className="text-xs text-slate-600 font-medium">Summit leaders & mountain team</p>
               </div>
               <Link href="/admin/guides" className="text-xs font-semibold text-slate-900 hover:text-amber-600 transition-colors">
                 View Roster
@@ -195,7 +193,7 @@ export default function AdminDashboardPage() {
               {mockGuides.map((guide) => (
                 <div
                   key={guide.id}
-                  className="p-3 rounded-xl bg-slate-50/70 border border-slate-200 flex items-center justify-between gap-3"
+                  className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200 flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-400 font-bold text-xs flex items-center justify-center shrink-0">
@@ -203,7 +201,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <div>
                       <div className="text-xs font-bold text-slate-900">{guide.name}</div>
-                      <div className="text-[10px] text-slate-500 font-medium">{guide.summitStats}</div>
+                      <div className="text-[10px] text-slate-600 font-medium">{guide.summitStats}</div>
                     </div>
                   </div>
 

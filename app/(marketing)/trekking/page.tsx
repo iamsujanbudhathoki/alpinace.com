@@ -12,8 +12,9 @@ import {
   Star,
   ArrowRight,
   Check,
+  Compass,
 } from "lucide-react";
-import { initialTreksData, TrekItem } from "@/lib/trek-data";
+import { initialTreksData } from "@/lib/trek-data";
 
 export default function TrekkingPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,31 +53,30 @@ export default function TrekkingPage() {
   }, [searchQuery, selectedDifficulty, maxDuration, sortBy]);
 
   return (
-    <div className="min-h-screen bg-[#fcfcf9] text-slate-900 pt-20 pb-20">
-      {/* Dark Mountain Hero Header */}
-      <section className="relative bg-[#0d1117] text-white py-16 px-6 md:px-12 border-b border-slate-800">
-        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none" />
-        <div className="max-w-7xl mx-auto space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-2 bg-[#261f10] border border-[#7d5e23]/50 text-amber-400 px-3.5 py-1 rounded-full text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+    <div className="min-h-screen bg-[#fafaf8] text-slate-900 pt-20 pb-20">
+      {/* Light Luxury Hero Header */}
+      <section className="bg-white border-b border-slate-200/80 py-14 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-900 px-3.5 py-1 rounded-full text-xs font-bold">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
             <span>Luxury Mountain Lodges &amp; Elite Guides</span>
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900">
             Himalayan Trekking Journeys
           </h1>
 
-          <p className="text-slate-300 text-sm md:text-base max-w-3xl font-medium leading-relaxed">
+          <p className="text-slate-600 text-sm md:text-base max-w-3xl font-medium leading-relaxed">
             Walk ancient trails lined with prayer flags, stay in premium boutique lodges with heated beds, and marvel at the world&apos;s highest peaks with local Sherpa legends.
           </p>
         </div>
       </section>
 
       {/* Main Catalog Workspace */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 mt-10">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Sidebar Filter Column (4 cols) */}
-          <aside className="lg:col-span-4 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-6 sticky top-24">
+          <aside className="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6 sticky top-24">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <span>Filter Expeditions</span>
@@ -126,7 +126,7 @@ export default function TrekkingPage() {
                       onClick={() => setSelectedDifficulty(item.value)}
                       className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         isSelected
-                          ? "bg-slate-950 text-white shadow-xs"
+                          ? "bg-slate-900 text-white shadow-xs"
                           : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-100"
                       }`}
                     >
@@ -184,7 +184,7 @@ export default function TrekkingPage() {
           {/* Right Main Catalog Content Column (8 cols) */}
           <main className="lg:col-span-8 space-y-6">
             {/* Counter Header Banner */}
-            <div className="bg-white border border-slate-200/80 rounded-xl px-5 py-3.5 flex items-center justify-between text-xs shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-xl px-5 py-3.5 flex items-center justify-between text-xs shadow-xs">
               <div className="text-slate-700 font-medium">
                 Showing <strong className="text-slate-900 font-bold">{filteredTreks.length}</strong> luxurious trekking itineraries
               </div>
@@ -208,7 +208,7 @@ export default function TrekkingPage() {
                 {filteredTreks.map((trk) => (
                   <div
                     key={trk.id}
-                    className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col justify-between group hover:shadow-md transition-all"
+                    className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden flex flex-col justify-between group hover:shadow-md transition-all"
                   >
                     <div>
                       {/* Image Header with Badges */}
@@ -280,7 +280,7 @@ export default function TrekkingPage() {
                             </button>
                           </Link>
                           <Link href="/contact">
-                            <button className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-950 text-white hover:bg-slate-800 transition-colors flex items-center gap-1 cursor-pointer shadow-xs">
+                            <button className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors flex items-center gap-1 cursor-pointer shadow-xs">
                               <span>Book</span>
                               <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
                             </button>
@@ -295,20 +295,25 @@ export default function TrekkingPage() {
           </main>
         </div>
 
-        {/* Bottom Customized Trek CTA Section */}
-        <div className="mt-16 bg-[#0d1117] text-white rounded-3xl p-8 md:p-10 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+        {/* Bottom Customized Trek Light Card CTA Section */}
+        <div className="mt-16 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-white text-slate-900 rounded-3xl p-8 md:p-10 border border-amber-300/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden shadow-xs">
           <div className="space-y-2 max-w-2xl relative z-10">
-            <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 uppercase tracking-wider">
+              <Compass className="w-4 h-4 text-amber-600" />
+              <span>Tailor-Made Expeditions</span>
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900">
               Seeking A Customized Off-the-Beaten Path Trek?
             </h3>
-            <p className="text-xs md:text-sm text-slate-300 font-medium leading-relaxed">
+            <p className="text-xs md:text-sm text-slate-600 font-medium leading-relaxed">
               We specialize in restricted regions like Mustang, Manaslu, Dolpo, and Kanchenjunga. Our adventure directors will coordinate specialized permits and private helicopter logistics.
             </p>
           </div>
 
           <Link href="/contact" className="relative z-10 shrink-0">
-            <button className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl cursor-pointer transition-colors shadow-lg">
-              Inquire Now
+            <button className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl cursor-pointer transition-colors shadow-md flex items-center gap-2">
+              <span>Inquire Now</span>
+              <ArrowRight className="w-4 h-4 text-amber-400" />
             </button>
           </Link>
         </div>

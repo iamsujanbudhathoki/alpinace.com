@@ -221,19 +221,19 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
             {/* High-Contrast Quick Facts Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white text-slate-900 p-6 rounded-2xl border border-slate-200 shadow-xs">
               <div className="space-y-1 border-r border-slate-100 pr-4">
-                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-mono font-bold">Max Altitude</span>
+                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading font-bold">Max Altitude</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-gold-600">5,364 meters</span>
               </div>
               <div className="space-y-1 sm:border-r border-slate-100 sm:px-4">
-                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-mono font-bold">Grade</span>
+                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading font-bold">Grade</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900">{trek.difficulty}</span>
               </div>
               <div className="space-y-1 border-r border-slate-100 px-4">
-                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-mono font-bold">Best Season</span>
+                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading font-bold">Best Season</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900 truncate">{trek.bestSeason}</span>
               </div>
               <div className="space-y-1 pl-4">
-                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-mono font-bold">Lodges</span>
+                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading font-bold">Lodges</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900">Luxury Lodges</span>
               </div>
             </div>
@@ -302,7 +302,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                             className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 focus:outline-none cursor-pointer"
                           >
                             <span className="font-heading text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-3">
-                              <span className="bg-slate-900 text-white w-7 h-7 rounded-lg flex items-center justify-center font-mono text-xs shrink-0 font-bold">
+                              <span className="bg-slate-900 text-white w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0">
                                 D{day.day}
                               </span>
                               {day.title}
@@ -317,7 +317,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                           {isOpen && (
                             <div className="p-6 bg-white border-t border-slate-200 space-y-3 text-xs sm:text-sm text-slate-800 font-normal">
                               <p>{day.description}</p>
-                              <div className="flex flex-wrap gap-4 pt-3 border-t border-slate-100 text-xs font-bold text-slate-700 font-mono">
+                              <div className="flex flex-wrap gap-4 pt-3 border-t border-slate-100 text-xs font-bold text-slate-700">
                                 <span>Meals: <strong className="text-slate-900">{day.meals}</strong></span>
                                 <span>Overnight: <strong className="text-slate-900">{day.overnight}</strong></span>
                               </div>
@@ -386,7 +386,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
 
             </div>
 
-            {/* SECTION 1: Client Chronicles & Reviews Pane */}
+            {/* Client Chronicles & Reviews Pane */}
             <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-xs space-y-6">
               <h3 className="font-heading text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
                 Client Chronicles &amp; Reviews
@@ -404,7 +404,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                         />
                         <div>
                           <h4 className="text-xs font-bold text-slate-900 leading-snug">{rev.author}</h4>
-                          <span className="text-[10px] text-slate-500 font-mono leading-none">{rev.country} &mdash; {rev.date}</span>
+                          <span className="text-[10px] text-slate-600 font-bold leading-none">{rev.country} &mdash; {rev.date}</span>
                         </div>
                       </div>
                       
@@ -439,15 +439,15 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               <div className="p-6 space-y-6">
                 {/* Traveler Counter */}
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center text-xs font-mono text-slate-800 font-bold">
+                  <div className="flex justify-between items-center text-xs font-heading font-extrabold tracking-wider text-slate-900">
                     <span>NUMBER OF TRAVELERS</span>
-                    <span className="text-slate-900 font-extrabold">{calculatorTravelers} {calculatorTravelers === 1 ? "Person" : "People"}</span>
+                    <span className="text-xs font-bold text-gold-700 bg-gold-100 px-2.5 py-1 rounded-md">{calculatorTravelers} {calculatorTravelers === 1 ? "Person" : "People"}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       disabled={calculatorTravelers <= 1}
                       onClick={() => setCalculatorTravelers(calculatorTravelers - 1)}
-                      className="bg-slate-100 text-slate-900 hover:bg-slate-200 disabled:opacity-40 w-10 h-10 rounded-lg flex items-center justify-center font-bold font-mono border border-slate-200 cursor-pointer text-base"
+                      className="bg-slate-100 text-slate-900 hover:bg-slate-200 disabled:opacity-40 w-10 h-10 rounded-xl flex items-center justify-center font-extrabold border border-slate-200 cursor-pointer text-lg"
                     >
                       -
                     </button>
@@ -455,12 +455,12 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                       type="text"
                       readOnly
                       value={calculatorTravelers}
-                      className="flex-grow bg-slate-50 border border-slate-200 text-center text-sm font-extrabold font-mono rounded-lg py-2.5 text-slate-900 focus:outline-none"
+                      className="flex-grow bg-slate-50 border border-slate-200 text-center text-base font-extrabold rounded-xl py-2 text-slate-900 focus:outline-none"
                     />
                     <button
                       disabled={calculatorTravelers >= 12}
                       onClick={() => setCalculatorTravelers(calculatorTravelers + 1)}
-                      className="bg-slate-100 text-slate-900 hover:bg-slate-200 disabled:opacity-40 w-10 h-10 rounded-lg flex items-center justify-center font-bold font-mono border border-slate-200 cursor-pointer text-base"
+                      className="bg-slate-100 text-slate-900 hover:bg-slate-200 disabled:opacity-40 w-10 h-10 rounded-xl flex items-center justify-center font-extrabold border border-slate-200 cursor-pointer text-lg"
                     >
                       +
                     </button>
@@ -488,14 +488,14 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 {/* Dynamic Price Display */}
                 <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
                   <div>
-                    <span className="text-[10px] text-slate-700 block font-mono font-bold">ESTIMATED TRIP PRICE</span>
+                    <span className="text-[10px] text-slate-700 block font-heading font-extrabold tracking-wider">ESTIMATED TRIP PRICE</span>
                     <span className="text-[10px] text-gold-700 block font-extrabold">Includes lodges &amp; Sherpa crew</span>
                   </div>
                   <div className="text-right">
                     <span className="font-heading text-2xl sm:text-3xl font-black text-slate-900">
                       ${totalPrice.toLocaleString()} <span className="text-xs font-normal text-slate-700">USD</span>
                     </span>
-                    <span className="text-[10px] text-slate-700 block font-mono font-bold">For {calculatorTravelers} travelers</span>
+                    <span className="text-[10px] text-slate-700 block font-bold">For {calculatorTravelers} travelers</span>
                   </div>
                 </div>
               </div>
@@ -577,10 +577,10 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     <h4 className="font-heading text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-gold-600 transition-colors leading-snug">
                       {p.title}
                     </h4>
-                    <p className="text-slate-700 text-xs line-clamp-2 leading-relaxed font-normal">
+                    <p className="text-slate-800 text-xs line-clamp-2 leading-relaxed font-normal">
                       {p.shortDesc}
                     </p>
-                    <span className="text-xs font-mono font-extrabold text-slate-900 block pt-1">
+                    <span className="text-xs font-extrabold text-slate-900 block pt-1">
                       From ${p.priceUSD.toLocaleString()} USD
                     </span>
                   </div>

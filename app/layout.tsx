@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
-import { SiteHeader } from "@/components/layout/site-header";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
@@ -51,8 +50,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <SiteHeader />
+      <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
         {children}
       </body>
     </html>

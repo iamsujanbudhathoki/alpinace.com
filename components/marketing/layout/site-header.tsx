@@ -48,7 +48,7 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        {/* Clean Desktop Navigation Links */}
+        {/* Desktop Navigation Links with Gold Active & Hover */}
         <nav className="hidden items-center gap-7 lg:flex">
           {navLinks.map((link) => {
             const isActive =
@@ -60,8 +60,8 @@ export function SiteHeader() {
                 href={link.href}
                 className={`py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
                   isActive
-                    ? "border-b-2 border-slate-900 text-slate-900"
-                    : "border-b-2 border-transparent text-slate-600 hover:text-slate-900"
+                    ? "border-b-2 border-amber-600 text-amber-700 font-bold"
+                    : "border-b-2 border-transparent text-slate-700 hover:text-amber-700"
                 }`}
               >
                 {link.label}
@@ -70,11 +70,11 @@ export function SiteHeader() {
           })}
         </nav>
 
-        {/* Right Action Button & Mobile Toggle */}
+        {/* Right Action Button - Gold only on Hover */}
         <div className="flex items-center gap-4">
           <Link
             href="/contact"
-            className="hidden sm:inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition-all hover:bg-slate-800 shadow-xs"
+            className="hidden sm:inline-flex items-center justify-center rounded-xl bg-slate-900 border border-slate-900 px-4.5 py-2 text-xs font-bold uppercase tracking-wider text-white transition-all duration-300 hover:bg-gold-500 hover:text-slate-950 hover:border-gold-400 hover:shadow-md cursor-pointer"
           >
             <span>Plan My Trip</span>
           </Link>
@@ -103,8 +103,8 @@ export function SiteHeader() {
                   href={link.href}
                   className={`px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
                     isActive
-                      ? "bg-slate-900 text-white"
-                      : "text-slate-700 hover:bg-slate-100"
+                      ? "bg-slate-900 text-gold-400 font-bold"
+                      : "text-slate-700 hover:bg-slate-100 hover:text-amber-700"
                   }`}
                 >
                   {link.label}
@@ -116,7 +116,7 @@ export function SiteHeader() {
           <div className="pt-2 border-t border-slate-100">
             <Link
               href="/contact"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-slate-800 transition-colors shadow-sm"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 border border-slate-900 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-gold-500 hover:text-slate-950 hover:border-gold-400 transition-all shadow-sm"
             >
               <span>Plan My Trip</span>
             </Link>

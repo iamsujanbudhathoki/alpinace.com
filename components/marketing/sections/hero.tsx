@@ -37,14 +37,14 @@ export function Hero() {
           {siteConfig.description}
         </p>
 
-        {/* Rich Mountain Gold Action Button */}
+        {/* Clean Luxe Action Button - Gold ONLY on Hover */}
         <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href="/contact"
-            className="group relative inline-flex items-center gap-3.5 rounded-full bg-gold-500 hover:bg-gold-400 px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-950 shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border border-gold-400 cursor-pointer"
+            className="group relative inline-flex items-center gap-3.5 rounded-full bg-white px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-950 shadow-xl border border-white cursor-pointer transition-all duration-300 hover:bg-gold-500 hover:text-slate-950 hover:border-gold-400 hover:shadow-2xl hover:scale-105 active:scale-95 hover:ring-4 hover:ring-gold-500/25"
           >
             <span>Plan My Trip</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950 text-gold-400 transition-transform duration-300 group-hover:translate-x-1">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950 text-white transition-all duration-300 group-hover:bg-slate-950 group-hover:text-amber-400 group-hover:translate-x-1">
               <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>

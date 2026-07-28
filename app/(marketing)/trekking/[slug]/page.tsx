@@ -193,22 +193,22 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               </div>
             </div>
 
-            {/* Pure Typographic Quick Facts Bar */}
+            {/* High-Contrast Quick Facts Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white text-slate-900 p-6 rounded-2xl border border-slate-200 shadow-xs">
               <div className="space-y-1 border-r border-slate-100 pr-4">
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-mono font-semibold">Max Altitude</span>
+                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-mono font-bold">Max Altitude</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-gold-600">5,364 meters</span>
               </div>
               <div className="space-y-1 sm:border-r border-slate-100 sm:px-4">
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-mono font-semibold">Grade</span>
+                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-mono font-bold">Grade</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900">{trek.difficulty}</span>
               </div>
               <div className="space-y-1 border-r border-slate-100 px-4">
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-mono font-semibold">Best Season</span>
+                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-mono font-bold">Best Season</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900 truncate">{trek.bestSeason}</span>
               </div>
               <div className="space-y-1 pl-4">
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-mono font-semibold">Lodges</span>
+                <span className="text-[10px] text-slate-700 uppercase tracking-widest font-mono font-bold">Lodges</span>
                 <span className="text-xs sm:text-sm font-extrabold block text-slate-900">Luxury Lodges</span>
               </div>
             </div>
@@ -219,10 +219,10 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-5 py-3 font-heading text-xs font-bold uppercase tracking-wider border-b-2 transition-colors cursor-pointer capitalize ${
+                  className={`px-5 py-3 font-heading text-xs font-extrabold uppercase tracking-wider border-b-2 transition-colors cursor-pointer capitalize ${
                     activeTab === tab
-                      ? "border-gold-500 text-slate-900"
-                      : "border-transparent text-slate-500 hover:text-slate-900"
+                      ? "border-gold-500 text-slate-900 font-extrabold"
+                      : "border-transparent text-slate-700 hover:text-slate-950 font-bold"
                   }`}
                 >
                   {tab}
@@ -237,7 +237,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               {activeTab === "overview" && (
                 <div className="space-y-6">
                   <h2 className="font-heading text-xl font-bold text-slate-900">Expedition Overview</h2>
-                  <p className="text-slate-600 text-sm font-normal leading-relaxed">
+                  <p className="text-slate-800 text-sm font-normal leading-relaxed">
                     {trek.shortDesc} This luxury trekking experience combines world-famous Himalayan trails with handpicked mountain lodges featuring attached heated bathrooms, electric blankets, and organic dining prepared by expert chefs.
                   </p>
 
@@ -249,7 +249,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                       {trek.permitsRequired.map((permit, idx) => (
                         <span
                           key={idx}
-                          className="bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold px-3.5 py-1.5 rounded-lg"
+                          className="bg-slate-100 border border-slate-200 text-slate-900 text-xs font-bold px-3.5 py-1.5 rounded-lg"
                         >
                           {permit}
                         </span>
@@ -283,16 +283,16 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                               {day.title}
                             </span>
                             <ChevronDown
-                              className={`h-4 w-4 text-slate-700 transition-transform duration-300 shrink-0 ${
+                              className={`h-4 w-4 text-slate-800 transition-transform duration-300 shrink-0 ${
                                 isOpen ? "rotate-180" : ""
                               }`}
                             />
                           </button>
 
                           {isOpen && (
-                            <div className="p-6 bg-white border-t border-slate-200 space-y-3 text-xs sm:text-sm text-slate-600 font-normal">
+                            <div className="p-6 bg-white border-t border-slate-200 space-y-3 text-xs sm:text-sm text-slate-800 font-normal">
                               <p>{day.description}</p>
-                              <div className="flex flex-wrap gap-4 pt-3 border-t border-slate-100 text-xs font-semibold text-slate-500 font-mono">
+                              <div className="flex flex-wrap gap-4 pt-3 border-t border-slate-100 text-xs font-bold text-slate-700 font-mono">
                                 <span>Meals: <strong className="text-slate-900">{day.meals}</strong></span>
                                 <span>Overnight: <strong className="text-slate-900">{day.overnight}</strong></span>
                               </div>
@@ -309,10 +309,10 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               {activeTab === "cost" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+                    <h3 className="font-heading text-xs font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
                       Cost Includes
                     </h3>
-                    <ul className="space-y-2.5 text-xs text-slate-600 font-normal leading-relaxed">
+                    <ul className="space-y-2.5 text-xs text-slate-800 font-normal leading-relaxed">
                       {costIncludes.map((inc, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-slate-900 font-bold">&bull;</span>
@@ -323,13 +323,13 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+                    <h3 className="font-heading text-xs font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
                       Cost Excludes
                     </h3>
-                    <ul className="space-y-2.5 text-xs text-slate-600 font-normal leading-relaxed">
+                    <ul className="space-y-2.5 text-xs text-slate-800 font-normal leading-relaxed">
                       {costExclusions.map((exc, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="text-slate-400 font-bold">&bull;</span>
+                          <span className="text-slate-500 font-bold">&bull;</span>
                           <span>{exc}</span>
                         </li>
                       ))}
@@ -342,7 +342,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               {activeTab === "equipment" && (
                 <div className="space-y-4">
                   <h2 className="font-heading text-xl font-bold text-slate-900">Recommended Gear List</h2>
-                  <p className="text-slate-600 text-xs leading-relaxed font-normal">
+                  <p className="text-slate-800 text-xs leading-relaxed font-normal">
                     We supply heavy-duty down jackets, thermal sleeping bags, and duffle bags. Explorers are recommended to bring waterproof trekking boots, moisture-wicking layers, personal medications, and polarized sunglasses.
                   </p>
                 </div>
@@ -352,7 +352,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               {activeTab === "faqs" && (
                 <div className="space-y-4">
                   <h2 className="font-heading text-xl font-bold text-slate-900">Trip FAQs</h2>
-                  <div className="space-y-3 text-xs text-slate-600 font-normal">
+                  <div className="space-y-3 text-xs text-slate-800 font-normal">
                     <p className="font-bold text-slate-900">Q: What is the medical safety coverage?</p>
                     <p className="leading-relaxed">A: All treks include 1:1 certified IFMGA Sherpas with pulse oximeter checks, medical oxygen, and 24/7 rescue helicopter standby coverage.</p>
                   </div>
@@ -377,7 +377,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               <div className="p-6 space-y-6">
                 {/* Traveler Counter */}
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center text-xs font-mono text-slate-600 font-bold">
+                  <div className="flex justify-between items-center text-xs font-mono text-slate-800 font-bold">
                     <span>NUMBER OF TRAVELERS</span>
                     <span className="text-slate-900 font-extrabold">{calculatorTravelers} {calculatorTravelers === 1 ? "Person" : "People"}</span>
                   </div>
@@ -411,7 +411,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     <span className="font-heading text-xs font-bold text-slate-900">
                       Helicopter Shuttle Return
                     </span>
-                    <p className="text-[10px] text-slate-500 leading-normal font-medium">
+                    <p className="text-[10px] text-slate-700 leading-normal font-semibold">
                       Fly back from high camps directly to Kathmandu. (+$450/person)
                     </p>
                   </div>
@@ -426,14 +426,14 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 {/* Dynamic Price Display */}
                 <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
                   <div>
-                    <span className="text-[10px] text-slate-500 block font-mono font-semibold">ESTIMATED TRIP PRICE</span>
-                    <span className="text-[10px] text-gold-600 block font-bold">Includes lodges &amp; Sherpa crew</span>
+                    <span className="text-[10px] text-slate-700 block font-mono font-bold">ESTIMATED TRIP PRICE</span>
+                    <span className="text-[10px] text-gold-700 block font-extrabold">Includes lodges &amp; Sherpa crew</span>
                   </div>
                   <div className="text-right">
                     <span className="font-heading text-2xl sm:text-3xl font-black text-slate-900">
-                      ${totalPrice.toLocaleString()} <span className="text-xs font-normal text-slate-500">USD</span>
+                      ${totalPrice.toLocaleString()} <span className="text-xs font-normal text-slate-700">USD</span>
                     </span>
-                    <span className="text-[10px] text-slate-500 block font-mono font-medium">For {calculatorTravelers} travelers</span>
+                    <span className="text-[10px] text-slate-700 block font-mono font-bold">For {calculatorTravelers} travelers</span>
                   </div>
                 </div>
               </div>
@@ -447,7 +447,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     &check;
                   </div>
                   <h3 className="font-heading text-sm font-bold text-slate-900">Inquiry Transmitted</h3>
-                  <p className="text-slate-600 text-xs leading-normal font-normal">
+                  <p className="text-slate-800 text-xs leading-normal font-normal">
                     Your request has been logged. Our concierge desk will email your formal PDF proposal within 4 hours.
                   </p>
                 </div>
@@ -455,7 +455,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 <form onSubmit={handleInquirySubmit} className="space-y-4">
                   <div className="space-y-1">
                     <h3 className="font-heading text-sm font-bold text-slate-900">Secure Booking Inquiry</h3>
-                    <p className="text-slate-600 text-[11px] leading-normal font-normal">
+                    <p className="text-slate-800 text-[11px] leading-normal font-normal">
                       Hold permits &amp; luxury lodges for {calculatorTravelers} hikers on this tour.
                     </p>
                   </div>

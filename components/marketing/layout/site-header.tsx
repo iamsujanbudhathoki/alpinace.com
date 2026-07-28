@@ -50,9 +50,7 @@ export function SiteHeader() {
             <span className="font-heading text-base font-extrabold tracking-tight text-slate-900">
               ALPINE<span className="text-amber-600">ACE</span>
             </span>
-            <span className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mt-0.5">
-              TREKS &amp; EXPED
-            </span>
+            
           </span>
         </Link>
 

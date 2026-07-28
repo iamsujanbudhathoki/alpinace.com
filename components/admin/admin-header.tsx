@@ -13,7 +13,6 @@ import {
   LogOut,
   Settings,
   ChevronDown,
-  AlertTriangle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -94,7 +93,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
           {showNotification && (
             <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50 animate-in fade-in slide-in-from-top-2">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <span className="font-bold text-xs text-slate-900">Operational Alerts</span>
+                <span className="font-bold text-xs text-slate-900">Notifications</span>
                 <button
                   onClick={() => setShowNotification(false)}
                   className="text-slate-400 hover:text-slate-700"
@@ -103,19 +102,19 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
                 </button>
               </div>
               <div className="mt-3 space-y-2.5">
-                <div className="p-2.5 rounded-xl bg-amber-50/50 border border-amber-200 text-xs">
-                  <div className="font-semibold text-amber-900 flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <div className="font-semibold text-slate-900 flex items-center justify-between">
                     <span>New Booking Received</span>
-                    <span className="text-[10px] text-amber-700 font-normal">10m ago</span>
+                    <span className="text-[10px] text-slate-500">10m ago</span>
                   </div>
                   <p className="text-slate-600 mt-1">
                     Marcus Vance booked Everest Luxury Helicopter Trek.
                   </p>
                 </div>
-                <div className="p-2.5 rounded-xl bg-emerald-50/50 border border-emerald-200 text-xs">
-                  <div className="font-semibold text-emerald-900 flex items-center justify-between">
-                    <span>Permit Approved</span>
-                    <span className="text-[10px] text-emerald-700 font-normal">1h ago</span>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <div className="font-semibold text-slate-900 flex items-center justify-between">
+                    <span>Permit Cleared</span>
+                    <span className="text-[10px] text-slate-500">1h ago</span>
                   </div>
                   <p className="text-slate-600 mt-1">
                     TIMS permit issued for Ama Dablam team.
@@ -181,37 +180,34 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
         </div>
       </div>
 
-      {/* Logout Confirmation Dialog */}
+      {/* Sleek Sign Out Confirmation Dialog */}
       {showLogoutConfirm && (
         <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
-          <DialogContent className="sm:max-w-md bg-white border-slate-200 p-6 space-y-4">
-            <DialogHeader className="space-y-2">
-              <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5" />
-              </div>
-              <DialogTitle className="text-lg font-bold text-slate-900">
-                Confirm Sign Out
+          <DialogContent className="sm:max-w-xs bg-white border border-slate-200 rounded-xl p-5 shadow-lg space-y-4">
+            <DialogHeader className="space-y-1 text-left">
+              <DialogTitle className="text-sm font-bold text-slate-900">
+                Sign out?
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-500 font-medium">
-                Are you sure you want to sign out of the AlpineAce Admin Portal? You will need to enter your staff credentials to log back in.
+              <DialogDescription className="text-xs text-slate-600 font-medium">
+                Are you sure you want to log out of your session?
               </DialogDescription>
             </DialogHeader>
 
-            <DialogFooter className="flex items-center justify-end gap-3 pt-2">
+            <DialogFooter className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowLogoutConfirm(false)}
-                className="text-xs font-semibold"
+                className="text-xs font-semibold h-8 px-3 border-slate-200 text-slate-700 hover:bg-slate-50"
               >
                 Cancel
               </Button>
               <Button
                 size="sm"
                 onClick={handleConfirmLogout}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs"
+                className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-8 px-3"
               >
-                Sign Out
+                Sign out
               </Button>
             </DialogFooter>
           </DialogContent>

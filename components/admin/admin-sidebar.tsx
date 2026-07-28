@@ -11,7 +11,6 @@ import {
   Settings,
   Mountain,
   ChevronRight,
-  ShieldCheck,
   X,
 } from "lucide-react";
 import { mockDashboardMetrics } from "@/lib/admin-data";
@@ -67,9 +66,9 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
   };
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 text-slate-900 flex flex-col shrink-0 h-full min-h-screen">
+    <aside className="w-64 bg-white text-slate-900 flex flex-col shrink-0 h-full overflow-y-auto">
       {/* Brand Header */}
-      <div className="h-16 px-6 flex items-center justify-between border-b border-slate-200">
+      <div className="h-16 px-6 flex items-center justify-between border-b border-slate-200 shrink-0">
         <Link href="/admin" onClick={handleNavClick} className="flex items-center gap-2.5 group">
           <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 group-hover:scale-105 transition-transform shadow-xs">
             <Mountain className="w-5 h-5" />
@@ -95,7 +94,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 py-6 px-3 space-y-1">
+      <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
         <div className="px-3 pb-2 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
           Management
         </div>
@@ -140,17 +139,6 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
             </Link>
           );
         })}
-      </div>
-
-      {/* Operational Brief Footer */}
-      <div className="p-4 mx-3 mb-4 rounded-xl bg-slate-50 border border-slate-200 text-xs shadow-xs">
-        <div className="flex items-center gap-1.5 text-amber-700 font-bold mb-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-          <span>Lukla Weather Window</span>
-        </div>
-        <p className="text-slate-600 leading-relaxed text-[11px]">
-          Morning flight window clear. 4 expeditions in transit to Namche.
-        </p>
       </div>
     </aside>
   );

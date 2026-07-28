@@ -9,7 +9,7 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-poppins), var(--font-sans);
 
-  /* Monochrome Palette */
+  /* Palette */
   --color-primary-950: #000000;
   --color-primary-900: #0f172a;
   --color-primary-800: #1e293b;
@@ -17,6 +17,17 @@
   --color-primary-600: #475569;
   --color-primary-500: #64748b;
   --color-primary-400: #94a3b8;
+
+  --color-gold-950: #211909;
+  --color-gold-900: #3f2f11;
+  --color-gold-800: #5e471a;
+  --color-gold-700: #7d5e23;
+  --color-gold-600: #b48529;
+  --color-gold-500: #d4a338;
+  --color-gold-400: #e5b854;
+  --color-gold-300: #f0cd7d;
+  --color-gold-200: #f7e2aa;
+  --color-gold-100: #fdf8eb;
 
   --color-offwhite-50: #fafaf9;
   --color-offwhite-100: #f1f5f9;
@@ -40,8 +51,8 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --color-accent: var(--color-primary-900);
-  --color-accent-foreground: var(--color-offwhite-50);
+  --color-accent: var(--color-gold-500);
+  --color-accent-foreground: var(--color-gold-950);
   --font-heading: var(--font-poppins), var(--font-sans);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -128,12 +139,12 @@
   }
 
   ::selection {
-    background-color: #0f172a;
-    color: #ffffff;
+    background-color: #d4a338;
+    color: #0f172a;
   }
 
   :focus-visible {
-    outline: 2px solid #0f172a;
+    outline: 2px solid #d4a338;
     outline-offset: 2px;
   }
 }

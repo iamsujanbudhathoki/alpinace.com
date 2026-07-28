@@ -30,21 +30,21 @@ export function Hero() {
       <div className="relative z-10 flex max-w-3xl flex-col items-center">
         <h1 className="font-heading text-4xl leading-[1.05] font-semibold text-white sm:text-5xl md:text-6xl lg:text-7xl drop-shadow-lg">
           <span className="block">{lead}</span>
-          <span className="block text-slate-100 font-normal italic">{highlight}</span>
+          <span className="block text-gold-400 font-normal italic">{highlight}</span>
         </h1>
 
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg drop-shadow-md font-medium">
           {siteConfig.description}
         </p>
 
-        {/* Clean High-Contrast Action Button */}
+        {/* Rich Mountain Gold Action Button */}
         <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href="/contact"
-            className="group relative inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-950 shadow-xl transition-all duration-300 hover:bg-slate-100 hover:scale-105 active:scale-95 border border-white cursor-pointer"
+            className="group relative inline-flex items-center gap-3.5 rounded-full bg-gold-500 hover:bg-gold-400 px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-950 shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border border-gold-400 cursor-pointer"
           >
             <span>Plan My Trip</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950 text-white transition-transform duration-300 group-hover:translate-x-1">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950 text-gold-400 transition-transform duration-300 group-hover:translate-x-1">
               <ArrowRight className="h-3.5 w-3.5" />
             </span>
           </Link>

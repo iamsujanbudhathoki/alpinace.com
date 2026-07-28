@@ -3,7 +3,7 @@
 import { useState, useMemo, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft, ChevronDown, Star } from "lucide-react";
 import { initialTreksData } from "@/lib/trek-data";
 
 interface TrekDetailPageProps {
@@ -19,6 +19,11 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
   if (!trek) {
     notFound();
   }
+
+  // Related treks excluding current
+  const relatedTreks = useMemo(() => {
+    return initialTreksData.filter((t) => t.slug !== trek.slug).slice(0, 2);
+  }, [trek]);
 
   // Interactive tab state
   const [activeTab, setActiveTab] = useState<"overview" | "itinerary" | "cost" | "equipment" | "faqs">("overview");
@@ -113,6 +118,26 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
     "Personal travel & medical insurance (helicopter rescue coverage required)",
     "Personal alcoholic beverages & bottled mineral water",
     "Gratuities for Sherpa guides and porters",
+  ];
+
+  // Mock Reviews
+  const reviews = [
+    {
+      author: "Jonathan Vance",
+      country: "United States",
+      date: "May 2026",
+      rating: 5,
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      content: "The 1:1 Sherpa guide ratio and basecamp luxury made our summit push unforgettable. AlpineAce sets the gold standard in high-altitude mountaineering.",
+    },
+    {
+      author: "Elena Rostova",
+      country: "Germany",
+      date: "April 2026",
+      rating: 5,
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
+      content: "Heated mattresses and organic fine dining at 4,000 meters! The Sherpa team looked after our safety with pulse oximeters every evening.",
+    },
   ];
 
   return (
@@ -360,6 +385,43 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
               )}
 
             </div>
+
+            {/* SECTION 1: Client Chronicles & Reviews Pane */}
+            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+              <h3 className="font-heading text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
+                Client Chronicles &amp; Reviews
+              </h3>
+              
+              <div className="space-y-6 divide-y divide-slate-100">
+                {reviews.map((rev, idx) => (
+                  <div key={idx} className="pt-6 first:pt-0 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={rev.avatar}
+                          alt={rev.author}
+                          className="w-10 h-10 rounded-full object-cover border border-slate-200"
+                        />
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-900 leading-snug">{rev.author}</h4>
+                          <span className="text-[10px] text-slate-500 font-mono leading-none">{rev.country} &mdash; {rev.date}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-0.5 text-gold-500">
+                        {[...Array(rev.rating)].map((_, i) => (
+                          <Star key={i} className="h-3.5 w-3.5 fill-gold-500 text-gold-500" />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-slate-800 text-xs leading-relaxed italic font-normal">
+                      &ldquo;{rev.content}&rdquo;
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
 
           {/* Right Pure Interactive Calculator & Lead Inquiry Box */}
@@ -490,6 +552,42 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
 
           </div>
 
+        </div>
+      </section>
+
+      {/* SECTION 2: OTHER PRESTIGIOUS HIMALAYAN ITINERARIES */}
+      <section className="py-16 bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <h3 className="font-heading text-lg font-extrabold text-slate-900 mb-8">
+            Other Prestigious Himalayan Itineraries
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+            {relatedTreks.map((p) => (
+              <Link key={p.id} href={`/trekking/${p.slug}`}>
+                <div className="bg-[#fafaf9] border border-slate-200 rounded-2xl p-5 flex gap-4 hover:border-slate-300 transition-all cursor-pointer group shadow-xs">
+                  <img
+                    src={p.image}
+                    alt={p.title}
+                    className="w-24 h-24 rounded-xl object-cover shrink-0"
+                  />
+                  <div className="space-y-1.5 flex-grow">
+                    <span className="text-gold-600 text-[10px] uppercase font-extrabold tracking-widest block">
+                      {p.region} REGION &bull; {p.durationDays} DAYS
+                    </span>
+                    <h4 className="font-heading text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-gold-600 transition-colors leading-snug">
+                      {p.title}
+                    </h4>
+                    <p className="text-slate-700 text-xs line-clamp-2 leading-relaxed font-normal">
+                      {p.shortDesc}
+                    </p>
+                    <span className="text-xs font-mono font-extrabold text-slate-900 block pt-1">
+                      From ${p.priceUSD.toLocaleString()} USD
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
     </div>

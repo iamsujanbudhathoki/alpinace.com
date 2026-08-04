@@ -12,7 +12,7 @@ export function DestinationsSection() {
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900">
             Iconic Nepal Regions
           </h2>
-          <p className="text-slate-600 text-sm font-normal leading-relaxed">
+          <p className="text-slate-700 text-sm font-normal leading-relaxed">
             From the deep pine forests of the lower valleys to the arid high-altitude tundra bordering Tibet, select your perfect theater of adventure.
           </p>
         </div>
@@ -31,7 +31,7 @@ export function DestinationsSection() {
                 </div>
 
                 <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
-                  <span className="bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-md w-fit mb-3">
+                  <span className="bg-amber-500 text-slate-950 text-xs font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-md w-fit mb-3">
                     {dest.packageCount} itineraries
                   </span>
                   <h3 className="font-heading text-lg font-bold text-white group-hover:text-amber-300 transition-colors leading-tight">
@@ -45,7 +45,7 @@ export function DestinationsSection() {
                     {dest.highlights.slice(0, 2).map((h, i) => (
                       <span
                         key={i}
-                        className="text-[9px] font-mono bg-white/15 text-amber-200 px-2 py-0.5 rounded border border-white/10"
+                        className="text-xs font-mono bg-white/15 text-amber-200 px-2 py-0.5 rounded border border-white/10"
                       >
                         {h}
                       </span>

@@ -79,7 +79,7 @@
 /* Light theme (default) - High contrast, sharp text */
 :root {
   --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.35 0 0);
+  --muted-foreground: oklch(0.18 0 0);
   --border: oklch(0.88 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.09 0 0);
@@ -169,17 +169,39 @@
   }
 }
 
-/* Custom scrollbar */
+/* ── Global Scrollbar — slim & subtle ── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
+  background: #cbd5e1;
+  border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0f172a;
+  background: #94a3b8;
+}
+
+/* ── Modal body scrollbar — even thinner ── */
+.modal-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 99px;
+}
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* Firefox */
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
 }

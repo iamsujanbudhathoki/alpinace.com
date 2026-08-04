@@ -79,7 +79,7 @@ export default function ExpeditionsPage() {
 
             {/* Search Input */}
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-semibold text-slate-600">
+              <label className="block text-xs font-bold text-slate-800">
                 Search Expeditions
               </label>
               <input
@@ -93,8 +93,8 @@ export default function ExpeditionsPage() {
 
             {/* Climbing Grade */}
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-semibold text-slate-600">
-                Climbing Grade
+              <label className="block text-xs font-bold text-slate-800">
+                Peak Category
               </label>
               <div className="space-y-1">
                 {[
@@ -124,8 +124,8 @@ export default function ExpeditionsPage() {
             {/* Min Peak Height Range */}
             <div className="space-y-2 pt-2 border-t border-slate-100">
               <div className="flex items-center justify-between text-xs">
-                <label className="font-semibold text-slate-600 text-[11px]">
-                  Min Peak Height
+                <label className="font-bold text-slate-800 text-xs">
+                  Max Duration
                 </label>
                 <span className="font-semibold text-slate-900 text-xs">
                   {minPeakHeight.toLocaleString()}m
@@ -144,7 +144,7 @@ export default function ExpeditionsPage() {
 
             {/* Sort Results By */}
             <div className="space-y-1.5 pt-2 border-t border-slate-100">
-              <label className="block text-[11px] font-semibold text-slate-600">
+              <label className="block text-xs font-bold text-slate-800">
                 Sort By
               </label>
               <select
@@ -196,20 +196,20 @@ export default function ExpeditionsPage() {
                       </div>
 
                       <div className="p-4 space-y-2">
-                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                          {exp.region} REGION • {exp.peakHeightM.toLocaleString()}M
+                        <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          {exp.region} • {exp.durationDays} DAYS
                         </div>
 
                         <h3 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-gold-600 transition-colors">
                           {exp.title}
                         </h3>
 
-                        <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+                        <p className="text-xs text-slate-700 leading-relaxed line-clamp-2">
                           {exp.shortDesc}
                         </p>
 
-                        <div className="pt-2 text-[11px] text-slate-500 font-medium border-t border-slate-100 flex items-center justify-between">
-                          <span>{exp.climbingGrade.replace(" Grade", "").replace(" Peak", "")}</span>
+                        <div className="pt-2 text-xs text-slate-700 font-semibold border-t border-slate-100 flex items-center justify-between">
+                          <span>Summit: {exp.peakHeightM.toLocaleString()}m</span>
                           <span>Rating: {exp.rating}★</span>
                         </div>
                       </div>
@@ -219,9 +219,9 @@ export default function ExpeditionsPage() {
                     <div className="p-4 pt-0 border-t border-slate-100 mt-2">
                       <div className="flex items-center justify-between pt-3">
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold">Starting from</span>
+                          <span className="text-xs text-slate-700 uppercase font-bold">Starting from</span>
                           <div className="text-base font-bold text-slate-900">
-                            ${exp.priceUSD.toLocaleString()} <span className="text-xs font-normal text-slate-500">USD</span>
+                            ${exp.priceUSD.toLocaleString()} <span className="text-xs font-semibold text-slate-700">USD</span>
                           </div>
                         </div>
 

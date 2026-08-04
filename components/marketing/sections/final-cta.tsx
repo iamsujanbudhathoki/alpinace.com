@@ -11,7 +11,7 @@ export function FinalCta() {
         <h2 className="font-heading text-3xl sm:text-5xl font-extrabold text-slate-900 leading-tight">
           The Himalayas Are Calling
         </h2>
-        <p className="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
+        <p className="text-slate-700 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
           Take the first step toward a bespoke mountain experience. Speak directly with our certified expedition directors to craft your personalized high-altitude itinerary.
         </p>
 
@@ -32,7 +32,7 @@ export function FinalCta() {
           </a>
         </div>
 
-        <div className="pt-4 text-xs font-mono text-slate-500 flex flex-wrap justify-center items-center gap-4">
+        <div className="pt-4 text-xs font-mono text-slate-700 flex flex-wrap justify-center items-center gap-4 font-semibold">
           <span>&bull; 24/7 Rescue Standby</span>
           <span>&bull; Sustainable Operator</span>
           <span>&bull; Tailored Customization</span>

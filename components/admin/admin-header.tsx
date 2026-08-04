@@ -77,11 +77,11 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
 
         {/* Search Input */}
         <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-700" />
           <input
             type="text"
             placeholder="Search guest, trip ID, guide..."
-            className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:bg-white focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all"
+            className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-500 text-xs rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:bg-white focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all font-medium"
           />
         </div>
       </div>
@@ -103,20 +103,20 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
               <div className="flex items-center gap-2">
                 <span className="font-bold text-xs text-slate-900">Notifications</span>
                 {unreadCount > 0 ? (
-                  <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full border border-amber-200">
+                  <span className="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-200">
                     {unreadCount} new
                   </span>
                 ) : (
-                  <span className="text-[10px] font-medium text-slate-500">All caught up</span>
+                  <span className="text-xs font-bold text-slate-700">All caught up</span>
                 )}
               </div>
 
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
-                  className="text-[11px] font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1 cursor-pointer transition-colors"
+                  className="text-xs font-bold text-slate-800 hover:text-slate-950 flex items-center gap-1 cursor-pointer transition-colors"
                 >
-                  <Check className="w-3 h-3 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
                   <span>Mark read</span>
                 </button>
               )}
@@ -129,9 +129,9 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
                 <div className="space-y-1 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-900">New Booking Received</span>
-                    <span className="text-[10px] text-slate-400 font-medium">10m ago</span>
+                    <span className="text-xs text-slate-700 font-bold">10m ago</span>
                   </div>
-                  <p className="text-slate-600 leading-relaxed font-medium">
+                  <p className="text-slate-800 leading-relaxed font-semibold">
                     Marcus Vance submitted reservation for Everest Luxury Helicopter Trek.
                   </p>
                 </div>
@@ -142,9 +142,9 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
                 <div className="space-y-1 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-900">TIMS Permit Issued</span>
-                    <span className="text-[10px] text-slate-400 font-medium">1h ago</span>
+                    <span className="text-xs text-slate-700 font-bold">1h ago</span>
                   </div>
-                  <p className="text-slate-600 leading-relaxed font-medium">
+                  <p className="text-slate-800 leading-relaxed font-semibold">
                     Sagarmatha permit clearance generated for Ama Dablam team.
                   </p>
                 </div>
@@ -154,7 +154,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
             {/* Popover Footer */}
             <Link
               href="/admin/bookings"
-              className="p-2.5 text-center text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100/60 bg-slate-50/50 border-t border-slate-100 cursor-pointer block transition-colors"
+              className="p-2.5 text-center text-xs font-bold text-slate-900 hover:bg-slate-100/80 bg-slate-50 border-t border-slate-200 cursor-pointer block transition-colors"
             >
               View all activity →
             </Link>
@@ -172,23 +172,23 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
                 <div className="text-xs font-bold text-slate-900 truncate leading-none">
                   {user?.name || "Sujan Budhathoki"}
                 </div>
-                <div className="text-[10px] text-slate-500 truncate font-medium mt-0.5">
+                <div className="text-xs text-slate-700 truncate font-bold mt-0.5">
                   {user?.role || "Expedition Director"}
                 </div>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden md:block" />
+              <ChevronDown className="w-3.5 h-3.5 text-slate-700 hidden md:block" />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200 shadow-xl rounded-xl p-1 z-50">
               <DropdownMenuLabel className="font-semibold text-xs px-3 py-2">
                 <div className="font-bold text-slate-900">{user?.name || "Sujan Budhathoki"}</div>
-                <div className="text-[10px] text-slate-500 font-normal truncate">{user?.email || "admin@alpineace.com"}</div>
+                <div className="text-xs text-slate-700 font-semibold truncate">{user?.email || "admin@alpineace.com"}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-100" />
 
               <DropdownMenuItem
                 onClick={() => router.push("/admin/settings")}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-800 hover:text-slate-950 hover:bg-slate-100 rounded-lg"
               >
                 <Settings className="w-3.5 h-3.5 text-amber-600" />
                 <span>Account Settings</span>
@@ -196,7 +196,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
 
               <DropdownMenuItem
                 onClick={() => window.open("/", "_blank")}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-800 hover:text-slate-950 hover:bg-slate-100 rounded-lg"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
                 <span>Visit Marketing Site</span>
@@ -206,7 +206,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
 
               <DropdownMenuItem
                 onClick={() => setShowLogoutConfirm(true)}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-red-600 hover:bg-red-50 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-bold cursor-pointer text-rose-600 hover:bg-rose-50 rounded-lg"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Sign Out</span>
@@ -224,7 +224,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
               <DialogTitle className="text-sm font-bold text-slate-900">
                 Sign out?
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-600 font-medium">
+              <DialogDescription className="text-xs text-slate-700 font-medium">
                 Are you sure you want to log out of your session?
               </DialogDescription>
             </DialogHeader>

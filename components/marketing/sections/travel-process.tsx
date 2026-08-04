@@ -32,7 +32,7 @@ export function TravelProcess() {
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900">
             Your Journey To The Sky
           </h2>
-          <p className="text-slate-600 text-sm font-normal leading-relaxed">
+          <p className="text-slate-700 text-sm font-normal leading-relaxed">
             From our initial custom planning call to boarding your final helicopter, we engineer every step of your Himalayan itinerary.
           </p>
         </div>
@@ -49,7 +49,7 @@ export function TravelProcess() {
               <h3 className="font-heading text-base font-bold text-slate-900 mt-8 mb-3 pr-8">
                 {step.title}
               </h3>
-              <p className="text-slate-600 text-xs leading-relaxed font-normal">
+              <p className="text-slate-700 text-xs leading-relaxed font-normal">
                 {step.desc}
               </p>
             </div>

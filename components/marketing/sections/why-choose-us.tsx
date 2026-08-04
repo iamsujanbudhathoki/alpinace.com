@@ -34,7 +34,7 @@ export function WhyChooseUs() {
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
               Luxury Mountaineering Built on Local Sherpa Heritage
             </h2>
-            <p className="text-slate-600 text-sm leading-relaxed font-normal">
+            <p className="text-slate-700 text-sm leading-relaxed font-normal">
               We believe that premium travel is not just about comfortable beds, but deep cultural connection, unparalleled safety margins, and absolute local authenticity.
             </p>
 
@@ -42,7 +42,7 @@ export function WhyChooseUs() {
               <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-slate-950">
                 1:1 Elite Climbing Guide Ratio
               </h3>
-              <p className="text-slate-600 text-xs leading-relaxed">
+              <p className="text-slate-700 text-xs leading-relaxed">
                 Our high-altitude mountaineering team consists entirely of multi-summit Sherpas carrying global certification.
               </p>
             </div>
@@ -61,7 +61,7 @@ export function WhyChooseUs() {
                 <h3 className="font-heading text-base font-bold text-slate-900 mb-2">
                   {item.title}
                 </h3>
-                <p className="text-slate-600 text-xs leading-relaxed font-normal">
+                <p className="text-slate-700 text-xs leading-relaxed font-normal">
                   {item.desc}
                 </p>
               </div>

@@ -5,7 +5,7 @@ export function TestimonialsSection() {
   const marqueeItems = [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS];
 
   return (
-    <section className="py-24 bg-[#fafaf8] border-y border-slate-200 overflow-hidden">
+    <section className="py-24 bg-slate-50 border-y border-slate-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center space-y-2">
         <span className="text-gold-600 text-xs uppercase tracking-widest font-extrabold block">
           Pioneer Experiences
@@ -13,7 +13,7 @@ export function TestimonialsSection() {
         <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900">
           Stories from High Altitudes
         </h2>
-        <p className="text-slate-600 text-sm font-normal max-w-xl mx-auto leading-relaxed">
+        <p className="text-slate-700 text-sm font-normal max-w-xl mx-auto leading-relaxed">
           Hear directly from explorers who traversed the Himalayas with our multi-summit Sherpa team.
         </p>
       </div>
@@ -21,8 +21,8 @@ export function TestimonialsSection() {
       {/* Infinite Horizontal X-Axis Auto Slider */}
       <div className="relative w-full overflow-hidden">
         {/* Left & Right Gradient Fade Masks */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#fafaf8] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#fafaf8] to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
 
         {/* Sliding X-Axis Track */}
         <div className="animate-marquee-track flex gap-6 px-4">
@@ -39,7 +39,7 @@ export function TestimonialsSection() {
                       <Star key={i} className="h-3.5 w-3.5 fill-gold-500 text-gold-500" />
                     ))}
                   </div>
-                  <span className="bg-slate-100 text-[10px] font-bold text-slate-700 px-2.5 py-0.5 rounded-md uppercase tracking-wider">
+                  <span className="bg-slate-100 text-xs font-bold text-slate-800 px-2.5 py-0.5 rounded-md uppercase tracking-wider">
                     Verified Explorer
                   </span>
                 </div>
@@ -62,13 +62,13 @@ export function TestimonialsSection() {
                     <h3 className="font-heading text-xs font-bold text-slate-900 leading-none">
                       {item.author}
                     </h3>
-                    <p className="text-[10px] text-slate-500 font-medium mt-1">
+                    <p className="text-xs text-slate-700 font-semibold mt-1">
                       {item.role} &bull; {item.country}
                     </p>
                   </div>
                 </div>
 
-                <span className="text-[10px] font-bold text-gold-600 bg-gold-100 px-2.5 py-1 rounded-md">
+                <span className="text-xs font-bold text-gold-600 bg-gold-100 px-2.5 py-1 rounded-md">
                   {item.tripName.split(" ")[0]}
                 </span>
               </div>

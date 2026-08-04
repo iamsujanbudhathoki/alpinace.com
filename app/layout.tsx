@@ -41,6 +41,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,9 +52,14 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
+      <body
+        className="min-h-full flex flex-col font-sans bg-background text-foreground"
+        suppressHydrationWarning
+      >
         <TopLoaderProvider>{children}</TopLoaderProvider>
+        <Toaster richColors position="top-right" duration={3000} />
       </body>
     </html>
   );

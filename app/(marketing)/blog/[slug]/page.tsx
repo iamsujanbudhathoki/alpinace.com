@@ -52,7 +52,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
           <div className="p-8 sm:p-12 space-y-6">
 
             {/* Meta row */}
-            <div className="flex flex-wrap items-center gap-6 text-xs text-slate-500 font-mono font-medium tracking-wide">
+            <div className="flex flex-wrap items-center gap-6 text-xs text-slate-700 font-mono font-bold tracking-wide">
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4 text-gold-600" />
                 {post.date}
@@ -78,7 +78,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
               />
               <div>
                 <h3 className="text-sm font-bold text-slate-900 leading-snug">{post.author.name}</h3>
-                <p className="text-[11px] text-slate-500 leading-none font-mono uppercase">{post.author.role}</p>
+                <p className="text-xs text-slate-700 leading-none font-mono font-semibold uppercase">{post.author.role}</p>
               </div>
             </div>
 
@@ -88,13 +88,13 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
             </p>
 
             {/* Detailed Content */}
-            <div className="text-slate-700 text-sm sm:text-base leading-relaxed space-y-6 font-light">
+            <div className="text-slate-800 text-sm sm:text-base leading-relaxed space-y-6 font-normal">
               <p>{post.content}</p>
             </div>
 
             {/* Sharing row */}
             <div className="flex items-center justify-between border-t border-slate-100 pt-6 mt-10">
-              <div className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Share this article:</div>
+              <div className="text-xs text-slate-800 font-bold uppercase tracking-wider">Share this article:</div>
               <div className="flex gap-2">
                 <button className="bg-stone-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer flex items-center gap-1">
                   <Share2 className="h-3.5 w-3.5" />

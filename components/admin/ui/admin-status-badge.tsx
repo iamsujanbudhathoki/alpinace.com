@@ -7,7 +7,7 @@ interface AdminStatusBadgeProps {
 }
 
 export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgeProps) {
-  let styleClass = "bg-slate-100 text-slate-700 border-slate-200";
+  let styleClass = "bg-slate-100 text-slate-800 border-slate-300 font-bold";
 
   switch (status) {
     case "Confirmed":
@@ -16,7 +16,7 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     case "Issued":
     case "Available":
     case "Booked":
-      styleClass = "bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold";
+      styleClass = "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold";
       break;
     case "Deposit Paid":
     case "Active Trek":
@@ -24,23 +24,23 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     case "Processing":
     case "On Mountain":
     case "New":
-      styleClass = "bg-amber-50 text-amber-800 border-amber-200 font-semibold";
+      styleClass = "bg-amber-50 text-amber-900 border-amber-300 font-bold";
       break;
     case "In Review":
     case "Quote Sent":
     case "Draft":
     case "Pending":
-      styleClass = "bg-purple-50 text-purple-700 border-purple-200 font-semibold";
+      styleClass = "bg-purple-50 text-purple-900 border-purple-300 font-bold";
       break;
     case "Cancelled":
     case "Closed":
     case "Refunded":
-      styleClass = "bg-red-50 text-red-700 border-red-200 font-semibold";
+      styleClass = "bg-rose-50 text-rose-800 border-rose-300 font-bold";
       break;
   }
 
   return (
-    <Badge variant="outline" className={`text-[10px] px-2.5 py-0.5 ${styleClass} ${className}`}>
+    <Badge variant="outline" className={`text-xs px-2.5 py-0.5 ${styleClass} ${className}`}>
       {status}
     </Badge>
   );

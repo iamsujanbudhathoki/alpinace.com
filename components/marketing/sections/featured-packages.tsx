@@ -39,7 +39,7 @@ export function FeaturedPackages() {
                     alt={pkg.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 right-3 bg-gold-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider border border-gold-400">
+                  <div className="absolute top-3 right-3 bg-gold-500 text-slate-950 text-xs font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider border border-gold-400">
                     {pkg.category}
                   </div>
                   <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
@@ -49,23 +49,23 @@ export function FeaturedPackages() {
                 </div>
 
                 <div className="p-6 space-y-3">
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                     {pkg.region}
                   </div>
                   <h3 className="font-heading text-base font-bold text-slate-900 leading-snug group-hover:text-gold-600 transition-colors">
                     {pkg.title}
                   </h3>
-                  <p className="text-slate-600 text-xs leading-relaxed font-normal line-clamp-2">
+                  <p className="text-slate-700 text-xs leading-relaxed font-normal line-clamp-2">
                     {pkg.shortDesc}
                   </p>
 
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600 font-semibold">
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-700 font-semibold">
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <Clock className="w-3.5 h-3.5 text-amber-600" />
                       {pkg.durationDays} Days
                     </span>
-                    <span className="flex items-center gap-1 text-slate-800">
-                      <TrendingUp className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="flex items-center gap-1 text-slate-900">
+                      <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
                       {pkg.maxAltitudeMeters}m
                     </span>
                   </div>
@@ -75,9 +75,9 @@ export function FeaturedPackages() {
               <div className="p-6 pt-0 border-t border-slate-100 mt-2">
                 <div className="flex items-center justify-between pt-4">
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">Starting from</span>
+                    <span className="text-xs font-bold text-slate-700 uppercase">Starting from</span>
                     <div className="text-base font-extrabold text-slate-900">
-                      ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-slate-500">USD</span>
+                      ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-semibold text-slate-700">USD</span>
                     </div>
                   </div>
 

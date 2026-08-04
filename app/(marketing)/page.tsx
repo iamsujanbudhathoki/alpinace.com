@@ -11,7 +11,7 @@ import { FinalCta } from "@/components/marketing/sections/final-cta";
 
 export default function Home() {
   return (
-    <div className="flex flex-col bg-[#fafaf9] text-slate-900">
+    <div className="flex flex-col bg-slate-50 text-slate-900">
       {/* 1. Video Hero Section */}
       <Hero />
 

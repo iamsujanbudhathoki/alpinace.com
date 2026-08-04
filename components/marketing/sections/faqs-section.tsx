@@ -21,7 +21,7 @@ export function FaqsSection() {
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900">
             Pre-Trip Consultations
           </h2>
-          <p className="text-slate-600 text-sm font-normal leading-relaxed">
+          <p className="text-slate-700 text-sm font-normal leading-relaxed">
             Clear answers regarding safety, bookings, high-altitude preparation, and expedition compliance.
           </p>
         </div>

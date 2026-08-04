@@ -34,18 +34,18 @@ export function FeaturedBlogs() {
                     alt={post.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
-                  <span className="absolute top-4 left-4 bg-slate-950 text-amber-400 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md">
+                  <span className="absolute top-4 left-4 bg-slate-950 text-amber-400 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md">
                     {post.category}
                   </span>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
-                  <span className="text-slate-500 text-[10px] uppercase font-semibold font-mono tracking-widest block mb-2">
+                  <span className="text-slate-800 text-xs font-semibold  block mb-2">
                     {post.date} &mdash; {post.readTime}
                   </span>
                   <h3 className="font-heading text-base font-bold text-slate-900 group-hover:text-amber-700 transition-colors mb-2 leading-snug line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-slate-600 text-xs leading-relaxed font-normal line-clamp-3 mb-4">
+                  <p className="text-slate-700 text-xs leading-relaxed font-normal line-clamp-3 mb-4">
                     {post.excerpt}
                   </p>
 
@@ -57,7 +57,7 @@ export function FeaturedBlogs() {
                     />
                     <div>
                       <h4 className="text-xs font-bold text-slate-900">{post.author.name}</h4>
-                      <p className="text-[10px] text-slate-500 leading-none">{post.author.role}</p>
+                      <p className="text-xs text-slate-700 leading-none">{post.author.role}</p>
                     </div>
                   </div>
                 </div>

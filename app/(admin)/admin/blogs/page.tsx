@@ -7,15 +7,18 @@ import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  AdminTableContainer,
+  AdminTable,
+  AdminTableHeader,
+  AdminTableHead,
+  AdminTableBody,
+  AdminTableRow,
+  AdminTableCell,
+  AdminTableEmpty,
+  AdminTableActions,
+  AdminActionButton,
+} from "@/components/admin/ui/admin-table";
 
 export default function AdminBlogsPage() {
   const [articles, setArticles] = useState<BlogArticle[]>(mockBlogArticles);
@@ -50,71 +53,84 @@ export default function AdminBlogsPage() {
         searchPlaceholder="Search article title, author, or category..."
       />
 
-      <Card className="bg-white border-slate-200 shadow-xs overflow-hidden">
-        <Table>
-          <TableHeader className="bg-slate-50/80">
-            <TableRow>
-              <TableHead className="font-bold text-slate-700 text-xs">Article Title</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Category</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Author</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Published Date</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Views</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Status</TableHead>
-              <TableHead className="text-right font-bold text-slate-700 text-xs">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="divide-y divide-slate-100 text-xs">
-            {filteredArticles.map((art) => (
-              <TableRow key={art.id} className="hover:bg-slate-50/80 transition-colors">
-                <TableCell className="py-3.5">
-                  <div className="font-bold text-slate-900 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>{art.title}</span>
-                  </div>
-                  <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
-                    Read time: {art.readTime}
-                  </div>
-                </TableCell>
+      {/* Blogs Table */}
+      <AdminTableContainer>
+        <AdminTable>
+          <AdminTableHeader>
+            <tr>
+              <AdminTableHead>Article Title</AdminTableHead>
+              <AdminTableHead>Category</AdminTableHead>
+              <AdminTableHead>Author</AdminTableHead>
+              <AdminTableHead>Published Date</AdminTableHead>
+              <AdminTableHead>Views</AdminTableHead>
+              <AdminTableHead>Status</AdminTableHead>
+              <AdminTableHead align="right">Actions</AdminTableHead>
+            </tr>
+          </AdminTableHeader>
+          <AdminTableBody>
+            {filteredArticles.length > 0 ? (
+              filteredArticles.map((art) => (
+                <AdminTableRow key={art.id}>
+                  <AdminTableCell>
+                    <div className="font-bold text-slate-900 flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>{art.title}</span>
+                    </div>
+                    <div className="text-xs text-slate-700 mt-0.5 font-semibold">
+                      Read time: {art.readTime}
+                    </div>
+                  </AdminTableCell>
 
-                <TableCell className="py-3.5 font-semibold text-slate-800">
-                  {art.category}
-                </TableCell>
+                  <AdminTableCell className="font-semibold text-slate-800">
+                    {art.category}
+                  </AdminTableCell>
 
-                <TableCell className="py-3.5 text-slate-700 font-medium">
-                  <div className="flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{art.author}</span>
-                  </div>
-                </TableCell>
+                  <AdminTableCell className="font-semibold text-slate-800">
+                    <div className="flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-slate-700" />
+                      <span>{art.author}</span>
+                    </div>
+                  </AdminTableCell>
 
-                <TableCell className="py-3.5 text-slate-600 font-medium">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{art.publishedDate}</span>
-                  </div>
-                </TableCell>
+                  <AdminTableCell className="font-semibold text-slate-800">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-slate-700" />
+                      <span>{art.publishedDate}</span>
+                    </div>
+                  </AdminTableCell>
 
-                <TableCell className="py-3.5 font-bold text-slate-900">
-                  <div className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{art.views.toLocaleString()}</span>
-                  </div>
-                </TableCell>
+                  <AdminTableCell className="font-bold text-slate-900">
+                    <div className="flex items-center gap-1">
+                      <Eye className="w-3.5 h-3.5 text-slate-700" />
+                      <span>{art.views.toLocaleString()}</span>
+                    </div>
+                  </AdminTableCell>
 
-                <TableCell className="py-3.5">
-                  <AdminStatusBadge status={art.status} />
-                </TableCell>
+                  <AdminTableCell>
+                    <AdminStatusBadge status={art.status} />
+                  </AdminTableCell>
 
-                <TableCell className="py-3.5 text-right">
-                  <Button variant="outline" size="sm" className="text-xs font-semibold h-8">
-                    Edit Article
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+                  <AdminTableCell align="right">
+                    <AdminTableActions>
+                      <AdminActionButton
+                        variant="edit"
+                        onClick={() => alert(`Editing article: ${art.title}`)}
+                        title="Edit Article"
+                      />
+                    </AdminTableActions>
+                  </AdminTableCell>
+                </AdminTableRow>
+              ))
+            ) : (
+              <AdminTableEmpty
+                colSpan={7}
+                title="No articles found"
+                description="No blog articles match your search criteria."
+              />
+            )}
+          </AdminTableBody>
+        </AdminTable>
+      </AdminTableContainer>
     </div>
   );
 }

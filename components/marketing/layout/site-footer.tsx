@@ -33,19 +33,19 @@ export function SiteFooter() {
                 <span className="font-heading text-base font-extrabold tracking-wide text-slate-900">
                   ALPINE ACE
                 </span>
-                <span className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mt-0.5">
+                <span className="text-xs font-bold tracking-[0.2em] text-slate-700 uppercase mt-0.5">
                   Nepal Trekking &amp; Expeditions
                 </span>
               </span>
             </Link>
 
-            <p className="text-slate-600 text-xs leading-relaxed font-normal">
+            <p className="text-slate-700 text-xs leading-relaxed font-normal">
               We organize guided treks, cultural tours, and mountain expeditions in Nepal, led by experienced local Sherpa guides with a strong focus on safety and the environment.
             </p>
 
             {/* Certifications and Badges */}
             <div className="pt-2 space-y-2">
-              <span className="text-[10px] uppercase text-gold-600 font-bold tracking-wider block">
+              <span className="text-xs uppercase text-gold-600 font-bold tracking-wider block">
                 Authorized Operator
               </span>
               <div className="flex flex-wrap gap-2">
@@ -54,7 +54,7 @@ export function SiteFooter() {
                   title="Trekking Agencies Association of Nepal"
                 >
                   <ShieldCheck className="h-3.5 w-3.5 text-gold-600" />
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-700 font-bold">
+                  <span className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold">
                     TAAN Member
                   </span>
                 </div>
@@ -63,7 +63,7 @@ export function SiteFooter() {
                   title="Nepal Mountaineering Association"
                 >
                   <Award className="h-3.5 w-3.5 text-gold-600" />
-                  <span className="font-mono text-[9px] uppercase tracking-wider text-slate-700 font-bold">
+                  <span className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold">
                     NMA Certified
                   </span>
                 </div>
@@ -76,7 +76,7 @@ export function SiteFooter() {
             <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
               Quick Links
             </h3>
-            <ul className="space-y-2.5 text-xs font-semibold text-slate-600">
+            <ul className="space-y-2.5 text-xs font-semibold text-slate-700">
               <li>
                 <Link href="/trekking" className="hover:text-gold-600 transition-colors">
                   Trekking in Nepal
@@ -115,7 +115,7 @@ export function SiteFooter() {
             <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
               Contact Info
             </h3>
-            <ul className="space-y-3.5 text-xs text-slate-600 font-medium">
+            <ul className="space-y-3.5 text-xs text-slate-700 font-medium">
               <li className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 text-gold-600 shrink-0 mt-0.5" />
                 <span>
@@ -125,13 +125,13 @@ export function SiteFooter() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-gold-600 shrink-0" />
-                <span className="font-mono text-[11px] text-slate-800 font-bold">
+                <span className="font-mono text-xs text-slate-900 font-bold">
                   +977 1 4410988 / +977 98511 23456
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-4 w-4 text-gold-600 shrink-0" />
-                <span className="font-mono text-[11px] text-slate-800 font-bold">
+                <span className="font-mono text-xs text-slate-900 font-bold">
                   concierge@alpineacetreks.com
                 </span>
               </li>
@@ -143,7 +143,7 @@ export function SiteFooter() {
             <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
               Newsletter
             </h3>
-            <p className="text-slate-600 text-xs leading-relaxed font-normal">
+            <p className="text-slate-700 text-xs leading-relaxed font-normal">
               Get travel tips, weather updates, and special offers for your next trip to Nepal.
             </p>
 
@@ -176,7 +176,7 @@ export function SiteFooter() {
         </div>
 
         {/* Divider & Bottom Bar */}
-        <div className="border-t border-slate-100 pt-8 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+        <div className="border-t border-slate-100 pt-8 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-700 font-semibold">
           <div>
             &copy; 2026 Alpine Ace Trek &amp; Exped Pvt. Ltd. All rights reserved.
           </div>

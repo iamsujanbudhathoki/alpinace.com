@@ -104,7 +104,7 @@ export default function ContactView() {
 
             {/* Google Map Placeholder (Beautiful illustrated map container) */}
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-              <span className="text-[10px] uppercase font-bold text-slate-500 font-mono tracking-wider block">Office Location Map</span>
+              <span className="text-xs uppercase font-bold text-slate-700 font-mono tracking-wider block">Office Location Map</span>
               <div className="relative h-60 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 flex flex-col justify-center items-center text-center px-6">
                 
                 {/* Styled background lines */}
@@ -119,10 +119,10 @@ export default function ContactView() {
                   <div className="bg-slate-950 text-gold-400 p-2.5 rounded-full shadow-lg border border-gold-500 animate-bounce">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <div className="bg-slate-950/90 text-white text-[11px] font-heading font-bold uppercase tracking-wider px-3 py-1.5 rounded shadow mt-2 border border-gold-500/20">
+                  <div className="bg-slate-950/90 text-white text-xs font-heading font-bold uppercase tracking-wider px-3 py-1.5 rounded shadow mt-2 border border-gold-500/20">
                     Tridevi Marg, Thamel
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono mt-1">Kathmandu, Nepal</span>
+                  <span className="text-xs text-slate-700 font-mono mt-1 font-semibold">Kathmandu, Nepal</span>
                 </div>
               </div>
             </div>

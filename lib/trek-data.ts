@@ -2,7 +2,7 @@ export interface TrekItem {
   id: string;
   title: string;
   slug: string;
-  category: "TREKKING";
+  category: string;
   rating: number;
   reviewsCount: number;
   image: string;

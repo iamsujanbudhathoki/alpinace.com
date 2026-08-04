@@ -84,11 +84,11 @@ export default function AboutView() {
               <div className="pt-4 flex gap-6">
                 <div>
                   <span className="font-heading text-3xl font-extrabold text-slate-900 block">100%</span>
-                  <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Sherpa Owned & Run</span>
+                  <span className="text-slate-700 text-xs uppercase font-bold tracking-wider">Sherpa Owned & Run</span>
                 </div>
                 <div className="border-l border-slate-200 pl-6">
                   <span className="font-heading text-3xl font-extrabold text-slate-900 block">25+</span>
-                  <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Active Peak Guides</span>
+                  <span className="text-slate-700 text-xs uppercase font-bold tracking-wider">Active Peak Guides</span>
                 </div>
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function AboutView() {
                   <span className="font-heading text-xs font-extrabold text-slate-400 shrink-0 pt-0.5">0{i + 1}</span>
                   <div>
                     <h4 className="font-heading text-sm font-bold text-slate-900 mb-1">{v.title}</h4>
-                    <p className="text-slate-600 text-xs leading-relaxed font-light">{v.desc}</p>
+                    <p className="text-slate-700 text-xs leading-relaxed font-normal">{v.desc}</p>
                   </div>
                 </div>
               ))}
@@ -139,7 +139,7 @@ export default function AboutView() {
                 <div className="p-6 flex flex-col flex-grow">
                   <h3 className="font-heading text-base font-bold text-slate-900 mb-1">{t.name}</h3>
                   <span className="text-gold-600 text-xs font-semibold uppercase tracking-wider block mb-3">{t.role}</span>
-                  <p className="text-slate-600 text-xs leading-relaxed font-light">
+                  <p className="text-slate-700 text-xs leading-relaxed font-normal">
                     {t.desc}
                   </p>
                 </div>

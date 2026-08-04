@@ -79,7 +79,7 @@ export default function TrekkingPage() {
 
             {/* Search Input */}
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-semibold text-slate-600">
+              <label className="block text-xs font-bold text-slate-800">
                 Search Packages
               </label>
               <input
@@ -93,8 +93,8 @@ export default function TrekkingPage() {
 
             {/* Difficulty Level */}
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-semibold text-slate-600">
-                Difficulty Level
+              <label className="block text-xs font-bold text-slate-800">
+                Region Filter
               </label>
               <div className="space-y-1">
                 {[
@@ -124,7 +124,7 @@ export default function TrekkingPage() {
             {/* Max Duration Range */}
             <div className="space-y-2 pt-2 border-t border-slate-100">
               <div className="flex items-center justify-between text-xs">
-                <label className="font-semibold text-slate-600 text-[11px]">
+                <label className="font-bold text-slate-800 text-xs">
                   Max Duration
                 </label>
                 <span className="font-semibold text-slate-900 text-xs">
@@ -144,7 +144,7 @@ export default function TrekkingPage() {
 
             {/* Sort Results By */}
             <div className="space-y-1.5 pt-2 border-t border-slate-100">
-              <label className="block text-[11px] font-semibold text-slate-600">
+              <label className="block text-xs font-bold text-slate-800">
                 Sort By
               </label>
               <select
@@ -196,19 +196,19 @@ export default function TrekkingPage() {
                       </div>
 
                       <div className="p-4 space-y-2">
-                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                          {trk.region} REGION • {trk.durationDays} DAYS
+                        <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          {trk.region} • {trk.durationDays} DAYS
                         </div>
 
                         <h3 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-gold-600 transition-colors">
                           {trk.title}
                         </h3>
 
-                        <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+                        <p className="text-xs text-slate-700 leading-relaxed line-clamp-2">
                           {trk.shortDesc}
                         </p>
 
-                        <div className="pt-2 text-[11px] text-slate-500 font-medium border-t border-slate-100 flex items-center justify-between">
+                        <div className="pt-2 text-xs text-slate-700 font-semibold border-t border-slate-100 flex items-center justify-between">
                           <span>Difficulty: {trk.difficulty.replace(" Trek", "")}</span>
                           <span>Rating: {trk.rating}★</span>
                         </div>
@@ -219,9 +219,9 @@ export default function TrekkingPage() {
                     <div className="p-4 pt-0 border-t border-slate-100 mt-2">
                       <div className="flex items-center justify-between pt-3">
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold">Starting from</span>
+                          <span className="text-xs text-slate-700 uppercase font-bold">Starting from</span>
                           <div className="text-base font-bold text-slate-900">
-                            ${trk.priceUSD.toLocaleString()} <span className="text-xs font-normal text-slate-500">USD</span>
+                            ${trk.priceUSD.toLocaleString()} <span className="text-xs font-semibold text-slate-700">USD</span>
                           </div>
                         </div>
 

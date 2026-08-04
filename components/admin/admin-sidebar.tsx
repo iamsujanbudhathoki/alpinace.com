@@ -12,10 +12,19 @@ import {
   MessageSquare,
   Settings,
   X,
+  Layers,
+  Image as ImageIcon,
 } from "lucide-react";
 import { mockDashboardMetrics } from "@/lib/admin-data";
 
-const navItems = [
+interface NavItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string | number | null;
+}
+
+const navItems: NavItem[] = [
   {
     title: "Overview",
     href: "/admin",
@@ -41,10 +50,22 @@ const navItems = [
     badge: null,
   },
   {
+    title: "Categories",
+    href: "/admin/categories",
+    icon: Layers,
+    badge: null,
+  },
+  {
+    title: "Media Library",
+    href: "/admin/media",
+    icon: ImageIcon,
+    badge: null,
+  },
+  {
     title: "Bookings",
     href: "/admin/bookings",
     icon: CalendarCheck,
-    badge: mockDashboardMetrics.pendingBookings,
+    // badge: mockDashboardMetrics.pendingBookings,
   },
   {
     title: "Blogs & Articles",
@@ -56,7 +77,7 @@ const navItems = [
     title: "Inquiries",
     href: "/admin/inquiries",
     icon: MessageSquare,
-    badge: mockDashboardMetrics.pendingInquiries,
+    // badge: mockDashboardMetrics.pendingInquiries,
   },
   {
     title: "Settings",
@@ -93,7 +114,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
         {onCloseMobile && (
           <button
             onClick={onCloseMobile}
-            className="md:hidden p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+            className="md:hidden p-1 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100"
           >
             <X className="w-5 h-5" />
           </button>
@@ -113,26 +134,26 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
               key={item.href}
               href={item.href}
               onClick={handleNavClick}
-              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
                 isActive
-                  ? "bg-slate-900 text-white font-semibold"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  ? "bg-slate-900 text-white font-bold"
+                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Icon
                   className={`w-4 h-4 ${
-                    isActive ? "text-amber-400" : "text-slate-400"
+                    isActive ? "text-amber-400" : "text-slate-700"
                   }`}
                 />
                 <span>{item.title}</span>
               </div>
               {item.badge ? (
                 <span
-                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                     isActive
                       ? "bg-amber-400 text-slate-950"
-                      : "bg-slate-100 text-slate-600 border border-slate-200"
+                      : "bg-slate-100 text-slate-800 border border-slate-200"
                   }`}
                 >
                   {item.badge}

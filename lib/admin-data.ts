@@ -22,7 +22,7 @@ export interface PackageItem {
   id: string;
   title: string;
   slug: string;
-  category: "Trekking" | "Expedition" | "Tour";
+  category: string;
   region: "Everest" | "Annapurna" | "Langtang" | "Manaslu" | "Kathmandu & Pokhara";
   durationDays: number;
   maxAltitudeMeters: number;
@@ -428,3 +428,71 @@ export const mockBlogArticles: BlogArticle[] = [
     views: 0,
   },
 ];
+
+export interface CategoryItem {
+  id: string;
+  name: string;
+  slug: string;
+  type: "Trekking" | "Tours" | "Expeditions" | "Blogs" | "Media";
+  description: string;
+  itemCount: number;
+  status: "Active" | "Draft";
+}
+
+export const mockCategories: CategoryItem[] = [
+  {
+    id: "cat-1",
+    name: "Everest & Khumbu Region",
+    slug: "everest-khumbu-region",
+    type: "Trekking",
+    description: "Trekking packages navigating the iconic Khumbu valley, Lukla, Namche Bazaar, and Everest Base Camp.",
+    itemCount: 8,
+    status: "Active",
+  },
+  {
+    id: "cat-2",
+    name: "8000m Technical Expeditions",
+    slug: "8000m-technical-expeditions",
+    type: "Expeditions",
+    description: "Extreme high-altitude peak climbs requiring IFMGA guide ratios, oxygen systems, and fixed-line logistics.",
+    itemCount: 4,
+    status: "Active",
+  },
+  {
+    id: "cat-3",
+    name: "UNESCO Heritage & Resorts",
+    slug: "unesco-heritage-resorts",
+    type: "Tours",
+    description: "Cultural sightseeing, boutique heritage hotels, and luxury Pokhara resort stays.",
+    itemCount: 6,
+    status: "Active",
+  },
+  {
+    id: "cat-4",
+    name: "High Altitude Physiology & Safety",
+    slug: "high-altitude-physiology",
+    type: "Blogs",
+    description: "Expert guide insights on AMS prevention, acclimatization schedules, and mountain wellness.",
+    itemCount: 12,
+    status: "Active",
+  },
+  {
+    id: "cat-5",
+    name: "Helicopter Charter Photography",
+    slug: "helicopter-charter-photography",
+    type: "Media",
+    description: "Aerial mountain imagery, heli-tour photography, and high-resolution marketing banners.",
+    itemCount: 24,
+    status: "Active",
+  },
+  {
+    id: "cat-6",
+    name: "Annapurna Sanctuary Circuit",
+    slug: "annapurna-sanctuary-circuit",
+    type: "Trekking",
+    description: "Traversing Thorong La pass, Poon Hill sunrises, and Annapurna Base Camp.",
+    itemCount: 5,
+    status: "Active",
+  },
+];
+

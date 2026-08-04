@@ -14,6 +14,14 @@ import {
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminStatsCard } from "@/components/admin/ui/admin-stats-card";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import {
+  AdminTable,
+  AdminTableHeader,
+  AdminTableHead,
+  AdminTableBody,
+  AdminTableRow,
+  AdminTableCell,
+} from "@/components/admin/ui/admin-table";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -101,41 +109,41 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="overflow-x-auto pt-1">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider">
-                    <th className="pb-3 pr-4">Guest</th>
-                    <th className="pb-3 px-4">Package</th>
-                    <th className="pb-3 px-4">Start Date</th>
-                    <th className="pb-3 px-4">Amount</th>
-                    <th className="pb-3 pl-4 text-right">Status</th>
+              <AdminTable>
+                <AdminTableHeader>
+                  <tr>
+                    <AdminTableHead>Guest</AdminTableHead>
+                    <AdminTableHead>Package</AdminTableHead>
+                    <AdminTableHead>Start Date</AdminTableHead>
+                    <AdminTableHead>Amount</AdminTableHead>
+                    <AdminTableHead align="right">Status</AdminTableHead>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
+                </AdminTableHeader>
+                <AdminTableBody>
                   {recentBookings.map((bkg) => (
-                    <tr key={bkg.id} className="group hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 pr-4">
+                    <AdminTableRow key={bkg.id}>
+                      <AdminTableCell>
                         <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
                           {bkg.guestName}
                         </div>
-                        <div className="text-[10px] text-slate-500 font-medium">{bkg.reference} • {bkg.country}</div>
-                      </td>
-                      <td className="py-3.5 px-4 text-slate-800 font-medium max-w-[180px] truncate">
+                        <div className="text-xs text-slate-700 font-semibold">{bkg.reference} • {bkg.country}</div>
+                      </AdminTableCell>
+                      <AdminTableCell className="max-w-[180px] truncate">
                         {bkg.packageName}
-                      </td>
-                      <td className="py-3.5 px-4 text-slate-600 font-medium">
+                      </AdminTableCell>
+                      <AdminTableCell>
                         {bkg.startDate}
-                      </td>
-                      <td className="py-3.5 px-4 font-bold text-slate-900">
+                      </AdminTableCell>
+                      <AdminTableCell className="font-bold text-slate-900">
                         ${bkg.totalAmountUSD.toLocaleString()}
-                      </td>
-                      <td className="py-3.5 pl-4 text-right">
+                      </AdminTableCell>
+                      <AdminTableCell align="right">
                         <AdminStatusBadge status={bkg.bookingStatus} />
-                      </td>
-                    </tr>
+                      </AdminTableCell>
+                    </AdminTableRow>
                   ))}
-                </tbody>
-              </table>
+                </AdminTableBody>
+              </AdminTable>
             </div>
           </Card>
         </div>
@@ -146,7 +154,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-base text-slate-900">Top Expeditions</h3>
-                <p className="text-xs text-slate-600 font-medium">Active mountain packages</p>
+                <p className="text-xs text-slate-700 font-semibold">Active mountain packages</p>
               </div>
               <Link href="/admin/expeditions" className="text-xs font-semibold text-slate-900 hover:text-amber-600 transition-colors">
                 View All
@@ -161,7 +169,7 @@ export default function AdminDashboardPage() {
                 >
                   <div>
                     <div className="font-bold text-slate-900 line-clamp-1">{pkg.title}</div>
-                    <div className="text-[10px] text-slate-500 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters}m</div>
+                    <div className="text-xs text-slate-700 font-semibold">{pkg.durationDays} Days • {pkg.maxAltitudeMeters}m</div>
                   </div>
                   <span className="font-bold text-slate-900 shrink-0">${pkg.priceUSD}</span>
                 </div>

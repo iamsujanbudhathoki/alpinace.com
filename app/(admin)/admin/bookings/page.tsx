@@ -1,46 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Download,
-  Plus,
-  Mail,
-  Phone,
-  Globe,
-  Calendar,
-  ShieldCheck,
-  CheckCircle2,
-} from "lucide-react";
+import { Download, Plus, Edit, Trash2, Eye } from "lucide-react";
 import { mockBookings, Booking } from "@/lib/admin-data";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import { BookingFormModal, DeleteBookingModal } from "@/components/admin/modals/booking-modal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AdminTableContainer,
+  AdminTable,
+  AdminTableHeader,
+  AdminTableHead,
+  AdminTableBody,
+  AdminTableRow,
+  AdminTableCell,
+  AdminTableEmpty,
+  AdminTableActions,
+  AdminActionButton,
+} from "@/components/admin/ui/admin-table";
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>(mockBookings);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
   const [selectedType, setSelectedType] = useState<string>("All");
-  const [activeBookingModal, setActiveBookingModal] = useState<Booking | null>(null);
+
+  // Modals
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
 
   const filteredBookings = bookings.filter((bkg) => {
     const matchesSearch =
@@ -58,13 +50,59 @@ export default function AdminBookingsPage() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const handleStatusChange = (bookingId: string, newStatus: Booking["bookingStatus"]) => {
-    setBookings((prev) =>
-      prev.map((bkg) => (bkg.id === bookingId ? { ...bkg, bookingStatus: newStatus } : bkg))
-    );
-    if (activeBookingModal && activeBookingModal.id === bookingId) {
-      setActiveBookingModal((prev) => (prev ? { ...prev, bookingStatus: newStatus } : null));
+  const handleSaveBooking = (savedBooking: Booking) => {
+    const exists = bookings.some((b) => b.id === savedBooking.id);
+    if (exists) {
+      setBookings(bookings.map((b) => (b.id === savedBooking.id ? savedBooking : b)));
+    } else {
+      setBookings([savedBooking, ...bookings]);
     }
+  };
+
+  const handleDeleteBooking = (id: string) => {
+    setBookings(bookings.filter((b) => b.id !== id));
+    setDeletingBooking(null);
+  };
+
+  const handleExportCSV = () => {
+    const headers = [
+      "Reference",
+      "Guest Name",
+      "Email",
+      "Country",
+      "Package",
+      "Type",
+      "Start Date",
+      "End Date",
+      "Amount (USD)",
+      "Payment Status",
+      "Booking Status",
+    ];
+    const rows = filteredBookings.map((b) => [
+      b.reference,
+      b.guestName,
+      b.guestEmail,
+      b.country,
+      b.packageName,
+      b.packageType,
+      b.startDate,
+      b.endDate,
+      b.totalAmountUSD,
+      b.paymentStatus,
+      b.bookingStatus,
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.map((val) => `"${val}"`).join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `alpineace_bookings_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -77,16 +115,20 @@ export default function AdminBookingsPage() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => alert("Exporting bookings CSV...")}
-          className="text-xs font-semibold"
+          onClick={handleExportCSV}
+          className="text-xs font-semibold cursor-pointer border-slate-200"
         >
           <Download className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
           Export CSV
         </Button>
         <Button
           size="sm"
-          onClick={() => alert("Creating manual booking...")}
-          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold"
+          onClick={() => {
+            setActiveBooking(null);
+            setIsEditing(true);
+            setIsFormOpen(true);
+          }}
+          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer shadow-xs"
         >
           <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
           New Booking
@@ -100,227 +142,147 @@ export default function AdminBookingsPage() {
         searchPlaceholder="Filter guest, ref, or package..."
       >
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-500 font-medium">Status:</span>
+          <span className="text-slate-700 font-bold">Category:</span>
+          <select
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value)}
+            className="bg-transparent text-slate-900 font-bold focus:outline-none cursor-pointer"
+          >
+            <option value="All">All Categories</option>
+            <option value="Trekking">Trekking</option>
+            <option value="Expedition">Expedition</option>
+            <option value="Tour">Tour</option>
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
+          <span className="text-slate-700 font-bold">Status:</span>
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-transparent text-slate-900 font-medium focus:outline-none cursor-pointer"
+            className="bg-transparent text-slate-900 font-bold focus:outline-none cursor-pointer"
           >
             <option value="All">All Statuses</option>
             <option value="Confirmed">Confirmed</option>
             <option value="In Review">In Review</option>
             <option value="Active Trek">Active Trek</option>
             <option value="Completed">Completed</option>
-          </select>
-        </div>
-
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-500 font-medium">Type:</span>
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="bg-transparent text-slate-900 font-medium focus:outline-none cursor-pointer"
-          >
-            <option value="All">All Types</option>
-            <option value="Trekking">Trekking</option>
-            <option value="Expedition">Expedition</option>
-            <option value="Tour">Tour</option>
+            <option value="Cancelled">Cancelled</option>
           </select>
         </div>
       </AdminFilterBar>
 
       {/* Bookings Table */}
-      <Card className="bg-white border-slate-200 shadow-xs overflow-hidden">
-        <Table>
-          <TableHeader className="bg-slate-50/80">
-            <TableRow>
-              <TableHead className="font-bold text-slate-700 text-xs">Reference & Guest</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Package & Type</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Dates</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Total Price</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Payment</TableHead>
-              <TableHead className="font-bold text-slate-700 text-xs">Permit Status</TableHead>
-              <TableHead className="text-right font-bold text-slate-700 text-xs">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="divide-y divide-slate-100 text-xs">
-            {filteredBookings.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="py-8 text-center text-slate-400">
-                  No bookings found matching your search filters.
-                </TableCell>
-              </TableRow>
-            ) : (
+      <AdminTableContainer>
+        <AdminTable>
+          <AdminTableHeader>
+            <tr>
+              <AdminTableHead>Ref / Guest</AdminTableHead>
+              <AdminTableHead>Trip Package</AdminTableHead>
+              <AdminTableHead>Dates &amp; Group</AdminTableHead>
+              <AdminTableHead>Total Amount</AdminTableHead>
+              <AdminTableHead>Payment</AdminTableHead>
+              <AdminTableHead>Status</AdminTableHead>
+              <AdminTableHead align="right">Actions</AdminTableHead>
+            </tr>
+          </AdminTableHeader>
+          <AdminTableBody>
+            {filteredBookings.length > 0 ? (
               filteredBookings.map((bkg) => (
-                <TableRow
-                  key={bkg.id}
-                  onClick={() => setActiveBookingModal(bkg)}
-                  className="hover:bg-slate-50/80 cursor-pointer transition-colors"
-                >
-                  <TableCell className="py-3.5">
-                    <div className="font-bold text-slate-900 hover:text-amber-600 transition-colors">
-                      {bkg.guestName}
-                    </div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">
-                      {bkg.reference} • {bkg.country} ({bkg.groupSize} PAX)
-                    </div>
-                  </TableCell>
-
-                  <TableCell className="py-3.5">
-                    <div className="font-semibold text-slate-800 max-w-[200px] truncate">
+                <AdminTableRow key={bkg.id}>
+                  <AdminTableCell>
+                    <div className="font-mono text-xs font-bold text-amber-600">{bkg.reference}</div>
+                    <div className="font-bold text-slate-900">{bkg.guestName}</div>
+                    <div className="text-xs text-slate-700 font-medium">{bkg.country}</div>
+                  </AdminTableCell>
+                  <AdminTableCell className="max-w-xs">
+                    <div className="font-bold text-slate-900 truncate" title={bkg.packageName}>
                       {bkg.packageName}
                     </div>
-                    <Badge variant="outline" className="text-[10px] text-amber-700 border-amber-200 bg-amber-50 mt-1">
+                    <Badge variant="outline" className="text-[10px] font-semibold mt-0.5 border-slate-200 text-slate-700">
                       {bkg.packageType}
                     </Badge>
-                  </TableCell>
-
-                  <TableCell className="py-3.5 text-slate-600">
-                    <div>{bkg.startDate}</div>
-                    <div className="text-[10px] text-slate-400">to {bkg.endDate}</div>
-                  </TableCell>
-
-                  <TableCell className="py-3.5 font-bold text-slate-900">
-                    ${bkg.totalAmountUSD.toLocaleString()}
-                  </TableCell>
-
-                  <TableCell className="py-3.5">
-                    <AdminStatusBadge status={bkg.paymentStatus} />
-                  </TableCell>
-
-                  <TableCell className="py-3.5">
-                    <span className="text-[11px] font-medium text-slate-600 flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-                      {bkg.permitStatus}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="py-3.5 text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveBookingModal(bkg);
-                      }}
-                      className="text-[11px] h-7 px-2.5 font-semibold"
+                  </AdminTableCell>
+                  <AdminTableCell>
+                    <div className="font-semibold">{bkg.startDate} &rarr; {bkg.endDate}</div>
+                    <div className="text-xs text-slate-700 font-bold">{bkg.groupSize} {bkg.groupSize === 1 ? "Guest" : "Guests"}</div>
+                  </AdminTableCell>
+                  <AdminTableCell className="font-extrabold text-slate-900 text-sm">
+                    ${bkg.totalAmountUSD.toLocaleString()} USD
+                  </AdminTableCell>
+                  <AdminTableCell>
+                    <Badge
+                      variant="secondary"
+                      className={`text-xs font-bold ${
+                        bkg.paymentStatus === "Paid"
+                          ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
+                          : bkg.paymentStatus === "Deposit Paid"
+                          ? "bg-amber-100 text-amber-900 border border-amber-300"
+                          : "bg-slate-100 text-slate-800 border border-slate-200"
+                      }`}
                     >
-                      Inspect
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                      {bkg.paymentStatus}
+                    </Badge>
+                  </AdminTableCell>
+                  <AdminTableCell>
+                    <AdminStatusBadge status={bkg.bookingStatus} />
+                  </AdminTableCell>
+                  <AdminTableCell align="right">
+                    <AdminTableActions>
+                      <AdminActionButton
+                        variant="view"
+                        onClick={() => {
+                          setActiveBooking(bkg);
+                          setIsEditing(false);
+                          setIsFormOpen(true);
+                        }}
+                        title="View Booking"
+                      />
+                      <AdminActionButton
+                        variant="edit"
+                        onClick={() => {
+                          setActiveBooking(bkg);
+                          setIsEditing(true);
+                          setIsFormOpen(true);
+                        }}
+                        title="Edit Booking"
+                      />
+                      <AdminActionButton
+                        variant="delete"
+                        onClick={() => setDeletingBooking(bkg)}
+                        title="Delete Booking"
+                      />
+                    </AdminTableActions>
+                  </AdminTableCell>
+                </AdminTableRow>
               ))
+            ) : (
+              <AdminTableEmpty
+                colSpan={7}
+                title="No bookings found"
+                description="No client booking records match your search query or status filter."
+              />
             )}
-          </TableBody>
-        </Table>
-      </Card>
+          </AdminTableBody>
+        </AdminTable>
+      </AdminTableContainer>
 
-      {/* Booking Detail Dialog Modal */}
-      {activeBookingModal && (
-        <Dialog open={!!activeBookingModal} onOpenChange={(open) => !open && setActiveBookingModal(null)}>
-          <DialogContent className="sm:max-w-2xl bg-white border-slate-200 p-6 space-y-4">
-            <DialogHeader className="border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Badge variant="outline" className="font-mono text-amber-700 bg-amber-50 border-amber-200">
-                  {activeBookingModal.reference}
-                </Badge>
-                <Badge variant="secondary" className="bg-slate-100 text-slate-700">
-                  {activeBookingModal.packageType}
-                </Badge>
-              </div>
-              <DialogTitle className="text-xl font-bold text-slate-900">
-                {activeBookingModal.guestName}
-              </DialogTitle>
-              <DialogDescription className="text-xs text-slate-500">
-                Expedition reservation breakdown and guide assignment.
-              </DialogDescription>
-            </DialogHeader>
+      {/* MODALS */}
+      <BookingFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSave={handleSaveBooking}
+        initialData={activeBooking}
+        isEditing={isEditing}
+      />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                  Guest Contact Details
-                </div>
-                <div className="flex items-center gap-2 text-slate-800 font-medium">
-                  <Mail className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{activeBookingModal.guestEmail}</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-800 font-medium">
-                  <Phone className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{activeBookingModal.guestPhone}</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-800 font-medium">
-                  <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{activeBookingModal.country} ({activeBookingModal.groupSize} Trekkers)</span>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                  Expedition Package
-                </div>
-                <div className="font-extrabold text-slate-900 text-sm">
-                  {activeBookingModal.packageName}
-                </div>
-                <div className="flex items-center gap-2 text-slate-600 mt-1 font-medium">
-                  <Calendar className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{activeBookingModal.startDate} to {activeBookingModal.endDate}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Status Management */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="text-xs font-bold text-slate-900">Update Booking Status</div>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {(["Confirmed", "In Review", "Active Trek", "Completed", "Cancelled"] as const).map((st) => (
-                  <Button
-                    key={st}
-                    type="button"
-                    variant={activeBookingModal.bookingStatus === st ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange(activeBookingModal.id, st)}
-                    className={`text-xs h-8 ${
-                      activeBookingModal.bookingStatus === st
-                        ? "bg-slate-900 text-white font-bold"
-                        : "bg-white text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    {st}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Special Requests */}
-            {activeBookingModal.specialRequests && (
-              <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 text-xs">
-                <div className="font-bold text-amber-900 mb-1">Medical / Special Notes:</div>
-                <p className="text-slate-700 leading-relaxed font-medium">
-                  {activeBookingModal.specialRequests}
-                </p>
-              </div>
-            )}
-
-            <DialogFooter className="border-t border-slate-100 pt-3">
-              <Button variant="outline" size="sm" onClick={() => setActiveBookingModal(null)}>
-                Close
-              </Button>
-              <Button
-                size="sm"
-                className="bg-slate-900 hover:bg-slate-800 text-white font-semibold"
-                onClick={() => {
-                  alert(`Confirmation voucher generated for ${activeBookingModal.guestName}`);
-                  setActiveBookingModal(null);
-                }}
-              >
-                <CheckCircle2 className="w-4 h-4 mr-1.5 text-amber-400" />
-                Send Confirmation Voucher
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+      <DeleteBookingModal
+        isOpen={deletingBooking !== null}
+        onClose={() => setDeletingBooking(null)}
+        onConfirm={() => deletingBooking && handleDeleteBooking(deletingBooking.id)}
+        bookingRef={deletingBooking?.reference}
+        guestName={deletingBooking?.guestName}
+      />
     </div>
   );
 }

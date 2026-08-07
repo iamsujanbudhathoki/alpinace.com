@@ -1,5 +1,3 @@
-import { PackageStatus } from "./admin-data";
-
 export interface TourItem {
   id: string;
   title: string;
@@ -14,7 +12,7 @@ export interface TourItem {
   bestSeason: string;
   priceUSD: number;
   highlights: string[];
-  status: PackageStatus | string;
+  status: string;
   region: string;
 }
 

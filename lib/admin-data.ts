@@ -39,15 +39,15 @@ export interface Booking {
   guestPhone: string;
   country: string;
   packageName: string;
-  packageType: PackageCategoryType | string;
+  packageType: "Trekking" | "Expedition" | "Tour";
   startDate: string;
   endDate: string;
   groupSize: number;
   totalAmountUSD: number;
-  paymentStatus: PaymentStatus | string;
-  bookingStatus: BookingStatus | string;
+  paymentStatus: "Paid" | "Deposit Paid" | "Pending" | "Refunded";
+  bookingStatus: "Confirmed" | "In Review" | "Active Trek" | "Completed" | "Cancelled";
   assignedGuide?: string;
-  permitStatus: PermitStatus | string;
+  permitStatus: "Issued" | "Processing" | "Pending Document";
   specialRequests?: string;
 }
 
@@ -56,12 +56,12 @@ export interface PackageItem {
   title: string;
   slug: string;
   category: string;
-  region: "Everest" | "Annapurna" | "Langtang" | "Manaslu" | "Kathmandu & Pokhara" | string;
+  region: "Everest" | "Annapurna" | "Langtang" | "Manaslu" | "Kathmandu & Pokhara";
   durationDays: number;
   maxAltitudeMeters: number;
-  difficulty: "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)" | string;
+  difficulty: "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)";
   priceUSD: number;
-  status: PackageStatus | string;
+  status: "Active" | "Draft" | "Featured";
   totalBookings: number;
   rating: number;
   reviewsCount?: number;

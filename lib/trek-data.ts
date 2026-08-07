@@ -1,11 +1,3 @@
-import { PackageStatus } from "./admin-data";
-
-export enum TrekDifficulty {
-  MODERATE = "Moderate Trek",
-  CHALLENGING = "Challenging Trek",
-  STRENUOUS = "Strenuous Trek",
-}
-
 export interface TrekItem {
   id: string;
   title: string;
@@ -16,12 +8,12 @@ export interface TrekItem {
   image: string;
   shortDesc: string;
   durationDays: number;
-  difficulty: TrekDifficulty | string;
+  difficulty: "Moderate Trek" | "Challenging Trek" | "Strenuous Trek";
   bestSeason: string;
   priceUSD: number;
   permitsRequired: string[];
-  status: PackageStatus | string;
-  region: "Everest" | "Annapurna" | "Langtang" | "Manaslu" | string;
+  status: "Active" | "Featured" | "Draft";
+  region: "Everest" | "Annapurna" | "Langtang" | "Manaslu";
 }
 
 export const initialTreksData: TrekItem[] = [];

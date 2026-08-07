@@ -1,15 +1,49 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { initialToursData } from "@/lib/tour-data";
+import { TourItem } from "@/lib/tour-data";
+import { TourService } from "@/lib/services/admin-service";
 
 export default function ToursPage() {
+  const [tours, setTours] = useState<TourItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(10);
   const [sortBy, setSortBy] = useState<string>("rating");
+
+  useEffect(() => {
+    async function loadTours() {
+      try {
+        const raw = await TourService.getAll();
+        const mapped: TourItem[] = raw.map((p) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          category: (p.category) as any,
+          rating: Number(p.rating),
+          reviewsCount: Number(p.reviewsCount || p.totalBookings),
+          image: p.image || "",
+          shortDesc: p.shortDesc || "",
+          durationDays: Number(p.durationDays),
+          tourType: p.category,
+          bestSeason: p.bestSeason || "",
+          priceUSD: Number(p.priceUSD),
+          highlights: p.permitsRequired,
+          status: p.status,
+          region: p.region,
+        }));
+        setTours(mapped);
+      } catch (e) {
+        console.warn("Failed to load tour packages from backend:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadTours();
+  }, []);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -19,7 +53,7 @@ export default function ToursPage() {
   };
 
   const filteredTours = useMemo(() => {
-    return initialToursData
+    return tours
       .filter((tour) => {
         const matchesSearch =
           tour.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,7 +73,8 @@ export default function ToursPage() {
         if (sortBy === "duration") return a.durationDays - b.durationDays;
         return 0;
       });
-  }, [searchQuery, selectedType, maxDuration, sortBy]);
+  }, [tours, searchQuery, selectedType, maxDuration, sortBy]);
+
 
   return (
     <div className="min-h-screen bg-stone-50 text-slate-900 pt-20 pb-20 font-sans">
@@ -109,11 +144,10 @@ export default function ToursPage() {
                     <button
                       key={item.value}
                       onClick={() => setSelectedType(item.value)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                        isSelected
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${isSelected
                           ? "bg-gold-500 text-slate-950 font-bold border border-gold-400 shadow-xs"
                           : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-transparent"
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </button>

@@ -1,15 +1,32 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { initialTreksData } from "@/lib/trek-data";
+import { TrekItem } from "@/lib/trek-data";
+import { TrekService } from "@/lib/services/admin-service";
 
 export default function TrekkingPage() {
+  const [treks, setTreks] = useState<TrekItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(30);
   const [sortBy, setSortBy] = useState<string>("rating");
+
+  useEffect(() => {
+    async function loadTreks() {
+      try {
+        const data = await TrekService.getAll();
+        setTreks(data);
+      } catch (e) {
+        console.warn("Failed to load trek packages from backend:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadTreks();
+  }, []);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -19,7 +36,7 @@ export default function TrekkingPage() {
   };
 
   const filteredTreks = useMemo(() => {
-    return initialTreksData
+    return treks
       .filter((trk) => {
         const matchesSearch =
           trk.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,7 +56,8 @@ export default function TrekkingPage() {
         if (sortBy === "duration") return a.durationDays - b.durationDays;
         return 0;
       });
-  }, [searchQuery, selectedDifficulty, maxDuration, sortBy]);
+  }, [treks, searchQuery, selectedDifficulty, maxDuration, sortBy]);
+
 
   return (
     <div className="min-h-screen bg-[#fafaf9] text-slate-900 pt-20 pb-20 font-sans">

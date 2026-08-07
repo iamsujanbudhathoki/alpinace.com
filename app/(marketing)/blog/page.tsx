@@ -1,27 +1,61 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { Search, Sparkles } from "lucide-react";
-import { BLOG_POSTS } from "@/lib/home-data";
+import { BlogPost } from "@/lib/home-data";
+import { BlogService } from "@/lib/services/admin-service";
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const categories = useMemo(() => {
-    return ["All", ...Array.from(new Set(BLOG_POSTS.map((post) => post.category)))];
+  useEffect(() => {
+    async function loadBlogs() {
+      try {
+        const raw = await BlogService.getAll();
+        const mapped: BlogPost[] = raw.map((b) => ({
+          id: b.id,
+          title: b.title,
+          slug: b.slug,
+          category: b.category,
+          date: (b as any).publishedDate,
+          readTime: b.readTime,
+          excerpt: (b as any).excerpt,
+          content: (b as any).content,
+          image: (b as any).image,
+          author: {
+            name: (b as any).author,
+            role: (b as any).authorRole,
+            avatar: (b as any).authorAvatar,
+          },
+        }));
+        setPosts(mapped);
+      } catch (e) {
+        console.warn("Failed to fetch blog posts from backend:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadBlogs();
   }, []);
 
+  const categories = useMemo(() => {
+    return ["All", ...Array.from(new Set(posts.map((post) => post.category)))];
+  }, [posts]);
+
   const filteredPosts = useMemo(() => {
-    return BLOG_POSTS.filter((post) => {
+    return posts.filter((post) => {
       const matchesSearch =
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [posts, searchTerm, selectedCategory]);
+
 
   return (
     <div className="pt-24 min-h-screen bg-stone-50 pb-20 font-sans">

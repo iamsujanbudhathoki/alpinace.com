@@ -111,29 +111,29 @@ export const TrekService = {
   async getAll(): Promise<TrekItem[]> {
     try {
       const packages = await apiClient.get<any[]>("/packages?categoryType=Trekking");
-      if (Array.isArray(packages) && packages.length > 0) {
+      if (Array.isArray(packages)) {
         return packages.map((p) => ({
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: p.category || "TREKKING",
-          rating: p.rating || 4.9,
-          reviewsCount: p.reviewsCount || 10,
+          category: p.categoryType,
+          rating: Number(p.rating),
+          reviewsCount: Number(p.reviewsCount),
           image: p.image,
           shortDesc: p.shortDesc,
-          durationDays: p.durationDays,
+          durationDays: Number(p.durationDays),
           difficulty: p.difficulty,
-          bestSeason: p.bestSeason || "March - May",
+          bestSeason: p.bestSeason,
           priceUSD: Number(p.priceUSD),
-          permitsRequired: p.permitsRequired || [],
+          permitsRequired: p.permitsRequired,
           status: p.status,
           region: p.region,
         }));
       }
     } catch (e) {
-      console.warn("Backend treks fetch error, fallback", e);
+      console.warn("Backend treks fetch error", e);
     }
-    return [...initialTreksData];
+    return [];
   },
 
   async create(data: TrekFormValues): Promise<TrekItem> {

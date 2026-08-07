@@ -1,15 +1,50 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { initialExpeditionsData } from "@/lib/expedition-data";
+import { ExpeditionItem } from "@/lib/expedition-data";
+import { ExpeditionService } from "@/lib/services/admin-service";
 
 export default function ExpeditionsPage() {
+  const [expeditions, setExpeditions] = useState<ExpeditionItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGrade, setSelectedGrade] = useState<string>("All");
   const [minPeakHeight, setMinPeakHeight] = useState<number>(6000);
   const [sortBy, setSortBy] = useState<string>("rating");
+
+  useEffect(() => {
+    async function loadExpeditions() {
+      try {
+        const raw = await ExpeditionService.getAll();
+        const mapped: ExpeditionItem[] = raw.map((p) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          category: (p.category) as any,
+          rating: Number(p.rating),
+          reviewsCount: Number(p.reviewsCount || p.totalBookings),
+          image: p.image || "",
+          shortDesc: p.shortDesc || "",
+          durationDays: Number(p.durationDays),
+          peakHeightM: Number(p.maxAltitudeMeters),
+          climbingGrade: p.difficulty as any,
+          bestSeason: p.bestSeason || "",
+          priceUSD: Number(p.priceUSD),
+          permitsRequired: p.permitsRequired,
+          status: p.status as any,
+          region: p.region as any,
+        }));
+        setExpeditions(mapped);
+      } catch (e) {
+        console.warn("Failed to load expedition packages from backend:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadExpeditions();
+  }, []);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -19,7 +54,7 @@ export default function ExpeditionsPage() {
   };
 
   const filteredExpeditions = useMemo(() => {
-    return initialExpeditionsData
+    return expeditions
       .filter((exp) => {
         const matchesSearch =
           exp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,7 +74,8 @@ export default function ExpeditionsPage() {
         if (sortBy === "height") return b.peakHeightM - a.peakHeightM;
         return 0;
       });
-  }, [searchQuery, selectedGrade, minPeakHeight, sortBy]);
+  }, [expeditions, searchQuery, selectedGrade, minPeakHeight, sortBy]);
+
 
   return (
     <div className="min-h-screen bg-stone-50 text-slate-900 pt-20 pb-20 font-sans">
@@ -108,11 +144,10 @@ export default function ExpeditionsPage() {
                     <button
                       key={item.value}
                       onClick={() => setSelectedGrade(item.value)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                        isSelected
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${isSelected
                           ? "bg-gold-500 text-slate-950 font-bold border border-gold-400 shadow-xs"
                           : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-transparent"
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </button>

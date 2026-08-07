@@ -1,10 +1,7 @@
 import { PackageStatus, PackageRegion } from "./admin-data";
 
-export enum TrekDifficulty {
-  MODERATE = "Moderate Trek",
-  CHALLENGING = "Challenging Trek",
-  STRENUOUS = "Strenuous Trek",
-}
+export const TREK_DIFFICULTIES = ["Moderate Trek", "Challenging Trek", "Strenuous Trek"] as const;
+export type TrekDifficulty = typeof TREK_DIFFICULTIES[number];
 
 export interface TrekItem {
   id: string;

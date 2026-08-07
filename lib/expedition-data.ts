@@ -1,10 +1,6 @@
 import { PackageStatus, PackageRegion } from "./admin-data";
 
-export enum ClimbingGrade {
-  NON_TECHNICAL = "Non-Technical Trekking Peak",
-  TECHNICAL_ALPINE = "Technical Alpine Grade",
-  EXTREME_TECHNICAL = "Extreme Technical Grade",
-}
+export type ClimbingGrade = "Non-Technical Trekking Peak" | "Technical Alpine Grade" | "Extreme Technical Grade";
 
 export interface ExpeditionItem {
   id: string;

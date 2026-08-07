@@ -1,51 +1,17 @@
-export enum PackageStatus {
-  ACTIVE = "Active",
-  DRAFT = "Draft",
-  FEATURED = "Featured",
-}
+export const PACKAGE_REGIONS = ["Everest", "Annapurna", "Langtang", "Manaslu", "Kathmandu & Pokhara", "Khumbu"] as const;
+export const PACKAGE_STATUSES = ["Active", "Draft", "Featured"] as const;
+export const PACKAGE_TYPES = ["Trekking", "Expedition", "Tour"] as const;
+export const BOOKING_STATUSES = ["Confirmed", "In Review", "Active Trek", "Completed", "Cancelled"] as const;
+export const PAYMENT_STATUSES = ["Paid", "Deposit Paid", "Pending", "Refunded"] as const;
+export const PERMIT_STATUSES = ["Issued", "Processing", "Pending Document"] as const;
 
-export enum PackageCategoryType {
-  TREKKING = "Trekking",
-  EXPEDITION = "Expedition",
-  TOUR = "Tour",
-}
-
-export enum BookingStatus {
-  CONFIRMED = "Confirmed",
-  IN_REVIEW = "In Review",
-  ACTIVE_TREK = "Active Trek",
-  COMPLETED = "Completed",
-  CANCELLED = "Cancelled",
-}
-
-export enum PaymentStatus {
-  PAID = "Paid",
-  DEPOSIT_PAID = "Deposit Paid",
-  PENDING = "Pending",
-  REFUNDED = "Refunded",
-}
-
-export enum PermitStatus {
-  ISSUED = "Issued",
-  PROCESSING = "Processing",
-  PENDING_DOCUMENT = "Pending Document",
-}
-
-export enum PackageRegion {
-  EVEREST = "Everest",
-  ANNAPURNA = "Annapurna",
-  LANGTANG = "Langtang",
-  MANASLU = "Manaslu",
-  KATHMANDU_POKHARA = "Kathmandu & Pokhara",
-  KHUMBU = "Khumbu",
-}
-
-export enum PackageDifficulty {
-  EASY = "Easy",
-  MODERATE = "Moderate",
-  CHALLENGING = "Challenging",
-  EXTREME = "Extreme (8000m+)",
-}
+export type PackageRegion = typeof PACKAGE_REGIONS[number];
+export type PackageStatus = typeof PACKAGE_STATUSES[number];
+export type PackageCategoryType = typeof PACKAGE_TYPES[number];
+export type BookingStatus = typeof BOOKING_STATUSES[number];
+export type PaymentStatus = typeof PAYMENT_STATUSES[number];
+export type PermitStatus = typeof PERMIT_STATUSES[number];
+export type PackageDifficulty = "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)";
 
 export interface Booking {
   id: string;

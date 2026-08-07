@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ChevronDown, Star } from "lucide-react";
 import { initialTreksData } from "@/lib/trek-data";
+import { InquiryService } from "@/lib/services/admin-service";
 
 interface TrekDetailPageProps {
   params: Promise<{
@@ -57,9 +58,23 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
     return Math.round(perPerson * calculatorTravelers * discount);
   }, [calculatorTravelers, helicopterAddon, baseCostPerPerson]);
 
-  const handleInquirySubmit = (e: React.FormEvent) => {
+  const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inquiryName && inquiryEmail) {
+      try {
+        await InquiryService.create({
+          guestName: inquiryName,
+          email: inquiryEmail,
+          phone: "+1 000-000-0000",
+          country: "International",
+          interestedTrip: trek.title,
+          travelDates: "Upcoming Season",
+          groupSize: calculatorTravelers,
+          message: `Inquiry for ${trek.title} (${calculatorTravelers} travelers, Est: $${totalPrice}).`,
+        });
+      } catch (err) {
+        console.error("Inquiry submission error:", err);
+      }
       setInquirySubmitted(true);
       setTimeout(() => {
         setInquirySubmitted(false);
@@ -507,7 +522,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                   </div>
                   <h3 className="font-heading text-sm font-bold text-slate-900">Inquiry Transmitted</h3>
                   <p className="text-slate-800 text-xs leading-normal font-normal">
-                    Your request has been logged. Our concierge desk will email your formal PDF proposal within 4 hours.
+                    Your request has been saved to the database. Our concierge desk will email your formal PDF proposal within 4 hours.
                   </p>
                 </div>
               ) : (

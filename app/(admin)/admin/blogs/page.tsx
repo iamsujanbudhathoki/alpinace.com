@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, FileText, Calendar, Eye, User } from "lucide-react";
-import { mockBlogArticles, BlogArticle } from "@/lib/admin-data";
+import { BlogArticle } from "@/lib/admin-data";
+import { BlogService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -21,8 +22,23 @@ import {
 } from "@/components/admin/ui/admin-table";
 
 export default function AdminBlogsPage() {
-  const [articles, setArticles] = useState<BlogArticle[]>(mockBlogArticles);
+  const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadArticles() {
+      try {
+        const data = await BlogService.getAll();
+        setArticles(data);
+      } catch (err) {
+        console.error("Failed to load blog articles:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadArticles();
+  }, []);
 
   const filteredArticles = articles.filter(
     (art) =>
@@ -39,8 +55,20 @@ export default function AdminBlogsPage() {
       >
         <Button
           size="sm"
-          onClick={() => alert("Opening Create New Article editor...")}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs"
+          onClick={() => {
+            const title = prompt("Enter new article title:");
+            if (title) {
+              BlogService.create({
+                title,
+                category: "Expedition Prep",
+                author: "Admin Team",
+                status: "Published",
+                readTime: "5 min read",
+                excerpt: "New article excerpt...",
+              }).then((created) => setArticles((prev) => [created, ...prev]));
+            }
+          }}
+          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
           Create New Article
@@ -77,7 +105,7 @@ export default function AdminBlogsPage() {
                       <span>{art.title}</span>
                     </div>
                     <div className="text-xs text-slate-700 mt-0.5 font-semibold">
-                      Read time: {art.readTime}
+                      Read time: {art.readTime || "5 min read"}
                     </div>
                   </AdminTableCell>
 
@@ -95,14 +123,14 @@ export default function AdminBlogsPage() {
                   <AdminTableCell className="font-semibold text-slate-800">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-slate-700" />
-                      <span>{art.publishedDate}</span>
+                      <span>{art.publishedDate || "2026-08-01"}</span>
                     </div>
                   </AdminTableCell>
 
                   <AdminTableCell className="font-bold text-slate-900">
                     <div className="flex items-center gap-1">
                       <Eye className="w-3.5 h-3.5 text-slate-700" />
-                      <span>{art.views.toLocaleString()}</span>
+                      <span>{(art.views || 0).toLocaleString()}</span>
                     </div>
                   </AdminTableCell>
 
@@ -113,9 +141,15 @@ export default function AdminBlogsPage() {
                   <AdminTableCell align="right">
                     <AdminTableActions>
                       <AdminActionButton
-                        variant="edit"
-                        onClick={() => alert(`Editing article: ${art.title}`)}
-                        title="Edit Article"
+                        variant="delete"
+                        onClick={() => {
+                          if (confirm(`Delete article: ${art.title}?`)) {
+                            BlogService.delete(art.id).then(() =>
+                              setArticles((prev) => prev.filter((a) => a.id !== art.id))
+                            );
+                          }
+                        }}
+                        title="Delete Article"
                       />
                     </AdminTableActions>
                   </AdminTableCell>

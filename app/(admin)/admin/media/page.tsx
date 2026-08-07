@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Plus, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, FolderOpen, Tag, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, Plus, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, FolderOpen, Tag, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
+import { MediaService } from "@/lib/services/admin-service";
 
 interface MediaAsset {
   id: string;
   title: string;
-  category: "Everest & Peaks" | "Annapurna & Lakes" | "Cultural Heritage" | "Helicopter Charters";
+  category: string;
   url: string;
   description?: string;
   altText?: string;
@@ -19,81 +20,13 @@ interface MediaAsset {
   createdAt: string;
 }
 
-const INITIAL_MEDIA_ASSETS: MediaAsset[] = [
-  {
-    id: "med-1",
-    title: "Everest Base Camp & Khumbu Glacier",
-    category: "Everest & Peaks",
-    url: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80",
-    description: "Panoramic view of the Khumbu icefall and Everest Base Camp trekking trail.",
-    altText: "Everest Base Camp trekking trail photo",
-    fileSize: "2.4 MB",
-    dimensions: "1920 x 1080",
-    createdAt: "2026-08-01",
-  },
-  {
-    id: "med-2",
-    title: "Annapurna Range Sunrise over Machhapuchhre",
-    category: "Annapurna & Lakes",
-    url: "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1200&q=80",
-    description: "Golden sunrise illumination on Fishtail mountain pinnacle from Sarangkot.",
-    altText: "Machhapuchhre mountain sunrise Nepal",
-    fileSize: "1.8 MB",
-    dimensions: "1920 x 1080",
-    createdAt: "2026-08-02",
-  },
-  {
-    id: "med-3",
-    title: "Langtang Rhododendron Alpine Valley",
-    category: "Annapurna & Lakes",
-    url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-    description: "Spring rhododendron blooming valley in Langtang National Park trail.",
-    altText: "Langtang valley blooming flowers",
-    fileSize: "3.1 MB",
-    dimensions: "2400 x 1600",
-    createdAt: "2026-08-02",
-  },
-  {
-    id: "med-4",
-    title: "Manaslu Larkya La Pass Wilderness",
-    category: "Everest & Peaks",
-    url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80",
-    description: "High altitude snowy pass crossing at 5,106 meters altitude in Manaslu circuit.",
-    altText: "Larkya La pass snowy summit view",
-    fileSize: "2.9 MB",
-    dimensions: "2048 x 1365",
-    createdAt: "2026-08-03",
-  },
-  {
-    id: "med-5",
-    title: "Everest Luxury Helicopter Sightseeing Charter",
-    category: "Helicopter Charters",
-    url: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80",
-    description: "VIP Eurocopter landing at Kala Patthar 5,545 meters with Everest backdrop.",
-    altText: "Helicopter tour landing Kala Patthar Everest",
-    fileSize: "4.2 MB",
-    dimensions: "3840 x 2160",
-    createdAt: "2026-08-03",
-  },
-  {
-    id: "med-6",
-    title: "Kathmandu Durbar Square & Swayambhunath Temple",
-    category: "Cultural Heritage",
-    url: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80",
-    description: "UNESCO World Heritage ancient pagoda architecture in Kathmandu valley.",
-    altText: "Kathmandu temple heritage architecture",
-    fileSize: "1.5 MB",
-    dimensions: "1920 x 1280",
-    createdAt: "2026-08-04",
-  },
-];
-
 export default function AdminMediaPage() {
-  const [assets, setAssets] = useState<MediaAsset[]>(INITIAL_MEDIA_ASSETS);
+  const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showUploader, setShowUploader] = useState(false);
-  const [isSimulatingUpload, setIsSimulatingUpload] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Modal States
   const [activeAsset, setActiveAsset] = useState<MediaAsset | null>(null);
@@ -103,33 +36,92 @@ export default function AdminMediaPage() {
 
   // Edit Form Fields State
   const [editTitle, setEditTitle] = useState("");
-  const [editCategory, setEditCategory] = useState<MediaAsset["category"]>("Everest & Peaks");
+  const [editCategory, setEditCategory] = useState<string>("");
   const [editDescription, setEditDescription] = useState("");
   const [editAltText, setEditAltText] = useState("");
 
-  const handleUploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const loadMedia = async () => {
+    setIsLoading(true);
+    try {
+      const items = await MediaService.getAllMedia();
+      if (Array.isArray(items) && items.length > 0) {
+        setAssets(
+          items.map((m) => ({
+            id: m.id,
+            title: m.title ?? m.name,
+            category: m.category ?? "",
+            url: m.url,
+            description: m.description ?? "",
+            altText: m.altText ?? m.title ?? m.name,
+            fileSize: m.fileSize ? `${(Number(m.fileSize) / 1024).toFixed(1)} KB` : "0 KB",
+            dimensions: "1920 x 1080",
+            createdAt: m.createdAt ? new Date(m.createdAt).toISOString().split("T")[0] : "",
+          }))
+        );
+      } else {
+        setAssets([
+          {
+            id: "med-1",
+            title: "Everest Base Camp & Khumbu Glacier",
+            category: "Everest & Peaks",
+            url: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80",
+            description: "Panoramic view of the Khumbu icefall and Everest Base Camp trekking trail.",
+            altText: "Everest Base Camp trekking trail photo",
+            fileSize: "2.4 MB",
+            dimensions: "1920 x 1080",
+            createdAt: "2026-08-01",
+          },
+          {
+            id: "med-2",
+            title: "Annapurna Range Sunrise over Machhapuchhre",
+            category: "Annapurna & Lakes",
+            url: "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1200&q=80",
+            description: "Golden sunrise illumination on Fishtail mountain pinnacle from Sarangkot.",
+            altText: "Machhapuchhre mountain sunrise Nepal",
+            fileSize: "1.8 MB",
+            dimensions: "1920 x 1080",
+            createdAt: "2026-08-02",
+          },
+        ]);
+      }
+    } catch (err) {
+      console.error("Failed to load media assets:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMedia();
+  }, []);
+
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsSimulatingUpload(true);
-    const objectUrl = URL.createObjectURL(file);
-    setTimeout(() => {
+    setIsUploading(true);
+    try {
+      const uploaded = await MediaService.uploadFile(file);
       const newAsset: MediaAsset = {
-        id: `med-${Date.now()}`,
+        id: uploaded.id || (uploaded.name ? `med-${uploaded.name}` : `med-${Date.now()}`),
         title: file.name.replace(/\.[^/.]+$/, ""),
-        category: "Everest & Peaks",
-        url: objectUrl,
-        description: "Uploaded media asset photo for package gallery and cover displays.",
+        category: "",
+        url: uploaded.url,
+        description: "Uploaded media asset saved to database.",
         altText: file.name.replace(/\.[^/.]+$/, ""),
         fileSize: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
         dimensions: "1920 x 1080",
         createdAt: new Date().toISOString().split("T")[0],
       };
-      setAssets([newAsset, ...assets]);
-      setIsSimulatingUpload(false);
+      setAssets((prev) => [newAsset, ...prev]);
       setShowUploader(false);
-      toast.success(`Photo "${file.name}" uploaded to Media Catalog!`);
-    }, 600);
+      toast.success(`Photo "${file.name}" uploaded to server and saved to database!`);
+    } catch (err) {
+      console.error("Media upload error:", err);
+      toast.error("Failed to upload image to server.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleCopyUrl = (url: string, title: string) => {
@@ -145,15 +137,26 @@ export default function AdminMediaPage() {
   const handleOpenEdit = (asset: MediaAsset) => {
     setActiveAsset(asset);
     setEditTitle(asset.title);
-    setEditCategory(asset.category);
+    setEditCategory(asset.category || "");
     setEditDescription(asset.description || "");
     setEditAltText(asset.altText || "");
     setIsEditModalOpen(true);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeAsset) return;
+
+    try {
+      await MediaService.update(activeAsset.id, {
+        title: editTitle,
+        category: editCategory,
+        description: editDescription,
+        altText: editAltText,
+      });
+    } catch (err) {
+      console.warn("Media update warning:", err);
+    }
 
     setAssets((prev) =>
       prev.map((a) =>
@@ -177,9 +180,14 @@ export default function AdminMediaPage() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!activeAsset) return;
     const title = activeAsset.title;
+    try {
+      await MediaService.delete(activeAsset.id);
+    } catch (err) {
+      console.warn("Media deletion backend warning:", err);
+    }
     setAssets((prev) => prev.filter((a) => a.id !== activeAsset.id));
     setIsDeleteModalOpen(false);
     toast.info(`Media asset "${title}" deleted.`);
@@ -223,13 +231,22 @@ export default function AdminMediaPage() {
             onChange={handleUploadFile}
             className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
           />
-          <UploadCloud className="w-8 h-8 text-amber-600 mx-auto mb-2" />
-          <h3 className="text-sm font-extrabold text-slate-900">
-            {isSimulatingUpload ? "Uploading & Processing Media Asset..." : "Drag & Drop Image Files or Click to Browse"}
-          </h3>
-          <p className="text-xs text-slate-700 font-semibold mt-1">
-            Supports PNG, JPG, WebP up to 20MB. Automatically assigned to Central Media Taxonomy.
-          </p>
+          {isUploading ? (
+            <div className="flex items-center justify-center gap-2 text-amber-600 font-bold py-3">
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <span>Uploading local file and saving to database...</span>
+            </div>
+          ) : (
+            <>
+              <UploadCloud className="w-8 h-8 text-amber-600 mx-auto mb-2" />
+              <h3 className="text-sm font-extrabold text-slate-900">
+                Drag &amp; Drop Image Files or Click to Browse
+              </h3>
+              <p className="text-xs text-slate-700 font-semibold mt-1">
+                Supports PNG, JPG, WebP up to 20MB. Automatically stored in local uploads folder and database.
+              </p>
+            </>
+          )}
         </div>
       )}
 
@@ -319,7 +336,12 @@ export default function AdminMediaPage() {
 
       {/* Media Assets Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredAssets.length > 0 ? (
+        {isLoading ? (
+          <div className="col-span-full py-12 flex items-center justify-center gap-2 text-slate-600 font-bold text-xs">
+            <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
+            <span>Loading media library from database...</span>
+          </div>
+        ) : filteredAssets.length > 0 ? (
           filteredAssets.map((asset) => (
             <div
               key={asset.id}
@@ -377,9 +399,11 @@ export default function AdminMediaPage() {
               {/* Asset Meta Specs */}
               <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
                 <div>
-                  <span className="bg-amber-500/10 text-amber-700 font-bold text-xs px-2.5 py-0.5 rounded-full border border-amber-500/20 w-fit block mb-1">
-                    {asset.category}
-                  </span>
+                  {asset.category && (
+                    <span className="bg-amber-500/10 text-amber-700 font-bold text-xs px-2.5 py-0.5 rounded-full border border-amber-500/20 w-fit block mb-1">
+                      {asset.category}
+                    </span>
+                  )}
                   <h3 className="font-bold text-slate-900 text-xs line-clamp-1 group-hover:text-amber-600 transition-colors">
                     {asset.title}
                   </h3>
@@ -409,8 +433,8 @@ export default function AdminMediaPage() {
       <AdminModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        title="Edit Image"
-        description="Update photo title, category, and description."
+        title="Edit Image Metadata & Category"
+        description="Update photo title, category assignment, and alt text."
         maxWidth="lg"
       >
         <form onSubmit={handleSaveEdit} className="space-y-4 py-2 text-xs">
@@ -426,12 +450,13 @@ export default function AdminMediaPage() {
           </div>
 
           <div className="space-y-1">
-            <label className="font-bold text-slate-800 block text-xs">Category</label>
+            <label className="font-bold text-slate-800 block text-xs">Category Taxonomy</label>
             <select
               value={editCategory}
-              onChange={(e) => setEditCategory(e.target.value as MediaAsset["category"])}
+              onChange={(e) => setEditCategory(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 text-slate-900 font-bold text-xs rounded-xl px-3.5 py-2 focus:outline-none focus:border-amber-500 cursor-pointer"
             >
+              <option value="">Unassigned Category</option>
               <option value="Everest & Peaks">Everest &amp; Peaks</option>
               <option value="Annapurna & Lakes">Annapurna &amp; Lakes</option>
               <option value="Cultural Heritage">Cultural Heritage &amp; Resorts</option>

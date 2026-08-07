@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Mountain, TrendingUp, Edit, Trash2, Eye } from "lucide-react";
-import { mockPackages, PackageItem } from "@/lib/admin-data";
+import { useEffect, useState } from "react";
+import { Plus, Mountain, TrendingUp } from "lucide-react";
+import { PackageItem } from "@/lib/admin-data";
+import { ExpeditionService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -22,16 +23,30 @@ import {
 } from "@/components/admin/ui/admin-table";
 
 export default function AdminExpeditionsPage() {
-  const initialExpeditions = mockPackages.filter((p) => p.category === "Expedition");
-  const [expeditions, setExpeditions] = useState<PackageItem[]>(initialExpeditions);
+  const [expeditions, setExpeditions] = useState<PackageItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
 
   // Modals
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeExp, setActiveExp] = useState<PackageItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deletingExp, setDeletingExp] = useState<PackageItem | null>(null);
+
+  useEffect(() => {
+    async function loadExpeditions() {
+      try {
+        const data = await ExpeditionService.getAll();
+        setExpeditions(data);
+      } catch (err) {
+        console.error("Failed to load expeditions:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadExpeditions();
+  }, []);
 
   const filteredExpeditions = expeditions.filter((exp) => {
     const matchesSearch =
@@ -42,17 +57,20 @@ export default function AdminExpeditionsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleSaveExpedition = (savedExp: PackageItem) => {
-    const exists = expeditions.some((e) => e.id === savedExp.id);
-    if (exists) {
-      setExpeditions(expeditions.map((e) => (e.id === savedExp.id ? savedExp : e)));
+  const handleSaveExpedition = async (savedExp: PackageItem) => {
+    if (isEditing && activeExp) {
+      const updated = await ExpeditionService.update(activeExp.id, savedExp as any);
+      setExpeditions((prev) => prev.map((e) => (e.id === activeExp.id ? updated : e)));
     } else {
-      setExpeditions([savedExp, ...expeditions]);
+      const created = await ExpeditionService.create(savedExp as any);
+      setExpeditions((prev) => [created, ...prev]);
     }
+    setIsFormOpen(false);
   };
 
-  const handleDeleteExpedition = (id: string) => {
-    setExpeditions(expeditions.filter((eItem) => eItem.id !== id));
+  const handleDeleteExpedition = async (id: string) => {
+    await ExpeditionService.delete(id);
+    setExpeditions((prev) => prev.filter((eItem) => eItem.id !== id));
     setDeletingExp(null);
   };
 
@@ -120,13 +138,13 @@ export default function AdminExpeditionsPage() {
                       <span>{exp.title}</span>
                     </div>
                     <div className="text-xs text-slate-700 mt-0.5 font-medium">
-                      Permits: {exp.permitsRequired.join(", ")}
+                      Permits: {exp.permitsRequired ? exp.permitsRequired.join(", ") : "NMA Summit Permit"}
                     </div>
                   </AdminTableCell>
                   <AdminTableCell className="font-extrabold text-slate-900">
                     <div className="flex items-center gap-1">
                       <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
-                      <span>{exp.maxAltitudeMeters.toLocaleString()}m</span>
+                      <span>{(exp.maxAltitudeMeters || 6000).toLocaleString()}m</span>
                     </div>
                   </AdminTableCell>
                   <AdminTableCell className="font-semibold text-slate-700">{exp.durationDays} Days</AdminTableCell>
@@ -134,7 +152,7 @@ export default function AdminExpeditionsPage() {
                     ${exp.priceUSD.toLocaleString()} USD
                   </AdminTableCell>
                   <AdminTableCell className="font-bold text-slate-900">
-                    {exp.totalBookings} Climbers
+                    {exp.totalBookings || 0} Climbers
                   </AdminTableCell>
                   <AdminTableCell>
                     <AdminStatusBadge status={exp.status} />

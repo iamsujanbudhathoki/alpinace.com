@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UploadCloud, Image as ImageIcon, Check, FolderOpen, Search, Eye, Trash2, Plus } from "lucide-react";
+import { UploadCloud, Image as ImageIcon, Check, FolderOpen, Search, Eye, Trash2, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
+import { MediaService } from "@/lib/services/admin-service";
 
 interface AdminImageUploadProps {
   label?: string;
@@ -66,7 +67,7 @@ export function AdminImageUpload({
   onChange,
   error,
 }: AdminImageUploadProps) {
-  const [isSimulatingUpload, setIsSimulatingUpload] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
@@ -83,30 +84,35 @@ export function AdminImageUpload({
     }
   }, [isLibraryOpen, value]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fromModal = false) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fromModal = false) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsSimulatingUpload(true);
-    const objectUrl = URL.createObjectURL(file);
-    setTimeout(() => {
+    setIsUploading(true);
+    try {
+      const res = await MediaService.uploadFile(file);
+      const url = res?.url || URL.createObjectURL(file);
       if (fromModal) {
         const newAsset: MediaAsset = {
           id: `media-upload-${Date.now()}`,
           title: file.name.replace(/\.[^/.]+$/, ""),
           category: "Everest & Peaks",
-          url: objectUrl,
+          url: url,
         };
         setAssets([newAsset, ...assets]);
-        setTempSelectedUrl(objectUrl);
+        setTempSelectedUrl(url);
         setShowModalUploader(false);
-        toast.success(`Photo "${file.name}" added to catalog! Click "Select Image & Apply" below.`);
+        toast.success(`Photo "${file.name}" uploaded to server! Click "Select Image & Apply" below.`);
       } else {
-        onChange(objectUrl);
-        toast.success("Cover image file selected successfully!");
+        onChange(url);
+        toast.success("Cover image file uploaded to server successfully!");
       }
-      setIsSimulatingUpload(false);
-    }, 600);
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error("Failed to upload image.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const filteredAssets = assets.filter((asset) => {
@@ -158,18 +164,27 @@ export function AdminImageUpload({
 
         {/* Upload Controls & Media Library Button */}
         <div className="col-span-2 space-y-3">
-          <div className="border-2 border-dashed border-slate-200 hover:border-amber-400 rounded-xl p-3 text-center transition-colors bg-slate-50 relative cursor-pointer">
+          <div className="border-2 border-dashed border-slate-200 hover:border-amber-400 rounded-xl p-3 text-center transition-colors bg-slate-50 relative cursor-pointer flex flex-col items-center justify-center min-h-[90px]">
             <input
               type="file"
               accept="image/*"
               onChange={(e) => handleFileChange(e, false)}
               className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
             />
-            <UploadCloud className="w-5 h-5 text-amber-600 mx-auto mb-1" />
-            <p className="text-xs font-bold text-slate-900">
-              {isSimulatingUpload ? "Processing Upload..." : "Click or Drag & Drop Image File"}
-            </p>
-            <p className="text-xs text-slate-700 font-semibold mt-0.5">Supports PNG, JPG, WebP up to 10MB</p>
+            {isUploading ? (
+              <div className="flex items-center gap-2 text-amber-600 font-bold text-xs">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Uploading local file to server...</span>
+              </div>
+            ) : (
+              <>
+                <UploadCloud className="w-5 h-5 text-amber-600 mx-auto mb-1" />
+                <p className="text-xs font-bold text-slate-900">
+                  Click or Drag &amp; Drop Image File
+                </p>
+                <p className="text-xs text-slate-700 font-semibold mt-0.5">Supports PNG, JPG, WebP up to 10MB</p>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -299,11 +314,20 @@ export function AdminImageUpload({
                 onChange={(e) => handleFileChange(e, true)}
                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
               />
-              <UploadCloud className="w-6 h-6 text-amber-600 mx-auto mb-1" />
-              <p className="text-xs font-bold text-slate-900">
-                {isSimulatingUpload ? "Adding Media to Library..." : "Drop new image file here or click to upload"}
-              </p>
-              <p className="text-xs text-slate-700 font-semibold mt-0.5">Uploaded file will be instantly added to gallery and highlighted below.</p>
+              {isUploading ? (
+                <div className="flex items-center justify-center gap-2 text-amber-600 font-bold text-xs py-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Uploading media file to server...</span>
+                </div>
+              ) : (
+                <>
+                  <UploadCloud className="w-6 h-6 text-amber-600 mx-auto mb-1" />
+                  <p className="text-xs font-bold text-slate-900">
+                    Drop new image file here or click to upload
+                  </p>
+                  <p className="text-xs text-slate-700 font-semibold mt-0.5">Uploaded file will be instantly added to gallery and highlighted below.</p>
+                </>
+              )}
             </div>
           )}
 

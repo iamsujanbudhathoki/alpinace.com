@@ -1,13 +1,15 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { apiClient } from "@/lib/services/api-client";
 
 export interface AdminUser {
   id: string;
   name: string;
   email: string;
-  role: "Expedition Director" | "Operations Manager" | "Guide Coordinator";
+  role: "Expedition Director" | "Operations Manager" | "Guide Coordinator" | string;
   avatarUrl?: string;
+  token?: string;
 }
 
 interface AdminAuthContextType {
@@ -17,13 +19,6 @@ interface AdminAuthContextType {
   login: (email: string, pass: string) => Promise<boolean>;
   logout: () => void;
 }
-
-const DEFAULT_USER: AdminUser = {
-  id: "admin-1",
-  name: "Sujan Budhathoki",
-  email: "admin@alpineace.com",
-  role: "Expedition Director",
-};
 
 const AdminAuthContext = createContext<AdminAuthContextType>({
   user: null,
@@ -40,43 +35,67 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const savedSession = localStorage.getItem(AUTH_KEY);
-      if (savedSession) {
-        const parsed = JSON.parse(savedSession);
-        setUser(parsed);
+    async function checkAuth() {
+      try {
+        const savedSession = localStorage.getItem(AUTH_KEY);
+        if (savedSession) {
+          const parsed = JSON.parse(savedSession);
+          if (parsed?.token) {
+            try {
+              // Always verify access token against backend profile endpoint on refresh
+              const currentUser = await apiClient.get<AdminUser>("/admin/auth/me");
+              const sessionUser = { ...currentUser, token: parsed.token };
+              setUser(sessionUser);
+              localStorage.setItem(AUTH_KEY, JSON.stringify(sessionUser));
+            } catch (err) {
+              console.warn("Session verification failed on refresh:", err);
+              setUser(null);
+              localStorage.removeItem(AUTH_KEY);
+            }
+          } else {
+            setUser(null);
+            localStorage.removeItem(AUTH_KEY);
+          }
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("Failed to read auth session:", err);
+        setUser(null);
+        localStorage.removeItem(AUTH_KEY);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to read auth session:", err);
-    } finally {
-      setIsLoading(false);
     }
+    checkAuth();
   }, []);
 
   const login = async (email: string, pass: string): Promise<boolean> => {
-    setIsLoading(true);
-    // Simulate API delay
-    await new Promise((res) => setTimeout(res, 600));
+    try {
+      const response = await apiClient.post<AdminUser>("/admin/auth/login", {
+        email,
+        password: pass,
+      });
 
-    // Accept valid demo credentials or fallback
-    if (email && pass.length >= 4) {
-      const sessionUser: AdminUser = {
-        ...DEFAULT_USER,
-        email: email || DEFAULT_USER.email,
-      };
-      setUser(sessionUser);
-      localStorage.setItem(AUTH_KEY, JSON.stringify(sessionUser));
-      setIsLoading(false);
-      return true;
+      if (response && response.token) {
+        setUser(response);
+        localStorage.setItem(AUTH_KEY, JSON.stringify(response));
+        return true;
+      }
+    } catch (err: any) {
+      console.error("Admin login error:", err);
+      throw err;
     }
 
-    setIsLoading(false);
+    setUser(null);
+    localStorage.removeItem(AUTH_KEY);
     return false;
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem(AUTH_KEY);
+    apiClient.post("/admin/auth/logout").catch(() => {});
   };
 
   return (

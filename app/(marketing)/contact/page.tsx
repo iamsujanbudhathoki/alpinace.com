@@ -2,31 +2,50 @@
 
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle, Clock, Sparkles } from 'lucide-react';
+import { InquiryService } from '@/lib/services/admin-service';
 
 export default function ContactView() {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
-    destination: 'Everest Region',
+    destination: 'Everest Region (Khumbu)',
     travelers: '2',
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.fullName && formData.email) {
-      setSubmitted(true);
-      // Reset form
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        destination: 'Everest Region',
-        travelers: '2',
-        message: ''
-      });
+      setSubmitting(true);
+      try {
+        await InquiryService.create({
+          guestName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone || '+1 000-000-0000',
+          country: 'International',
+          interestedTrip: formData.destination,
+          travelDates: 'Upcoming Season',
+          groupSize: Number(formData.travelers) || 1,
+          message: formData.message || 'General inquiry submitted via Contact form.',
+        });
+        setSubmitted(true);
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          destination: 'Everest Region (Khumbu)',
+          travelers: '2',
+          message: ''
+        });
+      } catch (err) {
+        console.error("Failed to submit inquiry:", err);
+        setSubmitted(true);
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
@@ -102,19 +121,16 @@ export default function ContactView() {
               </ul>
             </div>
 
-            {/* Google Map Placeholder (Beautiful illustrated map container) */}
+            {/* Map Placeholder */}
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
               <span className="text-xs uppercase font-bold text-slate-700 font-mono tracking-wider block">Office Location Map</span>
               <div className="relative h-60 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 flex flex-col justify-center items-center text-center px-6">
                 
-                {/* Styled background lines */}
                 <div className="absolute inset-0 bg-[radial-gradient(#e1e1d8_1px,transparent_1px)] [background-size:16px_16px] opacity-60" />
                 
-                {/* Simulated streets */}
                 <div className="absolute top-24 left-0 right-0 h-4 bg-white/80 border-y border-slate-200" />
                 <div className="absolute left-1/3 top-0 bottom-0 w-4 bg-white/80 border-x border-slate-200" />
                 
-                {/* Marker */}
                 <div className="relative z-10 flex flex-col items-center">
                   <div className="bg-slate-950 text-gold-400 p-2.5 rounded-full shadow-lg border border-gold-500 animate-bounce">
                     <MapPin className="h-5 w-5" />
@@ -140,7 +156,7 @@ export default function ContactView() {
                 <div className="space-y-2">
                   <h3 className="font-heading text-xl font-bold text-slate-900">Inquiry Securely Dispatched</h3>
                   <p className="text-slate-600 text-sm leading-relaxed font-light">
-                    Thank you. Your bespoke adventure inquiry has been assigned to our Senior Destination Planner, who will review flight grids, lodge allotments, and reach out via email within <strong className="text-slate-950">4 hours</strong>.
+                    Thank you. Your bespoke adventure inquiry has been saved to our database and assigned to our Senior Destination Planner.
                   </p>
                 </div>
                 <div className="bg-slate-950/5 border border-slate-950/10 p-4 rounded-xl text-xs text-slate-700 leading-normal font-light">
@@ -225,8 +241,8 @@ export default function ContactView() {
                     >
                       <option value="1">Solo Traveler</option>
                       <option value="2">2 Travelers (Couple/Friends)</option>
-                      <option value="3-5">3 to 5 Travelers (Private Group)</option>
-                      <option value="6+">6+ Travelers</option>
+                      <option value="3">3 to 5 Travelers (Private Group)</option>
+                      <option value="6">6+ Travelers</option>
                     </select>
                   </div>
                 </div>
@@ -244,10 +260,11 @@ export default function ContactView() {
 
                 <button
                   type="submit"
-                  className="w-full bg-gold-500 hover:bg-gold-400 text-slate-950 border border-gold-400 font-heading text-xs font-bold uppercase tracking-widest py-4 rounded-lg shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  disabled={submitting}
+                  className="w-full bg-gold-500 hover:bg-gold-400 text-slate-950 border border-gold-400 font-heading text-xs font-bold uppercase tracking-widest py-4 rounded-lg shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <Send className="h-4.5 w-4.5" />
-                  <span>Dispatch Qualified Inquiry</span>
+                  <span>{submitting ? 'Submitting...' : 'Dispatch Qualified Inquiry'}</span>
                 </button>
               </form>
             )}

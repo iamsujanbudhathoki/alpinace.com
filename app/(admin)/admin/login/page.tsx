@@ -28,10 +28,11 @@ export default function AdminLoginPage() {
       if (success) {
         router.replace("/admin");
       } else {
-        setErrorMsg("Invalid email or password");
+        setErrorMsg("Invalid email or password.");
       }
-    } catch {
-      setErrorMsg("Unable to sign in. Please try again.");
+    } catch (err: any) {
+      const message = err?.message || "Invalid credentials or network connection issue.";
+      setErrorMsg(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -47,25 +48,26 @@ export default function AdminLoginPage() {
               <Mountain className="w-5 h-5" />
             </div>
           </Link>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight font-heading">
             Sign in to AlpineAce Admin
           </h1>
         </div>
 
         {/* Login Form Card */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-lg bg-red-50 text-red-700 text-xs font-medium">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
               {errorMsg}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div className="space-y-1">
-              <label className="block text-slate-700 font-semibold">Email</label>
+              <label className="block text-slate-700 font-bold">Email</label>
               <Input
                 type="email"
                 required
+                disabled={isSubmitting}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@alpineace.com"
@@ -74,11 +76,12 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="block text-slate-700 font-semibold">Password</label>
+              <label className="block text-slate-700 font-bold">Password</label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   required
+                  disabled={isSubmitting}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pr-9 text-xs bg-slate-50/50 border-slate-200 focus:bg-white"
@@ -96,12 +99,12 @@ export default function AdminLoginPage() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 rounded-lg"
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-10 rounded-xl cursor-pointer transition-colors shadow-xs"
             >
               {isSubmitting ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Signing in...
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                  Authenticating...
                 </span>
               ) : (
                 "Sign in"
@@ -111,7 +114,7 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="text-center">
-          <Link href="/" className="text-xs text-slate-500 hover:text-slate-900 transition-colors">
+          <Link href="/" className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors">
             ← Back to website
           </Link>
         </div>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   DollarSign,
@@ -5,12 +8,16 @@ import {
   FileCheck,
   ChevronRight,
   Clock,
+  Loader2,
 } from "lucide-react";
 import {
   mockDashboardMetrics,
   mockBookings,
   mockPackages,
+  Booking,
+  PackageItem,
 } from "@/lib/admin-data";
+import { DashboardService, BookingService, ExpeditionService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminStatsCard } from "@/components/admin/ui/admin-stats-card";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -26,7 +33,37 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function AdminDashboardPage() {
-  const recentBookings = mockBookings.slice(0, 5);
+  const [metrics, setMetrics] = useState(mockDashboardMetrics);
+  const [recentBookings, setRecentBookings] = useState<Booking[]>(mockBookings.slice(0, 5));
+  const [topExpeditions, setTopExpeditions] = useState<PackageItem[]>(mockPackages.slice(0, 3));
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [dashData, bookingsData, expeditionsData] = await Promise.all([
+          DashboardService.getMetrics(),
+          BookingService.getAll(),
+          ExpeditionService.getAll(),
+        ]);
+
+        if (dashData) {
+          setMetrics(dashData);
+        }
+        if (Array.isArray(bookingsData) && bookingsData.length > 0) {
+          setRecentBookings(bookingsData.slice(0, 5));
+        }
+        if (Array.isArray(expeditionsData) && expeditionsData.length > 0) {
+          setTopExpeditions(expeditionsData.slice(0, 3));
+        }
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -56,8 +93,8 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <AdminStatsCard
           label="Total Revenue"
-          value={`$${mockDashboardMetrics.totalRevenueUSD.toLocaleString()}`}
-          trendText={`+${mockDashboardMetrics.revenueChangePercent}% vs last season`}
+          value={`$${metrics.totalRevenueUSD.toLocaleString()}`}
+          trendText={`+${metrics.revenueChangePercent}% vs last season`}
           trendType="positive"
           icon={DollarSign}
           iconColorClass="bg-emerald-50 border-emerald-200 text-emerald-600"
@@ -65,15 +102,15 @@ export default function AdminDashboardPage() {
 
         <AdminStatsCard
           label="Active Expeditions"
-          value={`${mockDashboardMetrics.activeExpeditions}`}
-          subtext={`${mockDashboardMetrics.climbersOnMountain} climbers on peak`}
+          value={`${metrics.activeExpeditions}`}
+          subtext={`${metrics.climbersOnMountain} climbers on peak`}
           icon={Mountain}
           iconColorClass="bg-amber-50 border-amber-200 text-amber-600"
         />
 
         <AdminStatsCard
           label="Pending Bookings"
-          value={`${mockDashboardMetrics.pendingBookings}`}
+          value={`${metrics.pendingBookings}`}
           trendText="Requires guide assignment"
           trendType="warning"
           icon={Clock}
@@ -82,7 +119,7 @@ export default function AdminDashboardPage() {
 
         <AdminStatsCard
           label="Permits Processing"
-          value={`${mockDashboardMetrics.timsPermitsProcessing}`}
+          value={`${metrics.timsPermitsProcessing}`}
           subtext="TIMS & Sagarmatha clearances"
           icon={FileCheck}
           iconColorClass="bg-purple-50 border-purple-200 text-purple-600"
@@ -162,14 +199,14 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="space-y-3">
-              {mockPackages.slice(0, 3).map((pkg) => (
+              {topExpeditions.map((pkg) => (
                 <div
                   key={pkg.id}
                   className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs"
                 >
                   <div>
                     <div className="font-bold text-slate-900 line-clamp-1">{pkg.title}</div>
-                    <div className="text-xs text-slate-700 font-semibold">{pkg.durationDays} Days • {pkg.maxAltitudeMeters}m</div>
+                    <div className="text-xs text-slate-700 font-semibold">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
                   </div>
                   <span className="font-bold text-slate-900 shrink-0">${pkg.priceUSD}</span>
                 </div>

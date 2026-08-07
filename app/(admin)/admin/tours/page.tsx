@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Compass, Clock, Edit, Trash2, Eye } from "lucide-react";
-import { mockPackages, PackageItem } from "@/lib/admin-data";
+import { useEffect, useState } from "react";
+import { Plus, Compass, Clock } from "lucide-react";
+import { PackageItem } from "@/lib/admin-data";
+import { TourService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -22,16 +23,30 @@ import {
 } from "@/components/admin/ui/admin-table";
 
 export default function AdminToursPage() {
-  const initialTours = mockPackages.filter((p) => p.category === "Tour");
-  const [tours, setTours] = useState<PackageItem[]>(initialTours);
+  const [tours, setTours] = useState<PackageItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
 
   // Modals
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTour, setActiveTour] = useState<PackageItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deletingTour, setDeletingTour] = useState<PackageItem | null>(null);
+
+  useEffect(() => {
+    async function loadTours() {
+      try {
+        const data = await TourService.getAll();
+        setTours(data);
+      } catch (err) {
+        console.error("Failed to load tours:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadTours();
+  }, []);
 
   const filteredTours = tours.filter((tur) => {
     const matchesSearch =
@@ -42,17 +57,20 @@ export default function AdminToursPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleSaveTour = (savedTour: PackageItem) => {
-    const exists = tours.some((t) => t.id === savedTour.id);
-    if (exists) {
-      setTours(tours.map((t) => (t.id === savedTour.id ? savedTour : t)));
+  const handleSaveTour = async (savedTour: PackageItem) => {
+    if (isEditing && activeTour) {
+      const updated = await TourService.update(activeTour.id, savedTour as any);
+      setTours((prev) => prev.map((t) => (t.id === activeTour.id ? updated : t)));
     } else {
-      setTours([savedTour, ...tours]);
+      const created = await TourService.create(savedTour as any);
+      setTours((prev) => [created, ...prev]);
     }
+    setIsFormOpen(false);
   };
 
-  const handleDeleteTour = (id: string) => {
-    setTours(tours.filter((t) => t.id !== id));
+  const handleDeleteTour = async (id: string) => {
+    await TourService.delete(id);
+    setTours((prev) => prev.filter((t) => t.id !== id));
     setDeletingTour(null);
   };
 
@@ -119,7 +137,7 @@ export default function AdminToursPage() {
                       <span>{tur.title}</span>
                     </div>
                     <div className="text-xs text-slate-700 mt-0.5 font-medium">
-                      Inclusions: {tur.permitsRequired.join(", ")}
+                      Inclusions: {tur.permitsRequired ? tur.permitsRequired.join(", ") : "Heritage Entrance Fees"}
                     </div>
                   </AdminTableCell>
                   <AdminTableCell>
@@ -133,7 +151,7 @@ export default function AdminToursPage() {
                     ${tur.priceUSD.toLocaleString()} USD
                   </AdminTableCell>
                   <AdminTableCell className="font-bold text-slate-900">
-                    {tur.totalBookings} Guests
+                    {tur.totalBookings || 0} Guests
                   </AdminTableCell>
                   <AdminTableCell>
                     <AdminStatusBadge status={tur.status} />

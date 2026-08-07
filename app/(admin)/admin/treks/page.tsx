@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Footprints, Clock, TrendingUp, Star, Edit, Trash2, Eye } from "lucide-react";
-import { initialTreksData, TrekItem } from "@/lib/trek-data";
+import { useEffect, useState } from "react";
+import { Plus, Footprints, Clock, TrendingUp, Star } from "lucide-react";
+import { TrekItem } from "@/lib/trek-data";
+import { TrekService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -22,15 +23,30 @@ import {
 } from "@/components/admin/ui/admin-table";
 
 export default function AdminTreksPage() {
-  const [treks, setTreks] = useState<TrekItem[]>(initialTreksData);
+  const [treks, setTreks] = useState<TrekItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
+  const [loading, setLoading] = useState(true);
 
   // Modal states
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTrek, setActiveTrek] = useState<TrekItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deletingTrek, setDeletingTrek] = useState<TrekItem | null>(null);
+
+  useEffect(() => {
+    async function loadTreks() {
+      try {
+        const data = await TrekService.getAll();
+        setTreks(data);
+      } catch (err) {
+        console.error("Failed to load treks:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadTreks();
+  }, []);
 
   const filteredTreks = treks.filter((trk) => {
     const matchesSearch =
@@ -43,17 +59,20 @@ export default function AdminTreksPage() {
     return matchesSearch && matchesDifficulty;
   });
 
-  const handleSaveTrek = (savedTrek: TrekItem) => {
-    const exists = treks.some((t) => t.id === savedTrek.id);
-    if (exists) {
-      setTreks(treks.map((t) => (t.id === savedTrek.id ? savedTrek : t)));
+  const handleSaveTrek = async (savedTrek: TrekItem) => {
+    if (isEditing && activeTrek) {
+      const updated = await TrekService.update(activeTrek.id, savedTrek as any);
+      setTreks((prev) => prev.map((t) => (t.id === activeTrek.id ? updated : t)));
     } else {
-      setTreks([savedTrek, ...treks]);
+      const created = await TrekService.create(savedTrek as any);
+      setTreks((prev) => [created, ...prev]);
     }
+    setIsFormOpen(false);
   };
 
-  const handleDeleteTrek = (id: string) => {
-    setTreks(treks.filter((t) => t.id !== id));
+  const handleDeleteTrek = async (id: string) => {
+    await TrekService.delete(id);
+    setTreks((prev) => prev.filter((t) => t.id !== id));
     setDeletingTrek(null);
   };
 
@@ -124,7 +143,7 @@ export default function AdminTreksPage() {
                       <span>{trk.title}</span>
                     </div>
                     <div className="text-xs text-slate-700 mt-0.5 font-medium">
-                      Permits: {trk.permitsRequired.join(", ")}
+                      Permits: {trk.permitsRequired ? trk.permitsRequired.join(", ") : "Standard Permits"}
                     </div>
                   </AdminTableCell>
                   <AdminTableCell>
@@ -147,7 +166,7 @@ export default function AdminTreksPage() {
                   <AdminTableCell className="font-bold text-slate-900">
                     <div className="flex items-center gap-1">
                       <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span>{trk.rating} ({trk.reviewsCount})</span>
+                      <span>{trk.rating || 5.0} ({trk.reviewsCount || 0})</span>
                     </div>
                   </AdminTableCell>
                   <AdminTableCell>

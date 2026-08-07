@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Trash2, Eye, Mail, MessageSquare } from "lucide-react";
-import { mockInquiries, Inquiry } from "@/lib/admin-data";
+import { Inquiry } from "@/lib/admin-data";
+import { InquiryService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -11,14 +12,29 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export default function AdminInquiriesPage() {
-  const [inquiries, setInquiries] = useState<Inquiry[]>(mockInquiries);
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
 
   // Modals
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeInquiry, setActiveInquiry] = useState<Inquiry | null>(null);
   const [deletingInquiry, setDeletingInquiry] = useState<Inquiry | null>(null);
+
+  useEffect(() => {
+    async function loadInquiries() {
+      try {
+        const data = await InquiryService.getAll();
+        setInquiries(data);
+      } catch (err) {
+        console.error("Failed to load inquiries:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadInquiries();
+  }, []);
 
   const filteredInquiries = inquiries.filter((inq) => {
     const matchesSearch =
@@ -30,7 +46,8 @@ export default function AdminInquiriesPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleUpdateStatus = (id: string, newStatus: Inquiry["status"]) => {
+  const handleUpdateStatus = async (id: string, newStatus: Inquiry["status"]) => {
+    const updated = await InquiryService.update(id, { status: newStatus });
     setInquiries((prev) =>
       prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq))
     );
@@ -39,11 +56,14 @@ export default function AdminInquiriesPage() {
     }
   };
 
-  const handleSaveInquiry = (savedInquiry: Inquiry) => {
-    setInquiries([savedInquiry, ...inquiries]);
+  const handleSaveInquiry = async (savedInquiry: Inquiry) => {
+    const created = await InquiryService.create(savedInquiry as any);
+    setInquiries([created, ...inquiries]);
+    setIsFormOpen(false);
   };
 
-  const handleDeleteInquiry = (id: string) => {
+  const handleDeleteInquiry = async (id: string) => {
+    await InquiryService.delete(id);
     setInquiries(inquiries.filter((inq) => inq.id !== id));
     setDeletingInquiry(null);
   };

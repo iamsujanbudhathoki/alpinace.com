@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Download, Plus, Edit, Trash2, Eye } from "lucide-react";
-import { mockBookings, Booking } from "@/lib/admin-data";
+import { useEffect, useState } from "react";
+import { Download, Plus } from "lucide-react";
+import { Booking } from "@/lib/admin-data";
+import { BookingService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -23,16 +24,31 @@ import {
 } from "@/components/admin/ui/admin-table";
 
 export default function AdminBookingsPage() {
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
   const [selectedType, setSelectedType] = useState<string>("All");
+  const [loading, setLoading] = useState(true);
 
   // Modals
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
+
+  useEffect(() => {
+    async function loadBookings() {
+      try {
+        const data = await BookingService.getAll();
+        setBookings(data);
+      } catch (err) {
+        console.error("Failed to load bookings:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadBookings();
+  }, []);
 
   const filteredBookings = bookings.filter((bkg) => {
     const matchesSearch =
@@ -50,16 +66,20 @@ export default function AdminBookingsPage() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const handleSaveBooking = (savedBooking: Booking) => {
+  const handleSaveBooking = async (savedBooking: Booking) => {
     const exists = bookings.some((b) => b.id === savedBooking.id);
     if (exists) {
-      setBookings(bookings.map((b) => (b.id === savedBooking.id ? savedBooking : b)));
+      const updated = await BookingService.update(savedBooking.id, savedBooking as any);
+      setBookings(bookings.map((b) => (b.id === updated.id ? updated : b)));
     } else {
-      setBookings([savedBooking, ...bookings]);
+      const created = await BookingService.create(savedBooking as any);
+      setBookings([created, ...bookings]);
     }
+    setIsFormOpen(false);
   };
 
-  const handleDeleteBooking = (id: string) => {
+  const handleDeleteBooking = async (id: string) => {
+    await BookingService.delete(id);
     setBookings(bookings.filter((b) => b.id !== id));
     setDeletingBooking(null);
   };

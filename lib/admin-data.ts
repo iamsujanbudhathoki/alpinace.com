@@ -1,3 +1,36 @@
+export enum PackageStatus {
+  ACTIVE = "Active",
+  DRAFT = "Draft",
+  FEATURED = "Featured",
+}
+
+export enum PackageCategoryType {
+  TREKKING = "Trekking",
+  EXPEDITION = "Expedition",
+  TOUR = "Tour",
+}
+
+export enum BookingStatus {
+  CONFIRMED = "Confirmed",
+  IN_REVIEW = "In Review",
+  ACTIVE_TREK = "Active Trek",
+  COMPLETED = "Completed",
+  CANCELLED = "Cancelled",
+}
+
+export enum PaymentStatus {
+  PAID = "Paid",
+  DEPOSIT_PAID = "Deposit Paid",
+  PENDING = "Pending",
+  REFUNDED = "Refunded",
+}
+
+export enum PermitStatus {
+  ISSUED = "Issued",
+  PROCESSING = "Processing",
+  PENDING_DOCUMENT = "Pending Document",
+}
+
 export interface Booking {
   id: string;
   reference: string;
@@ -6,15 +39,15 @@ export interface Booking {
   guestPhone: string;
   country: string;
   packageName: string;
-  packageType: "Trekking" | "Expedition" | "Tour";
+  packageType: PackageCategoryType | string;
   startDate: string;
   endDate: string;
   groupSize: number;
   totalAmountUSD: number;
-  paymentStatus: "Paid" | "Deposit Paid" | "Pending" | "Refunded";
-  bookingStatus: "Confirmed" | "In Review" | "Active Trek" | "Completed" | "Cancelled";
+  paymentStatus: PaymentStatus | string;
+  bookingStatus: BookingStatus | string;
   assignedGuide?: string;
-  permitStatus: "Issued" | "Processing" | "Pending Document";
+  permitStatus: PermitStatus | string;
   specialRequests?: string;
 }
 
@@ -23,12 +56,12 @@ export interface PackageItem {
   title: string;
   slug: string;
   category: string;
-  region: "Everest" | "Annapurna" | "Langtang" | "Manaslu" | "Kathmandu & Pokhara";
+  region: "Everest" | "Annapurna" | "Langtang" | "Manaslu" | "Kathmandu & Pokhara" | string;
   durationDays: number;
   maxAltitudeMeters: number;
-  difficulty: "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)";
+  difficulty: "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)" | string;
   priceUSD: number;
-  status: "Active" | "Draft" | "Featured";
+  status: PackageStatus | string;
   totalBookings: number;
   rating: number;
   reviewsCount?: number;

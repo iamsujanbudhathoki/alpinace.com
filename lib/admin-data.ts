@@ -1,35 +1,10 @@
-export enum PackageStatus {
-  ACTIVE = "Active",
-  DRAFT = "Draft",
-  FEATURED = "Featured",
-}
-
-export enum PackageCategoryType {
-  TREKKING = "Trekking",
-  EXPEDITION = "Expedition",
-  TOUR = "Tour",
-}
-
-export enum BookingStatus {
-  CONFIRMED = "Confirmed",
-  IN_REVIEW = "In Review",
-  ACTIVE_TREK = "Active Trek",
-  COMPLETED = "Completed",
-  CANCELLED = "Cancelled",
-}
-
-export enum PaymentStatus {
-  PAID = "Paid",
-  DEPOSIT_PAID = "Deposit Paid",
-  PENDING = "Pending",
-  REFUNDED = "Refunded",
-}
-
-export enum PermitStatus {
-  ISSUED = "Issued",
-  PROCESSING = "Processing",
-  PENDING_DOCUMENT = "Pending Document",
-}
+export type PackageStatus = "Active" | "Draft" | "Featured";
+export type PackageCategoryType = "Trekking" | "Expedition" | "Tour";
+export type BookingStatus = "Confirmed" | "In Review" | "Active Trek" | "Completed" | "Cancelled";
+export type PaymentStatus = "Paid" | "Deposit Paid" | "Pending" | "Refunded";
+export type PermitStatus = "Issued" | "Processing" | "Pending Document";
+export type PackageRegion = "Everest" | "Annapurna" | "Langtang" | "Manaslu" | "Kathmandu & Pokhara" | "Khumbu";
+export type PackageDifficulty = "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)";
 
 export interface Booking {
   id: string;
@@ -39,15 +14,15 @@ export interface Booking {
   guestPhone: string;
   country: string;
   packageName: string;
-  packageType: "Trekking" | "Expedition" | "Tour";
+  packageType: PackageCategoryType;
   startDate: string;
   endDate: string;
   groupSize: number;
   totalAmountUSD: number;
-  paymentStatus: "Paid" | "Deposit Paid" | "Pending" | "Refunded";
-  bookingStatus: "Confirmed" | "In Review" | "Active Trek" | "Completed" | "Cancelled";
+  paymentStatus: PaymentStatus;
+  bookingStatus: BookingStatus;
   assignedGuide?: string;
-  permitStatus: "Issued" | "Processing" | "Pending Document";
+  permitStatus: PermitStatus;
   specialRequests?: string;
 }
 
@@ -56,12 +31,12 @@ export interface PackageItem {
   title: string;
   slug: string;
   category: string;
-  region: "Everest" | "Annapurna" | "Langtang" | "Manaslu" | "Kathmandu & Pokhara";
+  region: PackageRegion;
   durationDays: number;
   maxAltitudeMeters: number;
-  difficulty: "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)";
+  difficulty: PackageDifficulty;
   priceUSD: number;
-  status: "Active" | "Draft" | "Featured";
+  status: PackageStatus;
   totalBookings: number;
   rating: number;
   reviewsCount?: number;

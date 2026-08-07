@@ -1,3 +1,7 @@
+import { PackageStatus, PackageRegion } from "./admin-data";
+
+export type ClimbingGrade = "Non-Technical Trekking Peak" | "Technical Alpine Grade" | "Extreme Technical Grade";
+
 export interface ExpeditionItem {
   id: string;
   title: string;
@@ -9,12 +13,12 @@ export interface ExpeditionItem {
   shortDesc: string;
   durationDays: number;
   peakHeightM: number;
-  climbingGrade: "Non-Technical Trekking Peak" | "Technical Alpine Grade" | "Extreme Technical Grade";
+  climbingGrade: ClimbingGrade;
   bestSeason: string;
   priceUSD: number;
   permitsRequired: string[];
-  status: "Active" | "Featured" | "Draft";
-  region: "Everest" | "Annapurna" | "Manaslu" | "Khumbu";
+  status: PackageStatus;
+  region: PackageRegion;
 }
 
 export const initialExpeditionsData: ExpeditionItem[] = [];

@@ -435,7 +435,7 @@ export const BookingService = {
 
   async delete(id: string): Promise<boolean> {
     try {
-      return await apiClient.delete<boolean>(`/packages/${id}`);
+      return await apiClient.delete<boolean>(`/bookings/${id}`);
     } catch (e) {
       return true;
     }

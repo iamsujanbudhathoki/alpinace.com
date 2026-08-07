@@ -43,7 +43,8 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
           if (parsed?.token) {
             try {
               // Always verify access token against backend profile endpoint on refresh
-              const currentUser = await apiClient.get<AdminUser>("/admin/auth/me");
+              const res = await apiClient.get<AdminUser>("/admin/auth/me");
+              const currentUser = res.data;
               const sessionUser = { ...currentUser, token: parsed.token };
               setUser(sessionUser);
               localStorage.setItem(AUTH_KEY, JSON.stringify(sessionUser));
@@ -77,9 +78,10 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         password: pass,
       });
 
-      if (response && response.token) {
-        setUser(response);
-        localStorage.setItem(AUTH_KEY, JSON.stringify(response));
+      const userData = response.data;
+      if (userData && userData.token) {
+        setUser(userData);
+        localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
         return true;
       }
     } catch (err: any) {

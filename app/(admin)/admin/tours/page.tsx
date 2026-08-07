@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Compass, Clock } from "lucide-react";
+import { toast } from "sonner";
 import { PackageItem } from "@/lib/admin-data";
 import { TourService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
@@ -58,20 +59,31 @@ export default function AdminToursPage() {
   });
 
   const handleSaveTour = async (savedTour: PackageItem) => {
-    if (isEditing && activeTour) {
-      const updated = await TourService.update(activeTour.id, savedTour as any);
-      setTours((prev) => prev.map((t) => (t.id === activeTour.id ? updated : t)));
-    } else {
-      const created = await TourService.create(savedTour as any);
-      setTours((prev) => [created, ...prev]);
+    try {
+      if (isEditing && activeTour) {
+        const res = await TourService.update(activeTour.id, savedTour as any);
+        setTours((prev) => prev.map((t) => (t.id === activeTour.id ? res.data : t)));
+        toast.success(res.message);
+      } else {
+        const res = await TourService.create(savedTour as any);
+        setTours((prev) => [res.data, ...prev]);
+        toast.success(res.message);
+      }
+      setIsFormOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save tour package");
     }
-    setIsFormOpen(false);
   };
 
   const handleDeleteTour = async (id: string) => {
-    await TourService.delete(id);
-    setTours((prev) => prev.filter((t) => t.id !== id));
-    setDeletingTour(null);
+    try {
+      const res = await TourService.delete(id);
+      setTours((prev) => prev.filter((t) => t.id !== id));
+      setDeletingTour(null);
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete tour package");
+    }
   };
 
   return (

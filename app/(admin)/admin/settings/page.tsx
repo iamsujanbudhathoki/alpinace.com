@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Save, Building } from "lucide-react";
+import { toast } from "sonner";
 import { SettingService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,7 @@ export default function AdminSettingsPage() {
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await SettingService.update({
+      const res = await SettingService.update({
         siteName,
         contactEmail,
         contactPhone,
@@ -46,8 +47,10 @@ export default function AdminSettingsPage() {
       });
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
-    } catch (err) {
+      toast.success(res.message);
+    } catch (err: any) {
       console.error("Failed to save settings:", err);
+      toast.error(err.message || "Failed to save agency settings");
     }
   };
 

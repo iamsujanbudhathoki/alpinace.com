@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Plus } from "lucide-react";
 import { Booking } from "@/lib/admin-data";
+import { toast } from "sonner";
 import { BookingService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
@@ -67,21 +68,32 @@ export default function AdminBookingsPage() {
   });
 
   const handleSaveBooking = async (savedBooking: Booking) => {
-    const exists = bookings.some((b) => b.id === savedBooking.id);
-    if (exists) {
-      const updated = await BookingService.update(savedBooking.id, savedBooking as any);
-      setBookings(bookings.map((b) => (b.id === updated.id ? updated : b)));
-    } else {
-      const created = await BookingService.create(savedBooking as any);
-      setBookings([created, ...bookings]);
+    try {
+      const exists = bookings.some((b) => b.id === savedBooking.id);
+      if (exists) {
+        const res = await BookingService.update(savedBooking.id, savedBooking as any);
+        setBookings(bookings.map((b) => (b.id === res.data.id ? res.data : b)));
+        toast.success(res.message);
+      } else {
+        const res = await BookingService.create(savedBooking as any);
+        setBookings([res.data, ...bookings]);
+        toast.success(res.message);
+      }
+      setIsFormOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save booking");
     }
-    setIsFormOpen(false);
   };
 
   const handleDeleteBooking = async (id: string) => {
-    await BookingService.delete(id);
-    setBookings(bookings.filter((b) => b.id !== id));
-    setDeletingBooking(null);
+    try {
+      const res = await BookingService.delete(id);
+      setBookings(bookings.filter((b) => b.id !== id));
+      setDeletingBooking(null);
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete booking");
+    }
   };
 
   const handleExportCSV = () => {

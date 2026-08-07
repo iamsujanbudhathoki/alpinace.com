@@ -79,32 +79,41 @@ export default function AdminCategoriesPage() {
   };
 
   const handleSaveCategory = async (savedCategory: CategoryItem) => {
-    if (activeCategory) {
-      await CategoryService.update(activeCategory.id, {
-        name: savedCategory.name,
-        type: savedCategory.type,
-        description: savedCategory.description,
-        status: savedCategory.status,
-      });
-      toast.success(`Category "${savedCategory.name}" updated successfully!`);
-    } else {
-      await CategoryService.create({
-        name: savedCategory.name,
-        type: savedCategory.type,
-        description: savedCategory.description,
-        status: savedCategory.status,
-      });
-      toast.success(`New category "${savedCategory.name}" created!`);
+    try {
+      if (activeCategory) {
+        const res = await CategoryService.update(activeCategory.id, {
+          name: savedCategory.name,
+          type: savedCategory.type,
+          description: savedCategory.description,
+          status: savedCategory.status,
+        });
+        toast.success(res.message);
+      } else {
+        const res = await CategoryService.create({
+          name: savedCategory.name,
+          type: savedCategory.type,
+          description: savedCategory.description,
+          status: savedCategory.status,
+        });
+        toast.success(res.message);
+      }
+      setIsFormModalOpen(false);
+      loadCategories();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save category");
     }
-    loadCategories();
   };
 
   const handleConfirmDelete = async () => {
     if (!activeCategory) return;
-    const catName = activeCategory.name;
-    await CategoryService.delete(activeCategory.id);
-    toast.success(`Category "${catName}" has been deleted.`);
-    loadCategories();
+    try {
+      const res = await CategoryService.delete(activeCategory.id);
+      toast.success(res.message);
+      setIsDeleteModalOpen(false);
+      loadCategories();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete category");
+    }
   };
 
   const getTypeIcon = (type: CategoryItem["type"]) => {

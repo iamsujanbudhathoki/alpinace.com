@@ -91,7 +91,7 @@ export function AdminImageUpload({
     setIsUploading(true);
     try {
       const res = await MediaService.uploadFile(file);
-      const url = res?.url || URL.createObjectURL(file);
+      const url = res?.data?.url  || URL.createObjectURL(file);
       if (fromModal) {
         const newAsset: MediaAsset = {
           id: `media-upload-${Date.now()}`,
@@ -102,10 +102,10 @@ export function AdminImageUpload({
         setAssets([newAsset, ...assets]);
         setTempSelectedUrl(url);
         setShowModalUploader(false);
-        toast.success(`Photo "${file.name}" uploaded to server! Click "Select Image & Apply" below.`);
+        toast.success(res.message || `Photo "${file.name}" uploaded to server! Click "Select Image & Apply" below.`);
       } else {
         onChange(url);
-        toast.success("Cover image file uploaded to server successfully!");
+        toast.success(res.message || "Cover image file uploaded to server successfully!");
       }
     } catch (err) {
       console.error("Upload error:", err);

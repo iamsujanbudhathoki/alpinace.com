@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Mountain, TrendingUp } from "lucide-react";
 import { PackageItem } from "@/lib/admin-data";
+import { toast } from "sonner";
 import { ExpeditionService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
@@ -58,20 +59,31 @@ export default function AdminExpeditionsPage() {
   });
 
   const handleSaveExpedition = async (savedExp: PackageItem) => {
-    if (isEditing && activeExp) {
-      const updated = await ExpeditionService.update(activeExp.id, savedExp as any);
-      setExpeditions((prev) => prev.map((e) => (e.id === activeExp.id ? updated : e)));
-    } else {
-      const created = await ExpeditionService.create(savedExp as any);
-      setExpeditions((prev) => [created, ...prev]);
+    try {
+      if (isEditing && activeExp) {
+        const res = await ExpeditionService.update(activeExp.id, savedExp as any);
+        setExpeditions((prev) => prev.map((e) => (e.id === activeExp.id ? res.data : e)));
+        toast.success(res.message);
+      } else {
+        const res = await ExpeditionService.create(savedExp as any);
+        setExpeditions((prev) => [res.data, ...prev]);
+        toast.success(res.message);
+      }
+      setIsFormOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save expedition");
     }
-    setIsFormOpen(false);
   };
 
   const handleDeleteExpedition = async (id: string) => {
-    await ExpeditionService.delete(id);
-    setExpeditions((prev) => prev.filter((eItem) => eItem.id !== id));
-    setDeletingExp(null);
+    try {
+      const res = await ExpeditionService.delete(id);
+      setExpeditions((prev) => prev.filter((eItem) => eItem.id !== id));
+      setDeletingExp(null);
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete expedition");
+    }
   };
 
   return (

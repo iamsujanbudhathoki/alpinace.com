@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, FileText, Calendar, Eye, User } from "lucide-react";
 import { BlogArticle } from "@/lib/admin-data";
+import { toast } from "sonner";
 import { BlogService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
@@ -40,6 +41,36 @@ export default function AdminBlogsPage() {
     loadArticles();
   }, []);
 
+  const handleCreateArticle = async () => {
+    const title = prompt("Enter new article title:");
+    if (!title) return;
+    try {
+      const res = await BlogService.create({
+        title,
+        category: "Expedition Prep",
+        author: "Admin Team",
+        status: "Published",
+        readTime: "5 min read",
+        excerpt: "New article excerpt...",
+      });
+      setArticles((prev) => [res.data, ...prev]);
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create blog article");
+    }
+  };
+
+  const handleDeleteArticle = async (id: string, title: string) => {
+    if (!confirm(`Delete article: ${title}?`)) return;
+    try {
+      const res = await BlogService.delete(id);
+      setArticles((prev) => prev.filter((a) => a.id !== id));
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete blog article");
+    }
+  };
+
   const filteredArticles = articles.filter(
     (art) =>
       art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -55,19 +86,7 @@ export default function AdminBlogsPage() {
       >
         <Button
           size="sm"
-          onClick={() => {
-            const title = prompt("Enter new article title:");
-            if (title) {
-              BlogService.create({
-                title,
-                category: "Expedition Prep",
-                author: "Admin Team",
-                status: "Published",
-                readTime: "5 min read",
-                excerpt: "New article excerpt...",
-              }).then((created) => setArticles((prev) => [created, ...prev]));
-            }
-          }}
+          onClick={handleCreateArticle}
           className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
@@ -142,13 +161,7 @@ export default function AdminBlogsPage() {
                     <AdminTableActions>
                       <AdminActionButton
                         variant="delete"
-                        onClick={() => {
-                          if (confirm(`Delete article: ${art.title}?`)) {
-                            BlogService.delete(art.id).then(() =>
-                              setArticles((prev) => prev.filter((a) => a.id !== art.id))
-                            );
-                          }
-                        }}
+                        onClick={() => handleDeleteArticle(art.id, art.title)}
                         title="Delete Article"
                       />
                     </AdminTableActions>

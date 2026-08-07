@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Eye, Mail, MessageSquare } from "lucide-react";
 import { Inquiry } from "@/lib/admin-data";
+import { toast } from "sonner";
 import { InquiryService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
@@ -47,25 +48,40 @@ export default function AdminInquiriesPage() {
   });
 
   const handleUpdateStatus = async (id: string, newStatus: Inquiry["status"]) => {
-    const updated = await InquiryService.update(id, { status: newStatus });
-    setInquiries((prev) =>
-      prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq))
-    );
-    if (activeInquiry && activeInquiry.id === id) {
-      setActiveInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+    try {
+      const res = await InquiryService.update(id, { status: newStatus });
+      setInquiries((prev) =>
+        prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq))
+      );
+      if (activeInquiry && activeInquiry.id === id) {
+        setActiveInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+      }
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update inquiry status");
     }
   };
 
   const handleSaveInquiry = async (savedInquiry: Inquiry) => {
-    const created = await InquiryService.create(savedInquiry as any);
-    setInquiries([created, ...inquiries]);
-    setIsFormOpen(false);
+    try {
+      const res = await InquiryService.create(savedInquiry as any);
+      setInquiries([res.data, ...inquiries]);
+      setIsFormOpen(false);
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to log inquiry");
+    }
   };
 
   const handleDeleteInquiry = async (id: string) => {
-    await InquiryService.delete(id);
-    setInquiries(inquiries.filter((inq) => inq.id !== id));
-    setDeletingInquiry(null);
+    try {
+      const res = await InquiryService.delete(id);
+      setInquiries(inquiries.filter((inq) => inq.id !== id));
+      setDeletingInquiry(null);
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete inquiry");
+    }
   };
 
   return (

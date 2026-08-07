@@ -49,7 +49,7 @@ axiosInstance.interceptors.response.use(
       if (!apiResponse.success) {
         throw new Error(apiResponse.message || 'API request failed');
       }
-      return apiResponse.data;
+      return apiResponse as any;
     }
     return response.data;
   },
@@ -66,7 +66,7 @@ axiosInstance.interceptors.response.use(
 export async function apiRequest<T>(
   endpoint: string,
   options: { method?: 'GET' | 'POST' | 'PUT' | 'DELETE'; body?: any; params?: any } = {}
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   const { method = 'GET', body, params } = options;
   const url = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
@@ -77,7 +77,7 @@ export async function apiRequest<T>(
     params,
   });
 
-  return response as unknown as T;
+  return (response.data as unknown as ApiResponse<T>) || response;
 }
 
 export const apiClient = {
@@ -86,3 +86,4 @@ export const apiClient = {
   put: <T>(endpoint: string, body?: any) => apiRequest<T>(endpoint, { method: 'PUT', body }),
   delete: <T>(endpoint: string) => apiRequest<T>(endpoint, { method: 'DELETE' }),
 };
+

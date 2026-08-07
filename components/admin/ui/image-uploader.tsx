@@ -24,8 +24,9 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
     setIsUploading(true);
     try {
       const res = await MediaService.uploadFile(file);
-      if (res?.url) {
-        onChange(res.url);
+      const url = res?.data?.url;
+      if (url) {
+        onChange(url);
       }
     } catch (err) {
       console.error("Upload error:", err);
@@ -42,8 +43,9 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
     setIsUploading(true);
     try {
       const res = await MediaService.uploadFile(file);
-      if (res?.url) {
-        onChange(res.url);
+      const url = res?.data?.url;
+      if (url) {
+        onChange(url);
       }
     } catch (err) {
       console.error("Upload error:", err);

@@ -181,9 +181,17 @@ export function SiteHeader() {
                 Plan My Trip
               </Link>
 
-              <div className="flex items-center justify-center gap-2 text-xs text-slate-500 font-medium pt-1">
-                <Phone className="h-3.5 w-3.5 text-slate-400" />
-                <span>+977 1 4410988 / +977 98511 23456</span>
+              <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-500 font-medium pt-1">
+                <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <div className="flex flex-wrap justify-center gap-1.5 font-mono text-[11px] font-bold text-slate-800">
+                  <a href="tel:+97714410988" className="hover:text-gold-600 transition-colors">
+                    +977 1 4410988
+                  </a>
+                  <span>/</span>
+                  <a href="tel:+9779851123456" className="hover:text-gold-600 transition-colors">
+                    +977 98511 23456
+                  </a>
+                </div>
               </div>
             </div>
           </div>

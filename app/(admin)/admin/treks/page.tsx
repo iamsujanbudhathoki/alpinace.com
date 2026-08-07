@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Footprints, Clock, TrendingUp, Star } from "lucide-react";
 import { TrekItem } from "@/lib/trek-data";
+import { toast } from "sonner";
 import { TrekService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
@@ -60,20 +61,31 @@ export default function AdminTreksPage() {
   });
 
   const handleSaveTrek = async (savedTrek: TrekItem) => {
-    if (isEditing && activeTrek) {
-      const updated = await TrekService.update(activeTrek.id, savedTrek as any);
-      setTreks((prev) => prev.map((t) => (t.id === activeTrek.id ? updated : t)));
-    } else {
-      const created = await TrekService.create(savedTrek as any);
-      setTreks((prev) => [created, ...prev]);
+    try {
+      if (isEditing && activeTrek) {
+        const res = await TrekService.update(activeTrek.id, savedTrek as any);
+        setTreks((prev) => prev.map((t) => (t.id === activeTrek.id ? res.data : t)));
+        toast.success(res.message);
+      } else {
+        const res = await TrekService.create(savedTrek as any);
+        setTreks((prev) => [res.data, ...prev]);
+        toast.success(res.message);
+      }
+      setIsFormOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save trek itinerary");
     }
-    setIsFormOpen(false);
   };
 
   const handleDeleteTrek = async (id: string) => {
-    await TrekService.delete(id);
-    setTreks((prev) => prev.filter((t) => t.id !== id));
-    setDeletingTrek(null);
+    try {
+      const res = await TrekService.delete(id);
+      setTreks((prev) => prev.filter((t) => t.id !== id));
+      setDeletingTrek(null);
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete trek itinerary");
+    }
   };
 
   return (

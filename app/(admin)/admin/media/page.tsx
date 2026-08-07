@@ -101,12 +101,13 @@ export default function AdminMediaPage() {
 
     setIsUploading(true);
     try {
-      const uploaded = await MediaService.uploadFile(file);
+      const res = await MediaService.uploadFile(file);
+      const uploaded = res.data;
       const newAsset: MediaAsset = {
-        id: uploaded.id || (uploaded.name ? `med-${uploaded.name}` : `med-${Date.now()}`),
+        id: uploaded?.id || (uploaded?.name ? `med-${uploaded.name}` : `med-${Date.now()}`),
         title: file.name.replace(/\.[^/.]+$/, ""),
         category: "",
-        url: uploaded.url,
+        url: uploaded?.url || "",
         description: "Uploaded media asset saved to database.",
         altText: file.name.replace(/\.[^/.]+$/, ""),
         fileSize: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
@@ -115,10 +116,10 @@ export default function AdminMediaPage() {
       };
       setAssets((prev) => [newAsset, ...prev]);
       setShowUploader(false);
-      toast.success(`Photo "${file.name}" uploaded to server and saved to database!`);
-    } catch (err) {
+      toast.success(res.message || `Photo "${file.name}" uploaded successfully!`);
+    } catch (err: any) {
       console.error("Media upload error:", err);
-      toast.error("Failed to upload image to server.");
+      toast.error(err.message || "Failed to upload image to server.");
     } finally {
       setIsUploading(false);
     }
@@ -148,14 +149,15 @@ export default function AdminMediaPage() {
     if (!activeAsset) return;
 
     try {
-      await MediaService.update(activeAsset.id, {
+      const res = await MediaService.update(activeAsset.id, {
         title: editTitle,
         category: editCategory,
         description: editDescription,
         altText: editAltText,
       });
-    } catch (err) {
-      console.warn("Media update warning:", err);
+      toast.success(res.message || `Media asset "${editTitle}" updated successfully!`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update media asset");
     }
 
     setAssets((prev) =>
@@ -172,7 +174,6 @@ export default function AdminMediaPage() {
       )
     );
     setIsEditModalOpen(false);
-    toast.success(`Media asset "${editTitle}" updated successfully!`);
   };
 
   const handleDeletePrompt = (asset: MediaAsset) => {
@@ -182,15 +183,14 @@ export default function AdminMediaPage() {
 
   const handleConfirmDelete = async () => {
     if (!activeAsset) return;
-    const title = activeAsset.title;
     try {
-      await MediaService.delete(activeAsset.id);
-    } catch (err) {
-      console.warn("Media deletion backend warning:", err);
+      const res = await MediaService.delete(activeAsset.id);
+      toast.success(res.message || `Media asset deleted.`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete media asset");
     }
     setAssets((prev) => prev.filter((a) => a.id !== activeAsset.id));
     setIsDeleteModalOpen(false);
-    toast.info(`Media asset "${title}" deleted.`);
   };
 
   const filteredAssets = assets.filter((a) => {

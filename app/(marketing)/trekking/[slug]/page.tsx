@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo, use } from "react";
+import { useState, useMemo, useEffect, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ChevronDown, Star } from "lucide-react";
-import { initialTreksData } from "@/lib/trek-data";
-import { InquiryService } from "@/lib/services/admin-service";
+import { ArrowLeft, ChevronDown, Star, Loader2 } from "lucide-react";
+import { TrekItem, initialTreksData } from "@/lib/trek-data";
+import { TrekService, InquiryService } from "@/lib/services/admin-service";
 
 interface TrekDetailPageProps {
   params: Promise<{
@@ -15,14 +15,33 @@ interface TrekDetailPageProps {
 
 export default function TrekDetailPage({ params }: TrekDetailPageProps) {
   const resolvedParams = use(params);
-  const trek = initialTreksData.find((t) => t.slug === resolvedParams.slug);
+  const [trek, setTrek] = useState<TrekItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!trek) {
-    notFound();
-  }
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const item = await TrekService.getBySlug(resolvedParams.slug);
+        if (item) {
+          setTrek(item);
+        } else {
+          const staticMatch = initialTreksData.find((t) => t.slug === resolvedParams.slug);
+          setTrek(staticMatch || null);
+        }
+      } catch (e) {
+        console.warn("Failed to fetch trek by slug", e);
+        const staticMatch = initialTreksData.find((t) => t.slug === resolvedParams.slug);
+        setTrek(staticMatch || null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [resolvedParams.slug]);
 
   // Related treks excluding current
   const relatedTreks = useMemo(() => {
+    if (!trek) return [];
     return initialTreksData.filter((t) => t.slug !== trek.slug).slice(0, 2);
   }, [trek]);
 
@@ -33,13 +52,23 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
   const [helicopterAddon, setHelicopterAddon] = useState<boolean>(true);
 
   // Gallery state
-  const gallery = [
-    trek.image,
-    "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80",
-  ];
-  const [activePhoto, setActivePhoto] = useState<string>(gallery[0]);
+  const gallery = useMemo(() => {
+    if (!trek) return [];
+    return [
+      trek.image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80",
+    ];
+  }, [trek]);
+
+  const [activePhoto, setActivePhoto] = useState<string>("");
+
+  useEffect(() => {
+    if (gallery.length > 0) {
+      setActivePhoto(gallery[0]);
+    }
+  }, [gallery]);
 
   // Lead inquiry state
   const [inquiryName, setInquiryName] = useState("");
@@ -47,7 +76,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
 
   // Price calculations
-  const baseCostPerPerson = trek.priceUSD;
+  const baseCostPerPerson = trek?.priceUSD || 0;
   const helicopterCostPerPerson = 450;
   const totalPrice = useMemo(() => {
     let perPerson = baseCostPerPerson;
@@ -57,6 +86,21 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
     if (calculatorTravelers >= 8) discount = 0.9;
     return Math.round(perPerson * calculatorTravelers * discount);
   }, [calculatorTravelers, helicopterAddon, baseCostPerPerson]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <div className="flex items-center gap-3 text-gold-400">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span className="font-semibold text-lg">Loading Trek Details...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trek) {
+    notFound();
+  }
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();

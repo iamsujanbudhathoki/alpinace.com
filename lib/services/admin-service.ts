@@ -136,6 +136,34 @@ export const TrekService = {
     return [];
   },
 
+  async getBySlug(slug: string): Promise<TrekItem | null> {
+    try {
+      const p = await apiClient.get<any>(`/packages/${slug}`);
+      if (p && p.id) {
+        return {
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          category: p.categoryType || "Trekking",
+          rating: Number(p.rating || 5.0),
+          reviewsCount: Number(p.reviewsCount || 0),
+          image: p.image || "",
+          shortDesc: p.shortDesc || "",
+          durationDays: Number(p.durationDays || 1),
+          difficulty: p.difficulty || "Moderate Trek",
+          bestSeason: p.bestSeason || "Spring / Autumn",
+          priceUSD: Number(p.priceUSD || 0),
+          permitsRequired: p.permitsRequired || [],
+          status: p.status || "Active",
+          region: p.region || "Everest",
+        };
+      }
+    } catch (e) {
+      console.warn("Backend trek by slug fetch error", e);
+    }
+    return null;
+  },
+
   async create(data: TrekFormValues): Promise<TrekItem> {
     try {
       const permitsArray = data.permitsText
@@ -235,6 +263,16 @@ export const TourService = {
     return mockPackages.filter((p) => p.category === "Tour" || p.category.includes("Tour") || p.category.includes("Sightseeing") || p.category.includes("Heritage"));
   },
 
+  async getBySlug(slug: string): Promise<PackageItem | null> {
+    try {
+      const p = await apiClient.get<PackageItem>(`/packages/${slug}`);
+      if (p && p.id) return p;
+    } catch (e) {
+      console.warn("Backend tour by slug fetch error", e);
+    }
+    return null;
+  },
+
   async create(data: TourFormValues): Promise<PackageItem> {
     try {
       const permitsArray = data.permitsText.split(",").map((s) => s.trim()).filter(Boolean);
@@ -290,6 +328,16 @@ export const ExpeditionService = {
       console.warn("Backend expeditions fetch error", e);
     }
     return mockPackages.filter((p) => p.category === "Expedition" || p.category.includes("Peaks") || p.category.includes("Climbing"));
+  },
+
+  async getBySlug(slug: string): Promise<PackageItem | null> {
+    try {
+      const p = await apiClient.get<PackageItem>(`/packages/${slug}`);
+      if (p && p.id) return p;
+    } catch (e) {
+      console.warn("Backend expedition by slug fetch error", e);
+    }
+    return null;
   },
 
   async create(data: ExpeditionFormValues): Promise<PackageItem> {

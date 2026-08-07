@@ -2,7 +2,7 @@ export interface TourItem {
   id: string;
   title: string;
   slug: string;
-  category: "TOUR";
+  category: string;
   rating: number;
   reviewsCount: number;
   image: string;

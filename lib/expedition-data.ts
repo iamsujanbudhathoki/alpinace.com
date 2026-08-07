@@ -2,7 +2,7 @@ export interface ExpeditionItem {
   id: string;
   title: string;
   slug: string;
-  category: "EXPEDITION";
+  category: string;
   rating: number;
   reviewsCount: number;
   image: string;

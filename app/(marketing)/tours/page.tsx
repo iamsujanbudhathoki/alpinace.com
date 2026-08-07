@@ -22,7 +22,7 @@ export default function ToursPage() {
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: "TOUR",
+          category: p.category,
           rating: Number(p.rating),
           reviewsCount: Number(p.reviewsCount ?? p.totalBookings),
           image: p.image ?? "",

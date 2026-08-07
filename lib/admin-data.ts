@@ -1,10 +1,51 @@
-export type PackageStatus = "Active" | "Draft" | "Featured";
-export type PackageCategoryType = "Trekking" | "Expedition" | "Tour";
-export type BookingStatus = "Confirmed" | "In Review" | "Active Trek" | "Completed" | "Cancelled";
-export type PaymentStatus = "Paid" | "Deposit Paid" | "Pending" | "Refunded";
-export type PermitStatus = "Issued" | "Processing" | "Pending Document";
-export type PackageRegion = "Everest" | "Annapurna" | "Langtang" | "Manaslu" | "Kathmandu & Pokhara" | "Khumbu";
-export type PackageDifficulty = "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)";
+export enum PackageStatus {
+  ACTIVE = "Active",
+  DRAFT = "Draft",
+  FEATURED = "Featured",
+}
+
+export enum PackageCategoryType {
+  TREKKING = "Trekking",
+  EXPEDITION = "Expedition",
+  TOUR = "Tour",
+}
+
+export enum BookingStatus {
+  CONFIRMED = "Confirmed",
+  IN_REVIEW = "In Review",
+  ACTIVE_TREK = "Active Trek",
+  COMPLETED = "Completed",
+  CANCELLED = "Cancelled",
+}
+
+export enum PaymentStatus {
+  PAID = "Paid",
+  DEPOSIT_PAID = "Deposit Paid",
+  PENDING = "Pending",
+  REFUNDED = "Refunded",
+}
+
+export enum PermitStatus {
+  ISSUED = "Issued",
+  PROCESSING = "Processing",
+  PENDING_DOCUMENT = "Pending Document",
+}
+
+export enum PackageRegion {
+  EVEREST = "Everest",
+  ANNAPURNA = "Annapurna",
+  LANGTANG = "Langtang",
+  MANASLU = "Manaslu",
+  KATHMANDU_POKHARA = "Kathmandu & Pokhara",
+  KHUMBU = "Khumbu",
+}
+
+export enum PackageDifficulty {
+  EASY = "Easy",
+  MODERATE = "Moderate",
+  CHALLENGING = "Challenging",
+  EXTREME = "Extreme (8000m+)",
+}
 
 export interface Booking {
   id: string;

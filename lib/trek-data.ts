@@ -1,6 +1,10 @@
 import { PackageStatus, PackageRegion } from "./admin-data";
 
-export type TrekDifficulty = "Moderate Trek" | "Challenging Trek" | "Strenuous Trek";
+export enum TrekDifficulty {
+  MODERATE = "Moderate Trek",
+  CHALLENGING = "Challenging Trek",
+  STRENUOUS = "Strenuous Trek",
+}
 
 export interface TrekItem {
   id: string;

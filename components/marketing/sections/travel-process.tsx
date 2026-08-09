@@ -84,7 +84,7 @@ export function TravelProcess() {
           </p>
         </div>
 
-        {/* Interactive Step Selector Tabs (Soft Warm Palette - No Pure Black) */}
+        {/* Interactive Step Selector Tabs (Consistent 2px Border to Prevent Layout Shift) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-stone-100/80 p-2.5 rounded-2xl border border-stone-200">
           {processSteps.map((step, idx) => {
             const isActive = activeStep === idx;
@@ -92,10 +92,10 @@ export function TravelProcess() {
               <button
                 key={step.id}
                 onClick={() => setActiveStep(idx)}
-                className={`flex flex-col items-start p-4 rounded-xl transition-all duration-200 cursor-pointer text-left ${
+                className={`flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-150 cursor-pointer text-left box-border ${
                   isActive
-                    ? "bg-amber-50/90 text-amber-950 font-bold border-2 border-amber-700/80 shadow-xs"
-                    : "bg-white hover:bg-stone-50 text-zinc-700 border border-stone-200/70"
+                    ? "bg-amber-50/90 text-amber-950 font-bold border-amber-700/80 shadow-xs"
+                    : "bg-white hover:bg-stone-50 text-zinc-700 border-stone-200/70"
                 }`}
               >
                 <span
@@ -114,10 +114,10 @@ export function TravelProcess() {
         </div>
 
         {/* Interactive Dynamic Display Panel */}
-        <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch transition-all duration-300">
+        <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
           
           {/* Left Detail Column */}
-          <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between space-y-8">
+          <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between space-y-8 min-h-[420px]">
             <div className="space-y-6">
               
               <div className="space-y-2">

@@ -2,16 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  Compass,
-  MapPin,
-  ShieldCheck,
-  Mountain,
-  CheckCircle2,
-  ArrowRight,
-  Sparkles,
-  PhoneCall,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 const processSteps = [
   {
@@ -27,7 +18,6 @@ const processSteps = [
     image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200",
     ctaText: "Request Private Consultation",
     ctaLink: "/contact",
-    icon: PhoneCall,
   },
   {
     id: "02",
@@ -42,7 +32,6 @@ const processSteps = [
     image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=1200",
     ctaText: "Explore Bespoke Itineraries",
     ctaLink: "/contact",
-    icon: Compass,
   },
   {
     id: "03",
@@ -57,7 +46,6 @@ const processSteps = [
     image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200",
     ctaText: "View Preparation Guidelines",
     ctaLink: "/contact",
-    icon: ShieldCheck,
   },
   {
     id: "04",
@@ -72,19 +60,16 @@ const processSteps = [
     image: "https://images.unsplash.com/photo-1585016495481-91613a3ab1bc?q=80&w=1200",
     ctaText: "Begin Your Expedition",
     ctaLink: "/contact",
-    icon: Mountain,
   },
 ];
 
 export function TravelProcess() {
   const [activeStep, setActiveStep] = useState(0);
-
   const currentStep = processSteps[activeStep];
-  const IconComponent = currentStep.icon;
 
   return (
-    <section className="py-24 bg-stone-50/70 border-b border-stone-200 font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+    <section className="py-24 bg-stone-50/80 border-b border-stone-200 font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
@@ -95,11 +80,11 @@ export function TravelProcess() {
             Your Journey To The Sky
           </h2>
           <p className="text-zinc-600 text-sm font-normal leading-relaxed">
-            From your initial consultation call to boarding your final helicopter, we engineer every step of your Himalayan expedition with precision.
+            From your initial consultation call to boarding your final helicopter, we engineer every step of your Himalayan expedition.
           </p>
         </div>
 
-        {/* Interactive Step Selector Tabs */}
+        {/* Interactive Step Selector Tabs (Clean Light Theme) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-white p-2.5 rounded-2xl border border-stone-200">
           {processSteps.map((step, idx) => {
             const isActive = activeStep === idx;
@@ -107,24 +92,19 @@ export function TravelProcess() {
               <button
                 key={step.id}
                 onClick={() => setActiveStep(idx)}
-                className={`flex flex-col items-start p-4 rounded-xl transition-all duration-300 cursor-pointer text-left ${
+                className={`flex flex-col items-start p-4 rounded-xl transition-all duration-200 cursor-pointer text-left ${
                   isActive
-                    ? "bg-zinc-900 text-white shadow-xs"
-                    : "bg-stone-50/60 hover:bg-stone-100/80 text-zinc-700 border border-stone-200/50"
+                    ? "bg-amber-500 text-slate-950 font-bold border border-amber-400"
+                    : "bg-white hover:bg-stone-50 text-zinc-700 border border-stone-200/60"
                 }`}
               >
-                <div className="flex items-center justify-between w-full mb-2">
-                  <span
-                    className={`font-heading text-xs font-extrabold px-2 py-0.5 rounded-md ${
-                      isActive ? "bg-amber-400 text-zinc-950" : "bg-stone-200/70 text-zinc-800"
-                    }`}
-                  >
-                    Phase {step.id}
-                  </span>
-                  {isActive && (
-                    <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
-                  )}
-                </div>
+                <span
+                  className={`font-heading text-xs font-extrabold mb-1 px-2 py-0.5 rounded ${
+                    isActive ? "bg-slate-950 text-amber-400" : "bg-stone-100 text-zinc-600"
+                  }`}
+                >
+                  Step {step.id}
+                </span>
                 <span className="font-heading text-xs sm:text-sm font-bold truncate w-full">
                   {step.title}
                 </span>
@@ -134,24 +114,24 @@ export function TravelProcess() {
         </div>
 
         {/* Interactive Dynamic Display Panel */}
-        <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch transition-all duration-500">
+        <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch transition-all duration-300">
           
           {/* Left Detail Column */}
           <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between space-y-8">
             <div className="space-y-6">
               
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-800 shrink-0">
-                  <IconComponent className="h-5 w-5" />
-                </div>
-                <div>
-                  <span className="text-xs font-semibold text-amber-800 uppercase tracking-wider block">
-                    Step {currentStep.id} Protocol
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60">
+                    Phase {currentStep.id} Protocol
                   </span>
-                  <h3 className="font-heading text-xl sm:text-2xl font-bold text-zinc-900">
-                    {currentStep.title}
-                  </h3>
+                  <span className="text-xs text-zinc-500 font-medium">
+                    {currentStep.subtitle}
+                  </span>
                 </div>
+                <h3 className="font-heading text-2xl sm:text-3xl font-bold text-zinc-900 pt-1">
+                  {currentStep.title}
+                </h3>
               </div>
 
               <p className="text-zinc-600 text-sm leading-relaxed font-normal">
@@ -159,9 +139,9 @@ export function TravelProcess() {
               </p>
 
               {/* Deliverables Checklist */}
-              <div className="space-y-3 pt-2 border-t border-stone-100">
+              <div className="space-y-3 pt-4 border-t border-stone-100">
                 <span className="text-xs font-bold text-zinc-900 uppercase tracking-wider block mb-2">
-                  Phase Deliverables:
+                  Key Phase Deliverables:
                 </span>
                 {currentStep.deliverables.map((item, dIdx) => (
                   <div key={dIdx} className="flex items-start gap-3 text-xs sm:text-sm text-zinc-700">
@@ -175,38 +155,36 @@ export function TravelProcess() {
 
             {/* Bottom Actions */}
             <div className="pt-6 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
-                <span>Phase {activeStep + 1} of 4</span>
-                <span>&bull;</span>
-                <span className="text-zinc-800 font-semibold">{currentStep.subtitle}</span>
-              </div>
+              <span className="text-xs text-zinc-500 font-medium">
+                Step {activeStep + 1} of 4 &bull; <strong className="text-zinc-800 font-semibold">{currentStep.title}</strong>
+              </span>
 
               <Link
                 href={currentStep.ctaLink}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-heading text-xs font-semibold px-6 py-3 rounded-xl transition-all cursor-pointer group active:scale-[0.99]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-700 hover:bg-amber-800 text-white font-heading text-xs font-semibold px-6 py-3.5 rounded-xl transition-all cursor-pointer group active:scale-[0.99]"
               >
                 <span>{currentStep.ctaText}</span>
-                <ArrowRight className="h-4 w-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
           </div>
 
-          {/* Right Visual Image Card */}
-          <div className="lg:col-span-5 relative min-h-[320px] lg:min-h-full bg-stone-100 overflow-hidden">
+          {/* Right Visual Image Card (Clean Light Overlay) */}
+          <div className="lg:col-span-5 relative min-h-[300px] lg:min-h-full bg-stone-100 overflow-hidden">
             <img
               src={currentStep.image}
               alt={currentStep.title}
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover object-center transition-all duration-700 scale-105 hover:scale-100"
+              className="w-full h-full object-cover object-center transition-all duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-zinc-950/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent" />
             
             <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
-              <span className="text-amber-400 text-xs font-semibold uppercase tracking-wider block">
+              <span className="text-amber-300 text-xs font-semibold block">
                 {currentStep.subtitle}
               </span>
-              <p className="font-heading text-sm font-bold text-white drop-shadow-sm">
+              <p className="font-heading text-sm font-bold text-white">
                 Step {currentStep.id}: {currentStep.title}
               </p>
             </div>

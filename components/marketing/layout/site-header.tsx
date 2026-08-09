@@ -52,7 +52,7 @@ export function SiteHeader() {
       <header
         className={`fixed inset-x-0 top-0 z-40 bg-white/95 backdrop-blur-md transition-all duration-200 ${
           isScrolled
-            ? "border-b border-stone-200 shadow-xs py-3"
+            ? "border-b border-stone-200 py-3"
             : "border-b border-stone-100 py-4"
         }`}
       >
@@ -62,7 +62,7 @@ export function SiteHeader() {
             <img
               src="/logo.jpg"
               alt="AlpineAce Logo"
-              className="h-9 w-9 object-cover rounded-lg border border-stone-200 shadow-xs"
+              className="h-9 w-9 object-cover rounded-lg border border-stone-200"
             />
             <span className="flex flex-col leading-none">
               <span className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">

@@ -38,7 +38,7 @@ export function WhyChooseUs() {
               We believe that premium travel is not just about comfortable beds, but deep cultural connection, unparalleled safety margins, and absolute local authenticity.
             </p>
 
-            <div className="p-5 bg-white rounded-xl border border-stone-200 shadow-xs space-y-1">
+            <div className="p-5 bg-white rounded-xl border border-stone-200 space-y-1">
               <h3 className="font-heading text-sm font-bold text-zinc-900">
                 1:1 Elite Climbing Guide Ratio
               </h3>
@@ -53,7 +53,7 @@ export function WhyChooseUs() {
             {whyUs.map((item, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs flex flex-col hover:border-stone-300 transition-all"
+                className="bg-white p-6 rounded-2xl border border-stone-200 flex flex-col hover:border-stone-300 transition-all"
               >
                 <span className="text-xs font-bold text-amber-700 mb-2">
                   {item.num}

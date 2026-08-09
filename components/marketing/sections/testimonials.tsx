@@ -29,7 +29,7 @@ export function TestimonialsSection() {
           {marqueeItems.map((item, idx) => (
             <div
               key={`${item.id}-${idx}`}
-              className="w-[360px] sm:w-[420px] shrink-0 bg-white rounded-2xl border border-stone-200/90 p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+              className="w-[360px] sm:w-[420px] shrink-0 bg-white rounded-2xl border border-stone-200/90 p-6 flex flex-col justify-between"
             >
               <div className="space-y-4">
                 {/* Header Row */}

@@ -103,7 +103,7 @@ export default function ContactView() {
           <div className="lg:col-span-5 space-y-8">
             
             {/* Info details */}
-            <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm space-y-6">
+            <div className="bg-white p-8 rounded-2xl border border-stone-200 space-y-6">
               <h2 className="font-heading text-lg font-bold text-zinc-900 border-b border-stone-100 pb-3">Kathmandu Headquarters</h2>
               
               <ul className="space-y-4 text-xs sm:text-sm text-zinc-700">
@@ -143,7 +143,7 @@ export default function ContactView() {
             </div>
 
             {/* Interactive Google Map */}
-            <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3">
+            <div className="bg-white p-4 rounded-2xl border border-stone-200 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-heading text-sm font-semibold text-zinc-900">Find Our Office</h3>
                 <a
@@ -156,7 +156,7 @@ export default function ContactView() {
                   <span>&rarr;</span>
                 </a>
               </div>
-              <div className="relative h-64 rounded-xl overflow-hidden border border-stone-200 shadow-xs">
+              <div className="relative h-64 rounded-xl overflow-hidden border border-stone-200">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.0854101316063!2d85.31076392638629!3d27.714649076178347!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18fd69092351%3A0x94dae66556fce46b!2sTridevi%20Marg%2C%20Kathmandu%2044600!5e0!3m2!1sen!2snp!4v1786292099624!5m2!1sen!2snp"
                   width="100%"
@@ -174,7 +174,7 @@ export default function ContactView() {
           </div>
 
           {/* Right Panel: Contact Inquiry Form */}
-          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-stone-200 shadow-sm">
+          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-stone-200">
             
             {submitted ? (
               <div className="py-12 text-center space-y-6 max-w-lg mx-auto animate-fade-in">

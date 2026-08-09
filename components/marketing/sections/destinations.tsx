@@ -20,7 +20,7 @@ export function DestinationsSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {DESTINATIONS.map((dest) => (
             <Link key={dest.id} href="/trekking">
-              <div className="group relative h-96 rounded-2xl overflow-hidden shadow-xs hover:shadow-md cursor-pointer transition-all duration-300 border border-stone-200">
+              <div className="group relative h-96 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 border border-stone-200 hover:border-amber-400/60">
                 <div className="absolute inset-0">
                   <img
                     src={dest.image}

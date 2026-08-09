@@ -76,7 +76,7 @@ export function FeaturedPackages() {
             {packages.map((pkg) => (
               <div
                 key={pkg.id}
-                className="bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden flex flex-col justify-between group hover:shadow-md transition-all"
+                className="bg-white rounded-2xl border border-stone-200 overflow-hidden flex flex-col justify-between group hover:border-amber-400/60 transition-all"
               >
                 <Link href={`/trekking/${pkg.slug}`} className="block">
                   <div className="relative h-56 w-full overflow-hidden bg-stone-100">
@@ -135,7 +135,7 @@ export function FeaturedPackages() {
                       </Link>
 
                       <Link href="/contact">
-                        <button className="bg-gold-500 hover:bg-gold-400 text-slate-950 border border-gold-400 font-bold text-xs px-3.5 py-1.5 rounded-xl transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1">
+                        <button className="bg-amber-700 hover:bg-amber-800 text-white font-semibold text-xs px-3.5 py-1.5 rounded-xl transition-colors cursor-pointer flex items-center gap-1">
                           <span>Book</span>
                           <ArrowRight className="w-3 h-3" />
                         </button>

@@ -14,7 +14,7 @@ export function SiteFooter() {
               <img
                 src="/logo.jpg"
                 alt="AlpineAce Logo"
-                className="h-10 w-10 object-cover rounded-xl border border-stone-200 shadow-xs"
+                className="h-10 w-10 object-cover rounded-xl border border-stone-200"
               />
               <span className="flex flex-col leading-none">
                 <span className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">

@@ -71,28 +71,17 @@ export default function ContactView() {
   };
 
   return (
-    <div className="relative min-h-screen pt-28 pb-20 bg-zinc-950 text-white overflow-hidden">
-      {/* Immersive Himalayan Background Image Overlay */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=1600"
-          alt="Kathmandu and Himalayan panorama"
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center opacity-35"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/80 via-zinc-950/75 to-zinc-950/95" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="pt-28 pb-20 min-h-screen bg-stone-50 text-zinc-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Editorial Title */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-amber-400 text-sm font-medium block">
-            Connect With Us
+          <span className="text-amber-800 text-sm font-medium block">
+            Get in Touch
           </span>
-          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white">
+          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-zinc-900">
             Plan Your Journey
           </h1>
-          <p className="text-stone-300 text-sm max-w-2xl mx-auto font-normal leading-relaxed">
+          <p className="text-zinc-600 text-sm max-w-2xl mx-auto font-normal leading-relaxed">
             Reach out to our local team in Kathmandu to secure permits, reserve lodges, or craft your custom Himalayan itinerary.
           </p>
         </div>
@@ -104,7 +93,7 @@ export default function ContactView() {
           <div className="lg:col-span-5 space-y-8">
             
             {/* Info details */}
-            <div className="bg-white/95 backdrop-blur-md p-8 rounded-2xl border border-stone-200/90 space-y-6">
+            <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-xs space-y-6">
               <h2 className="font-heading text-lg font-bold text-zinc-900 border-b border-stone-100 pb-3">Kathmandu Headquarters</h2>
               
               <ul className="space-y-5 text-xs sm:text-sm text-zinc-700">
@@ -152,7 +141,7 @@ export default function ContactView() {
             </div>
 
             {/* Interactive Google Map */}
-            <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-stone-200/90 space-y-3">
+            <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between px-1">
                 <h3 className="font-heading text-sm font-semibold text-zinc-900">Find Our Office</h3>
                 <a
@@ -183,7 +172,7 @@ export default function ContactView() {
           </div>
 
           {/* Right Panel: Contact Inquiry Form */}
-          <div className="lg:col-span-7 bg-white/95 backdrop-blur-md p-8 sm:p-10 rounded-3xl border border-stone-200/90">
+          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-stone-200 shadow-xs">
             
             {submitted ? (
               <div className="py-12 text-center space-y-6 max-w-lg mx-auto animate-fade-in">

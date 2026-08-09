@@ -140,10 +140,10 @@ export function SiteFooter() {
             &copy; {new Date().getFullYear()} Alpine Ace Trek &amp; Exped Pvt. Ltd. All rights reserved.
           </div>
           <div className="flex flex-wrap justify-center gap-6">
-            <Link href="/contact" className="hover:text-gold-600 transition-colors">
+            <Link href="/privacy" className="hover:text-amber-700 transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/contact" className="hover:text-gold-600 transition-colors">
+            <Link href="/terms" className="hover:text-amber-700 transition-colors">
               Terms &amp; Conditions
             </Link>
           </div>

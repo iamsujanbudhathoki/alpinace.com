@@ -57,8 +57,8 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-xs">
-        <label className="block text-slate-700 font-bold">{label}</label>
-        <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-[11px] font-semibold text-slate-600">
+        <label className="block text-slate-950 font-bold">{label}</label>
+        <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-[11px] font-bold text-slate-900">
           <button
             type="button"
             onClick={() => setMode("file")}
@@ -114,18 +114,18 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
           />
 
           {isUploading ? (
-            <div className="py-3 flex flex-col items-center gap-2 text-slate-600">
+            <div className="py-3 flex flex-col items-center gap-2 text-slate-900">
               <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
               <span className="text-xs font-bold">Uploading file to local server...</span>
             </div>
           ) : (
             <>
-              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center">
                 <UploadCloud className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <span className="text-xs font-bold text-slate-900 block">Click to upload or drag &amp; drop</span>
-                <span className="text-[11px] text-slate-500">PNG, JPG, WEBP up to 10MB</span>
+                <span className="text-xs font-extrabold text-slate-950 block">Click to upload or drag &amp; drop</span>
+                <span className="text-[11px] text-slate-800 font-semibold">PNG, JPG, WEBP up to 10MB</span>
               </div>
             </>
           )}
@@ -133,13 +133,13 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
       ) : (
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <LinkIcon className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <LinkIcon className="w-4 h-4 absolute left-3 top-2.5 text-slate-900" />
             <Input
               type="text"
               placeholder="https://images.unsplash.com/..."
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              className="text-xs bg-slate-50 border-slate-200 pl-9 focus:bg-white"
+              className="text-xs bg-slate-50 border-slate-300 text-slate-950 font-bold pl-9 focus:bg-white"
             />
           </div>
         </div>

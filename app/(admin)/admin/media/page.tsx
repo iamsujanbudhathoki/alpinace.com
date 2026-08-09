@@ -116,7 +116,11 @@ export default function AdminMediaPage() {
       };
       setAssets((prev) => [newAsset, ...prev]);
       setShowUploader(false);
-      toast.success(res.message || `Photo "${file.name}" uploaded successfully!`);
+      if (res.success) {
+        toast.success(res.message || `Photo "${file.name}" uploaded successfully!`);
+      } else {
+        toast.error(res.message || "Failed to upload photo");
+      }
     } catch (err: any) {
       console.error("Media upload error:", err);
       toast.error(err.message || "Failed to upload image to server.");
@@ -155,7 +159,11 @@ export default function AdminMediaPage() {
         description: editDescription,
         altText: editAltText,
       });
-      toast.success(res.message || `Media asset "${editTitle}" updated successfully!`);
+      if (res.success) {
+        toast.success(res.message || `Media asset "${editTitle}" updated successfully!`);
+      } else {
+        toast.error(res.message || "Failed to update media asset");
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to update media asset");
     }
@@ -185,7 +193,11 @@ export default function AdminMediaPage() {
     if (!activeAsset) return;
     try {
       const res = await MediaService.delete(activeAsset.id);
-      toast.success(res.message || `Media asset deleted.`);
+      if (res.success) {
+        toast.success(res.message || `Media asset deleted.`);
+      } else {
+        toast.error(res.message || "Failed to delete media asset");
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete media asset");
     }
@@ -205,10 +217,10 @@ export default function AdminMediaPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight font-heading">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight font-heading">
             Media Library
           </h1>
-          <p className="text-xs text-slate-700 font-semibold">
+          <p className="text-xs text-slate-600 font-normal">
             Manage and organize tour photos, mountain covers, and gallery media
           </p>
         </div>
@@ -239,10 +251,10 @@ export default function AdminMediaPage() {
           ) : (
             <>
               <UploadCloud className="w-8 h-8 text-amber-600 mx-auto mb-2" />
-              <h3 className="text-sm font-extrabold text-slate-900">
+              <h3 className="text-sm font-bold text-slate-900">
                 Drag &amp; Drop Image Files or Click to Browse
               </h3>
-              <p className="text-xs text-slate-700 font-semibold mt-1">
+              <p className="text-xs text-slate-600 font-normal mt-1">
                 Supports PNG, JPG, WebP up to 20MB. Automatically stored in local uploads folder and database.
               </p>
             </>
@@ -257,8 +269,8 @@ export default function AdminMediaPage() {
             <ImageIcon className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">Everest Assets</div>
-            <div className="text-lg font-extrabold text-slate-900">
+            <div className="text-sm font-bold text-slate-900">Everest Assets</div>
+            <div className="text-lg font-bold text-slate-900">
               {assets.filter((a) => a.category === "Everest & Peaks").length}
             </div>
           </div>
@@ -269,8 +281,8 @@ export default function AdminMediaPage() {
             <FolderOpen className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">Annapurna Assets</div>
-            <div className="text-lg font-extrabold text-slate-900">
+            <div className="text-sm font-bold text-slate-900">Annapurna Assets</div>
+            <div className="text-lg font-bold text-slate-900">
               {assets.filter((a) => a.category === "Annapurna & Lakes").length}
             </div>
           </div>
@@ -281,8 +293,8 @@ export default function AdminMediaPage() {
             <Tag className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">Cultural Assets</div>
-            <div className="text-lg font-extrabold text-slate-900">
+            <div className="text-sm font-bold text-slate-900">Cultural Assets</div>
+            <div className="text-lg font-bold text-slate-900">
               {assets.filter((a) => a.category === "Cultural Heritage").length}
             </div>
           </div>
@@ -293,8 +305,8 @@ export default function AdminMediaPage() {
             <Check className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">Helicopter Charters</div>
-            <div className="text-lg font-extrabold text-slate-900">
+            <div className="text-sm font-bold text-slate-900">Helicopter Charters</div>
+            <div className="text-lg font-bold text-slate-900">
               {assets.filter((a) => a.category === "Helicopter Charters").length}
             </div>
           </div>
@@ -305,24 +317,24 @@ export default function AdminMediaPage() {
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-700" />
+            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-500" />
             <input
               type="text"
               placeholder="Search photo asset by title or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-semibold text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-amber-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-500"
             />
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="text-xs font-bold text-slate-800 uppercase tracking-wider whitespace-nowrap">
+            <label className="text-xs font-bold text-slate-800 whitespace-nowrap">
               Category Filter:
             </label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-slate-900 font-bold text-xs rounded-xl px-3.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
+              className="bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
             >
               <option value="All">All Categories</option>
               <option value="Everest & Peaks">Everest &amp; Peaks</option>

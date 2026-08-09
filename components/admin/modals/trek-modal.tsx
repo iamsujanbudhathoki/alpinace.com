@@ -476,15 +476,15 @@ export function TrekFormModal({
             {activeTab === "seo" && (
               <div className="space-y-4">
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                  <span className="font-bold text-slate-800 text-xs block">Search Preview</span>
+                  <span className="font-extrabold text-slate-950 text-xs block">Search Preview</span>
                   <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
-                    <div className="text-xs font-semibold text-emerald-700 truncate">
+                    <div className="text-xs font-bold text-emerald-800 truncate">
                       https://alpineace.com/trekking/{watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "trek-slug"}
                     </div>
-                    <div className="text-sm font-bold text-blue-700 truncate hover:underline cursor-pointer">
+                    <div className="text-sm font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
                       {watchTitle ? `${watchTitle} | Alpine Ace Luxury Trekking` : "Trek Package Title Preview"}
                     </div>
-                    <div className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                    <div className="text-xs text-slate-800 font-semibold line-clamp-2 leading-relaxed">
                       {watchMetaDesc || "Brief summary for search engines..."}
                     </div>
                   </div>
@@ -523,29 +523,29 @@ export function TrekFormModal({
 
             <div className="col-span-2 grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div>
-                <span className="text-slate-700 font-bold block">Region:</span>
-                <span className="text-slate-900 font-extrabold">{initialData?.region}</span>
+                <span className="text-slate-950 font-bold block">Region:</span>
+                <span className="text-slate-950 font-black">{initialData?.region}</span>
               </div>
               <div>
-                <span className="text-slate-700 font-bold block">Duration:</span>
-                <span className="text-slate-900 font-extrabold">{initialData?.durationDays} Days</span>
+                <span className="text-slate-950 font-bold block">Duration:</span>
+                <span className="text-slate-950 font-black">{initialData?.durationDays} Days</span>
               </div>
               <div>
-                <span className="text-slate-700 font-bold block">Price:</span>
-                <span className="text-slate-900 font-extrabold">${initialData?.priceUSD.toLocaleString()} USD</span>
+                <span className="text-slate-950 font-bold block">Price:</span>
+                <span className="text-slate-950 font-black">${initialData?.priceUSD.toLocaleString()} USD</span>
               </div>
               <div>
-                <span className="text-slate-700 font-bold block">Status:</span>
+                <span className="text-slate-950 font-bold block">Status:</span>
                 <AdminStatusBadge status={initialData?.status || "Active"} />
               </div>
             </div>
           </div>
 
           <div className="space-y-1">
-            <span className="font-bold text-slate-800 block">Required Permits:</span>
+            <span className="font-extrabold text-slate-950 block">Required Permits:</span>
             <div className="flex flex-wrap gap-1.5">
               {initialData?.permitsRequired.map((p, i) => (
-                <span key={i} className="bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-slate-800 font-semibold">
+                <span key={i} className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-slate-950 font-bold">
                   {p}
                 </span>
               ))}
@@ -553,8 +553,8 @@ export function TrekFormModal({
           </div>
 
           <div className="space-y-1">
-            <span className="font-bold text-slate-800 block">Short Description:</span>
-            <p className="text-slate-700 leading-relaxed font-normal bg-stone-50 p-3 rounded-lg border border-slate-200">
+            <span className="font-extrabold text-slate-950 block">Short Description:</span>
+            <p className="text-slate-950 leading-relaxed font-semibold bg-stone-50 p-3 rounded-lg border border-slate-200">
               {initialData?.shortDesc}
             </p>
           </div>

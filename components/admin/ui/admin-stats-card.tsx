@@ -24,13 +24,13 @@ export function AdminStatsCard({
   return (
     <Card className="p-5 bg-white border-slate-200 shadow-xs space-y-3 relative overflow-hidden group hover:border-slate-300 transition-all">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-700">{label}</span>
+        <span className="text-sm font-bold text-slate-900">{label}</span>
         <div className={`w-9 h-9 rounded-xl border flex items-center justify-center ${iconColorClass}`}>
           <Icon className="w-5 h-5" />
         </div>
       </div>
       <div>
-        <div className="text-2xl font-extrabold text-slate-900">{value}</div>
+        <div className="text-2xl font-bold text-slate-900">{value}</div>
         {trendText && (
           <div
             className={`text-xs font-bold mt-1 ${

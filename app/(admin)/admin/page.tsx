@@ -75,7 +75,7 @@ export default function AdminDashboardPage() {
         <Link href="/admin/treks">
           <Button
             variant="outline"
-            className="bg-white text-slate-700 font-semibold border-slate-200"
+            className="bg-white text-slate-950 font-bold border-slate-300"
           >
             Manage Treks
           </Button>
@@ -134,7 +134,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-base font-bold text-slate-900">Recent Bookings</h2>
-                <p className="text-xs text-slate-600 font-medium">Latest guest reservations and inquiries</p>
+                <p className="text-xs text-slate-600 font-normal">Latest guest reservations and inquiries</p>
               </div>
               <Link
                 href="/admin/bookings"
@@ -163,7 +163,7 @@ export default function AdminDashboardPage() {
                         <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
                           {bkg.guestName}
                         </div>
-                        <div className="text-xs text-slate-700 font-semibold">{bkg.reference} • {bkg.country}</div>
+                        <div className="text-xs text-slate-600 font-normal">{bkg.reference} • {bkg.country}</div>
                       </AdminTableCell>
                       <AdminTableCell className="max-w-[180px] truncate">
                         {bkg.packageName}
@@ -191,7 +191,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-base text-slate-900">Top Expeditions</h3>
-                <p className="text-xs text-slate-700 font-semibold">Active mountain packages</p>
+                <p className="text-xs text-slate-600 font-normal">Active mountain packages</p>
               </div>
               <Link href="/admin/expeditions" className="text-xs font-semibold text-slate-900 hover:text-amber-600 transition-colors">
                 View All
@@ -206,7 +206,7 @@ export default function AdminDashboardPage() {
                 >
                   <div>
                     <div className="font-bold text-slate-900 line-clamp-1">{pkg.title}</div>
-                    <div className="text-xs text-slate-700 font-semibold">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
+                    <div className="text-xs text-slate-600 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
                   </div>
                   <span className="font-bold text-slate-900 shrink-0">${pkg.priceUSD}</span>
                 </div>

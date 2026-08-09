@@ -296,30 +296,30 @@ export function BookingFormModal({
         <div className="space-y-5 py-2 text-xs">
           <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <div className="space-y-1">
-              <span className="text-slate-700 font-bold block">Lead Guest:</span>
-              <div className="font-extrabold text-slate-900 text-sm">{initialData?.guestName}</div>
-              <div className="flex items-center gap-1.5 text-slate-700">
+              <span className="text-slate-500 font-semibold block">Lead Guest</span>
+              <div className="font-semibold text-slate-900 text-sm">{initialData?.guestName}</div>
+              <div className="flex items-center gap-1.5 text-slate-700 font-medium">
                 <Mail className="w-3.5 h-3.5 text-amber-600" />
                 <span>{initialData?.guestEmail}</span>
               </div>
-              <div className="flex items-center gap-1.5 text-slate-700">
+              <div className="flex items-center gap-1.5 text-slate-700 font-medium">
                 <Phone className="w-3.5 h-3.5 text-amber-600" />
                 <span>{initialData?.guestPhone}</span>
               </div>
-              <div className="flex items-center gap-1.5 text-slate-700">
+              <div className="flex items-center gap-1.5 text-slate-700 font-medium">
                 <Globe className="w-3.5 h-3.5 text-amber-600" />
                 <span>{initialData?.country}</span>
               </div>
             </div>
 
             <div className="space-y-1">
-              <span className="text-slate-700 font-bold block">Package Specs:</span>
-              <div className="font-bold text-slate-900">{initialData?.packageName}</div>
-              <div className="flex items-center gap-1 text-slate-700 font-semibold">
+              <span className="text-slate-500 font-semibold block">Package Specs</span>
+              <div className="font-semibold text-slate-900">{initialData?.packageName}</div>
+              <div className="flex items-center gap-1 text-slate-700 font-medium">
                 <Calendar className="w-3.5 h-3.5 text-amber-600" />
-                <span>{initialData?.startDate} to {initialData?.endDate}</span>
+                <span>{initialData?.startDate} → {initialData?.endDate}</span>
               </div>
-              <div className="font-extrabold text-slate-900 mt-1">
+              <div className="font-medium text-slate-700 mt-1">
                 Group: {initialData?.groupSize} Guests &bull; ${initialData?.totalAmountUSD.toLocaleString()} USD
               </div>
             </div>
@@ -327,23 +327,23 @@ export function BookingFormModal({
 
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
-              <span className="text-slate-700 font-bold block">Payment Status:</span>
-              <Badge variant="outline" className="font-bold text-slate-900 bg-white">
+              <span className="text-slate-500 font-semibold block">Payment Status</span>
+              <Badge variant="outline" className="font-semibold text-slate-800 bg-white">
                 {initialData?.paymentStatus}
               </Badge>
             </div>
 
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
-              <span className="text-slate-700 font-bold block">Permit Status:</span>
-              <div className="flex items-center gap-1 font-bold text-slate-900">
+              <span className="text-slate-500 font-semibold block">Permit Status</span>
+              <div className="flex items-center gap-1 font-medium text-slate-800">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span>{initialData?.permitStatus}</span>
               </div>
             </div>
 
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
-              <span className="text-slate-700 font-bold block">Assigned Sherpa:</span>
-              <div className="font-bold text-slate-900">
+              <span className="text-slate-500 font-semibold block">Assigned Sherpa</span>
+              <div className="font-medium text-slate-800">
                 {initialData?.assignedGuide || "Unassigned"}
               </div>
             </div>
@@ -351,7 +351,7 @@ export function BookingFormModal({
 
           {initialData?.specialRequests && (
             <div className="space-y-1">
-              <span className="font-bold text-slate-800 block">Special Requests &amp; Notes:</span>
+              <span className="font-semibold text-slate-700 block">Special Requests &amp; Notes</span>
               <p className="text-slate-700 font-normal bg-amber-50/60 border border-amber-200 p-3 rounded-lg leading-relaxed">
                 {initialData.specialRequests}
               </p>

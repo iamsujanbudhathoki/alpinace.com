@@ -14,11 +14,11 @@ export function AdminPageHeader({
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
+        <h1 className="text-xl font-bold tracking-tight text-slate-900">
           {title}
         </h1>
         {description && (
-          <p className="text-xs text-slate-600 mt-1 font-medium">
+          <p className="text-xs text-slate-600 mt-1 font-normal">
             {description}
           </p>
         )}

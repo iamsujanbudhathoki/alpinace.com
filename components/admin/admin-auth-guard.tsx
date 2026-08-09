@@ -28,7 +28,7 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
         <div className="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center shadow-md animate-bounce">
           <Mountain className="w-6 h-6" />
         </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
           <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
           <span>Verifying AlpineAce Credentials...</span>
         </div>

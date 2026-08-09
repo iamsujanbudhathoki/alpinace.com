@@ -398,15 +398,15 @@ export function ExpeditionFormModal({
             {activeTab === "seo" && (
               <div className="space-y-4">
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                  <span className="font-bold text-slate-800 text-xs block">Google Search Preview Snippet</span>
+                  <span className="font-extrabold text-slate-950 text-xs block">Google Search Preview Snippet</span>
                   <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
-                    <div className="text-xs font-semibold text-emerald-700 truncate">
+                    <div className="text-xs font-bold text-emerald-800 truncate">
                       https://alpineace.com/expeditions/{watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "peak-slug"}
                     </div>
-                    <div className="text-sm font-bold text-blue-700 truncate hover:underline cursor-pointer">
+                    <div className="text-sm font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
                       {watchTitle ? `${watchTitle} | Alpine Ace Expeditions` : "Expedition Peak Title Preview"}
                     </div>
-                    <div className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                    <div className="text-xs text-slate-800 font-semibold line-clamp-2 leading-relaxed">
                       {watchMetaDesc || "Configure meta description below to preview how search engine crawlers index this peak climbing expedition."}
                     </div>
                   </div>
@@ -439,28 +439,28 @@ export function ExpeditionFormModal({
         <div className="space-y-4 py-2 text-xs">
           <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <div>
-              <span className="text-slate-700 font-bold block">Summit Elevation:</span>
-              <span className="text-slate-900 font-extrabold">{initialData?.maxAltitudeMeters.toLocaleString()}m</span>
+              <span className="text-slate-950 font-bold block">Summit Elevation:</span>
+              <span className="text-slate-950 font-black">{initialData?.maxAltitudeMeters.toLocaleString()}m</span>
             </div>
             <div>
-              <span className="text-slate-700 font-bold block">Duration:</span>
-              <span className="text-slate-900 font-extrabold">{initialData?.durationDays} Days</span>
+              <span className="text-slate-950 font-bold block">Duration:</span>
+              <span className="text-slate-950 font-black">{initialData?.durationDays} Days</span>
             </div>
             <div>
-              <span className="text-slate-700 font-bold block">Price:</span>
-              <span className="text-slate-900 font-extrabold">${initialData?.priceUSD.toLocaleString()} USD</span>
+              <span className="text-slate-950 font-bold block">Price:</span>
+              <span className="text-slate-950 font-black">${initialData?.priceUSD.toLocaleString()} USD</span>
             </div>
             <div>
-              <span className="text-slate-700 font-bold block">Status:</span>
+              <span className="text-slate-950 font-bold block">Status:</span>
               <AdminStatusBadge status={initialData?.status || "Active"} />
             </div>
           </div>
 
           <div className="space-y-1">
-            <span className="font-bold text-slate-800 block">Required Permits:</span>
+            <span className="font-extrabold text-slate-950 block">Required Permits:</span>
             <div className="flex flex-wrap gap-1.5">
               {initialData?.permitsRequired.map((p, i) => (
-                <span key={i} className="bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-slate-800 font-semibold">
+                <span key={i} className="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-slate-950 font-bold">
                   {p}
                 </span>
               ))}

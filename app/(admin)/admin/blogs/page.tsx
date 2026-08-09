@@ -54,7 +54,11 @@ export default function AdminBlogsPage() {
         excerpt: "New article excerpt...",
       });
       setArticles((prev) => [res.data, ...prev]);
-      toast.success(res.message);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to create blog article");
     }
@@ -65,7 +69,11 @@ export default function AdminBlogsPage() {
     try {
       const res = await BlogService.delete(id);
       setArticles((prev) => prev.filter((a) => a.id !== id));
-      toast.success(res.message);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete blog article");
     }
@@ -123,32 +131,32 @@ export default function AdminBlogsPage() {
                       <FileText className="w-4 h-4 text-amber-600 shrink-0" />
                       <span>{art.title}</span>
                     </div>
-                    <div className="text-xs text-slate-700 mt-0.5 font-semibold">
+                    <div className="text-xs text-slate-600 mt-0.5 font-normal">
                       Read time: {art.readTime || "5 min read"}
                     </div>
                   </AdminTableCell>
 
-                  <AdminTableCell className="font-semibold text-slate-800">
+                  <AdminTableCell className="font-medium text-slate-800">
                     {art.category}
                   </AdminTableCell>
 
-                  <AdminTableCell className="font-semibold text-slate-800">
+                  <AdminTableCell className="font-medium text-slate-800">
                     <div className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-slate-700" />
+                      <User className="w-3.5 h-3.5 text-slate-600" />
                       <span>{art.author}</span>
                     </div>
                   </AdminTableCell>
 
-                  <AdminTableCell className="font-semibold text-slate-800">
+                  <AdminTableCell className="font-medium text-slate-800">
                     <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-slate-700" />
+                      <Calendar className="w-3.5 h-3.5 text-slate-600" />
                       <span>{art.publishedDate || "2026-08-01"}</span>
                     </div>
                   </AdminTableCell>
 
-                  <AdminTableCell className="font-bold text-slate-900">
+                  <AdminTableCell className="font-medium text-slate-800">
                     <div className="flex items-center gap-1">
-                      <Eye className="w-3.5 h-3.5 text-slate-700" />
+                      <Eye className="w-3.5 h-3.5 text-slate-600" />
                       <span>{(art.views || 0).toLocaleString()}</span>
                     </div>
                   </AdminTableCell>

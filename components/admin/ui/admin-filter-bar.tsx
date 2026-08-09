@@ -19,13 +19,13 @@ export function AdminFilterBar({
   return (
     <Card className="p-4 bg-white border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
       <div className="relative w-full md:w-80">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-700" />
+        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
         <Input
           type="text"
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={searchPlaceholder}
-          className="pl-9 text-xs font-semibold text-slate-900 placeholder:text-slate-500 bg-slate-50 border-slate-200 focus:bg-white"
+          className="pl-9 text-xs font-medium text-slate-900 placeholder:text-slate-400 bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 rounded-xl"
         />
       </div>
 

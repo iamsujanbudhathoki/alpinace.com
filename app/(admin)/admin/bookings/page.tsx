@@ -5,6 +5,7 @@ import { Download, Plus } from "lucide-react";
 import { Booking } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { BookingService } from "@/lib/services/admin-service";
+import { ApiResponse } from "@/lib/services/api-client";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -70,16 +71,24 @@ export default function AdminBookingsPage() {
   const handleSaveBooking = async (savedBooking: Booking) => {
     try {
       const exists = bookings.some((b) => b.id === savedBooking.id);
+      let res: ApiResponse<Booking>;
       if (exists) {
-        const res = await BookingService.update(savedBooking.id, savedBooking as any);
-        setBookings(bookings.map((b) => (b.id === res.data.id ? res.data : b)));
-        toast.success(res.message);
+        res = await BookingService.update(savedBooking.id, savedBooking as any);
+        if (res.success) {
+          setBookings(bookings.map((b) => (b.id === res.data.id ? res.data : b)));
+        }
       } else {
-        const res = await BookingService.create(savedBooking as any);
-        setBookings([res.data, ...bookings]);
-        toast.success(res.message);
+        res = await BookingService.create(savedBooking as any);
+        if (res.success) {
+          setBookings([res.data, ...bookings]);
+        }
       }
-      setIsFormOpen(false);
+      if (res.success) {
+        toast.success(res.message);
+        setIsFormOpen(false);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to save booking");
     }
@@ -90,7 +99,11 @@ export default function AdminBookingsPage() {
       const res = await BookingService.delete(id);
       setBookings(bookings.filter((b) => b.id !== id));
       setDeletingBooking(null);
-      toast.success(res.message);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete booking");
     }
@@ -174,11 +187,11 @@ export default function AdminBookingsPage() {
         searchPlaceholder="Filter guest, ref, or package..."
       >
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-700 font-bold">Category:</span>
+          <span className="text-slate-700 font-semibold">Category:</span>
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="bg-transparent text-slate-900 font-bold focus:outline-none cursor-pointer"
+            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="All">All Categories</option>
             <option value="Trekking">Trekking</option>
@@ -188,11 +201,11 @@ export default function AdminBookingsPage() {
         </div>
 
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-700 font-bold">Status:</span>
+          <span className="text-slate-700 font-semibold">Status:</span>
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-transparent text-slate-900 font-bold focus:outline-none cursor-pointer"
+            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="All">All Statuses</option>
             <option value="Confirmed">Confirmed</option>
@@ -225,27 +238,27 @@ export default function AdminBookingsPage() {
                   <AdminTableCell>
                     <div className="text-xs font-bold text-amber-600">{bkg.reference}</div>
                     <div className="font-bold text-slate-900">{bkg.guestName}</div>
-                    <div className="text-xs text-slate-700 font-medium">{bkg.country}</div>
+                    <div className="text-xs text-slate-600 font-normal">{bkg.country}</div>
                   </AdminTableCell>
                   <AdminTableCell className="max-w-xs">
-                    <div className="font-bold text-slate-900 truncate" title={bkg.packageName}>
+                    <div className="font-semibold text-slate-900 truncate" title={bkg.packageName}>
                       {bkg.packageName}
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-semibold mt-0.5 border-slate-200 text-slate-700">
+                    <Badge variant="outline" className="text-[10px] font-medium mt-0.5 border-slate-200 text-slate-700">
                       {bkg.packageType}
                     </Badge>
                   </AdminTableCell>
                   <AdminTableCell>
-                    <div className="font-semibold">{bkg.startDate} &rarr; {bkg.endDate}</div>
-                    <div className="text-xs text-slate-700 font-bold">{bkg.groupSize} {bkg.groupSize === 1 ? "Guest" : "Guests"}</div>
+                    <div className="font-medium text-slate-900">{bkg.startDate} &rarr; {bkg.endDate}</div>
+                    <div className="text-xs text-slate-600 font-normal">{bkg.groupSize} {bkg.groupSize === 1 ? "Guest" : "Guests"}</div>
                   </AdminTableCell>
-                  <AdminTableCell className="font-extrabold text-slate-900 text-sm">
+                  <AdminTableCell className="font-bold text-slate-900 text-sm">
                     ${bkg.totalAmountUSD.toLocaleString()} USD
                   </AdminTableCell>
                   <AdminTableCell>
                     <Badge
                       variant="secondary"
-                      className={`text-xs font-bold ${
+                      className={`text-xs font-semibold ${
                         bkg.paymentStatus === "Paid"
                           ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
                           : bkg.paymentStatus === "Deposit Paid"

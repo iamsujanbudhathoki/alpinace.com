@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { AdminSearchModal } from "@/components/admin/modals/admin-search-modal";
+import { NotificationService, AppNotification } from "@/lib/services/admin-service";
+import { formatDate } from "@/lib/utils";
 import {
   Search,
   Bell,
@@ -13,6 +16,7 @@ import {
   Settings,
   ChevronDown,
   Check,
+  Inbox,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -42,10 +46,58 @@ interface AdminHeaderProps {
 }
 
 export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
-  const [unreadCount, setUnreadCount] = useState(2);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [totalNotifications, setTotalNotifications] = useState(0);
+  const [notifOffset, setNotifOffset] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const PAGE_SIZE = 10;
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { user, logout } = useAdminAuth();
   const router = useRouter();
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const hasMore = notifications.length < totalNotifications;
+
+  const fetchNotifications = useCallback(async (reset = false) => {
+    const offset = reset ? 0 : 0; // always load from 0 on initial fetch
+    const res = await NotificationService.getPaged(PAGE_SIZE, offset);
+    setNotifications(res.items);
+    setTotalNotifications(res.total);
+    setNotifOffset(res.items.length);
+  }, []);
+
+  const handleLoadMore = async () => {
+    setIsLoadingMore(true);
+    const res = await NotificationService.getPaged(PAGE_SIZE, notifOffset);
+    setNotifications((prev) => {
+      const existingIds = new Set(prev.map((n) => n.id));
+      const newItems = res.items.filter((n) => !existingIds.has(n.id));
+      return [...prev, ...newItems];
+    });
+    setTotalNotifications(res.total);
+    setNotifOffset((prev) => prev + res.items.length);
+    setIsLoadingMore(false);
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    // Refresh every 60 seconds
+    const interval = setInterval(() => fetchNotifications(), 60_000);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
+  // Keyboard Shortcut: Cmd+K or Ctrl+K to open global search modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setIsSearchModalOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleConfirmLogout = () => {
     logout();
@@ -53,8 +105,23 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
     router.push("/admin/login");
   };
 
-  const handleMarkAllRead = () => {
-    setUnreadCount(0);
+  const handleMarkAllRead = async () => {
+    await NotificationService.markAllRead();
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  };
+
+  const handleMarkRead = async (id: string) => {
+    await NotificationService.markRead(id);
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+    );
+  };
+
+  const typeColor: Record<string, string> = {
+    inquiry: "bg-amber-500",
+    booking: "bg-emerald-500",
+    quote: "bg-blue-500",
+    system: "bg-slate-400",
   };
 
   const userInitials = user?.name
@@ -62,9 +129,9 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
     : "SB";
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-3 sticky top-0 z-30 shadow-xs">
-      <div className="flex items-center gap-3 flex-1 max-w-md">
-        {/* Mobile Hamburger Toggle Button */}
+    <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-4 sticky top-0 z-30 shadow-xs">
+      {/* Left Area: Mobile Toggle */}
+      <div className="flex items-center gap-3">
         {onToggleMobileSidebar && (
           <button
             onClick={onToggleMobileSidebar}
@@ -74,23 +141,30 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
             <Menu className="w-5 h-5" />
           </button>
         )}
+      </div>
 
-        {/* Search Input */}
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-700" />
-          <input
-            type="text"
-            placeholder="Search guest, trip ID, guide..."
-            className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-500 text-xs rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:bg-white focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all font-medium"
-          />
-        </div>
+      {/* Center Area: Centered Search Command Trigger */}
+      <div className="flex-1 max-w-md mx-auto flex items-center justify-center">
+        <button
+          type="button"
+          onClick={() => setIsSearchModalOpen(true)}
+          className="w-full bg-slate-50 hover:bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-700 text-xs rounded-xl pl-3.5 pr-3 py-2 flex items-center justify-between transition-all cursor-pointer font-medium shadow-2xs group"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Search className="w-4 h-4 text-slate-400 group-hover:text-amber-600 transition-colors shrink-0" />
+            <span className="truncate">Search guest, trip ID, guide...</span>
+          </div>
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-400 border border-slate-200 bg-white px-1.5 py-0.5 rounded-md shadow-2xs shrink-0 select-none">
+            ⌘K
+          </kbd>
+        </button>
       </div>
 
       {/* Right Side Widgets */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Notifications Popover */}
         <Popover>
-          <PopoverTrigger className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 transition-colors relative cursor-pointer focus:outline-none">
+          <PopoverTrigger className="p-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 hover:text-slate-950 hover:border-slate-400 transition-colors relative cursor-pointer focus:outline-none">
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
               <span className="w-2 h-2 rounded-full bg-amber-500 absolute top-1.5 right-1.5 ring-2 ring-white" />
@@ -122,42 +196,45 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
               )}
             </div>
 
-            {/* Notification List Items */}
-            <div className="divide-y divide-slate-100 text-xs">
-              <div className={`p-3.5 hover:bg-slate-50/80 transition-colors flex gap-3 ${unreadCount > 0 ? "bg-amber-50/20" : ""}`}>
-                <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0 mt-1.5" />
-                <div className="space-y-1 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900">New Booking Received</span>
-                    <span className="text-xs text-slate-700 font-bold">10m ago</span>
-                  </div>
-                  <p className="text-slate-800 leading-relaxed font-semibold">
-                    Marcus Vance submitted reservation for Everest Luxury Helicopter Trek.
-                  </p>
+            {/* Notification List */}
+            <div className="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto">
+              {notifications.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-10 text-slate-400">
+                  <Inbox className="w-6 h-6" />
+                  <span className="font-semibold">No notifications yet</span>
                 </div>
-              </div>
-
-              <div className="p-3.5 hover:bg-slate-50/80 transition-colors flex gap-3">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
-                <div className="space-y-1 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900">TIMS Permit Issued</span>
-                    <span className="text-xs text-slate-700 font-bold">1h ago</span>
+              ) : (
+                notifications.map((notif) => (
+                  <div
+                    key={notif.id}
+                    onClick={() => !notif.isRead && handleMarkRead(notif.id)}
+                    className={`p-3.5 hover:bg-slate-50/80 transition-colors flex gap-3 cursor-pointer ${
+                      !notif.isRead ? "bg-amber-50/30" : ""
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${typeColor[notif.type] ?? "bg-slate-400"}`} />
+                    <div className="space-y-0.5 flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-slate-900 truncate">{notif.title}</span>
+                        <span className="text-xs text-slate-500 font-semibold shrink-0">{formatDate(notif.createdAt)}</span>
+                      </div>
+                      <p className="text-slate-700 leading-relaxed font-medium">{notif.body}</p>
+                    </div>
                   </div>
-                  <p className="text-slate-800 leading-relaxed font-semibold">
-                    Sagarmatha permit clearance generated for Ama Dablam team.
-                  </p>
-                </div>
-              </div>
+                ))
+              )}
             </div>
 
-            {/* Popover Footer */}
-            <Link
-              href="/admin/bookings"
-              className="p-2.5 text-center text-xs font-bold text-slate-900 hover:bg-slate-100/80 bg-slate-50 border-t border-slate-200 cursor-pointer block transition-colors"
-            >
-              View all activity →
-            </Link>
+            {/* Popover Footer — Show More */}
+            {hasMore && (
+              <button
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="w-full p-2.5 text-center text-xs font-bold text-slate-800 hover:bg-slate-100/80 bg-slate-50 border-t border-slate-200 cursor-pointer transition-colors disabled:opacity-50"
+              >
+                {isLoadingMore ? "Loading..." : `Show more (${totalNotifications - notifications.length} remaining)`}
+              </button>
+            )}
           </PopoverContent>
         </Popover>
 
@@ -169,14 +246,14 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
                 {userInitials}
               </div>
               <div className="hidden md:block text-left">
-                <div className="text-xs font-bold text-slate-900 truncate leading-none">
+                <div className="text-xs font-bold text-slate-950 truncate leading-none">
                   {user?.name}
                 </div>
-                <div className="text-xs text-slate-700 truncate font-bold mt-0.5">
+                <div className="text-xs text-slate-800 truncate font-bold mt-0.5">
                   {user?.role}
                 </div>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-700 hidden md:block" />
+              <ChevronDown className="w-3.5 h-3.5 text-slate-900 hidden md:block" />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200 shadow-xl rounded-xl p-1 z-50">
@@ -249,6 +326,11 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
           </DialogContent>
         </Dialog>
       )}
+      {/* Global Command Search Modal */}
+      <AdminSearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+      />
     </header>
   );
 }

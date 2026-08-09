@@ -160,26 +160,26 @@ export function CategoryFormModal({
         <div className="space-y-4 py-2 text-xs">
           <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <div>
-              <span className="text-slate-700 font-bold block">Module Domain:</span>
-              <span className="text-slate-900 font-extrabold">{initialData?.type}</span>
+              <span className="text-slate-950 font-bold block">Module Domain:</span>
+              <span className="text-slate-950 font-black">{initialData?.type}</span>
             </div>
             <div>
-              <span className="text-slate-700 font-bold block">Associated Items:</span>
-              <span className="text-slate-900 font-extrabold">{initialData?.itemCount} Items</span>
+              <span className="text-slate-950 font-bold block">Associated Items:</span>
+              <span className="text-slate-950 font-black">{initialData?.itemCount} Items</span>
             </div>
             <div>
-              <span className="text-slate-700 font-bold block">Slug:</span>
-              <span className="text-slate-700 font-bold">/{initialData?.slug}</span>
+              <span className="text-slate-950 font-bold block">Slug:</span>
+              <span className="text-slate-900 font-bold">/{initialData?.slug}</span>
             </div>
             <div>
-              <span className="text-slate-700 font-bold block">Status:</span>
+              <span className="text-slate-950 font-bold block">Status:</span>
               <AdminStatusBadge status={initialData?.status || "Active"} />
             </div>
           </div>
 
           <div className="space-y-1">
-            <span className="font-bold text-slate-800 block">Description:</span>
-            <p className="text-slate-700 leading-relaxed font-normal bg-stone-50 p-3 rounded-lg border border-slate-200">
+            <span className="font-extrabold text-slate-950 block">Description:</span>
+            <p className="text-slate-950 leading-relaxed font-semibold bg-stone-50 p-3 rounded-lg border border-slate-200">
               {initialData?.description}
             </p>
           </div>

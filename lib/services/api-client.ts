@@ -41,17 +41,10 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response Interceptor: Typed unwrapping & error extraction
+// Response Interceptor: Error extraction & status verification
 axiosInstance.interceptors.response.use(
   (response) => {
-    const apiResponse = response.data as ApiResponse<any>;
-    if (apiResponse && typeof apiResponse.success === 'boolean') {
-      if (!apiResponse.success) {
-        throw new Error(apiResponse.message || 'API request failed');
-      }
-      return apiResponse as any;
-    }
-    return response.data;
+    return response;
   },
   (error: AxiosError<ApiResponse<null>>) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
@@ -70,14 +63,35 @@ export async function apiRequest<T>(
   const { method = 'GET', body, params } = options;
   const url = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-  const response = await axiosInstance.request<ApiResponse<T>>({
+  const response = await axiosInstance.request<any>({
     url,
     method,
     data: body,
     params,
   });
 
-  return (response.data as unknown as ApiResponse<T>) || response;
+  const resData = response.data;
+
+  if (resData && typeof resData === 'object' && !Array.isArray(resData)) {
+    const isSuccess = resData.success !== undefined
+      ? Boolean(resData.success)
+      : response.status >= 200 && response.status < 300;
+
+    const msg = resData.message || (isSuccess ? "Operation completed successfully" : "An error occurred");
+    const payload = resData.data !== undefined ? resData.data : resData;
+
+    return {
+      success: isSuccess,
+      message: msg,
+      data: payload as T,
+    };
+  }
+
+  return {
+    success: response.status >= 200 && response.status < 300,
+    message: "Operation completed successfully",
+    data: resData as T,
+  };
 }
 
 export const apiClient = {

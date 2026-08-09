@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Eye, Mail, MessageSquare } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import { Inquiry } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { InquiryService } from "@/lib/services/admin-service";
@@ -47,29 +48,65 @@ export default function AdminInquiriesPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleUpdateStatus = async (id: string, newStatus: Inquiry["status"]) => {
+  const handleUpdateStatus = async (id: string, newStatus: Inquiry["status"]): Promise<boolean> => {
     try {
       const res = await InquiryService.update(id, { status: newStatus });
-      setInquiries((prev) =>
-        prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq))
-      );
-      if (activeInquiry && activeInquiry.id === id) {
-        setActiveInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+      if (res.success) {
+        setInquiries((prev) =>
+          prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq))
+        );
+        if (activeInquiry && activeInquiry.id === id) {
+          setActiveInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+        }
+        toast.success(res.message);
+        return true;
+      } else {
+        toast.error(res.message);
+        return false;
       }
-      toast.success(res.message);
     } catch (err: any) {
       toast.error(err.message || "Failed to update inquiry status");
+      return false;
     }
   };
 
-  const handleSaveInquiry = async (savedInquiry: Inquiry) => {
+  const handleSendQuote = async (id: string, message: string, status: Inquiry["status"]): Promise<boolean> => {
+    try {
+      const res = await InquiryService.sendQuote(id, { message, status });
+      if (res.success) {
+        setInquiries((prev) =>
+          prev.map((inq) => (inq.id === id ? { ...inq, status } : inq))
+        );
+        if (activeInquiry && activeInquiry.id === id) {
+          setActiveInquiry((prev) => (prev ? { ...prev, status } : null));
+        }
+        toast.success(message.trim() ? (res.message || "Custom quote email dispatched successfully!") : (res.message || "Lead status updated successfully!"));
+        return true;
+      } else {
+        toast.error(res.message || "Failed to process quote dispatch.");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to process quote dispatch.");
+      return false;
+    }
+  };
+
+  const handleSaveInquiry = async (savedInquiry: Inquiry): Promise<boolean> => {
     try {
       const res = await InquiryService.create(savedInquiry as any);
-      setInquiries([res.data, ...inquiries]);
-      setIsFormOpen(false);
-      toast.success(res.message);
+      if (res.success) {
+        setInquiries([res.data, ...inquiries]);
+        setIsFormOpen(false);
+        toast.success(res.message);
+        return true;
+      } else {
+        toast.error(res.message);
+        return false;
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to log inquiry");
+      return false;
     }
   };
 
@@ -78,7 +115,11 @@ export default function AdminInquiriesPage() {
       const res = await InquiryService.delete(id);
       setInquiries(inquiries.filter((inq) => inq.id !== id));
       setDeletingInquiry(null);
-      toast.success(res.message);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete inquiry");
     }
@@ -139,19 +180,19 @@ export default function AdminInquiriesPage() {
                   <div className="font-bold text-slate-900 text-base leading-snug">
                     {inq.guestName}
                   </div>
-                  <div className="text-xs text-slate-700 font-medium">
-                    {inq.country} &bull; {inq.createdAt}
+                  <div className="text-xs text-slate-600 font-normal">
+                    {inq.country} &bull; {formatDate(inq.createdAt)}
                   </div>
                 </div>
                 <AdminStatusBadge status={inq.status} />
               </div>
 
               <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1.5 text-xs">
-                <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                <div className="font-semibold text-slate-900 flex items-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span className="truncate">{inq.interestedTrip}</span>
                 </div>
-                <div className="flex items-center justify-between text-slate-800 font-semibold text-xs">
+                <div className="flex items-center justify-between text-slate-700 font-medium text-xs">
                   <span>Dates: {inq.travelDates}</span>
                   <span>Group: {inq.groupSize} Pax</span>
                 </div>
@@ -165,7 +206,7 @@ export default function AdminInquiriesPage() {
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs text-slate-700">
                 <Mail className="w-3.5 h-3.5 text-amber-600" />
-                <span className="truncate max-w-[120px] font-semibold">{inq.email}</span>
+                <span className="truncate max-w-[120px] font-medium">{inq.email}</span>
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -204,6 +245,7 @@ export default function AdminInquiriesPage() {
         onClose={() => setActiveInquiry(null)}
         inquiry={activeInquiry}
         onUpdateStatus={handleUpdateStatus}
+        onSendQuote={handleSendQuote}
       />
 
       <DeleteInquiryModal

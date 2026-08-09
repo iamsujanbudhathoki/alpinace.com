@@ -47,7 +47,11 @@ export default function AdminSettingsPage() {
       });
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
-      toast.success(res.message);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       console.error("Failed to save settings:", err);
       toast.error(err.message || "Failed to save agency settings");
@@ -79,39 +83,39 @@ export default function AdminSettingsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Company Registered Name</label>
+              <label className="block text-slate-700 font-bold mb-1">Company Registered Name</label>
               <Input
                 type="text"
                 value={siteName}
                 onChange={(e) => setSiteName(e.target.value)}
-                className="text-xs bg-slate-50 border-slate-200 focus:bg-white"
+                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white"
               />
             </div>
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Operations Contact Email</label>
+              <label className="block text-slate-700 font-bold mb-1">Operations Contact Email</label>
               <Input
                 type="email"
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
-                className="text-xs bg-slate-50 border-slate-200 focus:bg-white"
+                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white"
               />
             </div>
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Operations Contact Phone</label>
+              <label className="block text-slate-700 font-bold mb-1">Operations Contact Phone</label>
               <Input
                 type="text"
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
-                className="text-xs bg-slate-50 border-slate-200 focus:bg-white"
+                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white"
               />
             </div>
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Physical Address</label>
+              <label className="block text-slate-700 font-bold mb-1">Physical Address</label>
               <Input
                 type="text"
                 value={companyAddress}
                 onChange={(e) => setCompanyAddress(e.target.value)}
-                className="text-xs bg-slate-50 border-slate-200 focus:bg-white"
+                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white"
               />
             </div>
           </div>

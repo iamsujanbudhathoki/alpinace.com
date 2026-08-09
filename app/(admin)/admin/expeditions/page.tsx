@@ -5,6 +5,7 @@ import { Plus, Mountain, TrendingUp } from "lucide-react";
 import { PackageItem } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { ExpeditionService } from "@/lib/services/admin-service";
+import { ApiResponse } from "@/lib/services/api-client";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -60,16 +61,24 @@ export default function AdminExpeditionsPage() {
 
   const handleSaveExpedition = async (savedExp: PackageItem) => {
     try {
+      let res: ApiResponse<PackageItem>;
       if (isEditing && activeExp) {
-        const res = await ExpeditionService.update(activeExp.id, savedExp as any);
-        setExpeditions((prev) => prev.map((e) => (e.id === activeExp.id ? res.data : e)));
-        toast.success(res.message);
+        res = await ExpeditionService.update(activeExp.id, savedExp as any);
+        if (res.success) {
+          setExpeditions((prev) => prev.map((e) => (e.id === activeExp.id ? res.data : e)));
+        }
       } else {
-        const res = await ExpeditionService.create(savedExp as any);
-        setExpeditions((prev) => [res.data, ...prev]);
-        toast.success(res.message);
+        res = await ExpeditionService.create(savedExp as any);
+        if (res.success) {
+          setExpeditions((prev) => [res.data, ...prev]);
+        }
       }
-      setIsFormOpen(false);
+      if (res.success) {
+        toast.success(res.message);
+        setIsFormOpen(false);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to save expedition");
     }
@@ -80,7 +89,11 @@ export default function AdminExpeditionsPage() {
       const res = await ExpeditionService.delete(id);
       setExpeditions((prev) => prev.filter((eItem) => eItem.id !== id));
       setDeletingExp(null);
-      toast.success(res.message);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete expedition");
     }
@@ -149,21 +162,21 @@ export default function AdminExpeditionsPage() {
                       <Mountain className="w-4 h-4 text-amber-600 shrink-0" />
                       <span>{exp.title}</span>
                     </div>
-                    <div className="text-xs text-slate-700 mt-0.5 font-medium">
+                    <div className="text-xs text-slate-600 mt-0.5 font-normal">
                       Permits: {exp.permitsRequired ? exp.permitsRequired.join(", ") : "NMA Summit Permit"}
                     </div>
                   </AdminTableCell>
-                  <AdminTableCell className="font-extrabold text-slate-900">
+                  <AdminTableCell className="font-medium text-slate-900">
                     <div className="flex items-center gap-1">
                       <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
                       <span>{(exp.maxAltitudeMeters || 6000).toLocaleString()}m</span>
                     </div>
                   </AdminTableCell>
-                  <AdminTableCell className="font-semibold text-slate-700">{exp.durationDays} Days</AdminTableCell>
-                  <AdminTableCell className="font-extrabold text-slate-900 text-sm">
+                  <AdminTableCell className="font-medium text-slate-800">{exp.durationDays} Days</AdminTableCell>
+                  <AdminTableCell className="font-bold text-slate-900 text-sm">
                     ${exp.priceUSD.toLocaleString()} USD
                   </AdminTableCell>
-                  <AdminTableCell className="font-bold text-slate-900">
+                  <AdminTableCell className="font-medium text-slate-800">
                     {exp.totalBookings || 0} Climbers
                   </AdminTableCell>
                   <AdminTableCell>

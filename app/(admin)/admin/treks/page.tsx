@@ -5,6 +5,7 @@ import { Plus, Footprints, Clock, TrendingUp, Star } from "lucide-react";
 import { TrekItem } from "@/lib/trek-data";
 import { toast } from "sonner";
 import { TrekService } from "@/lib/services/admin-service";
+import { ApiResponse } from "@/lib/services/api-client";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -62,16 +63,24 @@ export default function AdminTreksPage() {
 
   const handleSaveTrek = async (savedTrek: TrekItem) => {
     try {
+      let res: ApiResponse<TrekItem>;
       if (isEditing && activeTrek) {
-        const res = await TrekService.update(activeTrek.id, savedTrek as any);
-        setTreks((prev) => prev.map((t) => (t.id === activeTrek.id ? res.data : t)));
-        toast.success(res.message);
+        res = await TrekService.update(activeTrek.id, savedTrek as any);
+        if (res.success) {
+          setTreks((prev) => prev.map((t) => (t.id === activeTrek.id ? res.data : t)));
+        }
       } else {
-        const res = await TrekService.create(savedTrek as any);
-        setTreks((prev) => [res.data, ...prev]);
-        toast.success(res.message);
+        res = await TrekService.create(savedTrek as any);
+        if (res.success) {
+          setTreks((prev) => [res.data, ...prev]);
+        }
       }
-      setIsFormOpen(false);
+      if (res.success) {
+        toast.success(res.message);
+        setIsFormOpen(false);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to save trek itinerary");
     }
@@ -82,7 +91,11 @@ export default function AdminTreksPage() {
       const res = await TrekService.delete(id);
       setTreks((prev) => prev.filter((t) => t.id !== id));
       setDeletingTrek(null);
-      toast.success(res.message);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete trek itinerary");
     }
@@ -116,11 +129,11 @@ export default function AdminTreksPage() {
         searchPlaceholder="Search trek title or region..."
       >
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-700 font-bold">Difficulty:</span>
+          <span className="text-slate-700 font-semibold">Difficulty:</span>
           <select
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
-            className="bg-transparent text-slate-900 font-bold focus:outline-none cursor-pointer"
+            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="All">All Difficulties</option>
             <option value="Moderate Trek">Moderate Trek</option>
@@ -154,28 +167,28 @@ export default function AdminTreksPage() {
                       <Footprints className="w-4 h-4 text-amber-600 shrink-0" />
                       <span>{trk.title}</span>
                     </div>
-                    <div className="text-xs text-slate-700 mt-0.5 font-medium">
+                    <div className="text-xs text-slate-600 mt-0.5 font-normal">
                       Permits: {trk.permitsRequired ? trk.permitsRequired.join(", ") : "Standard Permits"}
                     </div>
                   </AdminTableCell>
                   <AdminTableCell>
-                    <div className="font-bold text-slate-900">{trk.region} Region</div>
-                    <div className="flex items-center gap-1 text-slate-700 text-xs font-semibold">
-                      <Clock className="w-3.5 h-3.5 text-slate-700" />
+                    <div className="font-semibold text-slate-900">{trk.region} Region</div>
+                    <div className="flex items-center gap-1 text-slate-600 text-xs font-medium">
+                      <Clock className="w-3.5 h-3.5 text-slate-600" />
                       <span>{trk.durationDays} Days</span>
                     </div>
                   </AdminTableCell>
-                  <AdminTableCell className="font-bold text-slate-800">
+                  <AdminTableCell className="font-medium text-slate-800">
                     <div className="flex items-center gap-1">
                       <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
                       <span>{trk.difficulty}</span>
                     </div>
                   </AdminTableCell>
-                  <AdminTableCell className="font-semibold text-slate-700">{trk.bestSeason}</AdminTableCell>
-                  <AdminTableCell className="font-extrabold text-slate-900 text-sm">
+                  <AdminTableCell className="font-medium text-slate-800">{trk.bestSeason}</AdminTableCell>
+                  <AdminTableCell className="font-bold text-slate-900 text-sm">
                     ${trk.priceUSD.toLocaleString()} USD
                   </AdminTableCell>
-                  <AdminTableCell className="font-bold text-slate-900">
+                  <AdminTableCell className="font-semibold text-slate-900">
                     <div className="flex items-center gap-1">
                       <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                       <span>{trk.rating || 5.0} ({trk.reviewsCount || 0})</span>

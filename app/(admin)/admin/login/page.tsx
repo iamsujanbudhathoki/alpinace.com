@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@alpineace.com"
-                className="text-xs bg-slate-50/50 border-slate-200 focus:bg-white"
+                className="text-xs bg-slate-50/50 border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
               />
             </div>
 
@@ -84,7 +84,7 @@ export default function AdminLoginPage() {
                   disabled={isSubmitting}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pr-9 text-xs bg-slate-50/50 border-slate-200 focus:bg-white"
+                  className="pr-9 text-xs bg-slate-50/50 border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                 />
                 <button
                   type="button"
@@ -114,7 +114,7 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="text-center">
-          <Link href="/" className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+          <Link href="/" className="text-xs font-bold text-slate-800 hover:text-slate-950 transition-colors">
             ← Back to website
           </Link>
         </div>

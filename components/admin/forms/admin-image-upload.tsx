@@ -102,10 +102,18 @@ export function AdminImageUpload({
         setAssets([newAsset, ...assets]);
         setTempSelectedUrl(url);
         setShowModalUploader(false);
-        toast.success(res.message || `Photo "${file.name}" uploaded to server! Click "Select Image & Apply" below.`);
+        if (res.success) {
+          toast.success(res.message || `Photo "${file.name}" uploaded to server! Click "Select Image & Apply" below.`);
+        } else {
+          toast.error(res.message || "Failed to upload image to server.");
+        }
       } else {
         onChange(url);
-        toast.success(res.message || "Cover image file uploaded to server successfully!");
+        if (res.success) {
+          toast.success(res.message || "Cover image file uploaded to server successfully!");
+        } else {
+          toast.error(res.message || "Failed to upload cover image.");
+        }
       }
     } catch (err) {
       console.error("Upload error:", err);
@@ -123,7 +131,7 @@ export function AdminImageUpload({
 
   return (
     <div className="space-y-2">
-      <label className="font-bold text-slate-800 block text-xs">{label}</label>
+      <label className="font-extrabold text-slate-950 block text-xs">{label}</label>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Preview Thumbnail Box with Hover Actions */}
@@ -133,8 +141,8 @@ export function AdminImageUpload({
             <img src={value} alt="Preview" className="w-full h-full object-cover" />
           ) : (
             <div className="text-center p-3">
-              <ImageIcon className="w-6 h-6 text-slate-700 mx-auto mb-1" />
-              <span className="text-xs text-slate-800 font-bold">No Cover Image Selected</span>
+              <ImageIcon className="w-6 h-6 text-slate-900 mx-auto mb-1" />
+              <span className="text-xs text-slate-950 font-extrabold">No Cover Image Selected</span>
             </div>
           )}
 
@@ -179,10 +187,10 @@ export function AdminImageUpload({
             ) : (
               <>
                 <UploadCloud className="w-5 h-5 text-amber-600 mx-auto mb-1" />
-                <p className="text-xs font-bold text-slate-900">
+                <p className="text-xs font-extrabold text-slate-950">
                   Click or Drag &amp; Drop Image File
                 </p>
-                <p className="text-xs text-slate-700 font-semibold mt-0.5">Supports PNG, JPG, WebP up to 10MB</p>
+                <p className="text-xs text-slate-800 font-bold mt-0.5">Supports PNG, JPG, WebP up to 10MB</p>
               </>
             )}
           </div>
@@ -265,25 +273,25 @@ export function AdminImageUpload({
           {/* Header Action Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
             <div className="relative w-full sm:w-72">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-700" />
+              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-900" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search photo asset title..."
-                className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-500"
+                className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-950 font-bold focus:outline-none focus:border-amber-500"
               />
             </div>
 
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <label className="text-xs font-bold text-slate-800 uppercase tracking-wider whitespace-nowrap">
+                <label className="text-xs font-black text-slate-950 uppercase tracking-wider whitespace-nowrap">
                   Category:
                 </label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-white border border-slate-200 text-slate-900 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
+                  className="bg-white border border-slate-300 text-slate-950 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
                 >
                   <option value="All">All Categories</option>
                   <option value="Everest & Peaks">Everest &amp; Peaks</option>
@@ -364,7 +372,7 @@ export function AdminImageUpload({
 
           {/* Explicit Bottom Right Footer Action Bar */}
           <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-between">
-            <div className="text-xs text-slate-700 font-bold">
+            <div className="text-xs text-slate-900 font-extrabold">
               {tempSelectedUrl ? "1 Image Asset Highlighted" : "No asset selected"}
             </div>
 

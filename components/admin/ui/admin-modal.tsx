@@ -99,12 +99,12 @@ export function AdminModal({
           >
             <DialogHeader className="space-y-0.5 text-left pr-8">
               {title && (
-                <DialogTitle className="font-heading text-lg font-bold text-slate-900 leading-tight">
+                <DialogTitle className="font-heading text-lg font-extrabold text-slate-950 leading-tight">
                   {title}
                 </DialogTitle>
               )}
               {description && (
-                <DialogDescription className="text-xs text-slate-500 font-medium leading-normal">
+                <DialogDescription className="text-xs text-slate-800 font-semibold leading-normal">
                   {description}
                 </DialogDescription>
               )}

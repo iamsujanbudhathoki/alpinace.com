@@ -155,10 +155,10 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         </div>
 
         <DialogFooter className="pt-2">
-          <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+          <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer">
             Cancel
           </Button>
-          <Button type="submit" className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs cursor-pointer">
+          <Button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer">
             Log Inquiry Lead
           </Button>
         </DialogFooter>
@@ -171,7 +171,8 @@ interface ReplyInquiryModalProps {
   isOpen: boolean;
   onClose: () => void;
   inquiry: Inquiry | null;
-  onUpdateStatus: (id: string, newStatus: Inquiry["status"]) => void;
+  onUpdateStatus: (id: string, newStatus: Inquiry["status"]) => Promise<boolean> | void;
+  onSendQuote?: (id: string, message: string, status: Inquiry["status"]) => Promise<boolean>;
 }
 
 export function ReplyInquiryModal({
@@ -179,16 +180,51 @@ export function ReplyInquiryModal({
   onClose,
   inquiry,
   onUpdateStatus,
+  onSendQuote,
 }: ReplyInquiryModalProps) {
   const [replyText, setReplyText] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<Inquiry["status"]>(inquiry?.status || "New");
 
-  const handleSendReply = (e: React.FormEvent) => {
+  // Sync selectedStatus when inquiry changes
+  useEffect(() => {
+    if (inquiry) setSelectedStatus(inquiry.status);
+    if (!isOpen) setReplyText("");
+  }, [inquiry, isOpen]);
+
+  const handleStatusClick = async (st: Inquiry["status"]) => {
+    if (!inquiry) return;
+    setSelectedStatus(st);
+    await onUpdateStatus(inquiry.id, st);
+  };
+
+  const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inquiry || !replyText) return;
+    if (!inquiry || isSending) return;
 
-    onUpdateStatus(inquiry.id, "Quote Sent");
-    setReplyText("");
-    onClose();
+    setIsSending(true);
+    try {
+      let success = false;
+      const hasMessage = replyText.trim().length > 0;
+
+      if (hasMessage && onSendQuote) {
+        // Send email + update status
+        success = await onSendQuote(inquiry.id, replyText, selectedStatus);
+      } else {
+        // No message — just update status
+        const res = await onUpdateStatus(inquiry.id, selectedStatus);
+        success = res !== false;
+      }
+
+      if (success) {
+        setReplyText("");
+        onClose();
+      }
+    } catch (err) {
+      console.error("Quote dispatch error:", err);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -200,10 +236,10 @@ export function ReplyInquiryModal({
       maxWidth="2xl"
     >
       <div className="space-y-5 py-2 text-xs">
-        <div className="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <div className="flex items-center justify-between bg-slate-50/80 p-4 rounded-xl border border-slate-200">
           <div className="space-y-1">
             <span className="text-slate-700 font-bold block">Contact Email:</span>
-            <div className="font-bold text-slate-900 flex items-center gap-1">
+            <div className="font-bold text-slate-900 flex items-center gap-1.5">
               <Mail className="w-3.5 h-3.5 text-amber-600" />
               <span>{inquiry?.email}</span>
             </div>
@@ -211,7 +247,7 @@ export function ReplyInquiryModal({
 
           <div className="space-y-1">
             <span className="text-slate-700 font-bold block">Phone / WhatsApp:</span>
-            <div className="font-bold text-slate-900 flex items-center gap-1">
+            <div className="font-bold text-slate-900 flex items-center gap-1.5">
               <Phone className="w-3.5 h-3.5 text-amber-600" />
               <span>{inquiry?.phone}</span>
             </div>
@@ -219,37 +255,37 @@ export function ReplyInquiryModal({
 
           <div className="space-y-1">
             <span className="text-slate-700 font-bold block">Country &amp; Group:</span>
-            <div className="font-bold text-slate-900 flex items-center gap-1">
+            <div className="font-bold text-slate-900 flex items-center gap-1.5">
               <Globe className="w-3.5 h-3.5 text-amber-600" />
               <span>{inquiry?.country} ({inquiry?.groupSize} Pax)</span>
             </div>
           </div>
 
           <div>
-            <AdminStatusBadge status={inquiry?.status || "New"} />
+            <AdminStatusBadge status={selectedStatus} />
           </div>
         </div>
 
-        <div className="space-y-1">
-          <span className="font-bold text-slate-800 block">Guest Message &amp; Requirements:</span>
-          <p className="text-slate-800 font-normal bg-stone-50 border border-slate-200 p-3 rounded-lg leading-relaxed italic">
+        <div className="space-y-1.5">
+          <span className="font-bold text-slate-900 block">Guest Message &amp; Requirements:</span>
+          <p className="text-slate-800 font-medium bg-slate-50/60 border border-slate-200 p-3 rounded-xl leading-relaxed italic">
             &ldquo;{inquiry?.message}&rdquo;
           </p>
         </div>
 
-        <div className="space-y-1 pt-2 border-t border-slate-100">
-          <span className="font-bold text-slate-800 block">Update Lead Status:</span>
+        <div className="space-y-1.5 pt-2 border-t border-slate-100">
+          <span className="font-bold text-slate-900 block">Update Lead Status:</span>
           <div className="flex flex-wrap gap-2">
             {(["New", "Contacted", "Quote Sent", "Booked", "Closed"] as Inquiry["status"][]).map((st) => (
               <Button
                 key={st}
+                type="button"
                 size="sm"
-                variant={inquiry?.status === st ? "default" : "outline"}
-                onClick={() => inquiry && onUpdateStatus(inquiry.id, st)}
-                className={`text-xs font-semibold cursor-pointer ${
-                  inquiry?.status === st
-                    ? "bg-slate-900 text-white"
-                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                onClick={() => handleStatusClick(st)}
+                className={`text-xs h-8 px-3 rounded-lg cursor-pointer ${
+                  selectedStatus === st
+                    ? "bg-slate-900 text-white font-bold"
+                    : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-medium"
                 }`}
               >
                 {st}
@@ -259,23 +295,35 @@ export function ReplyInquiryModal({
         </div>
 
         <form onSubmit={handleSendReply} className="space-y-3 pt-2 border-t border-slate-100">
-          <label className="font-bold text-slate-800 block">Send Custom Quote &amp; Dispatch Email</label>
+          <div className="space-y-0.5">
+            <label className="font-bold text-slate-900 block">Send Custom Quote &amp; Dispatch Email</label>
+            <p className="text-slate-500 font-normal">
+              {replyText.trim()
+                ? `Will email quote to ${inquiry?.email} and mark status as "${selectedStatus}".`
+                : `Leave blank to only update lead status to "${selectedStatus}" without sending an email.`}
+            </p>
+          </div>
           <textarea
             rows={4}
-            required
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder={`Draft custom quote itinerary and pricing details to ${inquiry?.email}...`}
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 font-normal leading-relaxed focus:outline-none focus:border-amber-500"
+            className="w-full bg-slate-50/60 border border-slate-200 rounded-xl p-3 text-slate-900 font-medium text-xs leading-relaxed focus:outline-none focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all placeholder:text-slate-400"
           />
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+          <DialogFooter className="pt-1">
+            <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer">
               Close
             </Button>
-            <Button type="submit" className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs cursor-pointer">
-              <Send className="w-3.5 h-3.5 mr-1.5" />
-              Dispatch Quote Email
+            <Button type="submit" disabled={isSending} className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-50">
+              <Send className="w-3.5 h-3.5" />
+              <span>
+                {isSending
+                  ? "Saving..."
+                  : replyText.trim()
+                  ? "Dispatch Quote Email"
+                  : "Save Status Update"}
+              </span>
             </Button>
           </DialogFooter>
         </form>

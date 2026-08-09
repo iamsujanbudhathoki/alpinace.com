@@ -134,16 +134,16 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
               key={item.href}
               href={item.href}
               onClick={handleNavClick}
-              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 isActive
-                  ? "bg-slate-900 text-white font-bold"
-                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                  ? "bg-slate-950 text-white font-extrabold shadow-sm"
+                  : "text-slate-900 hover:text-slate-950 hover:bg-slate-100/90"
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Icon
                   className={`w-4 h-4 ${
-                    isActive ? "text-amber-400" : "text-slate-700"
+                    isActive ? "text-amber-400" : "text-amber-600"
                   }`}
                 />
                 <span>{item.title}</span>

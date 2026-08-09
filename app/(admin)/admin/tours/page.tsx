@@ -5,6 +5,7 @@ import { Plus, Compass, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { PackageItem } from "@/lib/admin-data";
 import { TourService } from "@/lib/services/admin-service";
+import { ApiResponse } from "@/lib/services/api-client";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -60,16 +61,24 @@ export default function AdminToursPage() {
 
   const handleSaveTour = async (savedTour: PackageItem) => {
     try {
+      let res: ApiResponse<PackageItem>;
       if (isEditing && activeTour) {
-        const res = await TourService.update(activeTour.id, savedTour as any);
-        setTours((prev) => prev.map((t) => (t.id === activeTour.id ? res.data : t)));
-        toast.success(res.message);
+        res = await TourService.update(activeTour.id, savedTour as any);
+        if (res.success) {
+          setTours((prev) => prev.map((t) => (t.id === activeTour.id ? res.data : t)));
+        }
       } else {
-        const res = await TourService.create(savedTour as any);
-        setTours((prev) => [res.data, ...prev]);
-        toast.success(res.message);
+        res = await TourService.create(savedTour as any);
+        if (res.success) {
+          setTours((prev) => [res.data, ...prev]);
+        }
       }
-      setIsFormOpen(false);
+      if (res.success) {
+        toast.success(res.message);
+        setIsFormOpen(false);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to save tour package");
     }
@@ -80,7 +89,11 @@ export default function AdminToursPage() {
       const res = await TourService.delete(id);
       setTours((prev) => prev.filter((t) => t.id !== id));
       setDeletingTour(null);
-      toast.success(res.message);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete tour package");
     }
@@ -112,11 +125,11 @@ export default function AdminToursPage() {
         searchPlaceholder="Search tour title or location..."
       >
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-700 font-bold">Status:</span>
+          <span className="text-slate-700 font-semibold">Status:</span>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-transparent text-slate-900 font-bold focus:outline-none cursor-pointer"
+            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="All">All Statuses</option>
             <option value="Active">Active</option>
@@ -148,21 +161,21 @@ export default function AdminToursPage() {
                       <Compass className="w-4 h-4 text-amber-600 shrink-0" />
                       <span>{tur.title}</span>
                     </div>
-                    <div className="text-xs text-slate-700 mt-0.5 font-medium">
+                    <div className="text-xs text-slate-600 mt-0.5 font-normal">
                       Inclusions: {tur.permitsRequired ? tur.permitsRequired.join(", ") : "Heritage Entrance Fees"}
                     </div>
                   </AdminTableCell>
                   <AdminTableCell>
-                    <div className="font-bold text-slate-900">{tur.region}</div>
-                    <div className="flex items-center gap-1 text-slate-700 text-xs font-semibold">
-                      <Clock className="w-3.5 h-3.5 text-slate-700" />
+                    <div className="font-semibold text-slate-900">{tur.region}</div>
+                    <div className="flex items-center gap-1 text-slate-600 text-xs font-medium">
+                      <Clock className="w-3.5 h-3.5 text-slate-600" />
                       <span>{tur.durationDays} Days</span>
                     </div>
                   </AdminTableCell>
-                  <AdminTableCell className="font-extrabold text-slate-900 text-sm">
+                  <AdminTableCell className="font-bold text-slate-900 text-sm">
                     ${tur.priceUSD.toLocaleString()} USD
                   </AdminTableCell>
-                  <AdminTableCell className="font-bold text-slate-900">
+                  <AdminTableCell className="font-medium text-slate-800">
                     {tur.totalBookings || 0} Guests
                   </AdminTableCell>
                   <AdminTableCell>

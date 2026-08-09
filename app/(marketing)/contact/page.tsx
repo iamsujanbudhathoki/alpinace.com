@@ -71,33 +71,34 @@ export default function ContactView() {
   };
 
   return (
-    <div className="pt-24 min-h-screen bg-stone-50 pb-20">
-      
-      {/* Banner */}
-      <section className="py-16 bg-slate-950 text-white relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=1600"
-            alt="Kathmandu and Pokhara scenic overview"
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-slate-950/40" />
-        </div>
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="text-amber-400 text-sm font-medium block mb-1">Connect With Us</span>
-          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
-            Bespoke Adventure Planning
+    <div className="relative min-h-screen pt-28 pb-20 bg-zinc-950 text-white overflow-hidden">
+      {/* Immersive Himalayan Background Image Overlay */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=1600"
+          alt="Kathmandu and Himalayan panorama"
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover object-center opacity-35"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/80 via-zinc-950/75 to-zinc-950/95" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        {/* Editorial Title */}
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <span className="text-amber-400 text-sm font-medium block">
+            Connect With Us
+          </span>
+          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white">
+            Plan Your Journey
           </h1>
-          <p className="text-slate-300 text-sm max-w-2xl mx-auto font-light leading-relaxed">
-            Reach out to our private concierge desk in Kathmandu to secure permits, reserve luxury lodges, or customize your high-altitude itinerary.
+          <p className="text-stone-300 text-sm max-w-2xl mx-auto font-normal leading-relaxed">
+            Reach out to our local team in Kathmandu to secure permits, reserve lodges, or craft your custom Himalayan itinerary.
           </p>
         </div>
-      </section>
 
-      {/* Main split grid */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        {/* Main split grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Left Panel: Contact info & Map */}
           <div className="lg:col-span-5 space-y-8">
@@ -315,8 +316,7 @@ export default function ContactView() {
           </div>
 
         </div>
-      </section>
-
+      </div>
     </div>
   );
 }

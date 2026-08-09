@@ -68,15 +68,15 @@ export function TravelProcess() {
   const currentStep = processSteps[activeStep];
 
   return (
-    <section className="py-24 bg-stone-50/80 border-b border-stone-200 font-sans">
+    <section className="py-20 bg-stone-50/70 border-b border-stone-200 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
+        <div className="text-center max-w-3xl mx-auto space-y-2.5">
           <span className="text-amber-800 text-xs font-semibold block">
             How It Works
           </span>
-          <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-zinc-900">
+          <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-900">
             Your Journey To The Sky
           </h2>
           <p className="text-zinc-600 text-sm font-normal leading-relaxed">
@@ -84,7 +84,7 @@ export function TravelProcess() {
           </p>
         </div>
 
-        {/* Interactive Step Selector Tabs (Stable 2px Border) */}
+        {/* Interactive Step Selector Tabs (Stable 2px Borders) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-stone-100/80 p-2.5 rounded-2xl border border-stone-200">
           {processSteps.map((step, idx) => {
             const isActive = activeStep === idx;
@@ -94,18 +94,18 @@ export function TravelProcess() {
                 onClick={() => setActiveStep(idx)}
                 className={`flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-150 cursor-pointer text-left box-border ${
                   isActive
-                    ? "bg-amber-900 text-white font-bold border-amber-900 shadow-xs"
-                    : "bg-white hover:bg-stone-50 text-zinc-700 border-stone-200/70"
+                    ? "bg-white text-zinc-900 border-amber-700/80 shadow-xs"
+                    : "bg-white/70 hover:bg-white text-zinc-600 border-stone-200/70"
                 }`}
               >
                 <span
-                  className={`font-heading text-xs font-semibold mb-1.5 px-2 py-0.5 rounded ${
-                    isActive ? "bg-amber-400 text-zinc-950 font-bold" : "bg-stone-200/80 text-zinc-700"
+                  className={`font-heading text-xs font-medium mb-1.5 px-2 py-0.5 rounded ${
+                    isActive ? "bg-amber-100 text-amber-900 font-semibold" : "bg-stone-200/80 text-zinc-600"
                   }`}
                 >
                   Step {step.id}
                 </span>
-                <span className="font-heading text-xs sm:text-sm font-semibold truncate w-full">
+                <span className="font-heading text-xs sm:text-sm font-medium truncate w-full">
                   {step.title}
                 </span>
               </button>
@@ -117,19 +117,19 @@ export function TravelProcess() {
         <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
           
           {/* Left Detail Column */}
-          <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between space-y-8 min-h-[420px]">
+          <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between space-y-8 min-h-[400px]">
             <div className="space-y-6">
               
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60">
+                  <span className="text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60">
                     Step {currentStep.id} Overview
                   </span>
-                  <span className="text-xs text-zinc-500 font-medium">
+                  <span className="text-xs text-zinc-500 font-normal">
                     {currentStep.subtitle}
                   </span>
                 </div>
-                <h3 className="font-heading text-2xl sm:text-3xl font-bold text-zinc-900 pt-1">
+                <h3 className="font-heading text-2xl sm:text-3xl font-semibold text-zinc-900 pt-1">
                   {currentStep.title}
                 </h3>
               </div>
@@ -146,7 +146,7 @@ export function TravelProcess() {
                 {currentStep.deliverables.map((item, dIdx) => (
                   <div key={dIdx} className="flex items-start gap-3 text-xs sm:text-sm text-zinc-700">
                     <CheckCircle2 className="h-4.5 w-4.5 text-amber-700 shrink-0 mt-0.5" />
-                    <span className="leading-snug">{item}</span>
+                    <span className="leading-snug font-normal">{item}</span>
                   </div>
                 ))}
               </div>
@@ -155,22 +155,22 @@ export function TravelProcess() {
 
             {/* Bottom Actions */}
             <div className="pt-6 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-xs text-zinc-500 font-medium">
-                Step {activeStep + 1} of 4 &bull; <strong className="text-zinc-800 font-semibold">{currentStep.title}</strong>
+              <span className="text-xs text-zinc-500 font-normal">
+                Step {activeStep + 1} of 4 &bull; <strong className="text-zinc-800 font-medium">{currentStep.title}</strong>
               </span>
 
               <Link
                 href={currentStep.ctaLink}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-800 hover:bg-amber-900 text-white font-heading text-xs font-semibold px-6 py-3.5 rounded-xl transition-all cursor-pointer group active:scale-[0.99]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-heading text-xs font-medium px-6 py-3 rounded-xl transition-all cursor-pointer group active:scale-[0.99]"
               >
                 <span>{currentStep.ctaText}</span>
-                <ArrowRight className="h-4 w-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 text-stone-300 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
           </div>
 
-          {/* Right Visual Image Card (Clean Light Overlay) */}
+          {/* Right Visual Image Card */}
           <div className="lg:col-span-5 relative min-h-[300px] lg:min-h-full bg-stone-100 overflow-hidden">
             <img
               src={currentStep.image}
@@ -181,10 +181,10 @@ export function TravelProcess() {
             <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent" />
             
             <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
-              <span className="text-amber-300 text-xs font-semibold block">
+              <span className="text-amber-200 text-xs font-normal block">
                 {currentStep.subtitle}
               </span>
-              <p className="font-heading text-sm font-bold text-white">
+              <p className="font-heading text-sm font-semibold text-white">
                 Step {currentStep.id}: {currentStep.title}
               </p>
             </div>

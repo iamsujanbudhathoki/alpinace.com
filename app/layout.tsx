@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import { siteConfig } from "@/lib/site-config";
 import { TopLoaderProvider } from "@/components/ui/top-loader";
 import "./globals.css";
@@ -9,7 +9,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
@@ -51,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${plusJakarta.variable} h-full antialiased`}
+      className={`${inter.variable} ${poppins.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body

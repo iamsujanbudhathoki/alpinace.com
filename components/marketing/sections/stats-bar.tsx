@@ -10,7 +10,7 @@ export function StatsBar() {
               <span className="font-heading text-4xl sm:text-5xl font-extrabold block leading-none">
                 {s.number}
               </span>
-              <span className="font-heading text-xs font-bold block uppercase tracking-wider">
+              <span className="font-heading text-sm font-bold block text-slate-950">
                 {s.label}
               </span>
               <span className="text-slate-900 text-xs block font-normal leading-snug">

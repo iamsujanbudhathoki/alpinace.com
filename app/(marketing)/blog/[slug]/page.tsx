@@ -52,7 +52,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
           <div className="p-8 sm:p-12 space-y-6">
 
             {/* Meta row */}
-            <div className="flex flex-wrap items-center gap-6 text-xs text-slate-700 font-mono font-bold tracking-wide">
+            <div className="flex flex-wrap items-center gap-6 text-xs text-slate-700 font-bold tracking-wide">
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4 text-gold-600" />
                 {post.date}
@@ -78,7 +78,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
               />
               <div>
                 <h3 className="text-sm font-bold text-slate-900 leading-snug">{post.author.name}</h3>
-                <p className="text-xs text-slate-700 leading-none font-mono font-semibold uppercase">{post.author.role}</p>
+                <p className="text-xs text-slate-700 leading-none font-semibold uppercase">{post.author.role}</p>
               </div>
             </div>
 

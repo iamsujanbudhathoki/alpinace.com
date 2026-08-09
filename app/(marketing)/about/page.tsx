@@ -55,7 +55,7 @@ export default function AboutView() {
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/60 to-slate-950/85" />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="text-gold-400 text-xs uppercase tracking-widest font-extrabold block mb-2">Our Story</span>
+          <span className="text-amber-400 text-sm font-medium block mb-1">Our Story</span>
           <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
             Founded on Sherpa Heritage & Absolute Safety
           </h1>
@@ -72,7 +72,7 @@ export default function AboutView() {
 
             {/* Story */}
             <div className="lg:col-span-6 space-y-6">
-              <span className="text-gold-600 text-xs uppercase tracking-widest font-extrabold block">Bespoke Principles</span>
+              <span className="text-amber-700 text-sm font-medium block">Bespoke Principles</span>
               <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">Elevating Mountain Journeys Since 2012</h2>
               <p className="text-slate-700 text-sm leading-relaxed font-light">
                 For decades, trekking in Nepal was viewed as a rustic, self-sacrificing endeavor. Travelers endured sub-zero sleepless nights, inadequate nutrition, and high altitude risks. We saw a different path.
@@ -84,11 +84,11 @@ export default function AboutView() {
               <div className="pt-4 flex gap-6">
                 <div>
                   <span className="font-heading text-3xl font-extrabold text-slate-900 block">100%</span>
-                  <span className="text-slate-700 text-xs uppercase font-bold tracking-wider">Sherpa Owned & Run</span>
+                  <span className="text-slate-700 text-xs font-semibold">Sherpa Owned & Run</span>
                 </div>
                 <div className="border-l border-slate-200 pl-6">
                   <span className="font-heading text-3xl font-extrabold text-slate-900 block">25+</span>
-                  <span className="text-slate-700 text-xs uppercase font-bold tracking-wider">Active Peak Guides</span>
+                  <span className="text-slate-700 text-xs font-semibold">Active Peak Guides</span>
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function AboutView() {
       <section className="py-24 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-gold-600 text-xs uppercase tracking-widest font-extrabold block mb-2">Our Leaders</span>
+            <span className="text-amber-700 text-sm font-medium block mb-1">Our Leaders</span>
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900">Meet Your Expedition Directors</h2>
             <p className="text-slate-600 text-sm mt-3 font-light">
               Our leadership team blends legendary mountain survival skill, medical excellence, and elite client services coordination.
@@ -132,13 +132,13 @@ export default function AboutView() {
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <span className="absolute bottom-4 left-4 bg-slate-950/90 backdrop-blur-sm text-gold-400 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-md border border-gold-500/20">
+                  <span className="absolute bottom-4 left-4 bg-slate-950/90 backdrop-blur-sm text-amber-300 text-xs font-medium px-3 py-1.5 rounded-md border border-amber-500/20">
                     {t.badge}
                   </span>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <h3 className="font-heading text-base font-bold text-slate-900 mb-1">{t.name}</h3>
-                  <span className="text-gold-600 text-xs font-semibold uppercase tracking-wider block mb-3">{t.role}</span>
+                  <span className="text-amber-800 text-xs font-medium block mb-3">{t.role}</span>
                   <p className="text-slate-700 text-xs leading-relaxed font-normal">
                     {t.desc}
                   </p>

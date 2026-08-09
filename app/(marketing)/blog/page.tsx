@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { Search, Sparkles } from "lucide-react";
+import { Search } from "lucide-react";
 import { BlogPost } from "@/lib/home-data";
 import { BlogService } from "@/lib/services/admin-service";
 
@@ -72,10 +72,9 @@ export default function BlogPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/60 to-slate-950/85" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 bg-gold-500/10 border border-gold-400/20 text-gold-300 text-xs font-semibold px-4 py-2 rounded-full mb-4">
-            <Sparkles className="h-4 w-4" />
-            <span>The Mountain Journals</span>
-          </div>
+          <span className="text-amber-400 text-sm font-medium block mb-1">
+            The Mountain Journals
+          </span>
           <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
             The Himalayan Dispatch
           </h1>
@@ -146,7 +145,7 @@ export default function BlogPage() {
                   </span>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
-                  <span className="text-slate-700 text-xs uppercase font-semibold font-mono tracking-widest block mb-2">
+                  <span className="text-slate-700 text-xs uppercase font-semibold tracking-widest block mb-2">
                     {post.date} &mdash; {post.readTime}
                   </span>
                   <h3 className="font-heading text-base font-bold text-slate-900 group-hover:text-gold-600 transition-colors mb-2 leading-snug line-clamp-2">

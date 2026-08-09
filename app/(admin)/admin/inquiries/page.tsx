@@ -163,7 +163,7 @@ export default function AdminInquiriesPage() {
             </div>
 
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs text-slate-700 font-mono">
+              <div className="flex items-center gap-2 text-xs text-slate-700">
                 <Mail className="w-3.5 h-3.5 text-amber-600" />
                 <span className="truncate max-w-[120px] font-semibold">{inq.email}</span>
               </div>

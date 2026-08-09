@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { FormLabel } from "@/components/ui/form-label";
 
 interface AdminInputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -11,9 +12,7 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
   ({ label, error, required, className = "", ...props }, ref) => {
     return (
       <div className="space-y-1">
-        <label className="font-bold text-slate-800 block text-xs">
-          {label} {required && <span className="text-amber-600">*</span>}
-        </label>
+        <FormLabel required={required}>{label}</FormLabel>
         <input
           ref={ref}
           {...props}
@@ -38,9 +37,7 @@ export const AdminSelectField = React.forwardRef<HTMLSelectElement, AdminSelectF
   ({ label, error, required, options, className = "", ...props }, ref) => {
     return (
       <div className="space-y-1">
-        <label className="font-bold text-slate-800 block text-xs">
-          {label} {required && <span className="text-amber-600">*</span>}
-        </label>
+        <FormLabel required={required}>{label}</FormLabel>
         <select
           ref={ref}
           {...props}
@@ -70,9 +67,7 @@ export const AdminTextareaField = React.forwardRef<HTMLTextAreaElement, AdminTex
   ({ label, error, required, className = "", ...props }, ref) => {
     return (
       <div className="space-y-1">
-        <label className="font-bold text-slate-800 block text-xs">
-          {label} {required && <span className="text-amber-600">*</span>}
-        </label>
+        <FormLabel required={required}>{label}</FormLabel>
         <textarea
           ref={ref}
           {...props}

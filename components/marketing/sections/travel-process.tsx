@@ -23,16 +23,16 @@ export function TravelProcess() {
   ];
 
   return (
-    <section className="py-24 bg-white border-b border-slate-200">
+    <section className="py-24 bg-white border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-2">
-          <span className="text-gold-600 text-xs uppercase tracking-widest font-extrabold block">
+          <span className="text-amber-700 text-sm font-medium block">
             How It Works
           </span>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900">
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-zinc-900">
             Your Journey To The Sky
           </h2>
-          <p className="text-slate-700 text-sm font-normal leading-relaxed">
+          <p className="text-zinc-700 text-sm font-normal leading-relaxed">
             From our initial custom planning call to boarding your final helicopter, we engineer every step of your Himalayan itinerary.
           </p>
         </div>
@@ -41,15 +41,15 @@ export function TravelProcess() {
           {processSteps.map((step, idx) => (
             <div
               key={idx}
-              className="relative bg-slate-50/80 rounded-2xl p-6 border border-slate-200 flex flex-col group hover:border-slate-400 transition-all duration-300"
+              className="relative bg-stone-50/90 rounded-2xl p-6 border border-stone-200 flex flex-col group hover:border-amber-300 transition-all duration-300"
             >
               <span className="font-heading text-5xl font-extrabold text-amber-500/20 group-hover:text-amber-500/40 transition-colors absolute top-4 right-6 leading-none">
                 {step.step}
               </span>
-              <h3 className="font-heading text-base font-bold text-slate-900 mt-8 mb-3 pr-8">
+              <h3 className="font-heading text-base font-bold text-zinc-900 mt-8 mb-3 pr-8">
                 {step.title}
               </h3>
-              <p className="text-slate-700 text-xs leading-relaxed font-normal">
+              <p className="text-zinc-700 text-xs leading-relaxed font-normal">
                 {step.desc}
               </p>
             </div>

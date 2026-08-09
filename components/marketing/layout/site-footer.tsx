@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin, ShieldCheck, Award } from "lucide-react";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-white text-slate-900 pt-12 md:pt-16 pb-8 border-t border-slate-200 font-sans">
+    <footer className="bg-white text-zinc-900 pt-12 md:pt-16 pb-8 border-t border-stone-200 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 mb-12">
           {/* Column 1: Brand Info */}
@@ -14,43 +14,43 @@ export function SiteFooter() {
               <img
                 src="/logo.jpg"
                 alt="AlpineAce Logo"
-                className="h-10 w-10 object-cover rounded-xl border border-slate-200 shadow-xs"
+                className="h-10 w-10 object-cover rounded-xl border border-stone-200 shadow-xs"
               />
               <span className="flex flex-col leading-none">
-                <span className="font-heading text-base font-extrabold tracking-wide text-slate-900 group-hover:text-gold-600 transition-colors">
-                  ALPINE ACE
+                <span className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
+                  Alpine Ace
                 </span>
-                <span className="text-[11px] font-bold tracking-[0.18em] text-slate-600 uppercase mt-0.5">
+                <span className="text-[10px] font-medium text-zinc-500 mt-0.5">
                   Nepal Trekking &amp; Expeditions
                 </span>
               </span>
             </Link>
 
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-normal max-w-md">
+            <p className="text-zinc-600 text-xs sm:text-sm leading-relaxed font-normal max-w-md">
               We organize guided treks, cultural tours, and mountain expeditions in Nepal, led by experienced local Sherpa guides with a strong focus on safety and the environment.
             </p>
 
             {/* Certifications and Badges */}
             <div className="pt-2 space-y-2">
-              <span className="text-[11px] uppercase text-gold-600 font-bold tracking-wider block">
+              <span className="text-xs text-amber-700 font-medium block">
                 Authorized Operator
               </span>
               <div className="flex flex-wrap gap-2">
                 <div
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 flex items-center gap-1.5"
+                  className="bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1 flex items-center gap-1.5"
                   title="Trekking Agencies Association of Nepal"
                 >
-                  <ShieldCheck className="h-3.5 w-3.5 text-gold-600 shrink-0" />
-                  <span className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold">
+                  <ShieldCheck className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                  <span className="text-xs text-zinc-800 font-medium">
                     TAAN Member
                   </span>
                 </div>
                 <div
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 flex items-center gap-1.5"
+                  className="bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1 flex items-center gap-1.5"
                   title="Nepal Mountaineering Association"
                 >
-                  <Award className="h-3.5 w-3.5 text-gold-600 shrink-0" />
-                  <span className="font-mono text-xs uppercase tracking-wider text-slate-800 font-bold">
+                  <Award className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                  <span className="text-xs text-zinc-800 font-medium">
                     NMA Certified
                   </span>
                 </div>
@@ -60,7 +60,7 @@ export function SiteFooter() {
 
           {/* Column 2: Navigation Links */}
           <div className="space-y-4">
-            <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+            <h3 className="font-heading text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">
               Quick Links
             </h3>
             <ul className="grid grid-cols-2 sm:grid-cols-1 gap-2.5 text-xs sm:text-sm font-semibold text-slate-700">
@@ -99,7 +99,7 @@ export function SiteFooter() {
 
           {/* Column 3: Contact Details */}
           <div className="space-y-4">
-            <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+            <h3 className="font-heading text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">
               Contact Info
             </h3>
             <ul className="space-y-3 text-xs sm:text-sm text-slate-700 font-medium">
@@ -112,7 +112,7 @@ export function SiteFooter() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-gold-600 shrink-0" />
-                <div className="flex flex-col font-mono text-xs text-slate-900 font-bold gap-0.5">
+                <div className="flex flex-col text-xs text-slate-900 font-bold gap-0.5">
                   <a href="tel:+97714410988" className="hover:text-gold-600 transition-colors">
                     +977 1 4410988
                   </a>
@@ -125,7 +125,7 @@ export function SiteFooter() {
                 <Mail className="h-4 w-4 text-gold-600 shrink-0" />
                 <a
                   href="mailto:concierge@alpineacetreks.com"
-                  className="font-mono text-xs text-slate-900 font-bold hover:text-gold-600 transition-colors break-all"
+                  className="text-xs text-slate-900 font-bold hover:text-gold-600 transition-colors break-all"
                 >
                   concierge@alpineacetreks.com
                 </a>

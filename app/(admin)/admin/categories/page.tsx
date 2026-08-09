@@ -282,7 +282,7 @@ export default function AdminCategoriesPage() {
                       <span>{cat.type}</span>
                     </div>
                   </AdminTableCell>
-                  <AdminTableCell className="text-slate-700 font-mono text-xs font-semibold">/{cat.slug}</AdminTableCell>
+                  <AdminTableCell className="text-slate-700 text-xs font-semibold">/{cat.slug}</AdminTableCell>
                   <AdminTableCell className="font-bold text-slate-900">{cat.itemCount} Items</AdminTableCell>
                   <AdminTableCell>
                     <AdminStatusBadge status={cat.status} />

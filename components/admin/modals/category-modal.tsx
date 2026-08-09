@@ -169,7 +169,7 @@ export function CategoryFormModal({
             </div>
             <div>
               <span className="text-slate-700 font-bold block">Slug:</span>
-              <span className="text-slate-700 font-mono font-bold">/{initialData?.slug}</span>
+              <span className="text-slate-700 font-bold">/{initialData?.slug}</span>
             </div>
             <div>
               <span className="text-slate-700 font-bold block">Status:</span>

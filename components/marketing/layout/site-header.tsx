@@ -52,8 +52,8 @@ export function SiteHeader() {
       <header
         className={`fixed inset-x-0 top-0 z-40 bg-white/95 backdrop-blur-md transition-all duration-200 ${
           isScrolled
-            ? "border-b border-slate-200 shadow-xs py-3"
-            : "border-b border-slate-100 py-4"
+            ? "border-b border-stone-200 shadow-xs py-3"
+            : "border-b border-stone-100 py-4"
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 md:px-10">
@@ -62,10 +62,15 @@ export function SiteHeader() {
             <img
               src="/logo.jpg"
               alt="AlpineAce Logo"
-              className="h-9 w-9 object-cover rounded-lg border border-slate-200 shadow-xs"
+              className="h-9 w-9 object-cover rounded-lg border border-stone-200 shadow-xs"
             />
-            <span className="font-heading text-base font-bold tracking-tight text-slate-900">
-              AlpineAce
+            <span className="flex flex-col leading-none">
+              <span className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
+                Alpine Ace
+              </span>
+              <span className="text-[10px] font-medium text-zinc-500 mt-0.5">
+                Nepal Trekking &amp; Expeditions
+              </span>
             </span>
           </Link>
 
@@ -183,7 +188,7 @@ export function SiteHeader() {
 
               <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-500 font-medium pt-1">
                 <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                <div className="flex flex-wrap justify-center gap-1.5 font-mono text-[11px] font-bold text-slate-800">
+                <div className="flex flex-wrap justify-center gap-1.5 text-[11px] font-bold text-slate-800">
                   <a href="tel:+97714410988" className="hover:text-gold-600 transition-colors">
                     +977 1 4410988
                   </a>

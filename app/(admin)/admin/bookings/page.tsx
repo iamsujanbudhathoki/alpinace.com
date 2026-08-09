@@ -223,7 +223,7 @@ export default function AdminBookingsPage() {
               filteredBookings.map((bkg) => (
                 <AdminTableRow key={bkg.id}>
                   <AdminTableCell>
-                    <div className="font-mono text-xs font-bold text-amber-600">{bkg.reference}</div>
+                    <div className="text-xs font-bold text-amber-600">{bkg.reference}</div>
                     <div className="font-bold text-slate-900">{bkg.guestName}</div>
                     <div className="text-xs text-slate-700 font-medium">{bkg.country}</div>
                   </AdminTableCell>

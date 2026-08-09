@@ -170,10 +170,10 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
               </div>
               <div className="hidden md:block text-left">
                 <div className="text-xs font-bold text-slate-900 truncate leading-none">
-                  {user?.name || "Sujan Budhathoki"}
+                  {user?.name}
                 </div>
                 <div className="text-xs text-slate-700 truncate font-bold mt-0.5">
-                  {user?.role || "Expedition Director"}
+                  {user?.role}
                 </div>
               </div>
               <ChevronDown className="w-3.5 h-3.5 text-slate-700 hidden md:block" />

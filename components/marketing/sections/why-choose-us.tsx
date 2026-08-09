@@ -23,26 +23,26 @@ export function WhyChooseUs() {
   ];
 
   return (
-    <section className="py-24 bg-slate-50/70 border-b border-slate-200 relative overflow-hidden">
+    <section className="py-24 bg-stone-50/80 border-b border-stone-200 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           {/* Left Narrative */}
           <div className="lg:col-span-5 space-y-6">
-            <span className="text-gold-600 text-xs uppercase tracking-widest font-extrabold block">
+            <span className="text-amber-700 text-sm font-medium block">
               Unrivaled Expertise
             </span>
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-zinc-900 leading-tight">
               Luxury Mountaineering Built on Local Sherpa Heritage
             </h2>
-            <p className="text-slate-700 text-sm leading-relaxed font-normal">
+            <p className="text-zinc-700 text-sm leading-relaxed font-normal">
               We believe that premium travel is not just about comfortable beds, but deep cultural connection, unparalleled safety margins, and absolute local authenticity.
             </p>
 
-            <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-xs space-y-1">
-              <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-slate-950">
+            <div className="p-5 bg-white rounded-xl border border-stone-200 shadow-xs space-y-1">
+              <h3 className="font-heading text-sm font-bold text-zinc-900">
                 1:1 Elite Climbing Guide Ratio
               </h3>
-              <p className="text-slate-700 text-xs leading-relaxed">
+              <p className="text-zinc-700 text-xs leading-relaxed">
                 Our high-altitude mountaineering team consists entirely of multi-summit Sherpas carrying global certification.
               </p>
             </div>
@@ -53,15 +53,15 @@ export function WhyChooseUs() {
             {whyUs.map((item, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col hover:border-slate-300 transition-all"
+                className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs flex flex-col hover:border-stone-300 transition-all"
               >
-                <span className="text-xs font-extrabold text-gold-600 tracking-wider mb-2">
+                <span className="text-xs font-bold text-amber-700 mb-2">
                   {item.num}
                 </span>
-                <h3 className="font-heading text-base font-bold text-slate-900 mb-2">
+                <h3 className="font-heading text-base font-bold text-zinc-900 mb-2">
                   {item.title}
                 </h3>
-                <p className="text-slate-700 text-xs leading-relaxed font-normal">
+                <p className="text-zinc-700 text-xs leading-relaxed font-normal">
                   {item.desc}
                 </p>
               </div>

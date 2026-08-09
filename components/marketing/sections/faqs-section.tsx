@@ -12,16 +12,16 @@ export function FaqsSection() {
   };
 
   return (
-    <section className="py-24 bg-white border-b border-slate-200">
+    <section className="py-24 bg-white border-b border-stone-200">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 space-y-2">
-          <span className="text-gold-600 text-xs uppercase tracking-widest font-extrabold block">
+          <span className="text-amber-700 text-sm font-medium block">
             Have Questions?
           </span>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900">
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-zinc-900">
             Pre-Trip Consultations
           </h2>
-          <p className="text-slate-700 text-sm font-normal leading-relaxed">
+          <p className="text-zinc-700 text-sm font-normal leading-relaxed">
             Clear answers regarding safety, bookings, high-altitude preparation, and expedition compliance.
           </p>
         </div>
@@ -32,29 +32,29 @@ export function FaqsSection() {
             return (
               <div
                 key={faq.id}
-                className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden transition-all duration-300"
+                className="bg-stone-50/80 border border-stone-200 rounded-xl overflow-hidden transition-all duration-300"
               >
                 <button
                   onClick={() => toggleFaq(faq.id)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 focus:outline-none cursor-pointer"
+                  className="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-stone-100/60 transition-colors"
                 >
-                  <span className="font-heading text-sm sm:text-base font-bold text-slate-900">
+                  <span className="font-heading text-sm sm:text-base font-bold text-zinc-900">
                     {faq.question}
                   </span>
                   <ChevronDown
-                    className={`h-4 w-4 text-slate-700 transition-transform duration-300 shrink-0 ${
+                    className={`h-4 w-4 text-amber-700 shrink-0 transition-transform duration-300 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 <div
-                  className={`transition-all duration-300 overflow-hidden ${
-                    isOpen ? "max-h-96 border-t border-slate-200" : "max-h-0"
+                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    isOpen ? "max-h-96 border-t border-stone-200" : "max-h-0"
                   }`}
                 >
-                  <p className="p-6 text-slate-700 text-xs sm:text-sm leading-relaxed font-normal">
+                  <div className="p-6 pt-4 text-zinc-700 text-xs sm:text-sm leading-relaxed font-normal bg-white">
                     {faq.answer}
-                  </p>
+                  </div>
                 </div>
               </div>
             );

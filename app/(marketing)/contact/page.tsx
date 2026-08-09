@@ -1,51 +1,72 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle, Clock, Sparkles } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle, Clock } from 'lucide-react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { InquiryService } from '@/lib/services/admin-service';
+import { FormLabel } from '@/components/ui/form-label';
+import { cn } from '@/lib/utils';
+
+const contactSchema = z.object({
+  fullName: z
+    .string()
+    .trim()
+    .min(2, 'Full name must be at least 2 characters'),
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email address is required')
+    .email('Please enter a valid email address'),
+  phone: z.string().optional(),
+  destination: z.string().min(1, 'Please select a region of interest'),
+  travelers: z.string().min(1, 'Please select number of travelers'),
+  message: z
+    .string()
+    .trim()
+    .min(10, 'Please enter at least 10 characters for your message'),
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function ContactView() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    destination: 'Everest Region (Khumbu)',
-    travelers: '2',
-    message: ''
-  });
   const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.fullName && formData.email) {
-      setSubmitting(true);
-      try {
-        await InquiryService.create({
-          guestName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone || '+1 000-000-0000',
-          country: 'International',
-          interestedTrip: formData.destination,
-          travelDates: 'Upcoming Season',
-          groupSize: Number(formData.travelers) || 1,
-          message: formData.message || 'General inquiry submitted via Contact form.',
-        });
-        setSubmitted(true);
-        setFormData({
-          fullName: '',
-          email: '',
-          phone: '',
-          destination: 'Everest Region (Khumbu)',
-          travelers: '2',
-          message: ''
-        });
-      } catch (err) {
-        console.error("Failed to submit inquiry:", err);
-        setSubmitted(true);
-      } finally {
-        setSubmitting(false);
-      }
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      fullName: '',
+      email: '',
+      phone: '',
+      destination: 'Everest Region (Khumbu)',
+      travelers: '2',
+      message: '',
+    },
+  });
+
+  const onSubmit = async (data: ContactFormData) => {
+    try {
+      await InquiryService.create({
+        guestName: data.fullName,
+        email: data.email,
+        phone: data.phone || '+1 000-000-0000',
+        country: 'International',
+        interestedTrip: data.destination,
+        travelDates: 'Upcoming Season',
+        groupSize: Number(data.travelers) || 1,
+        message: data.message,
+      });
+      setSubmitted(true);
+      reset();
+    } catch (err) {
+      console.error("Failed to submit inquiry:", err);
+      setSubmitted(true);
     }
   };
 
@@ -64,7 +85,7 @@ export default function ContactView() {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-slate-950/40" />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="text-gold-400 text-xs uppercase tracking-widest font-extrabold block mb-2">Connect With Us</span>
+          <span className="text-amber-400 text-sm font-medium block mb-1">Connect With Us</span>
           <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
             Bespoke Adventure Planning
           </h1>
@@ -82,162 +103,177 @@ export default function ContactView() {
           <div className="lg:col-span-5 space-y-8">
             
             {/* Info details */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-              <h2 className="font-heading text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">Kathmandu Headquarters</h2>
+            <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm space-y-6">
+              <h2 className="font-heading text-lg font-bold text-zinc-900 border-b border-stone-100 pb-3">Kathmandu Headquarters</h2>
               
-              <ul className="space-y-4 text-xs sm:text-sm text-slate-700">
+              <ul className="space-y-4 text-xs sm:text-sm text-zinc-700">
                 <li className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-gold-600 shrink-0 mt-0.5" />
+                  <MapPin className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block text-slate-900 font-semibold mb-0.5">Physical Address</strong>
+                    <strong className="block text-zinc-900 font-semibold mb-0.5">Physical Address</strong>
                     <span>Tridevi Marg, Thamel, Kathmandu, Nepal 44600 (Opposite Himalayan Java Coffee)</span>
                   </div>
                 </li>
                 
                 <li className="flex items-start gap-3">
-                  <Phone className="h-5 w-5 text-gold-600 shrink-0 mt-0.5" />
+                  <Phone className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block text-slate-900 font-semibold mb-0.5">Telephone Numbers</strong>
-                    <span className="font-mono text-xs text-slate-950 block">+977 1 4410988 (Office Desk)</span>
-                    <span className="font-mono text-xs text-slate-950 block">+977 98511 23456 (24/7 Crisis Hotline)</span>
+                    <strong className="block text-zinc-900 font-semibold mb-0.5">Telephone Numbers</strong>
+                    <span className="text-xs text-zinc-950 block">+977 1 4410988 (Office Desk)</span>
+                    <span className="text-xs text-zinc-950 block">+977 98511 23456 (24/7 Crisis Hotline)</span>
                   </div>
                 </li>
 
                 <li className="flex items-start gap-3">
-                  <Mail className="h-5 w-5 text-gold-600 shrink-0 mt-0.5" />
+                  <Mail className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block text-slate-900 font-semibold mb-0.5">Direct Concierge Email</strong>
-                    <span className="font-mono text-xs text-slate-950 block">concierge@alpineacetreks.com</span>
+                    <strong className="block text-zinc-900 font-semibold mb-0.5">Direct Concierge Email</strong>
+                    <span className="text-xs text-zinc-950 block">concierge@alpineacetreks.com</span>
                   </div>
                 </li>
 
                 <li className="flex items-start gap-3">
-                  <Clock className="h-5 w-5 text-gold-600 shrink-0 mt-0.5" />
+                  <Clock className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block text-slate-900 font-semibold mb-0.5">Office Business Hours</strong>
+                    <strong className="block text-zinc-900 font-semibold mb-0.5">Office Business Hours</strong>
                     <span>Sunday – Friday: 9:00 AM – 6:00 PM NPT (UTC+5:45)</span>
                   </div>
                 </li>
               </ul>
             </div>
 
-            {/* Map Placeholder */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-              <span className="text-xs uppercase font-bold text-slate-700 font-mono tracking-wider block">Office Location Map</span>
-              <div className="relative h-60 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 flex flex-col justify-center items-center text-center px-6">
-                
-                <div className="absolute inset-0 bg-[radial-gradient(#e1e1d8_1px,transparent_1px)] [background-size:16px_16px] opacity-60" />
-                
-                <div className="absolute top-24 left-0 right-0 h-4 bg-white/80 border-y border-slate-200" />
-                <div className="absolute left-1/3 top-0 bottom-0 w-4 bg-white/80 border-x border-slate-200" />
-                
-                <div className="relative z-10 flex flex-col items-center">
-                  <div className="bg-slate-950 text-gold-400 p-2.5 rounded-full shadow-lg border border-gold-500 animate-bounce">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div className="bg-slate-950/90 text-white text-xs font-heading font-bold uppercase tracking-wider px-3 py-1.5 rounded shadow mt-2 border border-gold-500/20">
-                    Tridevi Marg, Thamel
-                  </div>
-                  <span className="text-xs text-slate-700 font-mono mt-1 font-semibold">Kathmandu, Nepal</span>
-                </div>
+            {/* Interactive Google Map */}
+            <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-heading text-sm font-semibold text-zinc-900">Find Our Office</h3>
+                <a
+                  href="https://maps.app.goo.gl/pZ9452LNnDzHN37M8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-medium text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1"
+                >
+                  <span>Open in Google Maps</span>
+                  <span>&rarr;</span>
+                </a>
+              </div>
+              <div className="relative h-64 rounded-xl overflow-hidden border border-stone-200 shadow-xs">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.0854101316063!2d85.31076392638629!3d27.714649076178347!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18fd69092351%3A0x94dae66556fce46b!2sTridevi%20Marg%2C%20Kathmandu%2044600!5e0!3m2!1sen!2snp!4v1786292099624!5m2!1sen!2snp"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  title="Alpine Ace Treks & Expeditions Location Map"
+                  className="w-full h-full"
+                />
               </div>
             </div>
 
           </div>
 
           {/* Right Panel: Contact Inquiry Form */}
-          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-stone-200 shadow-sm">
             
             {submitted ? (
               <div className="py-12 text-center space-y-6 max-w-lg mx-auto animate-fade-in">
-                <div className="bg-gold-100 text-gold-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto border border-gold-300">
-                  <CheckCircle className="h-8 w-8 text-gold-600" />
+                <div className="bg-amber-50 text-amber-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto border border-amber-200">
+                  <CheckCircle className="h-8 w-8 text-amber-600" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="font-heading text-xl font-bold text-slate-900">Inquiry Securely Dispatched</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed font-light">
+                  <h3 className="font-heading text-xl font-bold text-zinc-900">Inquiry Sent Successfully</h3>
+                  <p className="text-zinc-600 text-sm leading-relaxed font-light">
                     Thank you. Your bespoke adventure inquiry has been saved to our database and assigned to our Senior Destination Planner.
                   </p>
                 </div>
-                <div className="bg-slate-950/5 border border-slate-950/10 p-4 rounded-xl text-xs text-slate-700 leading-normal font-light">
-                  <Sparkles className="h-4.5 w-4.5 text-gold-600 inline mr-1 mb-0.5 animate-spin-slow" />
-                  Want immediate assistance? Tap the top-right <strong className="text-slate-950">WhatsApp</strong> button to speak directly with an active operations specialist.
+                <div className="bg-stone-100/60 border border-stone-200 p-4 rounded-xl text-xs text-zinc-700 leading-normal font-light">
+                  Want immediate assistance? Tap the top-right <strong className="text-zinc-950">WhatsApp</strong> button to speak directly with an active operations specialist.
                 </div>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="bg-gold-500 hover:bg-gold-400 text-slate-950 border border-gold-400 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg shadow-xs hover:shadow-md transition-all cursor-pointer"
+                  className="bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
                 >
                   Send another inquiry
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
                 <div className="space-y-2">
-                  <span className="text-gold-600 text-xs uppercase tracking-widest font-extrabold block">Bespoke Inquiries</span>
-                  <h2 className="font-heading text-2xl font-bold text-slate-900">Submit a Qualified Booking Request</h2>
-                  <p className="text-slate-600 text-xs font-light leading-relaxed">
+                  <span className="text-amber-700 text-sm font-medium block">Get in Touch</span>
+                  <h2 className="font-heading text-2xl font-bold text-zinc-900">Plan Your Journey</h2>
+                  <p className="text-zinc-600 text-xs font-light leading-relaxed">
                     Provide your tentative dates, travelers count, and desired goals, and we will formulate a personalized expedition draft.
                   </p>
                 </div>
 
                 {/* Form fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-700 block uppercase tracking-wide">Full Name *</label>
+                  <div className="space-y-1">
+                    <FormLabel required>Full Name</FormLabel>
                     <input
                       type="text"
-                      required
                       placeholder="e.g. Dr. Jennifer Vance"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className="w-full bg-stone-50 border border-slate-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-gold-500"
+                      {...register("fullName")}
+                      className={cn(
+                        "w-full bg-stone-50/80 border text-xs rounded-lg px-4 py-3 focus:outline-none transition-colors",
+                        errors.fullName
+                          ? "border-rose-400 focus:border-rose-500 bg-rose-50/20"
+                          : "border-stone-200 focus:border-amber-500"
+                      )}
                     />
+                    {errors.fullName && (
+                      <p className="text-xs font-medium text-rose-500 mt-1">{errors.fullName.message}</p>
+                    )}
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-700 block uppercase tracking-wide">Email Address *</label>
+                  <div className="space-y-1">
+                    <FormLabel required>Email Address</FormLabel>
                     <input
                       type="email"
-                      required
                       placeholder="e.g. jennifer@luxuryexpeditions.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-stone-50 border border-slate-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-gold-500"
+                      {...register("email")}
+                      className={cn(
+                        "w-full bg-stone-50/80 border text-xs rounded-lg px-4 py-3 focus:outline-none transition-colors",
+                        errors.email
+                          ? "border-rose-400 focus:border-rose-500 bg-rose-50/20"
+                          : "border-stone-200 focus:border-amber-500"
+                      )}
                     />
+                    {errors.email && (
+                      <p className="text-xs font-medium text-rose-500 mt-1">{errors.email.message}</p>
+                    )}
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-700 block uppercase tracking-wide">Contact Number</label>
+                  <div className="space-y-1">
+                    <FormLabel>Contact Number</FormLabel>
                     <input
                       type="tel"
                       placeholder="e.g. +1 (415) 555-0199"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-stone-50 border border-slate-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-gold-500 font-mono"
+                      {...register("phone")}
+                      className="w-full bg-stone-50/80 border border-stone-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-amber-500 transition-colors"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-700 block uppercase tracking-wide">Region of Interest</label>
+                  <div className="space-y-1">
+                    <FormLabel>Region of Interest</FormLabel>
                     <select
-                      value={formData.destination}
-                      onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                      className="w-full bg-stone-50 border border-slate-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-gold-500"
+                      {...register("destination")}
+                      className="w-full bg-stone-50/80 border border-stone-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-amber-500 transition-colors"
                     >
-                      <option>Everest Region (Khumbu)</option>
-                      <option>Annapurna Region</option>
-                      <option>Kathmandu Valley & Culture</option>
-                      <option>Peak Climbing Expeditions</option>
-                      <option>Other / Custom Wilderness</option>
+                      <option value="Everest Region (Khumbu)">Everest Region (Khumbu)</option>
+                      <option value="Annapurna Region">Annapurna Region</option>
+                      <option value="Kathmandu Valley & Culture">Kathmandu Valley & Culture</option>
+                      <option value="Peak Climbing Expeditions">Peak Climbing Expeditions</option>
+                      <option value="Other / Custom Wilderness">Other / Custom Wilderness</option>
                     </select>
                   </div>
 
-                  <div className="space-y-2 sm:col-span-2">
-                    <label className="text-xs font-bold text-slate-700 block uppercase tracking-wide">Number of Travelers</label>
+                  <div className="space-y-1 sm:col-span-2">
+                    <FormLabel>Number of Travelers</FormLabel>
                     <select
-                      value={formData.travelers}
-                      onChange={(e) => setFormData({ ...formData, travelers: e.target.value })}
-                      className="w-full bg-stone-50 border border-slate-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-gold-500"
+                      {...register("travelers")}
+                      className="w-full bg-stone-50/80 border border-stone-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-amber-500 transition-colors"
                     >
                       <option value="1">Solo Traveler</option>
                       <option value="2">2 Travelers (Couple/Friends)</option>
@@ -247,24 +283,31 @@ export default function ContactView() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-700 block uppercase tracking-wide">Your Goals / Message</label>
+                <div className="space-y-1">
+                  <FormLabel required>Your Goals / Message</FormLabel>
                   <textarea
                     rows={4}
                     placeholder="Describe your desired altitude goals, physical preparation level, and special dietary/helicopter requirements."
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-stone-50 border border-slate-200 text-xs rounded-lg px-4 py-3 focus:outline-none focus:border-gold-500 resize-none leading-relaxed"
+                    {...register("message")}
+                    className={cn(
+                      "w-full bg-stone-50/80 border text-xs rounded-lg px-4 py-3 focus:outline-none resize-none leading-relaxed transition-colors",
+                      errors.message
+                        ? "border-rose-400 focus:border-rose-500 bg-rose-50/20"
+                        : "border-stone-200 focus:border-amber-500"
+                    )}
                   />
+                  {errors.message && (
+                    <p className="text-xs font-medium text-rose-500 mt-1">{errors.message.message}</p>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="w-full bg-gold-500 hover:bg-gold-400 text-slate-950 border border-gold-400 font-heading text-xs font-bold uppercase tracking-widest py-4 rounded-lg shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  disabled={isSubmitting}
+                  className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-heading text-sm font-semibold py-3.5 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
                 >
-                  <Send className="h-4.5 w-4.5" />
-                  <span>{submitting ? 'Submitting...' : 'Dispatch Qualified Inquiry'}</span>
+                  <Send className="h-4 w-4 text-amber-400" />
+                  <span>{isSubmitting ? 'Sending...' : 'Send Inquiry'}</span>
                 </button>
               </form>
             )}

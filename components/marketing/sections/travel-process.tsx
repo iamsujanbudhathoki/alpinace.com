@@ -73,7 +73,7 @@ export function TravelProcess() {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-amber-800 text-xs font-semibold uppercase tracking-widest block">
+          <span className="text-zinc-500 text-xs font-semibold uppercase tracking-widest block">
             How It Works
           </span>
           <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-zinc-900">
@@ -84,8 +84,8 @@ export function TravelProcess() {
           </p>
         </div>
 
-        {/* Interactive Step Selector Tabs (Clean Light Theme) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-white p-2.5 rounded-2xl border border-stone-200">
+        {/* Interactive Step Selector Tabs (Clean Neutral Theme) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-stone-100/70 p-2.5 rounded-2xl border border-stone-200">
           {processSteps.map((step, idx) => {
             const isActive = activeStep === idx;
             return (
@@ -94,13 +94,13 @@ export function TravelProcess() {
                 onClick={() => setActiveStep(idx)}
                 className={`flex flex-col items-start p-4 rounded-xl transition-all duration-200 cursor-pointer text-left ${
                   isActive
-                    ? "bg-amber-500 text-slate-950 font-bold border border-amber-400"
-                    : "bg-white hover:bg-stone-50 text-zinc-700 border border-stone-200/60"
+                    ? "bg-white text-zinc-900 font-bold border-2 border-zinc-900 shadow-xs"
+                    : "bg-white/60 hover:bg-white text-zinc-600 border border-stone-200/60"
                 }`}
               >
                 <span
-                  className={`font-heading text-xs font-extrabold mb-1 px-2 py-0.5 rounded ${
-                    isActive ? "bg-slate-950 text-amber-400" : "bg-stone-100 text-zinc-600"
+                  className={`font-heading text-xs font-extrabold mb-1.5 px-2 py-0.5 rounded ${
+                    isActive ? "bg-zinc-900 text-white" : "bg-stone-200/80 text-zinc-700"
                   }`}
                 >
                   Step {step.id}
@@ -122,7 +122,7 @@ export function TravelProcess() {
               
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60">
+                  <span className="text-xs font-bold text-zinc-900 bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200">
                     Phase {currentStep.id} Protocol
                   </span>
                   <span className="text-xs text-zinc-500 font-medium">
@@ -145,7 +145,7 @@ export function TravelProcess() {
                 </span>
                 {currentStep.deliverables.map((item, dIdx) => (
                   <div key={dIdx} className="flex items-start gap-3 text-xs sm:text-sm text-zinc-700">
-                    <CheckCircle2 className="h-4.5 w-4.5 text-amber-600 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="h-4.5 w-4.5 text-zinc-900 shrink-0 mt-0.5" />
                     <span className="leading-snug">{item}</span>
                   </div>
                 ))}
@@ -161,10 +161,10 @@ export function TravelProcess() {
 
               <Link
                 href={currentStep.ctaLink}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-700 hover:bg-amber-800 text-white font-heading text-xs font-semibold px-6 py-3.5 rounded-xl transition-all cursor-pointer group active:scale-[0.99]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-heading text-xs font-semibold px-6 py-3.5 rounded-xl transition-all cursor-pointer group active:scale-[0.99]"
               >
                 <span>{currentStep.ctaText}</span>
-                <ArrowRight className="h-4 w-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 text-stone-300 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 

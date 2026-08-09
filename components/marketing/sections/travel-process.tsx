@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, CheckCircle2, ChevronRight } from "lucide-react";
 
 const processSteps = [
   {
@@ -67,16 +67,24 @@ export function TravelProcess() {
   const [activeStep, setActiveStep] = useState(0);
   const currentStep = processSteps[activeStep];
 
+  const handleNext = () => {
+    setActiveStep((prev) => (prev < processSteps.length - 1 ? prev + 1 : 0));
+  };
+
+  const handlePrev = () => {
+    setActiveStep((prev) => (prev > 0 ? prev - 1 : processSteps.length - 1));
+  };
+
   return (
-    <section className="py-20 bg-stone-50/70 border-b border-stone-200 font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section className="py-24 bg-stone-50/70 border-b border-stone-200 font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-2.5">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
           <span className="text-amber-800 text-xs font-semibold block">
             How It Works
           </span>
-          <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-900">
+          <h2 className="font-heading text-3xl sm:text-5xl font-semibold tracking-tight text-zinc-900">
             Your Journey To The Sky
           </h2>
           <p className="text-zinc-600 text-sm font-normal leading-relaxed">
@@ -84,57 +92,70 @@ export function TravelProcess() {
           </p>
         </div>
 
-        {/* Interactive Step Selector Tabs (Stable 2px Borders) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-stone-100/80 p-2.5 rounded-2xl border border-stone-200">
-          {processSteps.map((step, idx) => {
-            const isActive = activeStep === idx;
-            return (
-              <button
-                key={step.id}
-                onClick={() => setActiveStep(idx)}
-                className={`flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-150 cursor-pointer text-left box-border ${
-                  isActive
-                    ? "bg-white text-zinc-900 border-amber-700/80 shadow-xs"
-                    : "bg-white/70 hover:bg-white text-zinc-600 border-stone-200/70"
-                }`}
-              >
-                <span
-                  className={`font-heading text-xs font-medium mb-1.5 px-2 py-0.5 rounded ${
-                    isActive ? "bg-amber-100 text-amber-900 font-semibold" : "bg-stone-200/80 text-zinc-600"
-                  }`}
+        {/* Timeline Stepper Nodes */}
+        <div className="relative">
+          {/* Connector Bar */}
+          <div className="hidden md:block absolute top-5 left-12 right-12 h-0.5 bg-stone-200 -z-0" />
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+            {processSteps.map((step, idx) => {
+              const isActive = activeStep === idx;
+              return (
+                <button
+                  key={step.id}
+                  onClick={() => setActiveStep(idx)}
+                  className="flex flex-col items-center text-center group cursor-pointer"
                 >
-                  Step {step.id}
-                </span>
-                <span className="font-heading text-xs sm:text-sm font-medium truncate w-full">
-                  {step.title}
-                </span>
-              </button>
-            );
-          })}
+                  {/* Step Node Circle */}
+                  <div
+                    className={`w-10 h-10 rounded-full font-heading text-xs font-semibold flex items-center justify-center transition-all duration-200 mb-3 ${
+                      isActive
+                        ? "bg-amber-800 text-white ring-4 ring-amber-100 border-2 border-amber-800 scale-110"
+                        : "bg-white text-zinc-600 border-2 border-stone-300 group-hover:border-amber-600 group-hover:text-amber-800"
+                    }`}
+                  >
+                    {step.id}
+                  </div>
+                  
+                  {/* Step Title Label */}
+                  <span
+                    className={`font-heading text-xs sm:text-sm transition-colors ${
+                      isActive
+                        ? "font-semibold text-zinc-900"
+                        : "font-medium text-zinc-500 group-hover:text-zinc-800"
+                    }`}
+                  >
+                    {step.title}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Interactive Dynamic Display Panel */}
-        <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
+        {/* Main Step Detail Display Card */}
+        <div className="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           
-          {/* Left Detail Column */}
-          <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between space-y-8 min-h-[400px]">
+          {/* Left Details */}
+          <div className="lg:col-span-7 space-y-8 flex flex-col justify-between min-h-[380px]">
+            
             <div className="space-y-6">
               
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60">
-                    Step {currentStep.id} Overview
+                  <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60">
+                    Step {currentStep.id} of 04
                   </span>
                   <span className="text-xs text-zinc-500 font-normal">
                     {currentStep.subtitle}
                   </span>
                 </div>
-                <h3 className="font-heading text-2xl sm:text-3xl font-semibold text-zinc-900 pt-1">
+                <h3 className="font-heading text-2xl sm:text-4xl font-semibold text-zinc-900 pt-1">
                   {currentStep.title}
                 </h3>
               </div>
 
-              <p className="text-zinc-600 text-sm leading-relaxed font-normal">
+              <p className="text-zinc-600 text-sm sm:text-base leading-relaxed font-normal">
                 {currentStep.desc}
               </p>
 
@@ -153,34 +174,52 @@ export function TravelProcess() {
 
             </div>
 
-            {/* Bottom Actions */}
+            {/* Controls & Action Buttons */}
             <div className="pt-6 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-xs text-zinc-500 font-normal">
-                Step {activeStep + 1} of 4 &bull; <strong className="text-zinc-800 font-medium">{currentStep.title}</strong>
-              </span>
+              
+              {/* Previous / Next Stepper Controls */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handlePrev}
+                  className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200/70 border border-stone-200 flex items-center justify-center text-zinc-700 transition-colors cursor-pointer"
+                  title="Previous Step"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200/70 border border-stone-200 flex items-center justify-center text-zinc-700 transition-colors cursor-pointer"
+                  title="Next Step"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                <span className="text-xs text-zinc-500 font-medium ml-2">
+                  {activeStep + 1} / {processSteps.length}
+                </span>
+              </div>
 
+              {/* Primary CTA */}
               <Link
                 href={currentStep.ctaLink}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-heading text-xs font-medium px-6 py-3 rounded-xl transition-all cursor-pointer group active:scale-[0.99]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-800 hover:bg-amber-900 text-white font-heading text-xs font-semibold px-6 py-3.5 rounded-xl transition-all cursor-pointer group active:scale-[0.99]"
               >
                 <span>{currentStep.ctaText}</span>
-                <ArrowRight className="h-4 w-4 text-stone-300 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="h-4 w-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
           </div>
 
-          {/* Right Visual Image Card */}
-          <div className="lg:col-span-5 relative min-h-[300px] lg:min-h-full bg-stone-100 overflow-hidden">
+          {/* Right Image Showcase */}
+          <div className="lg:col-span-5 relative aspect-4/3 sm:aspect-16/10 lg:aspect-square rounded-2xl overflow-hidden border border-stone-200 bg-stone-100">
             <img
               src={currentStep.image}
               alt={currentStep.title}
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover object-center transition-all duration-500"
+              className="w-full h-full object-cover transition-opacity duration-300"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent" />
-            
-            <div className="absolute bottom-6 left-6 right-6 text-white space-y-1">
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-900/50 via-transparent to-transparent" />
+            <div className="absolute bottom-5 left-5 right-5 text-white">
               <span className="text-amber-200 text-xs font-normal block">
                 {currentStep.subtitle}
               </span>

@@ -7,58 +7,58 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 const processSteps = [
   {
     id: "01",
-    title: "Bespoke Consultation",
+    title: "1-on-1 Consultation",
     subtitle: "Initial Discovery & Physical Readiness",
-    desc: "Our expedition planners connect on a 1-on-1 private video call to assess your high-altitude experience, physical fitness goals, and travel preferences.",
+    desc: "Connect on a private video call with our expedition team in Kathmandu to review your physical fitness goals, travel dates, and high-altitude aspirations.",
     deliverables: [
-      "Custom Altitude Readiness & Acclimatization Assessment",
-      "Personalized Medical & Insurance Guidance",
-      "Private Helicopter Transfer vs. Trekking Preference Mapping",
+      "Altitude Readiness & Acclimatization Assessment",
+      "Personalized Medical & Rescue Insurance Guidance",
+      "Domestic Flight & Helicopter Transport Mapping",
     ],
     image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200",
-    ctaText: "Request Private Consultation",
+    ctaText: "Schedule Consultation Call",
     ctaLink: "/contact",
   },
   {
     id: "02",
-    title: "Itinerary Architecture",
-    subtitle: "Day-by-Day Custom Expedition Proposal",
-    desc: "We engineer a tailor-made day-by-day itinerary tailored to your exact pace, pairing luxury mountain teahouses with private Sherpa guide allocations and permit approvals.",
+    title: "Custom Itinerary Design",
+    subtitle: "Day-by-Day Route & Lodge Selection",
+    desc: "We design a tailor-made day-by-day itinerary around your preferred trekking pace, pairing premium teahouses with dedicated Sherpa guide allocations.",
     deliverables: [
-      "Tailored Altitude Elevation Profile & Mandatory Rest Days",
-      "Official Permit Pre-Approval (NTB, TIMS & National Parks)",
-      "Bespoke Teahouse & Domestic Aviation Pre-Allocations",
+      "Tailored Elevation Profiles & Mandatory Rest Days",
+      "Official Trekking Permit Approvals (NTB, TIMS & National Parks)",
+      "Reserved Teahouse Accommodations & Flight Seats",
     ],
     image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=1200",
-    ctaText: "Explore Bespoke Itineraries",
+    ctaText: "Explore Custom Itineraries",
     ctaLink: "/contact",
   },
   {
     id: "03",
-    title: "Guided Preparation",
-    subtitle: "Gear, Training & Safety Briefings",
-    desc: "Access high-altitude training protocols, custom gear packing checklists, visa assistance, and pre-departure safety briefings with active Sherpa team leaders.",
+    title: "Gear & Fitness Readiness",
+    subtitle: "Equipment Checklists & Preparation",
+    desc: "Receive mountaineer-approved gear checklists, aerobic conditioning plans, visa advice, and pre-departure briefings directly from our lead Sherpa guides.",
     deliverables: [
-      "Mountaineer-Tested Equipment & Packing Checklist",
-      "High-Altitude Aerobic Training & Acclimatization Schedule",
-      "24/7 Pre-Flight Concierge & Nepal Visa Support",
+      "Trail-Tested Equipment & Packing Checklist",
+      "High-Altitude Physical Preparation Plan",
+      "Nepal Visa Assistance & Pre-Flight Briefing",
     ],
     image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200",
-    ctaText: "View Preparation Guidelines",
+    ctaText: "View Preparation Advice",
     ctaLink: "/contact",
   },
   {
     id: "04",
-    title: "Legendary Footsteps",
-    subtitle: "Arrival in Kathmandu & Trail Execution",
-    desc: "Touch down in Nepal for VIP airport pickup, five-star heritage stays, and step into the high Himalayas under the care of certified IFMGA Sherpa guides.",
+    title: "Arrival & Trail Execution",
+    subtitle: "Kathmandu Welcome & Expedition Start",
+    desc: "Touch down in Kathmandu for VIP airport reception, boutique hotel stays, and step onto the trail supported by certified Sherpa guide leaders.",
     deliverables: [
-      "VIP Airport Transfer & Kathmandu Heritage Hospitality",
-      "Certified IFMGA Sherpa Trail Leadership & Satellite Comms",
-      "24/7 Helicopter Rescue Readiness & Medical Safety Net",
+      "VIP Airport Transfers & Kathmandu Boutique Stays",
+      "Certified IFMGA Sherpa Guide Leadership & Comms",
+      "Emergency Helicopter Rescue Readiness on Standby",
     ],
     image: "https://images.unsplash.com/photo-1585016495481-91613a3ab1bc?q=80&w=1200",
-    ctaText: "Begin Your Expedition",
+    ctaText: "Start Your Expedition",
     ctaLink: "/contact",
   },
 ];
@@ -73,7 +73,7 @@ export function TravelProcess() {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-amber-800 text-xs font-semibold uppercase tracking-widest block">
+          <span className="text-amber-800 text-xs font-semibold block">
             How It Works
           </span>
           <h2 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-zinc-900">
@@ -84,7 +84,7 @@ export function TravelProcess() {
           </p>
         </div>
 
-        {/* Interactive Step Selector Tabs (Consistent 2px Border to Prevent Layout Shift) */}
+        {/* Interactive Step Selector Tabs (Stable 2px Border) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-stone-100/80 p-2.5 rounded-2xl border border-stone-200">
           {processSteps.map((step, idx) => {
             const isActive = activeStep === idx;
@@ -94,18 +94,18 @@ export function TravelProcess() {
                 onClick={() => setActiveStep(idx)}
                 className={`flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-150 cursor-pointer text-left box-border ${
                   isActive
-                    ? "bg-amber-50/90 text-amber-950 font-bold border-amber-700/80 shadow-xs"
+                    ? "bg-amber-900 text-white font-bold border-amber-900 shadow-xs"
                     : "bg-white hover:bg-stone-50 text-zinc-700 border-stone-200/70"
                 }`}
               >
                 <span
-                  className={`font-heading text-xs font-bold mb-1.5 px-2.5 py-0.5 rounded-md ${
-                    isActive ? "bg-amber-800 text-white" : "bg-stone-200/80 text-zinc-700"
+                  className={`font-heading text-xs font-semibold mb-1.5 px-2 py-0.5 rounded ${
+                    isActive ? "bg-amber-400 text-zinc-950 font-bold" : "bg-stone-200/80 text-zinc-700"
                   }`}
                 >
                   Step {step.id}
                 </span>
-                <span className="font-heading text-xs sm:text-sm font-bold truncate w-full">
+                <span className="font-heading text-xs sm:text-sm font-semibold truncate w-full">
                   {step.title}
                 </span>
               </button>
@@ -122,8 +122,8 @@ export function TravelProcess() {
               
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-amber-900 bg-amber-100/70 px-2.5 py-1 rounded-md border border-amber-200/80">
-                    Phase {currentStep.id} Protocol
+                  <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60">
+                    Step {currentStep.id} Overview
                   </span>
                   <span className="text-xs text-zinc-500 font-medium">
                     {currentStep.subtitle}
@@ -140,8 +140,8 @@ export function TravelProcess() {
 
               {/* Deliverables Checklist */}
               <div className="space-y-3 pt-4 border-t border-stone-100">
-                <span className="text-xs font-bold text-zinc-900 uppercase tracking-wider block mb-2">
-                  Key Phase Deliverables:
+                <span className="text-xs font-semibold text-zinc-900 block mb-2">
+                  What We Handle In This Step:
                 </span>
                 {currentStep.deliverables.map((item, dIdx) => (
                   <div key={dIdx} className="flex items-start gap-3 text-xs sm:text-sm text-zinc-700">

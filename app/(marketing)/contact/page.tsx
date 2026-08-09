@@ -104,48 +104,56 @@ export default function ContactView() {
           <div className="lg:col-span-5 space-y-8">
             
             {/* Info details */}
-            <div className="bg-white p-8 rounded-2xl border border-stone-200 space-y-6">
+            <div className="bg-white/95 backdrop-blur-md p-8 rounded-2xl border border-stone-200/90 space-y-6">
               <h2 className="font-heading text-lg font-bold text-zinc-900 border-b border-stone-100 pb-3">Kathmandu Headquarters</h2>
               
-              <ul className="space-y-4 text-xs sm:text-sm text-zinc-700">
-                <li className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <ul className="space-y-5 text-xs sm:text-sm text-zinc-700">
+                <li className="flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shrink-0">
+                    <MapPin className="h-4.5 w-4.5" />
+                  </div>
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Physical Address</strong>
-                    <span>Tridevi Marg, Thamel, Kathmandu, Nepal 44600 (Opposite Himalayan Java Coffee)</span>
+                    <span className="text-zinc-600 text-xs leading-relaxed block">Tridevi Marg, Thamel, Kathmandu, Nepal 44600 (Opposite Himalayan Java Coffee)</span>
                   </div>
                 </li>
                 
-                <li className="flex items-start gap-3">
-                  <Phone className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <li className="flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shrink-0">
+                    <Phone className="h-4.5 w-4.5" />
+                  </div>
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Telephone Numbers</strong>
-                    <span className="text-xs text-zinc-950 block">+977 1 4410988 (Office Desk)</span>
-                    <span className="text-xs text-zinc-950 block">+977 98511 23456 (24/7 Crisis Hotline)</span>
+                    <span className="text-xs text-zinc-800 block">+977 1 4410988 (Office Desk)</span>
+                    <span className="text-xs text-zinc-800 block">+977 98511 23456 (24/7 Crisis Hotline)</span>
                   </div>
                 </li>
 
-                <li className="flex items-start gap-3">
-                  <Mail className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <li className="flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shrink-0">
+                    <Mail className="h-4.5 w-4.5" />
+                  </div>
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Direct Concierge Email</strong>
-                    <span className="text-xs text-zinc-950 block">concierge@alpineacetreks.com</span>
+                    <span className="text-xs text-amber-800 font-medium block">concierge@alpineacetreks.com</span>
                   </div>
                 </li>
 
-                <li className="flex items-start gap-3">
-                  <Clock className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <li className="flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shrink-0">
+                    <Clock className="h-4.5 w-4.5" />
+                  </div>
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Office Business Hours</strong>
-                    <span>Sunday – Friday: 9:00 AM – 6:00 PM NPT (UTC+5:45)</span>
+                    <span className="text-zinc-600 text-xs block">Sunday – Friday: 9:00 AM – 6:00 PM NPT (UTC+5:45)</span>
                   </div>
                 </li>
               </ul>
             </div>
 
             {/* Interactive Google Map */}
-            <div className="bg-white p-4 rounded-2xl border border-stone-200 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-stone-200/90 space-y-3">
+              <div className="flex items-center justify-between px-1">
                 <h3 className="font-heading text-sm font-semibold text-zinc-900">Find Our Office</h3>
                 <a
                   href="https://maps.app.goo.gl/pZ9452LNnDzHN37M8"
@@ -175,7 +183,7 @@ export default function ContactView() {
           </div>
 
           {/* Right Panel: Contact Inquiry Form */}
-          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-stone-200">
+          <div className="lg:col-span-7 bg-white/95 backdrop-blur-md p-8 sm:p-10 rounded-3xl border border-stone-200/90">
             
             {submitted ? (
               <div className="py-12 text-center space-y-6 max-w-lg mx-auto animate-fade-in">

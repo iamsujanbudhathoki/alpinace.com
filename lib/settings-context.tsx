@@ -50,9 +50,9 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   youtubeUrl: "",
   tripadvisorUrl: "",
   linkedinUrl: "",
-  currency: "USD",
-  depositPercentage: "20",
-  enableBookings: "true",
+  currency: "",
+  depositPercentage: "",
+  enableBookings: "",
 };
 
 interface SettingsContextType {

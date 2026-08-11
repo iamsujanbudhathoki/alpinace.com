@@ -21,10 +21,10 @@ export function SiteFooter() {
               />
               <span className="flex flex-col leading-none">
                 <span className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
-                  {settings.siteName || "Alpine Ace"}
+                  {settings.siteName}
                 </span>
                 <span className="text-[10px] font-medium text-zinc-500 mt-0.5">
-                  {settings.tagline || "Nepal Trekking & Expeditions"}
+                  {settings.tagline}
                 </span>
               </span>
             </Link>
@@ -165,7 +165,7 @@ export function SiteFooter() {
               <li className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                 <span>
-                  {settings.companyAddress || "Thamel, Kathmandu, Nepal 44600"}
+                  {settings.companyAddress}
                 </span>
               </li>
               <li className="flex items-center gap-3">
@@ -183,15 +183,17 @@ export function SiteFooter() {
                   )}
                 </div>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-amber-600 shrink-0" />
-                <a
-                  href={`mailto:${settings.contactEmail || "info@alpineace.com"}`}
-                  className="text-xs text-slate-900 font-bold hover:text-amber-700 transition-colors break-all"
-                >
-                  {settings.contactEmail || "info@alpineace.com"}
-                </a>
-              </li>
+              {settings.contactEmail && (
+                <li className="flex items-center gap-3">
+                  <Mail className="h-4 w-4 text-amber-600 shrink-0" />
+                  <a
+                    href={`mailto:${settings.contactEmail}`}
+                    className="text-xs text-slate-900 font-bold hover:text-amber-700 transition-colors break-all"
+                  >
+                    {settings.contactEmail}
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -199,7 +201,7 @@ export function SiteFooter() {
         {/* Divider & Bottom Bar */}
         <div className="border-t border-slate-100 pt-6 sm:pt-8 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 font-semibold text-center sm:text-left">
           <div>
-            &copy; {new Date().getFullYear()} {settings.siteName || "Alpine Ace Treks & Expeditions"}. All rights reserved.
+            &copy; {new Date().getFullYear()} {settings.siteName}. All rights reserved.
           </div>
           <div className="flex flex-wrap justify-center gap-6">
             <Link href="/privacy" className="hover:text-amber-700 transition-colors">

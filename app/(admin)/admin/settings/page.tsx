@@ -60,9 +60,9 @@ export default function AdminSettingsPage() {
     linkedinUrl: "",
 
     // Operations
-    currency: "USD",
-    depositPercentage: "20",
-    enableBookings: "true",
+    currency: "",
+    depositPercentage: "",
+    enableBookings: "",
   });
 
   useEffect(() => {

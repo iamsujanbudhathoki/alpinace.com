@@ -113,7 +113,7 @@ export default function ContactView() {
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Physical Address</strong>
                     <span className="text-zinc-600 text-xs leading-relaxed block">
-                      {settings.companyAddress || "Thamel Marg, Ward 26, Kathmandu, Nepal 44600"}
+                      {settings.companyAddress}
                     </span>
                   </div>
                 </li>
@@ -137,32 +137,36 @@ export default function ContactView() {
                   </div>
                 </li>
 
-                <li className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shrink-0">
-                    <Mail className="h-4.5 w-4.5" />
-                  </div>
-                  <div>
-                    <strong className="block text-zinc-900 font-semibold mb-0.5">Direct Concierge Email</strong>
-                    <a
-                      href={`mailto:${settings.contactEmail || "info@alpineace.com"}`}
-                      className="text-xs text-amber-800 font-medium block hover:underline"
-                    >
-                      {settings.contactEmail || "info@alpineace.com"}
-                    </a>
-                  </div>
-                </li>
+                {settings.contactEmail && (
+                  <li className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shrink-0">
+                      <Mail className="h-4.5 w-4.5" />
+                    </div>
+                    <div>
+                      <strong className="block text-zinc-900 font-semibold mb-0.5">Direct Concierge Email</strong>
+                      <a
+                        href={`mailto:${settings.contactEmail}`}
+                        className="text-xs text-amber-800 font-medium block hover:underline"
+                      >
+                        {settings.contactEmail}
+                      </a>
+                    </div>
+                  </li>
+                )}
 
-                <li className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shrink-0">
-                    <Clock className="h-4.5 w-4.5" />
-                  </div>
-                  <div>
-                    <strong className="block text-zinc-900 font-semibold mb-0.5">Office Business Hours</strong>
-                    <span className="text-zinc-600 text-xs block">
-                      {settings.officeHours || "Sunday – Friday: 9:00 AM – 6:00 PM NPT (UTC+5:45)"}
-                    </span>
-                  </div>
-                </li>
+                {settings.officeHours && (
+                  <li className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 shrink-0">
+                      <Clock className="h-4.5 w-4.5" />
+                    </div>
+                    <div>
+                      <strong className="block text-zinc-900 font-semibold mb-0.5">Office Business Hours</strong>
+                      <span className="text-zinc-600 text-xs block">
+                        {settings.officeHours}
+                      </span>
+                    </div>
+                  </li>
+                )}
               </ul>
             </div>
 

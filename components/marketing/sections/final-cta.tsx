@@ -6,7 +6,7 @@ import { useSettings } from "@/lib/settings-context";
 
 export function FinalCta() {
   const { settings } = useSettings();
-  const phone = settings.whatsappNumber || "9779851000000";
+  const phone = settings.whatsappNumber;
 
   return (
     <section className="relative py-20 bg-white text-slate-900 border-t border-slate-200 text-center overflow-hidden">

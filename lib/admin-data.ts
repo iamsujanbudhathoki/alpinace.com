@@ -129,4 +129,23 @@ export interface CategoryItem {
 
 export const mockCategories: CategoryItem[] = [];
 
+export enum AssociateStatus {
+  ACTIVE = "Active",
+  DRAFT = "Draft",
+}
+
+export interface AssociateItem {
+  id: string;
+  name: string;
+  role?: string;
+  company?: string;
+  image?: string;
+  websiteUrl?: string;
+  description?: string;
+  category: string;
+  status: AssociateStatus;
+  order: number;
+}
+
+
 

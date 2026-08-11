@@ -1,5 +1,5 @@
-import { CategoryItem, PackageItem, Booking, Inquiry, Guide, BlogArticle, BlogStatus } from "@/lib/admin-data";
-import { CategoryFormValues, TrekFormValues, TourFormValues, ExpeditionFormValues, BookingFormValues, InquiryFormValues, BlogFormValues } from "@/lib/admin-schemas";
+import { CategoryItem, PackageItem, Booking, Inquiry, Guide, BlogArticle, BlogStatus, AssociateItem, AssociateStatus } from "@/lib/admin-data";
+import { CategoryFormValues, TrekFormValues, TourFormValues, ExpeditionFormValues, BookingFormValues, InquiryFormValues, BlogFormValues, AssociateFormValues } from "@/lib/admin-schemas";
 import { TrekItem } from "@/lib/trek-data";
 import { apiClient, axiosInstance, ApiResponse } from "@/lib/services/api-client";
 
@@ -484,3 +484,39 @@ export const NotificationService = {
     return apiClient.delete<boolean>(`/notifications/${id}`);
   },
 };
+
+export const AssociateService = {
+  async getAll(status?: AssociateStatus): Promise<AssociateItem[]> {
+    try {
+      const endpoint = status ? `/associates?status=${status}` : "/associates";
+      const res = await apiClient.get<AssociateItem[]>(endpoint);
+      return Array.isArray(res?.data) ? res.data : [];
+    } catch (e) {
+      console.warn("Backend associates fetch error:", e);
+      return [];
+    }
+  },
+
+  async getById(id: string): Promise<AssociateItem | null> {
+    try {
+      const res = await apiClient.get<AssociateItem>(`/associates/${id}`);
+      return res?.data || null;
+    } catch (e) {
+      console.warn("Backend associate by id fetch error:", e);
+      return null;
+    }
+  },
+
+  async create(data: AssociateFormValues): Promise<ApiResponse<AssociateItem>> {
+    return apiClient.post<AssociateItem>("/associates", data);
+  },
+
+  async update(id: string, data: Partial<AssociateFormValues>): Promise<ApiResponse<AssociateItem>> {
+    return apiClient.put<AssociateItem>(`/associates/${id}`, data);
+  },
+
+  async delete(id: string): Promise<ApiResponse<boolean>> {
+    return apiClient.delete<boolean>(`/associates/${id}`);
+  },
+};
+

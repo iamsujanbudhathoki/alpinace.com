@@ -7,6 +7,7 @@ import {
   PAYMENT_STATUSES,
   PERMIT_STATUSES,
   BlogStatus,
+  AssociateStatus,
 } from "./admin-data";
 import { TREK_DIFFICULTIES } from "./trek-data";
 
@@ -136,5 +137,20 @@ export const blogSchema = z.object({
 });
 
 export type BlogFormValues = z.infer<typeof blogSchema>;
+
+export const associateSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  role: z.string().optional(),
+  company: z.string().optional(),
+  image: z.string().optional(),
+  websiteUrl: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  description: z.string().optional(),
+  category: z.string().default("Partner"),
+  status: z.nativeEnum(AssociateStatus).default(AssociateStatus.ACTIVE),
+  order: z.preprocess((val) => Number(val) || 0, z.number().default(0)),
+});
+
+export type AssociateFormValues = z.infer<typeof associateSchema>;
+
 
 

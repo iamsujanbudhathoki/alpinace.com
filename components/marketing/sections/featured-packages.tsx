@@ -85,11 +85,11 @@ export function FeaturedPackages() {
                       alt={pkg.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 right-3 bg-gold-500 text-slate-950 text-xs font-bold px-2.5 py-1 rounded-md border border-gold-400">
+                    <div className="absolute top-3 right-3 bg-slate-900/90 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-xs">
                       {pkg.category}
                     </div>
                     <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 text-gold-400 fill-gold-400" />
+                      <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
                       <span>{pkg.rating} ({pkg.reviewsCount})</span>
                     </div>
                   </div>

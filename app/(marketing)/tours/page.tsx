@@ -99,25 +99,25 @@ export default function ToursPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search region or tour..."
+            placeholder="Search cultural, safari, luxury..."
             className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-slate-400 transition-all"
           />
           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
         </div>
       </div>
 
-      {/* Tour Type */}
+      {/* Tour Type Filter */}
       <div className="space-y-1.5">
         <label className="block text-xs font-bold text-slate-800">
-          Tour Type
+          Tour Style
         </label>
         <div className="space-y-1">
           {[
-            { label: "All Types", value: "All" },
+            { label: "All Styles", value: "All" },
             { label: "Cultural Heritage", value: "Cultural Heritage" },
-            { label: "Wildlife Safari", value: "Wildlife Safari" },
-            { label: "Wellness Retreat", value: "Wellness Retreat" },
-            { label: "Scenic & Adventure", value: "Scenic & Adventure" },
+            { label: "Luxury Wildlife Safari", value: "Luxury Wildlife Safari" },
+            { label: "Helicopter Pilgrimage", value: "Helicopter Pilgrimage" },
+            { label: "Photography & Scenic", value: "Photography & Scenic" },
           ].map((item) => {
             const isSelected = selectedType === item.value;
             return (
@@ -126,7 +126,7 @@ export default function ToursPage() {
                 onClick={() => setSelectedType(item.value)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                   isSelected
-                    ? "bg-gold-500 text-slate-950 font-bold border border-gold-400 shadow-xs"
+                    ? "bg-slate-900 text-white font-bold shadow-xs"
                     : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-transparent"
                 }`}
               >
@@ -154,7 +154,7 @@ export default function ToursPage() {
           step="1"
           value={maxDuration}
           onChange={(e) => setMaxDuration(Number(e.target.value))}
-          className="w-full accent-gold-600 cursor-pointer"
+          className="w-full accent-amber-600 cursor-pointer"
         />
       </div>
 
@@ -179,19 +179,19 @@ export default function ToursPage() {
 
   return (
     <div className="min-h-screen bg-[#fafaf9] text-slate-900 pt-16 sm:pt-20 pb-20 font-sans">
-      {/* Clean Hero Header */}
+      {/* Hero Header */}
       <section className="bg-white border-b border-slate-200 py-8 sm:py-12 px-4 sm:px-6 md:px-12">
         <div className="max-w-7xl mx-auto space-y-2">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
-            Nepal Luxury Tours &amp; Retreats
+          <p className="text-xs font-semibold text-amber-700 uppercase tracking-widest">
+            Nepal Cultural Tours &amp; Safaris
           </p>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
-            Cultural, Wildlife &amp; Wellness Journeys
+            Nepal Tours &amp; Heritage Journeys
           </h1>
 
           <p className="text-slate-600 text-xs sm:text-sm max-w-2xl font-normal leading-relaxed pt-1">
-            Sip premium tea overlooking ancient pagoda palaces, take private lakeside cruises, fly close to Everest, and rejuvenate in world-class wellness resorts.
+            Experience UNESCO World Heritage temples in Kathmandu Valley, private Chitwan jungle safaris, and sunrise over the Annapurnas in Pokhara. Curated for travelers who value heritage, luxury transport, and private local historians.
           </p>
         </div>
       </section>
@@ -205,7 +205,7 @@ export default function ToursPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search tour name or region..."
+              placeholder="Search tour name or style..."
               className="w-full text-xs bg-white border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-400 transition-all shadow-xs"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -215,10 +215,10 @@ export default function ToursPage() {
             onClick={() => setIsMobileFilterOpen(true)}
             className="flex items-center justify-center gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-800 shadow-xs hover:bg-slate-50 transition-colors cursor-pointer"
           >
-            <SlidersHorizontal className="w-4 h-4 text-gold-600" />
+            <SlidersHorizontal className="w-4 h-4 text-amber-600" />
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="bg-gold-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">
+              <span className="bg-slate-900 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -235,7 +235,7 @@ export default function ToursPage() {
             <div className="relative z-10 bg-white w-full rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto space-y-4 border-t border-slate-200 shadow-2xl">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 sticky top-0 bg-white z-10 pt-1">
                 <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-gold-600" />
+                  <SlidersHorizontal className="w-4 h-4 text-amber-600" />
                   <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
                     Filter Tours
                   </h2>
@@ -262,7 +262,7 @@ export default function ToursPage() {
               <div className="pt-4 border-t border-slate-100">
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="w-full bg-gold-500 hover:bg-gold-400 text-slate-950 font-bold text-xs py-3 rounded-xl shadow-xs transition-colors cursor-pointer"
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl shadow-xs transition-colors cursor-pointer"
                 >
                   Show {filteredTours.length} Tours
                 </button>
@@ -293,11 +293,11 @@ export default function ToursPage() {
           {/* Right Main Catalog Content Column */}
           <main className="lg:col-span-8 space-y-5">
             <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-xs text-slate-600 font-medium shadow-xs">
-              <span>Showing <strong>{filteredTours.length}</strong> luxury tours</span>
+              <span>Showing <strong>{filteredTours.length}</strong> guided tours</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-xs text-gold-600 font-semibold hover:underline cursor-pointer"
+                  className="text-xs text-amber-700 font-semibold hover:underline cursor-pointer"
                 >
                   Clear filters ({activeFilterCount})
                 </button>
@@ -339,7 +339,7 @@ export default function ToursPage() {
                           {tour.region} • {tour.durationDays} {tour.durationDays === 1 ? "DAY" : "DAYS"}
                         </div>
 
-                        <h3 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-gold-600 transition-colors">
+                        <h3 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-amber-700 transition-colors">
                           {tour.title}
                         </h3>
 
@@ -354,7 +354,7 @@ export default function ToursPage() {
                       </div>
                     </Link>
 
-                    {/* Footer Row with Details and Gold Book Button */}
+                    {/* Footer Row with Details and Book Button */}
                     <div className="p-4 pt-0 border-t border-slate-100 mt-2">
                       <div className="flex items-center justify-between pt-3">
                         <div>
@@ -372,9 +372,9 @@ export default function ToursPage() {
                           </Link>
 
                           <Link href="/contact">
-                            <button className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gold-500 text-slate-950 border border-gold-400 hover:bg-gold-400 transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1">
+                            <button className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1.5">
                               <span>Book</span>
-                              <ArrowRight className="w-3 h-3" />
+                              <ArrowRight className="w-3 h-3 text-amber-400" />
                             </button>
                           </Link>
                         </div>
@@ -399,8 +399,9 @@ export default function ToursPage() {
           </div>
 
           <Link href="/contact" className="shrink-0 w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-gold-500 hover:bg-gold-400 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-xl border border-gold-400 cursor-pointer transition-all shadow-xs hover:shadow-md">
-              Consult Destination Designer
+            <button className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all shadow-xs hover:shadow-md flex items-center justify-center gap-2">
+              <span>Consult Destination Designer</span>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
             </button>
           </Link>
         </div>
@@ -408,4 +409,3 @@ export default function ToursPage() {
     </div>
   );
 }
-

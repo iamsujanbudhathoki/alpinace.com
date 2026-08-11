@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ChevronDown, Star, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, Star, Loader2 } from "lucide-react";
 import { TrekItem, initialTreksData } from "@/lib/trek-data";
 import { TrekService, InquiryService } from "@/lib/services/admin-service";
 
@@ -227,7 +227,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
         <div className="absolute bottom-10 left-0 right-0 z-10">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="bg-gold-500 text-slate-950 text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-md">
+              <span className="bg-amber-600 text-white text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-md shadow-xs">
                 {trek.region} REGION
               </span>
               <span className="bg-white/90 border border-slate-200 text-slate-900 text-xs px-3 py-1 rounded-md font-bold">
@@ -280,7 +280,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white text-slate-900 p-6 rounded-2xl border border-slate-200 shadow-xs">
               <div className="space-y-1 border-r border-slate-100 pr-4">
                 <span className="text-xs text-slate-700 uppercase tracking-widest font-heading font-bold">Max Altitude</span>
-                <span className="text-xs sm:text-sm font-extrabold block text-gold-600">5,364 meters</span>
+                <span className="text-xs sm:text-sm font-extrabold block text-amber-700">5,364 meters</span>
               </div>
               <div className="space-y-1 sm:border-r border-slate-100 sm:px-4">
                 <span className="text-xs text-slate-700 uppercase tracking-widest font-heading font-bold">Grade</span>
@@ -303,8 +303,8 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`px-5 py-3 font-heading text-xs font-extrabold uppercase tracking-wider border-b-2 transition-colors cursor-pointer capitalize ${activeTab === tab
-                      ? "border-gold-500 text-slate-900 font-extrabold"
-                      : "border-transparent text-slate-700 hover:text-slate-950 font-bold"
+                      ? "border-slate-900 text-slate-900 font-extrabold"
+                      : "border-transparent text-slate-600 hover:text-slate-950 font-bold"
                     }`}
                 >
                   {tab}
@@ -485,9 +485,9 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
 
             {/* Live Calculator Box */}
             <div className="bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="bg-gold-500 p-4 text-slate-950 border-b border-gold-400">
-                <span className="text-xs uppercase font-extrabold tracking-wider block">Bespoke Proposal Generator</span>
-                <h3 className="font-heading text-sm font-extrabold">
+              <div className="bg-slate-900 p-4 text-white">
+                <span className="text-xs uppercase font-extrabold tracking-wider text-amber-400 block">Bespoke Proposal Generator</span>
+                <h3 className="font-heading text-sm font-extrabold text-white">
                   Trip Estimate &amp; Calculator
                 </h3>
               </div>
@@ -497,7 +497,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs font-heading font-extrabold tracking-wider text-slate-900">
                     <span>NUMBER OF TRAVELERS</span>
-                    <span className="text-xs font-bold text-gold-700 bg-gold-100 px-2.5 py-1 rounded-md">{calculatorTravelers} {calculatorTravelers === 1 ? "Person" : "People"}</span>
+                    <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">{calculatorTravelers} {calculatorTravelers === 1 ? "Person" : "People"}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -537,7 +537,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     type="checkbox"
                     checked={helicopterAddon}
                     onChange={(e) => setHelicopterAddon(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded accent-gold-600 shrink-0 cursor-pointer"
+                    className="mt-1 h-4 w-4 rounded accent-amber-600 shrink-0 cursor-pointer"
                   />
                 </div>
 
@@ -545,7 +545,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
                   <div>
                     <span className="text-xs text-slate-700 block font-heading font-extrabold tracking-wider">ESTIMATED TRIP PRICE</span>
-                    <span className="text-xs text-gold-700 block font-extrabold">Includes lodges &amp; Sherpa crew</span>
+                    <span className="text-xs text-amber-700 block font-extrabold">Includes lodges &amp; Sherpa crew</span>
                   </div>
                   <div className="text-right">
                     <span className="font-heading text-2xl sm:text-3xl font-black text-slate-900">
@@ -561,7 +561,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
               {inquirySubmitted ? (
                 <div className="text-center py-6 space-y-3">
-                  <div className="bg-gold-100 text-gold-700 w-10 h-10 rounded-full flex items-center justify-center mx-auto border border-gold-300 font-bold">
+                  <div className="bg-emerald-50 text-emerald-700 w-10 h-10 rounded-full flex items-center justify-center mx-auto border border-emerald-200 font-bold">
                     &check;
                   </div>
                   <h3 className="font-heading text-sm font-bold text-slate-900">Inquiry Transmitted</h3>
@@ -584,7 +584,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     placeholder="Your Full Name"
                     value={inquiryName}
                     onChange={(e) => setInquiryName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold-600"
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-slate-400"
                   />
 
                   <input
@@ -593,14 +593,15 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                     placeholder="Email Address"
                     value={inquiryEmail}
                     onChange={(e) => setInquiryEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold-600"
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-slate-400"
                   />
 
                   <button
                     type="submit"
-                    className="w-full bg-gold-500 hover:bg-gold-400 text-slate-950 border border-gold-400 font-extrabold text-xs py-3.5 rounded-xl shadow-xs hover:shadow-md transition-all cursor-pointer uppercase tracking-wider"
+                    className="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs py-3.5 rounded-xl shadow-xs hover:shadow-md transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
                   >
-                    Inquire for {calculatorTravelers} Travelers
+                    <span>Inquire for {calculatorTravelers} Travelers</span>
+                    <ArrowRight className="w-4 h-4 text-amber-400" />
                   </button>
                 </form>
               )}

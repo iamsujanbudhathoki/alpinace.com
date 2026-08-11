@@ -5,8 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Phone } from "lucide-react";
 import { navLinks } from "@/lib/site-config";
+import { useSettings } from "@/lib/settings-context";
 
 export function SiteHeader() {
+  const { settings } = useSettings();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -186,18 +188,24 @@ export function SiteHeader() {
                 Plan My Trip
               </Link>
 
-              <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-500 font-medium pt-1">
-                <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                <div className="flex flex-wrap justify-center gap-1.5 text-[11px] font-bold text-slate-800">
-                  <a href="tel:+97714410988" className="hover:text-gold-600 transition-colors">
-                    +977 1 4410988
-                  </a>
-                  <span>/</span>
-                  <a href="tel:+9779851123456" className="hover:text-gold-600 transition-colors">
-                    +977 98511 23456
-                  </a>
+              {(settings.contactPhone || settings.emergencyPhone) && (
+                <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-500 font-medium pt-1">
+                  <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <div className="flex flex-wrap justify-center gap-1.5 text-[11px] font-bold text-slate-800">
+                    {settings.contactPhone && (
+                      <a href={`tel:${settings.contactPhone.replace(/\s+/g, "")}`} className="hover:text-amber-700 transition-colors">
+                        {settings.contactPhone}
+                      </a>
+                    )}
+                    {settings.contactPhone && settings.emergencyPhone && <span>/</span>}
+                    {settings.emergencyPhone && (
+                      <a href={`tel:${settings.emergencyPhone.replace(/\s+/g, "")}`} className="hover:text-amber-700 transition-colors text-slate-600">
+                        {settings.emergencyPhone}
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

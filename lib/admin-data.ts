@@ -147,5 +147,20 @@ export interface AssociateItem {
   order: number;
 }
 
+export enum FaqStatus {
+  ACTIVE = "Active",
+  DRAFT = "Draft",
+}
+
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  status: FaqStatus;
+  order: number;
+}
+
+
 
 

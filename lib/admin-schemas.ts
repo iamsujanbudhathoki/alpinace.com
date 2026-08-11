@@ -8,6 +8,7 @@ import {
   PERMIT_STATUSES,
   BlogStatus,
   AssociateStatus,
+  FaqStatus,
 } from "./admin-data";
 import { TREK_DIFFICULTIES } from "./trek-data";
 
@@ -151,6 +152,17 @@ export const associateSchema = z.object({
 });
 
 export type AssociateFormValues = z.infer<typeof associateSchema>;
+
+export const faqSchema = z.object({
+  question: z.string().min(5, "Question must be at least 5 characters"),
+  answer: z.string().min(10, "Answer must be at least 10 characters"),
+  category: z.string().min(2, "Category is required").default("General"),
+  status: z.nativeEnum(FaqStatus).default(FaqStatus.ACTIVE),
+  order: z.preprocess((val) => Number(val) || 0, z.number().default(0)),
+});
+
+export type FaqFormValues = z.infer<typeof faqSchema>;
+
 
 
 

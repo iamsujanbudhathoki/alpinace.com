@@ -1,5 +1,5 @@
-import { CategoryItem, PackageItem, Booking, Inquiry, Guide, BlogArticle, BlogStatus, AssociateItem, AssociateStatus } from "@/lib/admin-data";
-import { CategoryFormValues, TrekFormValues, TourFormValues, ExpeditionFormValues, BookingFormValues, InquiryFormValues, BlogFormValues, AssociateFormValues } from "@/lib/admin-schemas";
+import { CategoryItem, PackageItem, Booking, Inquiry, Guide, BlogArticle, BlogStatus, AssociateItem, AssociateStatus, FaqItem, FaqStatus } from "@/lib/admin-data";
+import { CategoryFormValues, TrekFormValues, TourFormValues, ExpeditionFormValues, BookingFormValues, InquiryFormValues, BlogFormValues, AssociateFormValues, FaqFormValues } from "@/lib/admin-schemas";
 import { TrekItem } from "@/lib/trek-data";
 import { apiClient, axiosInstance, ApiResponse } from "@/lib/services/api-client";
 
@@ -519,4 +519,40 @@ export const AssociateService = {
     return apiClient.delete<boolean>(`/associates/${id}`);
   },
 };
+
+export const FaqService = {
+  async getAll(status?: FaqStatus): Promise<FaqItem[]> {
+    try {
+      const endpoint = status ? `/faqs?status=${status}` : "/faqs";
+      const res = await apiClient.get<FaqItem[]>(endpoint);
+      return Array.isArray(res?.data) ? res.data : [];
+    } catch (e) {
+      console.warn("Backend faqs fetch error:", e);
+      return [];
+    }
+  },
+
+  async getById(id: string): Promise<FaqItem | null> {
+    try {
+      const res = await apiClient.get<FaqItem>(`/faqs/${id}`);
+      return res?.data || null;
+    } catch (e) {
+      console.warn("Backend faq by id fetch error:", e);
+      return null;
+    }
+  },
+
+  async create(data: FaqFormValues): Promise<ApiResponse<FaqItem>> {
+    return apiClient.post<FaqItem>("/faqs", data);
+  },
+
+  async update(id: string, data: Partial<FaqFormValues>): Promise<ApiResponse<FaqItem>> {
+    return apiClient.put<FaqItem>(`/faqs/${id}`, data);
+  },
+
+  async delete(id: string): Promise<ApiResponse<boolean>> {
+    return apiClient.delete<boolean>(`/faqs/${id}`);
+  },
+};
+
 

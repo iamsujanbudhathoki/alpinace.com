@@ -11,6 +11,7 @@ import {
   FileText,
   MessageSquare,
   Settings,
+  HelpCircle,
   X,
   Layers,
   Image as ImageIcon,
@@ -78,6 +79,12 @@ const navItems: NavItem[] = [
     href: "/admin/inquiries",
     icon: MessageSquare,
     // badge: mockDashboardMetrics.pendingInquiries,
+  },
+  {
+    title: "FAQs & Consultations",
+    href: "/admin/faqs",
+    icon: HelpCircle,
+    badge: null,
   },
   {
     title: "Settings",

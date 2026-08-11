@@ -171,35 +171,43 @@ export default function ContactView() {
             </div>
 
             {/* Interactive Google Map */}
-            <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs space-y-3">
-              <div className="flex items-center justify-between px-1">
-                <h3 className="font-heading text-sm font-semibold text-zinc-900">Find Our Office</h3>
-                {settings.googleMapsUrl && (
-                  <a
-                    href={settings.googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-medium text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1"
-                  >
-                    <span>Open in Google Maps</span>
-                    <span>&rarr;</span>
-                  </a>
-                )}
+            {(settings.googleMapsUrl || settings.companyAddress) && (
+              <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs space-y-3">
+                <div className="flex items-center justify-between px-1">
+                  <h3 className="font-heading text-sm font-semibold text-zinc-900">Find Our Office</h3>
+                  {settings.googleMapsUrl && (
+                    <a
+                      href={settings.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1"
+                    >
+                      <span>Open in Google Maps</span>
+                      <span>&rarr;</span>
+                    </a>
+                  )}
+                </div>
+                <div className="relative h-64 rounded-xl overflow-hidden border border-stone-200">
+                  <iframe
+                    src={
+                      settings.googleMapsUrl?.includes("embed")
+                        ? settings.googleMapsUrl
+                        : `https://maps.google.com/maps?q=${encodeURIComponent(
+                            settings.companyAddress || settings.googleMapsUrl || ""
+                          )}&t=&z=15&ie=UTF8&iwloc=&output=embed`
+                    }
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title={`${settings.siteName} Location Map`}
+                    className="w-full h-full"
+                  />
+                </div>
               </div>
-              <div className="relative h-64 rounded-xl overflow-hidden border border-stone-200">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.0854101316063!2d85.31076392638629!3d27.714649076178347!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18fd69092351%3A0x94dae66556fce46b!2sTridevi%20Marg%2C%20Kathmandu%2044600!5e0!3m2!1sen!2snp!4v1786292099624!5m2!1sen!2snp"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  title="Alpine Ace Treks & Expeditions Location Map"
-                  className="w-full h-full"
-                />
-              </div>
-            </div>
+            )}
 
           </div>
 

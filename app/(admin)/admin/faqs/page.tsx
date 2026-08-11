@@ -246,7 +246,8 @@ export default function AdminFaqsPage() {
             ) : filteredFaqs.length === 0 ? (
               <AdminTableEmpty
                 colSpan={6}
-                message={
+                title="No FAQs found"
+                description={
                   searchQuery
                     ? "No FAQs match your search criteria."
                     : "No consultation FAQs available. Click 'New Consultation FAQ' to create one."
@@ -287,19 +288,15 @@ export default function AdminFaqsPage() {
                   <AdminTableCell className="text-right">
                     <AdminTableActions>
                       <AdminActionButton
+                        variant="edit"
                         onClick={() => openEditModal(faq)}
                         title="Edit FAQ"
-                        className="hover:text-amber-600"
-                      >
-                        <Edit className="w-3.5 h-3.5" />
-                      </AdminActionButton>
+                      />
                       <AdminActionButton
+                        variant="delete"
                         onClick={() => openDeleteModal(faq)}
                         title="Delete FAQ"
-                        className="hover:text-rose-600"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </AdminActionButton>
+                      />
                     </AdminTableActions>
                   </AdminTableCell>
                 </AdminTableRow>

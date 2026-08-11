@@ -10,15 +10,33 @@ export default function ToursPage() {
   const [tours, setTours] = useState<TourItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedType, setSelectedType] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(10);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  // Debounce search query
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Fetch from backend whenever filters change
+  useEffect(() => {
+    let isCancelled = false;
     async function loadTours() {
+      setLoading(true);
       try {
-        const raw = await TourService.getAll();
+        const raw = await TourService.getAll({
+          search: debouncedSearch,
+          region: selectedType === "All" ? undefined : selectedType,
+          maxDuration: maxDuration < 10 ? maxDuration : undefined,
+          sortBy,
+          status: "Active",
+        });
         const mapped: TourItem[] = raw.map((p) => ({
           id: p.id,
           title: p.title,
@@ -36,15 +54,20 @@ export default function ToursPage() {
           status: p.status,
           region: p.region,
         }));
-        setTours(mapped);
+        if (!isCancelled) {
+          setTours(mapped);
+        }
       } catch (e) {
         console.warn("Failed to load tour packages from backend:", e);
       } finally {
-        setLoading(false);
+        if (!isCancelled) setLoading(false);
       }
     }
     loadTours();
-  }, []);
+    return () => {
+      isCancelled = true;
+    };
+  }, [debouncedSearch, selectedType, maxDuration, sortBy]);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -62,28 +85,7 @@ export default function ToursPage() {
     return count;
   }, [searchQuery, selectedType, maxDuration, sortBy]);
 
-  const filteredTours = useMemo(() => {
-    return tours
-      .filter((tour) => {
-        const matchesSearch =
-          tour.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          tour.region.toLowerCase().includes(searchQuery.toLowerCase());
-
-        const matchesType =
-          selectedType === "All" || tour.tourType === selectedType;
-
-        const matchesDuration = tour.durationDays <= maxDuration;
-
-        return matchesSearch && matchesType && matchesDuration;
-      })
-      .sort((a, b) => {
-        if (sortBy === "rating") return b.rating - a.rating;
-        if (sortBy === "price-low") return a.priceUSD - b.priceUSD;
-        if (sortBy === "price-high") return b.priceUSD - a.priceUSD;
-        if (sortBy === "duration") return a.durationDays - b.durationDays;
-        return 0;
-      });
-  }, [tours, searchQuery, selectedType, maxDuration, sortBy]);
+  const filteredTours = tours;
 
   const filterControls = (
     <div className="space-y-5">

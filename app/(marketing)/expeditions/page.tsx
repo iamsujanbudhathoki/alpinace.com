@@ -10,15 +10,32 @@ export default function ExpeditionsPage() {
   const [expeditions, setExpeditions] = useState<ExpeditionItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedGrade, setSelectedGrade] = useState<string>("All");
   const [minPeakHeight, setMinPeakHeight] = useState<number>(6000);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  // Debounce search query
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Fetch from backend whenever filters change
+  useEffect(() => {
+    let isCancelled = false;
     async function loadExpeditions() {
+      setLoading(true);
       try {
-        const raw = await ExpeditionService.getAll();
+        const raw = await ExpeditionService.getAll({
+          search: debouncedSearch,
+          difficulty: selectedGrade === "All" ? undefined : selectedGrade,
+          sortBy,
+          status: "Active",
+        });
         const mapped: ExpeditionItem[] = raw.map((p) => ({
           id: p.id,
           title: p.title,
@@ -37,15 +54,20 @@ export default function ExpeditionsPage() {
           status: p.status as any,
           region: p.region as any,
         }));
-        setExpeditions(mapped);
+        if (!isCancelled) {
+          setExpeditions(mapped);
+        }
       } catch (e) {
         console.warn("Failed to load expedition packages from backend:", e);
       } finally {
-        setLoading(false);
+        if (!isCancelled) setLoading(false);
       }
     }
     loadExpeditions();
-  }, []);
+    return () => {
+      isCancelled = true;
+    };
+  }, [debouncedSearch, selectedGrade, minPeakHeight, sortBy]);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -63,28 +85,7 @@ export default function ExpeditionsPage() {
     return count;
   }, [searchQuery, selectedGrade, minPeakHeight, sortBy]);
 
-  const filteredExpeditions = useMemo(() => {
-    return expeditions
-      .filter((exp) => {
-        const matchesSearch =
-          exp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          exp.region.toLowerCase().includes(searchQuery.toLowerCase());
-
-        const matchesGrade =
-          selectedGrade === "All" || exp.climbingGrade === selectedGrade;
-
-        const matchesHeight = exp.peakHeightM >= minPeakHeight;
-
-        return matchesSearch && matchesGrade && matchesHeight;
-      })
-      .sort((a, b) => {
-        if (sortBy === "rating") return b.rating - a.rating;
-        if (sortBy === "price-low") return a.priceUSD - b.priceUSD;
-        if (sortBy === "price-high") return b.priceUSD - a.priceUSD;
-        if (sortBy === "height") return b.peakHeightM - a.peakHeightM;
-        return 0;
-      });
-  }, [expeditions, searchQuery, selectedGrade, minPeakHeight, sortBy]);
+  const filteredExpeditions = expeditions;
 
   const filterControls = (
     <div className="space-y-5">

@@ -7,12 +7,12 @@ import {
   Edit, 
   Trash2, 
   HelpCircle, 
-  Check, 
   Loader2, 
   X, 
   Layers, 
-  ArrowUpDown,
-  FileQuestion
+  GripVertical,
+  ArrowUp,
+  ArrowDown
 } from "lucide-react";
 import { toast } from "sonner";
 import { FaqItem, FaqStatus } from "@/lib/admin-data";
@@ -34,13 +34,17 @@ import {
 } from "@/components/admin/ui/admin-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 
 export default function AdminFaqsPage() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
+
+  // Drag & Drop State
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isReordering, setIsReordering] = useState(false);
 
   // Modal States
   const [modalOpen, setModalOpen] = useState(false);
@@ -167,6 +171,89 @@ export default function AdminFaqsPage() {
     }
   };
 
+  // Drag and drop reordering
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const reordered = [...faqs];
+    const [movedItem] = reordered.splice(draggedIndex, 1);
+    reordered.splice(targetIndex, 0, movedItem);
+
+    // Re-assign sequential order numbers
+    const updated = reordered.map((item, idx) => ({
+      ...item,
+      order: idx + 1,
+    }));
+
+    setFaqs(updated);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+
+    // Save to backend
+    setIsReordering(true);
+    try {
+      const payload = updated.map((f) => ({ id: f.id, order: f.order }));
+      const res = await FaqService.reorder(payload);
+      if (res.success) {
+        toast.success("FAQ order updated!");
+      }
+    } catch (err) {
+      console.error("Failed to reorder FAQs:", err);
+      toast.error("Failed to save reordered list");
+      loadFaqs();
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
+  const handleMove = async (index: number, direction: "up" | "down") => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= faqs.length) return;
+
+    const reordered = [...faqs];
+    const [movedItem] = reordered.splice(index, 1);
+    reordered.splice(targetIndex, 0, movedItem);
+
+    const updated = reordered.map((item, idx) => ({
+      ...item,
+      order: idx + 1,
+    }));
+
+    setFaqs(updated);
+
+    setIsReordering(true);
+    try {
+      const payload = updated.map((f) => ({ id: f.id, order: f.order }));
+      const res = await FaqService.reorder(payload);
+      if (res.success) {
+        toast.success("FAQ moved!");
+      }
+    } catch (err) {
+      console.error("Failed to move FAQ:", err);
+      toast.error("Failed to save new order");
+      loadFaqs();
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
   const categories = Array.from(
     new Set(faqs.map((f) => f.category).filter(Boolean))
   );
@@ -226,17 +313,33 @@ export default function AdminFaqsPage() {
         </div>
       </div>
 
+      {/* Tip Banner */}
+      <div className="flex items-center justify-between bg-amber-50/80 border border-amber-200/80 rounded-xl px-4 py-2.5 text-xs text-amber-900 font-medium">
+        <div className="flex items-center gap-2">
+          <GripVertical className="w-4 h-4 text-amber-600 shrink-0" />
+          <span>
+            <strong>Drag and drop rows</strong> using the grip handle or use the arrow buttons to reorder questions on the website.
+          </span>
+        </div>
+        {isReordering && (
+          <div className="flex items-center gap-1.5 text-amber-700 font-bold text-[11px]">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <span>Syncing order...</span>
+          </div>
+        )}
+      </div>
+
       {/* FAQs Table */}
       <AdminTableContainer>
         <AdminTable>
           <AdminTableHeader>
             <AdminTableRow>
-              <AdminTableHead className="w-16 text-center">Order</AdminTableHead>
+              <AdminTableHead className="w-20 text-center">Order</AdminTableHead>
               <AdminTableHead className="w-64">Question</AdminTableHead>
               <AdminTableHead>Answer</AdminTableHead>
               <AdminTableHead className="w-36">Category</AdminTableHead>
               <AdminTableHead className="w-24">Status</AdminTableHead>
-              <AdminTableHead className="w-24 text-right">Actions</AdminTableHead>
+              <AdminTableHead className="w-28 text-right">Actions</AdminTableHead>
             </AdminTableRow>
           </AdminTableHeader>
 
@@ -254,53 +357,94 @@ export default function AdminFaqsPage() {
                 }
               />
             ) : (
-              filteredFaqs.map((faq) => (
-                <AdminTableRow key={faq.id}>
-                  <AdminTableCell className="text-center font-bold text-slate-500 text-xs">
-                    #{faq.order}
-                  </AdminTableCell>
+              filteredFaqs.map((faq, index) => {
+                const isDragging = draggedIndex === index;
+                const isOver = dragOverIndex === index;
 
-                  <AdminTableCell>
-                    <span className="font-bold text-slate-900 text-xs line-clamp-2">
-                      {faq.question}
-                    </span>
-                  </AdminTableCell>
+                return (
+                  <AdminTableRow
+                    key={faq.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onDragEnd={() => {
+                      setDraggedIndex(null);
+                      setDragOverIndex(null);
+                    }}
+                    className={`transition-colors cursor-move ${
+                      isDragging ? "opacity-40 bg-amber-50/50" : ""
+                    } ${isOver ? "border-t-2 border-amber-500 bg-amber-50/30" : ""}`}
+                  >
+                    <AdminTableCell className="text-center font-bold text-slate-500 text-xs">
+                      <div className="flex items-center justify-center gap-1">
+                        <GripVertical className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700 shrink-0 cursor-grab active:cursor-grabbing" />
+                        <span className="w-5 text-slate-800">#{faq.order}</span>
+                        <div className="flex flex-col gap-0.5 ml-1">
+                          <button
+                            type="button"
+                            onClick={() => handleMove(index, "up")}
+                            disabled={index === 0}
+                            className="p-0.5 text-slate-400 hover:text-slate-800 disabled:opacity-20 cursor-pointer"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-2.5 h-2.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMove(index, "down")}
+                            disabled={index === faqs.length - 1}
+                            className="p-0.5 text-slate-400 hover:text-slate-800 disabled:opacity-20 cursor-pointer"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-2.5 h-2.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </AdminTableCell>
 
-                  <AdminTableCell>
-                    <p className="text-slate-600 text-xs line-clamp-2 font-normal leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </AdminTableCell>
+                    <AdminTableCell>
+                      <span className="font-bold text-slate-900 text-xs line-clamp-2">
+                        {faq.question}
+                      </span>
+                    </AdminTableCell>
 
-                  <AdminTableCell>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-semibold">
-                      <Layers className="w-3 h-3 text-amber-600" />
-                      <span>{faq.category || "General"}</span>
-                    </span>
-                  </AdminTableCell>
+                    <AdminTableCell>
+                      <p className="text-slate-600 text-xs line-clamp-2 font-normal leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </AdminTableCell>
 
-                  <AdminTableCell>
-                    <AdminStatusBadge
-                      status={faq.status === FaqStatus.ACTIVE ? "Active" : "Draft"}
-                    />
-                  </AdminTableCell>
+                    <AdminTableCell>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-semibold">
+                        <Layers className="w-3 h-3 text-amber-600" />
+                        <span>{faq.category || "General"}</span>
+                      </span>
+                    </AdminTableCell>
 
-                  <AdminTableCell className="text-right">
-                    <AdminTableActions>
-                      <AdminActionButton
-                        variant="edit"
-                        onClick={() => openEditModal(faq)}
-                        title="Edit FAQ"
+                    <AdminTableCell>
+                      <AdminStatusBadge
+                        status={faq.status === FaqStatus.ACTIVE ? "Active" : "Draft"}
                       />
-                      <AdminActionButton
-                        variant="delete"
-                        onClick={() => openDeleteModal(faq)}
-                        title="Delete FAQ"
-                      />
-                    </AdminTableActions>
-                  </AdminTableCell>
-                </AdminTableRow>
-              ))
+                    </AdminTableCell>
+
+                    <AdminTableCell className="text-right">
+                      <AdminTableActions>
+                        <AdminActionButton
+                          variant="edit"
+                          onClick={() => openEditModal(faq)}
+                          title="Edit FAQ"
+                        />
+                        <AdminActionButton
+                          variant="delete"
+                          onClick={() => openDeleteModal(faq)}
+                          title="Delete FAQ"
+                        />
+                      </AdminTableActions>
+                    </AdminTableCell>
+                  </AdminTableRow>
+                );
+              })
             )}
           </AdminTableBody>
         </AdminTable>

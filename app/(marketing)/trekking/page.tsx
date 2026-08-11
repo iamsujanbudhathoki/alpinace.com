@@ -10,24 +10,47 @@ export default function TrekkingPage() {
   const [treks, setTreks] = useState<TrekItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(30);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  // Debounce search query
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Fetch from backend whenever filters change
+  useEffect(() => {
+    let isCancelled = false;
     async function loadTreks() {
+      setLoading(true);
       try {
-        const data = await TrekService.getAll();
-        setTreks(data);
+        const data = await TrekService.getAll({
+          search: debouncedSearch,
+          difficulty: selectedDifficulty === "All" ? undefined : selectedDifficulty,
+          maxDuration: maxDuration < 30 ? maxDuration : undefined,
+          sortBy,
+          status: "Active",
+        });
+        if (!isCancelled) {
+          setTreks(data);
+        }
       } catch (e) {
         console.warn("Failed to load trek packages from backend:", e);
       } finally {
-        setLoading(false);
+        if (!isCancelled) setLoading(false);
       }
     }
     loadTreks();
-  }, []);
+    return () => {
+      isCancelled = true;
+    };
+  }, [debouncedSearch, selectedDifficulty, maxDuration, sortBy]);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -45,28 +68,7 @@ export default function TrekkingPage() {
     return count;
   }, [searchQuery, selectedDifficulty, maxDuration, sortBy]);
 
-  const filteredTreks = useMemo(() => {
-    return treks
-      .filter((trk) => {
-        const matchesSearch =
-          trk.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          trk.region.toLowerCase().includes(searchQuery.toLowerCase());
-
-        const matchesDifficulty =
-          selectedDifficulty === "All" || trk.difficulty === selectedDifficulty;
-
-        const matchesDuration = trk.durationDays <= maxDuration;
-
-        return matchesSearch && matchesDifficulty && matchesDuration;
-      })
-      .sort((a, b) => {
-        if (sortBy === "rating") return b.rating - a.rating;
-        if (sortBy === "price-low") return a.priceUSD - b.priceUSD;
-        if (sortBy === "price-high") return b.priceUSD - a.priceUSD;
-        if (sortBy === "duration") return a.durationDays - b.durationDays;
-        return 0;
-      });
-  }, [treks, searchQuery, selectedDifficulty, maxDuration, sortBy]);
+  const filteredTreks = treks;
 
   const filterControls = (
     <div className="space-y-5">

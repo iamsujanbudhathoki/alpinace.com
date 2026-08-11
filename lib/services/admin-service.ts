@@ -96,10 +96,46 @@ export const CategoryService = {
   },
 };
 
+export interface PackageFilterParams {
+  categoryType?: "Trekking" | "Expedition" | "Tour";
+  region?: string;
+  difficulty?: string;
+  status?: string;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minDuration?: number;
+  maxDuration?: number;
+  sortBy?: string;
+  limit?: number;
+  page?: number;
+}
+
+export function buildPackageQuery(params?: PackageFilterParams): string {
+  if (!params) return "";
+  const query = new URLSearchParams();
+  if (params.categoryType) query.set("categoryType", params.categoryType);
+  if (params.region && params.region !== "All") query.set("region", params.region);
+  if (params.difficulty && params.difficulty !== "All") query.set("difficulty", params.difficulty);
+  if (params.status) query.set("status", params.status);
+  if (params.search && params.search.trim()) query.set("search", params.search.trim());
+  if (params.minPrice !== undefined && params.minPrice > 0) query.set("minPrice", String(params.minPrice));
+  if (params.maxPrice !== undefined && params.maxPrice > 0) query.set("maxPrice", String(params.maxPrice));
+  if (params.minDuration !== undefined && params.minDuration > 0) query.set("minDuration", String(params.minDuration));
+  if (params.maxDuration !== undefined && params.maxDuration > 0) query.set("maxDuration", String(params.maxDuration));
+  if (params.sortBy) query.set("sortBy", params.sortBy);
+  if (params.limit) query.set("limit", String(params.limit));
+  if (params.page) query.set("page", String(params.page));
+
+  const str = query.toString();
+  return str ? `?${str}` : "";
+}
+
 export const TrekService = {
-  async getAll(): Promise<TrekItem[]> {
+  async getAll(filters?: PackageFilterParams): Promise<TrekItem[]> {
     try {
-      const res = await apiClient.get<any[]>("/packages?categoryType=Trekking");
+      const q = buildPackageQuery({ ...filters, categoryType: "Trekking" });
+      const res = await apiClient.get<any[]>(`/packages${q}`);
       const packages = res?.data;
       if (Array.isArray(packages)) {
         return packages.map((p) => ({
@@ -218,9 +254,10 @@ export const TrekService = {
 };
 
 export const TourService = {
-  async getAll(): Promise<PackageItem[]> {
+  async getAll(filters?: PackageFilterParams): Promise<PackageItem[]> {
     try {
-      const res = await apiClient.get<PackageItem[]>("/packages?categoryType=Tour");
+      const q = buildPackageQuery({ ...filters, categoryType: "Tour" });
+      const res = await apiClient.get<PackageItem[]>(`/packages${q}`);
       return Array.isArray(res?.data) ? res.data : [];
     } catch (e) {
       console.warn("Backend tours fetch error:", e);
@@ -256,9 +293,10 @@ export const TourService = {
 };
 
 export const ExpeditionService = {
-  async getAll(): Promise<PackageItem[]> {
+  async getAll(filters?: PackageFilterParams): Promise<PackageItem[]> {
     try {
-      const res = await apiClient.get<PackageItem[]>("/packages?categoryType=Expedition");
+      const q = buildPackageQuery({ ...filters, categoryType: "Expedition" });
+      const res = await apiClient.get<PackageItem[]>(`/packages${q}`);
       return Array.isArray(res?.data) ? res.data : [];
     } catch (e) {
       console.warn("Backend expeditions fetch error:", e);
@@ -552,6 +590,10 @@ export const FaqService = {
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
     return apiClient.delete<boolean>(`/faqs/${id}`);
+  },
+
+  async reorder(items: { id: string; order: number }[]): Promise<ApiResponse<boolean>> {
+    return apiClient.put<boolean>("/faqs/reorder", { items });
   },
 };
 

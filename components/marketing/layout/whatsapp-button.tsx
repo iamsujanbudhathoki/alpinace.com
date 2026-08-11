@@ -1,13 +1,15 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
-import { contact } from "@/lib/site-config";
+import { useSettings } from "@/lib/settings-context";
 
 export function WhatsAppButton() {
+  const { settings } = useSettings();
+  const phone = settings.whatsappNumber
   const defaultMsg = encodeURIComponent(
     "Hello! I am interested in planning a trek or expedition with Alpine Ace."
   );
-  const whatsappUrl = `https://wa.me/${contact.whatsappNumber}?text=${defaultMsg}`;
+  const whatsappUrl = `https://wa.me/${phone}?text=${defaultMsg}`;
 
   return (
     <a
@@ -15,7 +17,7 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-3 rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 group cursor-pointer border border-emerald-400/40"
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-3 rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 group cursor-pointer border border-emerald-400/40 shadow-lg"
     >
       <div className="relative flex items-center justify-center">
         <MessageCircle className="w-5 h-5 fill-white text-emerald-600 transition-transform group-hover:rotate-12" />

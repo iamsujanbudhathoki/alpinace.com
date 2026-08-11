@@ -5,7 +5,9 @@ import { Mail, Phone, MapPin, Send, CheckCircle, Clock } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 import { InquiryService } from '@/lib/services/admin-service';
+import { useSettings } from '@/lib/settings-context';
 import { FormLabel } from '@/components/ui/form-label';
 import { cn } from '@/lib/utils';
 
@@ -31,6 +33,7 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function ContactView() {
+  const { settings } = useSettings();
   const [submitted, setSubmitted] = useState(false);
 
   const {
@@ -52,7 +55,7 @@ export default function ContactView() {
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      await InquiryService.create({
+      const res = await InquiryService.create({
         guestName: data.fullName,
         email: data.email,
         phone: data.phone || '+1 000-000-0000',
@@ -62,11 +65,17 @@ export default function ContactView() {
         groupSize: Number(data.travelers) || 1,
         message: data.message,
       });
-      setSubmitted(true);
-      reset();
-    } catch (err) {
+
+      if (res?.success !== false) {
+        setSubmitted(true);
+        reset();
+        toast.success("Your inquiry has been submitted! Our team will reach out shortly.");
+      } else {
+        toast.error(res.message || "Failed to submit inquiry. Please try again.");
+      }
+    } catch (err: any) {
       console.error("Failed to submit inquiry:", err);
-      setSubmitted(true);
+      toast.error(err.message || "Failed to submit inquiry. Please try again or message via WhatsApp.");
     }
   };
 
@@ -103,7 +112,9 @@ export default function ContactView() {
                   </div>
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Physical Address</strong>
-                    <span className="text-zinc-600 text-xs leading-relaxed block">Tridevi Marg, Thamel, Kathmandu, Nepal 44600 (Opposite Himalayan Java Coffee)</span>
+                    <span className="text-zinc-600 text-xs leading-relaxed block">
+                      {settings.companyAddress || "Thamel Marg, Ward 26, Kathmandu, Nepal 44600"}
+                    </span>
                   </div>
                 </li>
                 
@@ -113,8 +124,16 @@ export default function ContactView() {
                   </div>
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Telephone Numbers</strong>
-                    <span className="text-xs text-zinc-800 block">+977 1 4410988 (Office Desk)</span>
-                    <span className="text-xs text-zinc-800 block">+977 98511 23456 (24/7 Crisis Hotline)</span>
+                    {settings.contactPhone && (
+                      <span className="text-xs text-zinc-800 block">
+                        {settings.contactPhone} (Office Desk)
+                      </span>
+                    )}
+                    {settings.emergencyPhone && (
+                      <span className="text-xs text-zinc-800 block">
+                        {settings.emergencyPhone} (24/7 Hotline)
+                      </span>
+                    )}
                   </div>
                 </li>
 
@@ -124,7 +143,12 @@ export default function ContactView() {
                   </div>
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Direct Concierge Email</strong>
-                    <span className="text-xs text-amber-800 font-medium block">concierge@alpineacetreks.com</span>
+                    <a
+                      href={`mailto:${settings.contactEmail || "info@alpineace.com"}`}
+                      className="text-xs text-amber-800 font-medium block hover:underline"
+                    >
+                      {settings.contactEmail || "info@alpineace.com"}
+                    </a>
                   </div>
                 </li>
 
@@ -134,7 +158,9 @@ export default function ContactView() {
                   </div>
                   <div>
                     <strong className="block text-zinc-900 font-semibold mb-0.5">Office Business Hours</strong>
-                    <span className="text-zinc-600 text-xs block">Sunday – Friday: 9:00 AM – 6:00 PM NPT (UTC+5:45)</span>
+                    <span className="text-zinc-600 text-xs block">
+                      {settings.officeHours || "Sunday – Friday: 9:00 AM – 6:00 PM NPT (UTC+5:45)"}
+                    </span>
                   </div>
                 </li>
               </ul>
@@ -144,15 +170,17 @@ export default function ContactView() {
             <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between px-1">
                 <h3 className="font-heading text-sm font-semibold text-zinc-900">Find Our Office</h3>
-                <a
-                  href="https://maps.app.goo.gl/pZ9452LNnDzHN37M8"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-medium text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1"
-                >
-                  <span>Open in Google Maps</span>
-                  <span>&rarr;</span>
-                </a>
+                {settings.googleMapsUrl && (
+                  <a
+                    href={settings.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-medium text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1"
+                  >
+                    <span>Open in Google Maps</span>
+                    <span>&rarr;</span>
+                  </a>
+                )}
               </div>
               <div className="relative h-64 rounded-xl overflow-hidden border border-stone-200">
                 <iframe
@@ -186,7 +214,7 @@ export default function ContactView() {
                   </p>
                 </div>
                 <div className="bg-stone-100/60 border border-stone-200 p-4 rounded-xl text-xs text-zinc-700 leading-normal font-light">
-                  Want immediate assistance? Tap the top-right <strong className="text-zinc-950">WhatsApp</strong> button to speak directly with an active operations specialist.
+                  Want immediate assistance? Tap the bottom-right <strong className="text-zinc-950">WhatsApp</strong> button to speak directly with an active operations specialist.
                 </div>
                 <button
                   onClick={() => setSubmitted(false)}

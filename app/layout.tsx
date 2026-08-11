@@ -42,6 +42,49 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from "sonner";
+import { SettingsProvider } from "@/lib/settings-context";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TravelAgency",
+  name: siteConfig.name,
+  description: siteConfig.description,
+  url: siteConfig.url,
+  logo: `${siteConfig.url}/logo.jpg`,
+  image: `${siteConfig.url}/logo.jpg`,
+  telephone: "+977 1 4700543",
+  email: "info@alpineace.com",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Tridevi Marg, Thamel",
+    addressLocality: "Kathmandu",
+    postalCode: "44600",
+    addressCountry: "NP",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: "27.714649",
+    longitude: "85.310764",
+  },
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Sunday",
+    ],
+    opens: "09:00",
+    closes: "18:00",
+  },
+  sameAs: [
+    "https://facebook.com/alpineacenepal",
+    "https://instagram.com/alpineacenepal",
+    "https://youtube.com/@alpineacenepal",
+  ],
+};
 
 export default function RootLayout({
   children,
@@ -54,12 +97,20 @@ export default function RootLayout({
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className="min-h-full flex flex-col font-sans bg-background text-foreground"
         suppressHydrationWarning
       >
-        <TopLoaderProvider>{children}</TopLoaderProvider>
-        <Toaster richColors position="top-right" duration={3000} />
+        <SettingsProvider>
+          <TopLoaderProvider>{children}</TopLoaderProvider>
+          <Toaster richColors position="top-right" duration={3000} />
+        </SettingsProvider>
       </body>
     </html>
   );

@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
-import { contact } from "@/lib/site-config";
 import { MessageCircle, ArrowRight } from "lucide-react";
+import { useSettings } from "@/lib/settings-context";
 
 export function FinalCta() {
+  const { settings } = useSettings();
+  const phone = settings.whatsappNumber || "9779851000000";
+
   return (
     <section className="relative py-20 bg-white text-slate-900 border-t border-slate-200 text-center overflow-hidden">
       <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
@@ -25,7 +30,7 @@ export function FinalCta() {
             <ArrowRight className="h-4 w-4 text-amber-400" />
           </Link>
           <a
-            href={`https://wa.me/${contact.whatsappNumber}`}
+            href={`https://wa.me/${phone}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-heading text-sm font-medium px-8 py-3.5 rounded-full transition-colors flex items-center justify-center gap-2"

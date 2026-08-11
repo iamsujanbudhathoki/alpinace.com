@@ -36,6 +36,8 @@ export function TrekFormModal({
     register,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     control,
     watch,
     formState: { errors },
@@ -44,6 +46,7 @@ export function TrekFormModal({
     resolver: zodResolver(trekSchema) as any,
     defaultValues: {
       title: "",
+      categoryId: "",
       region: "Everest",
       durationDays: 12,
       maxAltitudeMeters: 5364,
@@ -69,29 +72,29 @@ export function TrekFormModal({
   const watchTitle = watch("title");
   const watchMetaDesc = watch("metaDescription");
 
-  const [trekCategories, setTrekCategories] = useState<{ label: string; value: string }[]>([
-    { label: "Everest & Khumbu Region", value: "Everest & Khumbu Region" },
-    { label: "Annapurna Sanctuary", value: "Annapurna Sanctuary" },
-    { label: "Langtang Alpine Valley", value: "Langtang Alpine Valley" },
-    { label: "Manaslu Wilderness Circuit", value: "Manaslu Wilderness Circuit" },
-    { label: "Mustang & Remote Dolpo", value: "Mustang & Remote Dolpo" },
-  ]);
+  const [trekCategories, setTrekCategories] = useState<{ label: string; value: string }[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       CategoryService.getByType("Trekking").then((cats) => {
         if (cats && cats.length > 0) {
-          setTrekCategories(cats.map((c) => ({ label: c.name, value: c.name })));
+          const opts = cats.map((c) => ({ label: c.name, value: c.id }));
+          setTrekCategories(opts);
+          if (!initialData && !getValues("categoryId")) {
+            setValue("categoryId", cats[0].id);
+          }
+        } else {
+          setTrekCategories([]);
         }
       });
     }
-  }, [isOpen]);
+  }, [isOpen, initialData, getValues, setValue]);
 
   useEffect(() => {
     if (initialData) {
       reset({
         title: initialData.title,
-        category: initialData.category || "Everest & Khumbu Region",
+        categoryId: initialData.categoryId || "",
         region: initialData.region,
         durationDays: initialData.durationDays,
         maxAltitudeMeters: 5364,
@@ -115,7 +118,7 @@ export function TrekFormModal({
     } else {
       reset({
         title: "",
-        category: "Everest & Khumbu Region",
+        categoryId: trekCategories[0]?.value || "",
         region: "Everest",
         durationDays: 12,
         maxAltitudeMeters: 5364,
@@ -139,7 +142,7 @@ export function TrekFormModal({
     }
     setEditingMode(isEditing || !initialData);
     setActiveTab("general");
-  }, [initialData, isEditing, isOpen, reset]);
+  }, [initialData, isEditing, isOpen, reset, trekCategories]);
 
   const onSubmit = (values: TrekFormValues) => {
     const permitsArray = values.permitsText
@@ -151,7 +154,8 @@ export function TrekFormModal({
       id: initialData?.id || `trk-${Date.now()}`,
       title: values.title,
       slug: initialData?.slug || values.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      category: values.category || "Everest & Khumbu Region",
+      category: initialData?.category || "Trekking",
+      categoryId: values.categoryId,
       region: values.region,
       durationDays: Number(values.durationDays),
       difficulty: values.difficulty,
@@ -299,9 +303,9 @@ export function TrekFormModal({
                   <AdminSelectField
                     label="Category"
                     required
-                    error={errors.category?.message}
+                    error={errors.categoryId?.message}
                     options={trekCategories}
-                    {...register("category")}
+                    {...register("categoryId")}
                   />
                 </div>
 

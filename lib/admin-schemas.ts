@@ -14,7 +14,7 @@ import { TREK_DIFFICULTIES } from "./trek-data";
 
 export const trekSchema = z.object({
   title: z.string().min(3, "Trek title must be at least 3 characters"),
-  category: z.string().min(2, "Category is required"),
+  categoryId: z.string().min(1, "Category is required"),
   region: z.enum(PACKAGE_REGIONS),
   durationDays: z.preprocess((val) => Number(val), z.number().min(1, "Duration must be at least 1 day")),
   maxAltitudeMeters: z.preprocess((val) => Number(val), z.number().min(1000, "Max altitude is required")),
@@ -40,7 +40,7 @@ export type TrekFormValues = z.infer<typeof trekSchema>;
 
 export const tourSchema = z.object({
   title: z.string().min(3, "Tour title must be at least 3 characters"),
-  category: z.string().min(2, "Category is required"),
+  categoryId: z.string().min(1, "Category is required"),
   region: z.enum(PACKAGE_REGIONS),
   durationDays: z.preprocess((val) => Number(val), z.number().min(1, "Duration must be at least 1 day")),
   maxAltitudeMeters: z.preprocess((val) => Number(val), z.number().min(100, "Max altitude is required")),
@@ -63,7 +63,7 @@ export type TourFormValues = z.infer<typeof tourSchema>;
 
 export const expeditionSchema = z.object({
   title: z.string().min(3, "Expedition title must be at least 3 characters"),
-  category: z.string().min(2, "Category is required"),
+  categoryId: z.string().min(1, "Category is required"),
   region: z.enum(PACKAGE_REGIONS),
   maxAltitudeMeters: z.preprocess((val) => Number(val), z.number().min(4000, "Summit elevation must be at least 4,000m")),
   durationDays: z.preprocess((val) => Number(val), z.number().min(5, "Duration must be at least 5 days")),

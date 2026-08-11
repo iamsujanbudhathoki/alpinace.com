@@ -8,6 +8,7 @@ export interface TrekItem {
   title: string;
   slug: string;
   category: string;
+  categoryId?: string;
   rating: number;
   reviewsCount: number;
   image: string;

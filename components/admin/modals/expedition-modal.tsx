@@ -36,6 +36,7 @@ export function ExpeditionFormModal({
     register,
     handleSubmit,
     reset,
+    setValue,
     control,
     watch,
     formState: { errors },
@@ -66,27 +67,24 @@ export function ExpeditionFormModal({
   const watchTitle = watch("title");
   const watchMetaDesc = watch("metaDescription");
 
-  const [expeditionCategories, setExpeditionCategories] = useState<{ label: string; value: string }[]>([
-    { label: "8000m+ Extreme Peaks", value: "8000m+ Extreme Peaks" },
-    { label: "7000m Technical Expeditions", value: "7000m Technical Expeditions" },
-    { label: "6000m Peak Climbing", value: "6000m Peak Climbing" },
-  ]);
+  const [expeditionCategories, setExpeditionCategories] = useState<{ label: string; value: string }[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       CategoryService.getByType("Expeditions").then((cats) => {
         if (cats && cats.length > 0) {
-          setExpeditionCategories(cats.map((c) => ({ label: c.name, value: c.name })));
+          setExpeditionCategories(cats.map((c) => ({ label: c.name, value: c.id })));
+          if (!initialData) setValue("categoryId", cats[0].id);
         }
       });
     }
-  }, [isOpen]);
+  }, [isOpen, initialData, setValue]);
 
   useEffect(() => {
     if (initialData) {
       reset({
         title: initialData.title,
-        category: initialData.category || "8000m+ Extreme Peaks",
+        categoryId: initialData.categoryId || "",
         region: (initialData.region as ExpeditionFormValues["region"]) || "Everest",
         maxAltitudeMeters: initialData.maxAltitudeMeters,
         durationDays: initialData.durationDays,
@@ -107,7 +105,7 @@ export function ExpeditionFormModal({
     } else {
       reset({
         title: "",
-        category: "8000m+ Extreme Peaks",
+        categoryId: expeditionCategories[0]?.value || "",
         region: "Everest",
         maxAltitudeMeters: 7129,
         durationDays: 30,
@@ -128,7 +126,7 @@ export function ExpeditionFormModal({
     }
     setEditingMode(isEditing || !initialData);
     setActiveTab("general");
-  }, [initialData, isEditing, isOpen, reset]);
+  }, [initialData, isEditing, isOpen, reset, expeditionCategories]);
 
   const onSubmit = (values: ExpeditionFormValues) => {
     const permitsArray = values.permitsText
@@ -140,7 +138,8 @@ export function ExpeditionFormModal({
       id: initialData?.id || `pkg-exp-${Date.now()}`,
       title: values.title,
       slug: initialData?.slug || values.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      category: values.category || "8000m+ Extreme Peaks",
+      category: initialData?.category || "Expedition",
+      categoryId: values.categoryId,
       region: values.region,
       durationDays: Number(values.durationDays),
       maxAltitudeMeters: Number(values.maxAltitudeMeters),
@@ -258,9 +257,9 @@ export function ExpeditionFormModal({
                   <AdminSelectField
                     label="Category"
                     required
-                    error={errors.category?.message}
+                    error={errors.categoryId?.message}
                     options={expeditionCategories}
-                    {...register("category")}
+                    {...register("categoryId")}
                   />
                 </div>
 

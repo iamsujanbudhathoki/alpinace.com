@@ -44,6 +44,7 @@ export interface PackageItem {
   title: string;
   slug: string;
   category: string;
+  categoryId?: string;
   region: PackageRegion;
   durationDays: number;
   maxAltitudeMeters: number;

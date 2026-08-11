@@ -36,6 +36,7 @@ export function TourFormModal({
     register,
     handleSubmit,
     reset,
+    setValue,
     control,
     watch,
     formState: { errors },
@@ -66,29 +67,24 @@ export function TourFormModal({
   const watchTitle = watch("title");
   const watchMetaDesc = watch("metaDescription");
 
-  const [tourCategories, setTourCategories] = useState<{ label: string; value: string }[]>([
-    { label: "Kathmandu Valley Heritage", value: "Kathmandu Valley Heritage" },
-    { label: "Pokhara & Lakes Sightseeing", value: "Pokhara & Lakes Sightseeing" },
-    { label: "Chitwan Wildlife Safari", value: "Chitwan Wildlife Safari" },
-    { label: "Lumbini Birthplace Tour", value: "Lumbini Birthplace Tour" },
-    { label: "Helicopter Mountain Charters", value: "Helicopter Mountain Charters" },
-  ]);
+  const [tourCategories, setTourCategories] = useState<{ label: string; value: string }[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       CategoryService.getByType("Tours").then((cats) => {
         if (cats && cats.length > 0) {
-          setTourCategories(cats.map((c) => ({ label: c.name, value: c.name })));
+          setTourCategories(cats.map((c) => ({ label: c.name, value: c.id })));
+          if (!initialData) setValue("categoryId", cats[0].id);
         }
       });
     }
-  }, [isOpen]);
+  }, [isOpen, initialData, setValue]);
 
   useEffect(() => {
     if (initialData) {
       reset({
         title: initialData.title,
-        category: initialData.category || "Kathmandu Valley Heritage",
+        categoryId: initialData.categoryId || "",
         region: (initialData.region as TourFormValues["region"]) || "Kathmandu & Pokhara",
         durationDays: initialData.durationDays,
         maxAltitudeMeters: initialData.maxAltitudeMeters || 1400,
@@ -109,7 +105,7 @@ export function TourFormModal({
     } else {
       reset({
         title: "",
-        category: "Kathmandu Valley Heritage",
+        categoryId: tourCategories[0]?.value || "",
         region: "Kathmandu & Pokhara",
         durationDays: 7,
         maxAltitudeMeters: 1400,
@@ -130,7 +126,7 @@ export function TourFormModal({
     }
     setEditingMode(isEditing || !initialData);
     setActiveTab("general");
-  }, [initialData, isEditing, isOpen, reset]);
+  }, [initialData, isEditing, isOpen, reset, tourCategories]);
 
   const onSubmit = (values: TourFormValues) => {
     const permitsArray = values.permitsText
@@ -142,7 +138,8 @@ export function TourFormModal({
       id: initialData?.id || `pkg-tour-${Date.now()}`,
       title: values.title,
       slug: initialData?.slug || values.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      category: values.category || "Kathmandu Valley Heritage",
+      category: initialData?.category || "Tour",
+      categoryId: values.categoryId,
       region: values.region,
       durationDays: Number(values.durationDays),
       maxAltitudeMeters: Number(values.maxAltitudeMeters) || 1400,
@@ -260,9 +257,9 @@ export function TourFormModal({
                   <AdminSelectField
                     label="Category"
                     required
-                    error={errors.category?.message}
+                    error={errors.categoryId?.message}
                     options={tourCategories}
-                    {...register("category")}
+                    {...register("categoryId")}
                   />
                 </div>
 

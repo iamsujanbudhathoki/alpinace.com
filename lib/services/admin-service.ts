@@ -98,6 +98,7 @@ export const CategoryService = {
 
 export interface PackageFilterParams {
   categoryType?: "Trekking" | "Expedition" | "Tour";
+  categoryId?: string;
   region?: string;
   difficulty?: string;
   status?: string;
@@ -115,6 +116,7 @@ export function buildPackageQuery(params?: PackageFilterParams): string {
   if (!params) return "";
   const query = new URLSearchParams();
   if (params.categoryType) query.set("categoryType", params.categoryType);
+  if (params.categoryId && params.categoryId !== "All") query.set("categoryId", params.categoryId);
   if (params.region && params.region !== "All") query.set("region", params.region);
   if (params.difficulty && params.difficulty !== "All") query.set("difficulty", params.difficulty);
   if (params.status) query.set("status", params.status);
@@ -174,7 +176,8 @@ export const TrekService = {
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: p.categoryType || p.category,
+          category: p.categoryType,
+          categoryId: p.categoryId,
           rating: Number(p.rating || 5),
           reviewsCount: Number(p.reviewsCount || 0),
           image: p.image,
@@ -240,7 +243,7 @@ export const TrekService = {
       id: pkg.id || `trk-${Date.now()}`,
       title: pkg.title || data.title,
       slug: pkg.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      category: pkg.category || data.category,
+      category: pkg.category || data.categoryId,
       rating: Number(pkg.rating || 5),
       reviewsCount: Number(pkg.reviewsCount || 0),
       image: pkg.image || data.image,

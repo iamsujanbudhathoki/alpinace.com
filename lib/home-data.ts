@@ -45,11 +45,6 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   image: string;
-  author: {
-    name: string;
-    role: string;
-    avatar: string;
-  };
 }
 
 export interface CompanyFaq {

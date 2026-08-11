@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, FileText, Calendar, Eye, User } from "lucide-react";
+import Link from "next/link";
+import { Plus, Calendar, Eye, Image as ImageIcon, Loader2 } from "lucide-react";
 import { BlogArticle } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { BlogService } from "@/lib/services/admin-service";
@@ -41,38 +42,15 @@ export default function AdminBlogsPage() {
     loadArticles();
   }, []);
 
-  const handleCreateArticle = async () => {
-    const title = prompt("Enter new article title:");
-    if (!title) return;
-    try {
-      const res = await BlogService.create({
-        title,
-        category: "Expedition Prep",
-        author: "Admin Team",
-        status: "Published",
-        readTime: "5 min read",
-        excerpt: "New article excerpt...",
-      });
-      setArticles((prev) => [res.data, ...prev]);
-      if (res.success) {
-        toast.success(res.message);
-      } else {
-        toast.error(res.message);
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create blog article");
-    }
-  };
-
   const handleDeleteArticle = async (id: string, title: string) => {
-    if (!confirm(`Delete article: ${title}?`)) return;
+    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
     try {
       const res = await BlogService.delete(id);
       setArticles((prev) => prev.filter((a) => a.id !== id));
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Article deleted successfully.");
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to delete article.");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete blog article");
@@ -82,8 +60,7 @@ export default function AdminBlogsPage() {
   const filteredArticles = articles.filter(
     (art) =>
       art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      art.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      art.author.toLowerCase().includes(searchQuery.toLowerCase())
+      art.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -92,30 +69,39 @@ export default function AdminBlogsPage() {
         title="Blogs & Articles Management"
         description="Publish expedition preparation guides, packing lists, and Sherpa stories."
       >
-        <Button
-          size="sm"
-          onClick={handleCreateArticle}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
-        >
-          <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
-          Create New Article
-        </Button>
+        <Link href="/admin/blogs/new">
+          <Button
+            size="sm"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
+            Create New Article
+          </Button>
+        </Link>
       </AdminPageHeader>
 
       <AdminFilterBar
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        searchPlaceholder="Search article title, author, or category..."
+        searchPlaceholder="Search article title or category..."
       />
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+          <p className="text-xs font-semibold text-slate-600">Loading blog articles...</p>
+        </div>
+      )}
+
       {/* Blogs Table */}
+      {!loading && (
       <AdminTableContainer>
         <AdminTable>
           <AdminTableHeader>
             <tr>
               <AdminTableHead>Article Title</AdminTableHead>
               <AdminTableHead>Category</AdminTableHead>
-              <AdminTableHead>Author</AdminTableHead>
               <AdminTableHead>Published Date</AdminTableHead>
               <AdminTableHead>Views</AdminTableHead>
               <AdminTableHead>Status</AdminTableHead>
@@ -127,30 +113,40 @@ export default function AdminBlogsPage() {
               filteredArticles.map((art) => (
                 <AdminTableRow key={art.id}>
                   <AdminTableCell>
-                    <div className="font-bold text-slate-900 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-amber-600 shrink-0" />
-                      <span>{art.title}</span>
-                    </div>
-                    <div className="text-xs text-slate-600 mt-0.5 font-normal">
-                      Read time: {art.readTime || "5 min read"}
+                    <div className="flex items-center gap-3">
+                      {art.image ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={art.image}
+                          alt={art.title}
+                          className="w-12 h-10 object-cover rounded-lg border border-slate-200 shrink-0"
+                        />
+                      ) : (
+                        <div className="w-12 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+                          <ImageIcon className="w-5 h-5 text-slate-400" />
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-bold text-slate-900 line-clamp-1">
+                          {art.title}
+                        </div>
+                        <div className="text-xs text-slate-600 font-normal">
+                          Read time: {art.readTime}
+                        </div>
+                      </div>
                     </div>
                   </AdminTableCell>
 
                   <AdminTableCell className="font-medium text-slate-800">
-                    {art.category}
-                  </AdminTableCell>
-
-                  <AdminTableCell className="font-medium text-slate-800">
-                    <div className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-slate-600" />
-                      <span>{art.author}</span>
-                    </div>
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700">
+                      {art.category}
+                    </span>
                   </AdminTableCell>
 
                   <AdminTableCell className="font-medium text-slate-800">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-slate-600" />
-                      <span>{art.publishedDate || "2026-08-01"}</span>
+                      <span>{art.publishedDate}</span>
                     </div>
                   </AdminTableCell>
 
@@ -167,6 +163,12 @@ export default function AdminBlogsPage() {
 
                   <AdminTableCell align="right">
                     <AdminTableActions>
+                      <Link href={`/admin/blogs/${art.id}/edit`}>
+                        <AdminActionButton
+                          variant="edit"
+                          title="Edit Article"
+                        />
+                      </Link>
                       <AdminActionButton
                         variant="delete"
                         onClick={() => handleDeleteArticle(art.id, art.title)}
@@ -178,7 +180,7 @@ export default function AdminBlogsPage() {
               ))
             ) : (
               <AdminTableEmpty
-                colSpan={7}
+                colSpan={6}
                 title="No articles found"
                 description="No blog articles match your search criteria."
               />
@@ -186,6 +188,7 @@ export default function AdminBlogsPage() {
           </AdminTableBody>
         </AdminTable>
       </AdminTableContainer>
+      )}
     </div>
   );
 }

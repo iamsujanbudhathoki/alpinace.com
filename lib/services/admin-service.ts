@@ -1,5 +1,5 @@
-import { CategoryItem, PackageItem, Booking, Inquiry, Guide, BlogArticle } from "@/lib/admin-data";
-import { CategoryFormValues, TrekFormValues, TourFormValues, ExpeditionFormValues, BookingFormValues, InquiryFormValues } from "@/lib/admin-schemas";
+import { CategoryItem, PackageItem, Booking, Inquiry, Guide, BlogArticle, BlogStatus } from "@/lib/admin-data";
+import { CategoryFormValues, TrekFormValues, TourFormValues, ExpeditionFormValues, BookingFormValues, InquiryFormValues, BlogFormValues } from "@/lib/admin-schemas";
 import { TrekItem } from "@/lib/trek-data";
 import { apiClient, axiosInstance, ApiResponse } from "@/lib/services/api-client";
 
@@ -370,9 +370,10 @@ export const GuideService = {
 };
 
 export const BlogService = {
-  async getAll(): Promise<BlogArticle[]> {
+  async getAll(status?: BlogStatus): Promise<BlogArticle[]> {
     try {
-      const res = await apiClient.get<BlogArticle[]>("/blogs");
+      const endpoint = status ? `/blogs?status=${status}` : "/blogs";
+      const res = await apiClient.get<BlogArticle[]>(endpoint);
       return Array.isArray(res?.data) ? res.data : [];
     } catch (e) {
       console.warn("Backend blog articles fetch error:", e);
@@ -380,11 +381,21 @@ export const BlogService = {
     }
   },
 
-  async create(data: any): Promise<ApiResponse<BlogArticle>> {
+  async getById(idOrSlug: string): Promise<BlogArticle | null> {
+    try {
+      const res = await apiClient.get<BlogArticle>(`/blogs/${idOrSlug}`);
+      return res?.data || null;
+    } catch (e) {
+      console.warn("Backend blog by id fetch error:", e);
+      return null;
+    }
+  },
+
+  async create(data: BlogFormValues): Promise<ApiResponse<BlogArticle>> {
     return apiClient.post<BlogArticle>("/blogs", data);
   },
 
-  async update(id: string, data: any): Promise<ApiResponse<BlogArticle>> {
+  async update(id: string, data: Partial<BlogFormValues>): Promise<ApiResponse<BlogArticle>> {
     return apiClient.put<BlogArticle>(`/blogs/${id}`, data);
   },
 

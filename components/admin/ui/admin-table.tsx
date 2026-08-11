@@ -229,7 +229,7 @@ export function AdminTableLoading({
 interface AdminActionButtonProps {
   icon?: React.ReactNode;
   label?: string;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   title?: string;
   variant?: "view" | "edit" | "delete" | "default";
   className?: string;

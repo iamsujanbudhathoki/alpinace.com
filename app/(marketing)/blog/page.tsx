@@ -2,9 +2,10 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { BlogPost } from "@/lib/home-data";
 import { BlogService } from "@/lib/services/admin-service";
+import { BlogStatus } from "@/lib/admin-data";
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -15,22 +16,17 @@ export default function BlogPage() {
   useEffect(() => {
     async function loadBlogs() {
       try {
-        const raw = await BlogService.getAll();
+        const raw = await BlogService.getAll(BlogStatus.PUBLISHED);
         const mapped: BlogPost[] = raw.map((b) => ({
           id: b.id,
           title: b.title,
           slug: b.slug,
           category: b.category,
-          date: (b as any).publishedDate,
+          date: b.publishedDate,
           readTime: b.readTime,
-          excerpt: (b as any).excerpt,
-          content: (b as any).content,
-          image: (b as any).image,
-          author: {
-            name: (b as any).author,
-            role: (b as any).authorRole,
-            avatar: (b as any).authorAvatar,
-          },
+          excerpt: b.excerpt || "",
+          content: b.content || "",
+          image: b.image || "",
         }));
         setPosts(mapped);
       } catch (e) {
@@ -43,19 +39,19 @@ export default function BlogPage() {
   }, []);
 
   const categories = useMemo(() => {
-    return ["All", ...Array.from(new Set(posts.map((post) => post.category)))];
+    return ["All", ...Array.from(new Set(posts.map((post) => post.category).filter(Boolean)))];
   }, [posts]);
 
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
+      const excerpt = post.excerpt ?? "";
       const matchesSearch =
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+        excerpt.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [posts, searchTerm, selectedCategory]);
-
 
   return (
     <div className="pt-24 min-h-screen bg-stone-50 pb-20 font-sans">
@@ -120,12 +116,22 @@ export default function BlogPage() {
           </div>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-24 gap-3">
+            <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
+            <p className="text-xs font-semibold text-stone-600">Loading articles...</p>
+          </div>
+        )}
+
         {/* Blog Post List */}
-        {filteredPosts.length === 0 ? (
+        {!loading && filteredPosts.length === 0 && (
           <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center max-w-md mx-auto">
             <p className="text-zinc-600 text-sm font-light">No articles match your search criteria. Try another filter.</p>
           </div>
-        ) : (
+        )}
+
+        {!loading && filteredPosts.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
               <Link
@@ -133,41 +139,29 @@ export default function BlogPage() {
                 href={`/blog/${post.slug}`}
                 className="bg-white rounded-2xl overflow-hidden border border-stone-200 hover:border-amber-400/60 transition-all duration-300 flex flex-col h-full cursor-pointer group"
               >
-                <div className="relative aspect-16/10 overflow-hidden bg-stone-100">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <span className="absolute top-4 left-4 bg-zinc-900 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-md">
-                    {post.category}
-                  </span>
-                </div>
+                {post.image && (
+                  <div className="relative aspect-16/10 overflow-hidden bg-stone-100">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <span className="absolute top-4 left-4 bg-zinc-900 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-md">
+                      {post.category}
+                    </span>
+                  </div>
+                )}
                 <div className="p-6 flex flex-col flex-grow">
                   <span className="text-zinc-600 text-xs font-semibold block mb-2">
-                    {post.date} &mdash; {post.readTime}
+                    {post.date} {post.readTime && `— ${post.readTime}`}
                   </span>
                   <h3 className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors mb-2 leading-snug line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-zinc-600 text-xs leading-relaxed font-normal line-clamp-3 mb-4">
+                  <p className="text-zinc-600 text-xs leading-relaxed font-normal line-clamp-3">
                     {post.excerpt}
                   </p>
-
-                  {/* Author Row */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-stone-100 mt-auto">
-                    <img
-                      src={post.author.avatar}
-                      alt={post.author.name}
-                      referrerPolicy="no-referrer"
-                      className="w-8 h-8 rounded-full object-cover border border-stone-200"
-                    />
-                    <div>
-                      <h4 className="text-xs font-bold text-zinc-900">{post.author.name}</h4>
-                      <p className="text-xs text-zinc-600 leading-none">{post.author.role}</p>
-                    </div>
-                  </div>
                 </div>
               </Link>
             ))}

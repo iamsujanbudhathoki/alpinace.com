@@ -1,8 +1,42 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { BLOG_POSTS } from "@/lib/home-data";
+import { BlogPost } from "@/lib/home-data";
+import { BlogService } from "@/lib/services/admin-service";
+import { BlogStatus } from "@/lib/admin-data";
 
 export function FeaturedBlogs() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const raw = await BlogService.getAll(BlogStatus.PUBLISHED);
+        const mapped: BlogPost[] = raw.slice(0, 3).map((b) => ({
+          id: b.id,
+          title: b.title,
+          slug: b.slug,
+          category: b.category,
+          date: b.publishedDate,
+          readTime: b.readTime,
+          excerpt: b.excerpt || "",
+          content: b.content || "",
+          image: b.image || "",
+        }));
+        setPosts(mapped);
+      } catch (e) {
+        console.warn("Failed to fetch featured blogs:", e);
+      }
+    }
+    loadFeatured();
+  }, []);
+
+  if (posts.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-24 bg-stone-50/80 border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,41 +59,31 @@ export function FeaturedBlogs() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {BLOG_POSTS.slice(0, 3).map((post) => (
+          {posts.map((post) => (
             <Link key={post.id} href={`/blog/${post.slug}`}>
               <div className="bg-white rounded-2xl overflow-hidden border border-stone-200 hover:border-amber-400/60 transition-all duration-300 flex flex-col h-full cursor-pointer group">
-                <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <span className="absolute top-4 left-4 bg-zinc-900 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-md">
-                    {post.category}
-                  </span>
-                </div>
+                {post.image && (
+                  <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <span className="absolute top-4 left-4 bg-zinc-900 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-md">
+                      {post.category}
+                    </span>
+                  </div>
+                )}
                 <div className="p-6 flex flex-col flex-grow">
                   <span className="text-zinc-600 text-xs font-semibold block mb-2">
-                    {post.date} &mdash; {post.readTime}
+                    {post.date} {post.readTime && `— ${post.readTime}`}
                   </span>
                   <h3 className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors mb-2 leading-snug line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-zinc-600 text-xs leading-relaxed font-normal line-clamp-3 mb-4">
+                  <p className="text-zinc-600 text-xs leading-relaxed font-normal line-clamp-3">
                     {post.excerpt}
                   </p>
-
-                  <div className="flex items-center gap-3 pt-4 border-t border-stone-100 mt-auto">
-                    <img
-                      src={post.author.avatar}
-                      alt={post.author.name}
-                      referrerPolicy="no-referrer"
-                      className="w-7 h-7 rounded-full object-cover border border-stone-200"
-                    />
-                    <span className="text-xs font-semibold text-zinc-800">
-                      {post.author.name}
-                    </span>
-                  </div>
                 </div>
               </div>
             </Link>

@@ -6,6 +6,7 @@ import {
   BOOKING_STATUSES,
   PAYMENT_STATUSES,
   PERMIT_STATUSES,
+  BlogStatus,
 } from "./admin-data";
 import { TREK_DIFFICULTIES } from "./trek-data";
 
@@ -122,4 +123,18 @@ export const categorySchema = z.object({
 });
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;
+
+export const blogSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  category: z.string().min(2, "Category is required"),
+  readTime: z.string().default("5 min read"),
+  status: z.nativeEnum(BlogStatus),
+  publishedDate: z.string().optional(),
+  excerpt: z.string().optional(),
+  content: z.string().optional(),
+  image: z.string().min(5, "Featured image URL is required"),
+});
+
+export type BlogFormValues = z.infer<typeof blogSchema>;
+
 

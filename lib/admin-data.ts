@@ -5,6 +5,12 @@ export const BOOKING_STATUSES = ["Confirmed", "In Review", "Active Trek", "Compl
 export const PAYMENT_STATUSES = ["Paid", "Deposit Paid", "Pending", "Refunded"] as const;
 export const PERMIT_STATUSES = ["Issued", "Processing", "Pending Document"] as const;
 
+export enum BlogStatus {
+  PUBLISHED = "Published",
+  DRAFT = "Draft",
+  ARCHIVED = "Archived",
+}
+
 export type PackageRegion = typeof PACKAGE_REGIONS[number];
 export type PackageStatus = typeof PACKAGE_STATUSES[number];
 export type PackageCategoryType = typeof PACKAGE_TYPES[number];
@@ -85,12 +91,14 @@ export interface BlogArticle {
   id: string;
   title: string;
   slug: string;
-  category: "Expedition Prep" | "Trekking Guides" | "Sherpa Culture" | "Gear & Equipment";
-  author: string;
+  category: string;
   readTime: string;
-  status: "Published" | "Draft" | "Archived";
+  status: BlogStatus;
   publishedDate: string;
   views: number;
+  excerpt?: string;
+  content?: string;
+  image?: string;
 }
 
 export const mockDashboardMetrics = {

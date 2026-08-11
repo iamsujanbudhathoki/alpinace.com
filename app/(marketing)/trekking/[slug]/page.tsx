@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ChevronDown, Star, Loader2 } from "lucide-react";
 import { TrekItem, initialTreksData } from "@/lib/trek-data";
 import { TrekService, InquiryService } from "@/lib/services/admin-service";
+import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
 
 interface TrekDetailPageProps {
   params: Promise<{
@@ -88,18 +89,11 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
   }, [calculatorTravelers, helicopterAddon, baseCostPerPerson]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gold-400">
-          <Loader2 className="w-6 h-6 animate-spin" />
-          <span className="font-semibold text-lg">Loading Trek Details...</span>
-        </div>
-      </div>
-    );
+    return <PackageDetailSkeleton />;
   }
 
   if (!trek) {
-    notFound();
+    return notFound();
   }
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
@@ -198,6 +192,14 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
       content: "Heated mattresses and organic fine dining at 4,000 meters! The Sherpa team looked after our safety with pulse oximeters every evening.",
     },
   ];
+
+  if (loading) {
+    return <PackageDetailSkeleton />;
+  }
+
+  if (!trek) {
+    return notFound();
+  }
 
   return (
     <div className="pt-20 min-h-screen bg-stone-50 text-slate-900 pb-24 font-sans">

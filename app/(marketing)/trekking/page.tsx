@@ -4,17 +4,41 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw } from "lucide-react";
 import { TrekItem } from "@/lib/trek-data";
-import { TrekService } from "@/lib/services/admin-service";
+import { TrekService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
+import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
+import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 
 export default function TrekkingPage() {
   const [treks, setTreks] = useState<TrekItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(null);
+  const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
+
+  // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(30);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Fetch filter options from backend
+  useEffect(() => {
+    async function loadOptions() {
+      try {
+        const opts = await PackageFilterService.getOptions("Trekking");
+        if (opts) {
+          setFilterOptions(opts);
+          if (opts.maxDuration) setMaxDuration(opts.maxDuration);
+        }
+      } catch (e) {
+        console.warn("Failed to load filter options from backend:", e);
+      } finally {
+        setLoadingOptions(false);
+      }
+    }
+    loadOptions();
+  }, []);
 
   // Debounce search query
   useEffect(() => {
@@ -24,7 +48,7 @@ export default function TrekkingPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Fetch from backend whenever filters change
+  // Fetch treks from backend whenever filters change
   useEffect(() => {
     let isCancelled = false;
     async function loadTreks() {
@@ -33,7 +57,7 @@ export default function TrekkingPage() {
         const data = await TrekService.getAll({
           search: debouncedSearch,
           difficulty: selectedDifficulty === "All" ? undefined : selectedDifficulty,
-          maxDuration: maxDuration < 30 ? maxDuration : undefined,
+          maxDuration: maxDuration < (filterOptions?.maxDuration || 30) ? maxDuration : undefined,
           sortBy,
           status: "Active",
         });
@@ -50,12 +74,12 @@ export default function TrekkingPage() {
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedDifficulty, maxDuration, sortBy]);
+  }, [debouncedSearch, selectedDifficulty, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedDifficulty("All");
-    setMaxDuration(30);
+    setMaxDuration(filterOptions?.maxDuration || 30);
     setSortBy("rating");
   };
 
@@ -63,14 +87,33 @@ export default function TrekkingPage() {
     let count = 0;
     if (searchQuery.trim() !== "") count++;
     if (selectedDifficulty !== "All") count++;
-    if (maxDuration < 30) count++;
+    if (maxDuration < (filterOptions?.maxDuration || 30)) count++;
     if (sortBy !== "rating") count++;
     return count;
-  }, [searchQuery, selectedDifficulty, maxDuration, sortBy]);
+  }, [searchQuery, selectedDifficulty, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const filteredTreks = treks;
 
-  const filterControls = (
+  // Dynamic Options from backend
+  const difficulties = filterOptions?.difficulties || [
+    { label: "All Difficulties", value: "All" },
+    { label: "Moderate Trek", value: "Moderate Trek" },
+    { label: "Challenging Trek", value: "Challenging Trek" },
+    { label: "Strenuous Trek", value: "Strenuous Trek" },
+  ];
+
+  const sortOptions = filterOptions?.sortOptions || [
+    { label: "Guest Rating", value: "rating" },
+    { label: "Price: Low to High", value: "price-low" },
+    { label: "Price: High to Low", value: "price-high" },
+    { label: "Duration: Short to Long", value: "duration" },
+  ];
+
+  const maxDurationLimit = filterOptions?.maxDuration || 30;
+
+  const filterControls = loadingOptions ? (
+    <FilterSidebarSkeleton />
+  ) : (
     <div className="space-y-5">
       {/* Search Input */}
       <div className="space-y-1.5">
@@ -95,12 +138,7 @@ export default function TrekkingPage() {
           Difficulty Grade
         </label>
         <div className="space-y-1">
-          {[
-            { label: "All Difficulties", value: "All" },
-            { label: "Moderate Trek", value: "Moderate Trek" },
-            { label: "Challenging Trek", value: "Challenging Trek" },
-            { label: "Strenuous Trek", value: "Strenuous Trek" },
-          ].map((item) => {
+          {difficulties.map((item) => {
             const isSelected = selectedDifficulty === item.value;
             return (
               <button
@@ -132,7 +170,7 @@ export default function TrekkingPage() {
         <input
           type="range"
           min="5"
-          max="30"
+          max={maxDurationLimit}
           step="1"
           value={maxDuration}
           onChange={(e) => setMaxDuration(Number(e.target.value))}
@@ -150,10 +188,11 @@ export default function TrekkingPage() {
           onChange={(e) => setSortBy(e.target.value)}
           className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs font-medium rounded-lg px-3 py-2 focus:outline-none cursor-pointer"
         >
-          <option value="rating">Guest Rating</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="duration">Duration: Short to Long</option>
+          {sortOptions.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
         </select>
       </div>
     </div>
@@ -161,7 +200,7 @@ export default function TrekkingPage() {
 
   return (
     <div className="min-h-screen bg-[#fafaf9] text-slate-900 pt-16 sm:pt-20 pb-20 font-sans">
-      {/* Clean Hero Header */}
+      {/* Hero Header */}
       <section className="bg-white border-b border-slate-200 py-8 sm:py-12 px-4 sm:px-6 md:px-12">
         <div className="max-w-7xl mx-auto space-y-2">
           <p className="text-xs font-semibold text-amber-700 uppercase tracking-widest">
@@ -275,7 +314,7 @@ export default function TrekkingPage() {
           {/* Right Main Catalog Content Column */}
           <main className="lg:col-span-8 space-y-5">
             <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-xs text-slate-600 font-medium shadow-xs">
-              <span>Showing <strong>{filteredTreks.length}</strong> trekking itineraries</span>
+              <span>Showing <strong>{loading ? "..." : filteredTreks.length}</strong> trekking itineraries</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
@@ -286,7 +325,9 @@ export default function TrekkingPage() {
               )}
             </div>
 
-            {filteredTreks.length === 0 ? (
+            {loading ? (
+              <PackageGridSkeleton count={6} />
+            ) : filteredTreks.length === 0 ? (
               <div className="bg-white border border-slate-200 rounded-xl p-10 text-center space-y-3">
                 <p className="text-slate-500 text-xs font-medium">
                   No matching trekking routes found.

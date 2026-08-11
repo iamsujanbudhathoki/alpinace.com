@@ -4,17 +4,41 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw } from "lucide-react";
 import { TourItem } from "@/lib/tour-data";
-import { TourService } from "@/lib/services/admin-service";
+import { TourService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
+import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
+import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 
 export default function ToursPage() {
   const [tours, setTours] = useState<TourItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(null);
+  const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
+
+  // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedType, setSelectedType] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(10);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Fetch filter options from backend
+  useEffect(() => {
+    async function loadOptions() {
+      try {
+        const opts = await PackageFilterService.getOptions("Tour");
+        if (opts) {
+          setFilterOptions(opts);
+          if (opts.maxDuration) setMaxDuration(opts.maxDuration);
+        }
+      } catch (e) {
+        console.warn("Failed to load tour filter options from backend:", e);
+      } finally {
+        setLoadingOptions(false);
+      }
+    }
+    loadOptions();
+  }, []);
 
   // Debounce search query
   useEffect(() => {
@@ -33,7 +57,7 @@ export default function ToursPage() {
         const raw = await TourService.getAll({
           search: debouncedSearch,
           region: selectedType === "All" ? undefined : selectedType,
-          maxDuration: maxDuration < 10 ? maxDuration : undefined,
+          maxDuration: maxDuration < (filterOptions?.maxDuration || 10) ? maxDuration : undefined,
           sortBy,
           status: "Active",
         });
@@ -67,12 +91,12 @@ export default function ToursPage() {
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedType, maxDuration, sortBy]);
+  }, [debouncedSearch, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedType("All");
-    setMaxDuration(10);
+    setMaxDuration(filterOptions?.maxDuration || 10);
     setSortBy("rating");
   };
 
@@ -80,14 +104,34 @@ export default function ToursPage() {
     let count = 0;
     if (searchQuery.trim() !== "") count++;
     if (selectedType !== "All") count++;
-    if (maxDuration < 10) count++;
+    if (maxDuration < (filterOptions?.maxDuration || 10)) count++;
     if (sortBy !== "rating") count++;
     return count;
-  }, [searchQuery, selectedType, maxDuration, sortBy]);
+  }, [searchQuery, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const filteredTours = tours;
 
-  const filterControls = (
+  // Dynamic Options from backend
+  const styles = filterOptions?.styles || [
+    { label: "All Styles", value: "All" },
+    { label: "Cultural Heritage", value: "Cultural Heritage" },
+    { label: "Luxury Wildlife Safari", value: "Luxury Wildlife Safari" },
+    { label: "Helicopter Pilgrimage", value: "Helicopter Pilgrimage" },
+    { label: "Photography & Scenic", value: "Photography & Scenic" },
+  ];
+
+  const sortOptions = filterOptions?.sortOptions || [
+    { label: "Guest Rating", value: "rating" },
+    { label: "Price: Low to High", value: "price-low" },
+    { label: "Price: High to Low", value: "price-high" },
+    { label: "Duration: Short to Long", value: "duration" },
+  ];
+
+  const maxDurationLimit = filterOptions?.maxDuration || 10;
+
+  const filterControls = loadingOptions ? (
+    <FilterSidebarSkeleton />
+  ) : (
     <div className="space-y-5">
       {/* Search Input */}
       <div className="space-y-1.5">
@@ -106,19 +150,13 @@ export default function ToursPage() {
         </div>
       </div>
 
-      {/* Tour Type Filter */}
+      {/* Tour Style Filter */}
       <div className="space-y-1.5">
         <label className="block text-xs font-bold text-slate-800">
           Tour Style
         </label>
         <div className="space-y-1">
-          {[
-            { label: "All Styles", value: "All" },
-            { label: "Cultural Heritage", value: "Cultural Heritage" },
-            { label: "Luxury Wildlife Safari", value: "Luxury Wildlife Safari" },
-            { label: "Helicopter Pilgrimage", value: "Helicopter Pilgrimage" },
-            { label: "Photography & Scenic", value: "Photography & Scenic" },
-          ].map((item) => {
+          {styles.map((item) => {
             const isSelected = selectedType === item.value;
             return (
               <button
@@ -150,7 +188,7 @@ export default function ToursPage() {
         <input
           type="range"
           min="1"
-          max="10"
+          max={maxDurationLimit}
           step="1"
           value={maxDuration}
           onChange={(e) => setMaxDuration(Number(e.target.value))}
@@ -168,10 +206,11 @@ export default function ToursPage() {
           onChange={(e) => setSortBy(e.target.value)}
           className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs font-medium rounded-lg px-3 py-2 focus:outline-none cursor-pointer"
         >
-          <option value="rating">Guest Rating</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="duration">Duration: Short to Long</option>
+          {sortOptions.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
         </select>
       </div>
     </div>
@@ -293,7 +332,7 @@ export default function ToursPage() {
           {/* Right Main Catalog Content Column */}
           <main className="lg:col-span-8 space-y-5">
             <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-xs text-slate-600 font-medium shadow-xs">
-              <span>Showing <strong>{filteredTours.length}</strong> guided tours</span>
+              <span>Showing <strong>{loading ? "..." : filteredTours.length}</strong> guided tours</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
@@ -304,7 +343,9 @@ export default function ToursPage() {
               )}
             </div>
 
-            {filteredTours.length === 0 ? (
+            {loading ? (
+              <PackageGridSkeleton count={6} />
+            ) : filteredTours.length === 0 ? (
               <div className="bg-white border border-slate-200 rounded-xl p-10 text-center space-y-3">
                 <p className="text-slate-500 text-xs font-medium">
                   No matching tours found.

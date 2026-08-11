@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useMemo, use } from "react";
+import { useState, useMemo, useEffect, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ChevronDown, Star } from "lucide-react";
-import { initialToursData } from "@/lib/tour-data";
+import { TourItem, initialToursData } from "@/lib/tour-data";
+import { TourService, InquiryService } from "@/lib/services/admin-service";
+import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
 
 interface TourDetailPageProps {
   params: Promise<{
@@ -14,14 +16,49 @@ interface TourDetailPageProps {
 
 export default function TourDetailPage({ params }: TourDetailPageProps) {
   const resolvedParams = use(params);
-  const tour = initialToursData.find((t) => t.slug === resolvedParams.slug);
+  const [tour, setTour] = useState<TourItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!tour) {
-    notFound();
-  }
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const raw = await TourService.getBySlug(resolvedParams.slug);
+        if (raw) {
+          setTour({
+            id: raw.id,
+            title: raw.title,
+            slug: raw.slug,
+            category: raw.category,
+            rating: Number(raw.rating),
+            reviewsCount: Number(raw.reviewsCount ?? raw.totalBookings),
+            image: raw.image ?? "",
+            shortDesc: raw.shortDesc ?? "",
+            durationDays: Number(raw.durationDays),
+            tourType: raw.category,
+            bestSeason: raw.bestSeason ?? "",
+            priceUSD: Number(raw.priceUSD),
+            highlights: raw.permitsRequired,
+            status: raw.status,
+            region: raw.region,
+          });
+        } else {
+          const staticMatch = initialToursData.find((t) => t.slug === resolvedParams.slug);
+          setTour(staticMatch || null);
+        }
+      } catch (e) {
+        console.warn("Failed to fetch tour by slug", e);
+        const staticMatch = initialToursData.find((t) => t.slug === resolvedParams.slug);
+        setTour(staticMatch || null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [resolvedParams.slug]);
 
   // Related tours excluding current
   const relatedTours = useMemo(() => {
+    if (!tour) return [];
     return initialToursData.filter((t) => t.slug !== tour.slug).slice(0, 2);
   }, [tour]);
 
@@ -32,13 +69,20 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
   const [vipAddon, setVipAddon] = useState<boolean>(true);
 
   // Gallery state
-  const gallery = [
-    tour.image,
-    "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80",
-  ];
+  const gallery = useMemo(() => {
+    return [
+      tour?.image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80",
+    ];
+  }, [tour?.image]);
+
   const [activePhoto, setActivePhoto] = useState<string>(gallery[0]);
+
+  useEffect(() => {
+    if (gallery[0]) setActivePhoto(gallery[0]);
+  }, [gallery]);
 
   // Lead inquiry state
   const [inquiryName, setInquiryName] = useState("");
@@ -46,28 +90,40 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
 
   // Price calculations
-  const baseCostPerPerson = tour.priceUSD;
+  const baseCostPerPerson = tour?.priceUSD || 1200;
   const vipCostPerPerson = 250;
   const totalPrice = useMemo(() => {
-    let perPerson = baseCostPerPerson;
-    if (vipAddon) perPerson += vipCostPerPerson;
-    let discount = 1;
-    if (calculatorTravelers >= 4) discount = 0.95;
-    if (calculatorTravelers >= 8) discount = 0.9;
-    return Math.round(perPerson * calculatorTravelers * discount);
-  }, [calculatorTravelers, vipAddon, baseCostPerPerson]);
+    const addonPrice = vipAddon ? vipCostPerPerson : 0;
+    return (baseCostPerPerson + addonPrice) * calculatorTravelers;
+  }, [baseCostPerPerson, vipAddon, calculatorTravelers]);
 
-  const handleInquirySubmit = (e: React.FormEvent) => {
+  const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (inquiryName && inquiryEmail) {
-      setInquirySubmitted(true);
-      setTimeout(() => {
-        setInquirySubmitted(false);
-        setInquiryName("");
-        setInquiryEmail("");
-      }, 6000);
+    if (!tour) return;
+    try {
+      await InquiryService.create({
+        guestName: inquiryName,
+        email: inquiryEmail,
+        phone: "+1 000-000-0000",
+        country: "International",
+        interestedTrip: tour.title,
+        travelDates: "Upcoming Season",
+        groupSize: calculatorTravelers,
+        message: `Inquiry for ${tour.title}. Travelers: ${calculatorTravelers}. VIP Guide: ${vipAddon ? "Yes" : "No"}. Estimated Price: $${totalPrice}`,
+      });
+    } catch (e) {
+      console.warn("Failed to create inquiry via API:", e);
     }
+    setInquirySubmitted(true);
   };
+
+  if (loading) {
+    return <PackageDetailSkeleton />;
+  }
+
+  if (!tour) {
+    return notFound();
+  }
 
   // Day-by-day itinerary data
   const itineraryDays = [

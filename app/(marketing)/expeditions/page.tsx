@@ -4,17 +4,41 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw } from "lucide-react";
 import { ExpeditionItem } from "@/lib/expedition-data";
-import { ExpeditionService } from "@/lib/services/admin-service";
+import { ExpeditionService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
+import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
+import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 
 export default function ExpeditionsPage() {
   const [expeditions, setExpeditions] = useState<ExpeditionItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(null);
+  const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
+
+  // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedGrade, setSelectedGrade] = useState<string>("All");
   const [minPeakHeight, setMinPeakHeight] = useState<number>(6000);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Fetch filter options from backend
+  useEffect(() => {
+    async function loadOptions() {
+      try {
+        const opts = await PackageFilterService.getOptions("Expedition");
+        if (opts) {
+          setFilterOptions(opts);
+          if (opts.minAltitude) setMinPeakHeight(opts.minAltitude);
+        }
+      } catch (e) {
+        console.warn("Failed to load expedition filter options from backend:", e);
+      } finally {
+        setLoadingOptions(false);
+      }
+    }
+    loadOptions();
+  }, []);
 
   // Debounce search query
   useEffect(() => {
@@ -72,7 +96,7 @@ export default function ExpeditionsPage() {
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedGrade("All");
-    setMinPeakHeight(6000);
+    setMinPeakHeight(filterOptions?.minAltitude || 5500);
     setSortBy("rating");
   };
 
@@ -80,14 +104,35 @@ export default function ExpeditionsPage() {
     let count = 0;
     if (searchQuery.trim() !== "") count++;
     if (selectedGrade !== "All") count++;
-    if (minPeakHeight > 6000) count++;
+    if (minPeakHeight > (filterOptions?.minAltitude || 5500)) count++;
     if (sortBy !== "rating") count++;
     return count;
-  }, [searchQuery, selectedGrade, minPeakHeight, sortBy]);
+  }, [searchQuery, selectedGrade, minPeakHeight, sortBy, filterOptions?.minAltitude]);
 
   const filteredExpeditions = expeditions;
 
-  const filterControls = (
+  // Dynamic Options from backend
+  const difficulties = filterOptions?.difficulties || [
+    { label: "All Alpine Grades", value: "All" },
+    { label: "PD (Slightly Difficult)", value: "Alpine PD" },
+    { label: "AD (Fairly Difficult)", value: "Alpine AD" },
+    { label: "D (Difficult / Technical)", value: "Alpine D" },
+    { label: "ED (Extremely Difficult)", value: "Alpine ED" },
+  ];
+
+  const sortOptions = filterOptions?.sortOptions || [
+    { label: "Guest Rating", value: "rating" },
+    { label: "Price: Low to High", value: "price-low" },
+    { label: "Price: High to Low", value: "price-high" },
+    { label: "Peak Elevation: High to Low", value: "altitude" },
+  ];
+
+  const minAltitudeLimit = filterOptions?.minAltitude || 5500;
+  const maxAltitudeLimit = filterOptions?.maxAltitude || 8848;
+
+  const filterControls = loadingOptions ? (
+    <FilterSidebarSkeleton />
+  ) : (
     <div className="space-y-5">
       {/* Search Input */}
       <div className="space-y-1.5">
@@ -112,13 +157,7 @@ export default function ExpeditionsPage() {
           Alpine Climbing Grade
         </label>
         <div className="space-y-1">
-          {[
-            { label: "All Alpine Grades", value: "All" },
-            { label: "PD (Slightly Difficult)", value: "Alpine PD" },
-            { label: "AD (Fairly Difficult)", value: "Alpine AD" },
-            { label: "D (Difficult / Technical)", value: "Alpine D" },
-            { label: "ED (Extremely Difficult)", value: "Alpine ED" },
-          ].map((item) => {
+          {difficulties.map((item) => {
             const isSelected = selectedGrade === item.value;
             return (
               <button
@@ -149,8 +188,8 @@ export default function ExpeditionsPage() {
         </div>
         <input
           type="range"
-          min="5500"
-          max="8848"
+          min={minAltitudeLimit}
+          max={maxAltitudeLimit}
           step="100"
           value={minPeakHeight}
           onChange={(e) => setMinPeakHeight(Number(e.target.value))}
@@ -168,10 +207,11 @@ export default function ExpeditionsPage() {
           onChange={(e) => setSortBy(e.target.value)}
           className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs font-medium rounded-lg px-3 py-2 focus:outline-none cursor-pointer"
         >
-          <option value="rating">Guest Rating</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="altitude">Peak Elevation: High to Low</option>
+          {sortOptions.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
         </select>
       </div>
     </div>
@@ -293,7 +333,7 @@ export default function ExpeditionsPage() {
           {/* Right Main Catalog Content Column */}
           <main className="lg:col-span-8 space-y-5">
             <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-xs text-slate-600 font-medium shadow-xs">
-              <span>Showing <strong>{filteredExpeditions.length}</strong> peak expeditions</span>
+              <span>Showing <strong>{loading ? "..." : filteredExpeditions.length}</strong> peak expeditions</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
@@ -304,7 +344,9 @@ export default function ExpeditionsPage() {
               )}
             </div>
 
-            {filteredExpeditions.length === 0 ? (
+            {loading ? (
+              <PackageGridSkeleton count={6} />
+            ) : filteredExpeditions.length === 0 ? (
               <div className="bg-white border border-slate-200 rounded-xl p-10 text-center space-y-3">
                 <p className="text-slate-500 text-xs font-medium">
                   No matching mountaineering expeditions found.

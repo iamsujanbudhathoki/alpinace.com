@@ -131,6 +131,38 @@ export function buildPackageQuery(params?: PackageFilterParams): string {
   return str ? `?${str}` : "";
 }
 
+export interface FilterOptionItem {
+  label: string;
+  value: string;
+}
+
+export interface PackageFilterOptions {
+  categoryType?: string;
+  styles: FilterOptionItem[];
+  difficulties: FilterOptionItem[];
+  regions: FilterOptionItem[];
+  sortOptions: FilterOptionItem[];
+  minDuration: number;
+  maxDuration: number;
+  minPrice: number;
+  maxPrice: number;
+  minAltitude: number;
+  maxAltitude: number;
+}
+
+export const PackageFilterService = {
+  async getOptions(categoryType?: "Trekking" | "Tour" | "Expedition"): Promise<PackageFilterOptions | null> {
+    try {
+      const endpoint = categoryType ? `/packages/filter-options?categoryType=${categoryType}` : "/packages/filter-options";
+      const res = await apiClient.get<PackageFilterOptions>(endpoint);
+      return res?.data || null;
+    } catch (e) {
+      console.warn("Backend package filter-options fetch error:", e);
+      return null;
+    }
+  },
+};
+
 export const TrekService = {
   async getAll(filters?: PackageFilterParams): Promise<TrekItem[]> {
     try {

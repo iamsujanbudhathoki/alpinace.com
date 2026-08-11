@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useMemo, use } from "react";
+import { useState, useMemo, useEffect, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ChevronDown, Star } from "lucide-react";
-import { initialExpeditionsData } from "@/lib/expedition-data";
+import { ExpeditionItem, initialExpeditionsData } from "@/lib/expedition-data";
+import { ExpeditionService, InquiryService } from "@/lib/services/admin-service";
+import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
 
 interface ExpeditionDetailPageProps {
   params: Promise<{
@@ -14,14 +16,50 @@ interface ExpeditionDetailPageProps {
 
 export default function ExpeditionDetailPage({ params }: ExpeditionDetailPageProps) {
   const resolvedParams = use(params);
-  const expedition = initialExpeditionsData.find((e) => e.slug === resolvedParams.slug);
+  const [expedition, setExpedition] = useState<ExpeditionItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!expedition) {
-    notFound();
-  }
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const raw = await ExpeditionService.getBySlug(resolvedParams.slug);
+        if (raw) {
+          setExpedition({
+            id: raw.id,
+            title: raw.title,
+            slug: raw.slug,
+            category: raw.category,
+            rating: Number(raw.rating),
+            reviewsCount: Number(raw.reviewsCount ?? raw.totalBookings),
+            image: raw.image ?? "",
+            shortDesc: raw.shortDesc ?? "",
+            durationDays: Number(raw.durationDays),
+            peakHeightM: Number(raw.maxAltitudeMeters),
+            climbingGrade: raw.difficulty as any,
+            bestSeason: raw.bestSeason ?? "",
+            priceUSD: Number(raw.priceUSD),
+            permitsRequired: raw.permitsRequired,
+            status: raw.status as any,
+            region: raw.region as any,
+          });
+        } else {
+          const staticMatch = initialExpeditionsData.find((e) => e.slug === resolvedParams.slug);
+          setExpedition(staticMatch || null);
+        }
+      } catch (e) {
+        console.warn("Failed to fetch expedition by slug", e);
+        const staticMatch = initialExpeditionsData.find((e) => e.slug === resolvedParams.slug);
+        setExpedition(staticMatch || null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [resolvedParams.slug]);
 
   // Related expeditions excluding current
   const relatedExpeditions = useMemo(() => {
+    if (!expedition) return [];
     return initialExpeditionsData.filter((e) => e.slug !== expedition.slug).slice(0, 2);
   }, [expedition]);
 
@@ -32,13 +70,20 @@ export default function ExpeditionDetailPage({ params }: ExpeditionDetailPagePro
   const [oxygenAddon, setOxygenAddon] = useState<boolean>(true);
 
   // Gallery state
-  const gallery = [
-    expedition.image,
-    "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80",
-  ];
+  const gallery = useMemo(() => {
+    return [
+      expedition?.image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80",
+    ];
+  }, [expedition?.image]);
+
   const [activePhoto, setActivePhoto] = useState<string>(gallery[0]);
+
+  useEffect(() => {
+    if (gallery[0]) setActivePhoto(gallery[0]);
+  }, [gallery]);
 
   // Lead inquiry state
   const [inquiryName, setInquiryName] = useState("");
@@ -46,7 +91,7 @@ export default function ExpeditionDetailPage({ params }: ExpeditionDetailPagePro
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
 
   // Price calculations
-  const baseCostPerPerson = expedition.priceUSD;
+  const baseCostPerPerson = expedition?.priceUSD || 2800;
   const oxygenCostPerPerson = 1200;
   const totalPrice = useMemo(() => {
     let perPerson = baseCostPerPerson;
@@ -57,17 +102,33 @@ export default function ExpeditionDetailPage({ params }: ExpeditionDetailPagePro
     return Math.round(perPerson * calculatorClimbers * discount);
   }, [calculatorClimbers, oxygenAddon, baseCostPerPerson]);
 
-  const handleInquirySubmit = (e: React.FormEvent) => {
+  const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (inquiryName && inquiryEmail) {
-      setInquirySubmitted(true);
-      setTimeout(() => {
-        setInquirySubmitted(false);
-        setInquiryName("");
-        setInquiryEmail("");
-      }, 6000);
+    if (!expedition) return;
+    try {
+      await InquiryService.create({
+        guestName: inquiryName,
+        email: inquiryEmail,
+        phone: "+1 000-000-0000",
+        country: "International",
+        interestedTrip: expedition.title,
+        travelDates: "Upcoming Season",
+        groupSize: calculatorClimbers,
+        message: `Inquiry for ${expedition.title}. Climbers: ${calculatorClimbers}. Oxygen: ${oxygenAddon ? "Yes" : "No"}. Estimated Price: $${totalPrice}`,
+      });
+    } catch (e) {
+      console.warn("Failed to create inquiry via API:", e);
     }
+    setInquirySubmitted(true);
   };
+
+  if (loading) {
+    return <PackageDetailSkeleton />;
+  }
+
+  if (!expedition) {
+    return notFound();
+  }
 
   // Day-by-day itinerary data
   const itineraryDays = [

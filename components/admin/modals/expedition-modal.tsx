@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Image as ImageIcon, Search, Info } from "lucide-react";
-import { PackageItem } from "@/lib/admin-data";
+import { Edit, Image as ImageIcon, Search, Info, Loader2 } from "lucide-react";
+import { PackageItem, CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
 import { expeditionSchema, ExpeditionFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
@@ -17,7 +17,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 interface ExpeditionFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (expedition: PackageItem) => void;
+  onSave: (expedition: PackageItem) => Promise<boolean | void> | boolean | void;
   initialData?: PackageItem | null;
   isEditing?: boolean;
 }
@@ -31,6 +31,7 @@ export function ExpeditionFormModal({
 }: ExpeditionFormModalProps) {
   const [editingMode, setEditingMode] = useState(isEditing);
   const [activeTab, setActiveTab] = useState<"general" | "media" | "seo">("general");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -71,7 +72,7 @@ export function ExpeditionFormModal({
 
   useEffect(() => {
     if (isOpen) {
-      CategoryService.getByType("Expeditions").then((cats) => {
+      CategoryService.getByType(CategoryType.EXPEDITIONS).then((cats) => {
         if (cats && cats.length > 0) {
           setExpeditionCategories(cats.map((c) => ({ label: c.name, value: c.id })));
           if (!initialData) setValue("categoryId", cats[0].id);
@@ -128,31 +129,38 @@ export function ExpeditionFormModal({
     setActiveTab("general");
   }, [initialData, isEditing, isOpen, reset, expeditionCategories]);
 
-  const onSubmit = (values: ExpeditionFormValues) => {
-    const permitsArray = values.permitsText
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+  const onSubmit = async (values: ExpeditionFormValues) => {
+    setIsSubmitting(true);
+    try {
+      const permitsArray = values.permitsText
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
 
-    const expToSave: PackageItem = {
-      id: initialData?.id || `pkg-exp-${Date.now()}`,
-      title: values.title,
-      slug: initialData?.slug || values.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      category: initialData?.category || "Expedition",
-      categoryId: values.categoryId,
-      region: values.region,
-      durationDays: Number(values.durationDays),
-      maxAltitudeMeters: Number(values.maxAltitudeMeters),
-      difficulty: "Extreme (8000m+)",
-      priceUSD: Number(values.priceUSD),
-      status: values.status,
-      totalBookings: initialData?.totalBookings || 0,
-      rating: initialData?.rating || 5.0,
-      permitsRequired: permitsArray.length > 0 ? permitsArray : ["NMA Climbing Permit"],
-    };
+      const expToSave: PackageItem = {
+        id: initialData?.id || "",
+        title: values.title,
+        slug: initialData?.slug || "",
+        category: initialData?.category || "Expedition",
+        categoryId: values.categoryId,
+        region: values.region,
+        durationDays: Number(values.durationDays),
+        maxAltitudeMeters: Number(values.maxAltitudeMeters),
+        difficulty: "Extreme (8000m+)",
+        priceUSD: Number(values.priceUSD),
+        status: values.status,
+        totalBookings: initialData?.totalBookings || 0,
+        rating: initialData?.rating || 5.0,
+        permitsRequired: permitsArray.length > 0 ? permitsArray : ["NMA Climbing Permit"],
+      };
 
-    onSave(expToSave);
-    onClose();
+      const success = await onSave(expToSave);
+      if (success !== false) {
+        onClose();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const modalTitle = !initialData
@@ -178,8 +186,22 @@ export function ExpeditionFormModal({
         )}
       </div>
       <div className="flex items-center gap-2">
-        <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">Cancel</Button>
-        <Button type="submit" form="expedition-form" className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors">Save Expedition</Button>
+        <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">Cancel</Button>
+        <Button 
+          type="submit" 
+          form="expedition-form" 
+          disabled={isSubmitting}
+          className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
+        >
+          {isSubmitting ? (
+            <span className="flex items-center gap-1.5">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Saving...
+            </span>
+          ) : (
+            "Save Expedition"
+          )}
+        </Button>
       </div>
     </div>
   );

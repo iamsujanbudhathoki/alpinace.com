@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Mail, Phone, Globe, Calendar, ShieldCheck } from "lucide-react";
+import { Edit, Mail, Phone, Globe, Calendar, ShieldCheck, Loader2 } from "lucide-react";
 import { Booking } from "@/lib/admin-data";
 import { bookingSchema, BookingFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
@@ -15,7 +15,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 interface BookingFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (booking: Booking) => void;
+  onSave: (booking: Booking) => Promise<boolean | void> | boolean | void;
   initialData?: Booking | null;
   isEditing?: boolean;
 }
@@ -28,6 +28,7 @@ export function BookingFormModal({
   isEditing = false,
 }: BookingFormModalProps) {
   const [editingMode, setEditingMode] = useState(isEditing);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -97,29 +98,36 @@ export function BookingFormModal({
     setEditingMode(isEditing || !initialData);
   }, [initialData, isEditing, isOpen, reset]);
 
-  const onSubmit = (values: BookingFormValues) => {
-    const bookingToSave: Booking = {
-      id: initialData?.id || `bkg-${Date.now()}`,
-      reference: initialData?.reference || `ACE-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      guestName: values.guestName,
-      guestEmail: values.guestEmail,
-      guestPhone: values.guestPhone,
-      country: values.country,
-      packageName: values.packageName,
-      packageType: values.packageType,
-      startDate: values.startDate,
-      endDate: values.endDate,
-      groupSize: Number(values.groupSize),
-      totalAmountUSD: Number(values.totalAmountUSD),
-      paymentStatus: values.paymentStatus,
-      bookingStatus: values.bookingStatus,
-      assignedGuide: values.assignedGuide || undefined,
-      permitStatus: values.permitStatus,
-      specialRequests: values.specialRequests || undefined,
-    };
+  const onSubmit = async (values: BookingFormValues) => {
+    setIsSubmitting(true);
+    try {
+      const bookingToSave: Booking = {
+        id: initialData?.id || `bkg-${Date.now()}`,
+        reference: initialData?.reference || `ACE-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+        guestName: values.guestName,
+        guestEmail: values.guestEmail,
+        guestPhone: values.guestPhone,
+        country: values.country,
+        packageName: values.packageName,
+        packageType: values.packageType,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        groupSize: Number(values.groupSize),
+        totalAmountUSD: Number(values.totalAmountUSD),
+        paymentStatus: values.paymentStatus,
+        bookingStatus: values.bookingStatus,
+        assignedGuide: values.assignedGuide || undefined,
+        permitStatus: values.permitStatus,
+        specialRequests: values.specialRequests || undefined,
+      };
 
-    onSave(bookingToSave);
-    onClose();
+      const success = await onSave(bookingToSave);
+      if (success !== false) {
+        onClose();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const modalTitle = !initialData
@@ -284,11 +292,22 @@ export function BookingFormModal({
             </div>
           </div>
           <DialogFooter className="pt-2">
-            <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
               Cancel
             </Button>
-            <Button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors">
-              Save Reservation
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-1.5">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Saving...
+                </span>
+              ) : (
+                "Save Reservation"
+              )}
             </Button>
           </DialogFooter>
         </form>

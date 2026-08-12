@@ -61,7 +61,7 @@ export default function AdminTreksPage() {
     return matchesSearch && matchesDifficulty;
   });
 
-  const handleSaveTrek = async (savedTrek: TrekItem) => {
+  const handleSaveTrek = async (savedTrek: TrekItem): Promise<boolean> => {
     try {
       let res: ApiResponse<TrekItem>;
       if (isEditing && activeTrek) {
@@ -76,13 +76,16 @@ export default function AdminTreksPage() {
         }
       }
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Trek itinerary saved successfully");
         setIsFormOpen(false);
+        return true;
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to save trek itinerary");
+        return false;
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to save trek itinerary");
+      return false;
     }
   };
 

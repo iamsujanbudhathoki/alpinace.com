@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
-import { CategoryItem } from "@/lib/admin-data";
+import { CategoryItem, CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
 import { CategoryFormModal, DeleteCategoryModal } from "@/components/admin/modals/category-modal";
@@ -79,16 +79,38 @@ export default function AdminCategoriesPage() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleSaveCategory = async (savedCategory: CategoryItem) => {
+  const handleConfirmDelete = async () => {
+    if (!activeCategory) return;
+    try {
+      const res = await CategoryService.delete(activeCategory.id);
+      if (res.success) {
+        setCategories((prev) => prev.filter((c) => c.id !== activeCategory.id));
+        toast.success(res.message );
+      } else {
+        toast.error(res.message );
+      }
+    } catch (err: any) {
+      toast.error(err.message );
+    } finally {
+      setIsDeleteModalOpen(false);
+    }
+  };
+
+  const handleSaveCategory = async (savedCategory: CategoryItem): Promise<boolean> => {
     try {
       let res: ApiResponse<CategoryItem>;
-      if (activeCategory) {
+      if (isEditing && activeCategory) {
         res = await CategoryService.update(activeCategory.id, {
           name: savedCategory.name,
           type: savedCategory.type,
           description: savedCategory.description,
           status: savedCategory.status,
         });
+        if (res.success) {
+          setCategories((prev) =>
+            prev.map((c) => (c.id === activeCategory.id ? res.data : c))
+          );
+        }
       } else {
         res = await CategoryService.create({
           name: savedCategory.name,
@@ -96,57 +118,48 @@ export default function AdminCategoriesPage() {
           description: savedCategory.description,
           status: savedCategory.status,
         });
+        if (res.success) {
+          setCategories((prev) => [res.data, ...prev]);
+        }
       }
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Category saved successfully.");
         setIsFormModalOpen(false);
-        loadCategories();
+        return true;
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to save category.");
+        return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save category");
+      toast.error(err.message || "Failed to save category.");
+      return false;
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (!activeCategory) return;
-    try {
-      const res = await CategoryService.delete(activeCategory.id);
-      if (res.success) {
-        toast.success(res.message);
-      } else {
-        toast.error(res.message);
-      }
-      setIsDeleteModalOpen(false);
-      loadCategories();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to delete category");
-    }
-  };
-
-  const getTypeIcon = (type: CategoryItem["type"]) => {
+  const getTypeIcon = (type: CategoryType) => {
     switch (type) {
-      case "Trekking":
+      case CategoryType.TREKKING:
         return <Compass className="w-3.5 h-3.5 text-amber-600" />;
-      case "Expeditions":
+      case CategoryType.EXPEDITIONS:
         return <Mountain className="w-3.5 h-3.5 text-rose-600" />;
-      case "Tours":
+      case CategoryType.TOURS:
         return <MapPin className="w-3.5 h-3.5 text-blue-600" />;
-      case "Blogs":
+      case CategoryType.BLOGS:
         return <BookOpen className="w-3.5 h-3.5 text-purple-600" />;
-      case "Media":
+      case CategoryType.MEDIA:
         return <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />;
       default:
-        return <Tag className="w-3.5 h-3.5 text-slate-700" />;
+        return <Tag className="w-3.5 h-3.5 text-slate-600" />;
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Top Banner */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight font-heading">
+          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <Tag className="w-5 h-5 text-amber-500" />
             Categories
           </h1>
           <p className="text-xs text-slate-600 font-normal">
@@ -164,7 +177,7 @@ export default function AdminCategoriesPage() {
           <div>
             <div className="text-sm font-bold text-slate-900">Trekking Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === "Trekking").length}
+              {categories.filter((c) => c.type === CategoryType.TREKKING).length}
             </div>
           </div>
         </div>
@@ -176,7 +189,7 @@ export default function AdminCategoriesPage() {
           <div>
             <div className="text-sm font-bold text-slate-900">Expedition Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === "Expeditions").length}
+              {categories.filter((c) => c.type === CategoryType.EXPEDITIONS).length}
             </div>
           </div>
         </div>
@@ -188,7 +201,7 @@ export default function AdminCategoriesPage() {
           <div>
             <div className="text-sm font-bold text-slate-900">Tour Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === "Tours").length}
+              {categories.filter((c) => c.type === CategoryType.TOURS).length}
             </div>
           </div>
         </div>
@@ -200,7 +213,7 @@ export default function AdminCategoriesPage() {
           <div>
             <div className="text-sm font-bold text-slate-900">Blog Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === "Blogs").length}
+              {categories.filter((c) => c.type === CategoryType.BLOGS).length}
             </div>
           </div>
         </div>
@@ -212,7 +225,7 @@ export default function AdminCategoriesPage() {
           <div>
             <div className="text-sm font-bold text-slate-900">Media Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === "Media").length}
+              {categories.filter((c) => c.type === CategoryType.MEDIA).length}
             </div>
           </div>
         </div>
@@ -251,11 +264,11 @@ export default function AdminCategoriesPage() {
             className="bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
           >
             <option value="All">All Modules (All Categories)</option>
-            <option value="Trekking">Trekking Packages</option>
-            <option value="Tours">Sightseeing Tours</option>
-            <option value="Expeditions">Peak Expeditions</option>
-            <option value="Blogs">Blogs &amp; Articles</option>
-            <option value="Media">Media Assets &amp; Gallery</option>
+            <option value={CategoryType.TREKKING}>Trekking Packages</option>
+            <option value={CategoryType.TOURS}>Sightseeing Tours</option>
+            <option value={CategoryType.EXPEDITIONS}>Peak Expeditions</option>
+            <option value={CategoryType.BLOGS}>Blogs &amp; Articles</option>
+            <option value={CategoryType.MEDIA}>Media Assets &amp; Gallery</option>
           </select>
         </div>
       </div>

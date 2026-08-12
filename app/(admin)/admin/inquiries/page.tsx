@@ -72,7 +72,15 @@ export default function AdminInquiriesPage() {
 
   const handleSendQuote = async (id: string, message: string, status: Inquiry["status"]): Promise<boolean> => {
     try {
-      const res = await InquiryService.sendQuote(id, { message, status });
+      if (status) {
+        const statusRes = await InquiryService.update(id, { status });
+        if (!statusRes.success) {
+          toast.error(statusRes.message || "Failed to update inquiry status");
+          return false;
+        }
+      }
+
+      const res = await InquiryService.sendQuote(id, { message });
       if (res.success) {
         setInquiries((prev) =>
           prev.map((inq) => (inq.id === id ? { ...inq, status } : inq))
@@ -80,7 +88,7 @@ export default function AdminInquiriesPage() {
         if (activeInquiry && activeInquiry.id === id) {
           setActiveInquiry((prev) => (prev ? { ...prev, status } : null));
         }
-        toast.success(message.trim() ? (res.message || "Custom quote email dispatched successfully!") : (res.message || "Lead status updated successfully!"));
+        toast.success(res.message || "Custom quote email dispatched successfully!");
         return true;
       } else {
         toast.error(res.message || "Failed to process quote dispatch.");

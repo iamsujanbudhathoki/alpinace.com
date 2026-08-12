@@ -59,7 +59,7 @@ export default function AdminExpeditionsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleSaveExpedition = async (savedExp: PackageItem) => {
+  const handleSaveExpedition = async (savedExp: PackageItem): Promise<boolean> => {
     try {
       let res: ApiResponse<PackageItem>;
       if (isEditing && activeExp) {
@@ -74,13 +74,16 @@ export default function AdminExpeditionsPage() {
         }
       }
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Expedition saved successfully");
         setIsFormOpen(false);
+        return true;
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to save expedition");
+        return false;
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to save expedition");
+      return false;
     }
   };
 

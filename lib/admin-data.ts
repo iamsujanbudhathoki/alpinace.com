@@ -118,14 +118,27 @@ export const mockGuides: Guide[] = [];
 export const mockInquiries: Inquiry[] = [];
 export const mockBlogArticles: BlogArticle[] = [];
 
+export enum CategoryType {
+  TREKKING = "Trekking",
+  TOURS = "Tours",
+  EXPEDITIONS = "Expeditions",
+  BLOGS = "Blogs",
+  MEDIA = "Media",
+}
+
+export enum CategoryStatus {
+  ACTIVE = "Active",
+  DRAFT = "Draft",
+}
+
 export interface CategoryItem {
   id: string;
   name: string;
   slug: string;
-  type: "Trekking" | "Tours" | "Expeditions" | "Blogs" | "Media";
+  type: CategoryType;
   description: string;
   itemCount: number;
-  status: "Active" | "Draft";
+  status: CategoryStatus;
 }
 
 export const mockCategories: CategoryItem[] = [];

@@ -14,7 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { BlogArticle, BlogStatus } from "@/lib/admin-data";
+import { BlogArticle, BlogStatus, CategoryType } from "@/lib/admin-data";
 import { blogSchema, BlogFormValues } from "@/lib/admin-schemas";
 import { 
   AdminInputField, 
@@ -23,7 +23,7 @@ import {
 } from "@/components/admin/forms/admin-form-fields";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
-import { MediaService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { Button } from "@/components/ui/button";
 
 interface BlogArticleFormProps {
@@ -32,15 +32,6 @@ interface BlogArticleFormProps {
   onSubmit: (values: BlogFormValues) => Promise<void>;
   isSubmitting?: boolean;
 }
-
-const CATEGORY_OPTIONS = [
-  { label: "Expedition Prep", value: "Expedition Prep" },
-  { label: "Trekking Guides", value: "Trekking Guides" },
-  { label: "Sherpa Culture", value: "Sherpa Culture" },
-  { label: "Gear & Equipment", value: "Gear & Equipment" },
-  { label: "Safety & Health", value: "Safety & Health" },
-  { label: "Mountain Stories", value: "Mountain Stories" },
-];
 
 const STATUS_OPTIONS = [
   { label: "Published", value: BlogStatus.PUBLISHED },
@@ -55,10 +46,11 @@ export function BlogArticleForm({
   isSubmitting = false,
 }: BlogArticleFormProps) {
   const router = useRouter();
+  const [categoryOptions, setCategoryOptions] = useState<{ label: string; value: string }[]>([]);
   const [formData, setFormData] = useState<BlogFormValues>({
     title: initialData?.title || "",
-    category: initialData?.category || "Expedition Prep",
-    readTime: initialData?.readTime || "5 min read",
+    category: initialData?.category || "",
+    readTime: initialData?.readTime || "",
     status: initialData?.status || BlogStatus.PUBLISHED,
     publishedDate: initialData?.publishedDate || new Date().toISOString().split("T")[0],
     excerpt: initialData?.excerpt || "",
@@ -70,11 +62,38 @@ export function BlogArticleForm({
   const [localSubmitting, setLocalSubmitting] = useState(false);
 
   useEffect(() => {
+    async function loadCategories() {
+      try {
+        const blogCats = await CategoryService.getByType(CategoryType.BLOGS);
+        if (blogCats && blogCats.length > 0) {
+          setCategoryOptions([
+            { label: "Select a Category...", value: "" },
+            ...blogCats.map((c) => ({ label: c.name, value: c.name })),
+          ]);
+        } else {
+          const allCats = await CategoryService.getAll();
+          if (allCats && allCats.length > 0) {
+            setCategoryOptions([
+              { label: "Select a Category...", value: "" },
+              ...allCats.map((c) => ({ label: c.name, value: c.name })),
+            ]);
+          } else {
+            setCategoryOptions([{ label: "Select a Category...", value: "" }]);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to load dynamic blog categories:", err);
+      }
+    }
+    loadCategories();
+  }, []);
+
+  useEffect(() => {
     if (initialData) {
       setFormData({
         title: initialData.title || "",
-        category: initialData.category || "Expedition Prep",
-        readTime: initialData.readTime || "5 min read",
+        category: initialData.category || "",
+        readTime: initialData.readTime || "",
         status: initialData.status || BlogStatus.PUBLISHED,
         publishedDate: initialData.publishedDate || new Date().toISOString().split("T")[0],
         excerpt: initialData.excerpt || "",
@@ -217,7 +236,7 @@ export function BlogArticleForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <AdminSelectField
                 label="Category"
-                options={CATEGORY_OPTIONS}
+                options={categoryOptions}
                 value={formData.category}
                 onChange={(e) => handleChange("category", e.target.value)}
                 error={errors.category}

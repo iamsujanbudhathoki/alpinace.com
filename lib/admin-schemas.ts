@@ -9,6 +9,8 @@ import {
   BlogStatus,
   AssociateStatus,
   FaqStatus,
+  CategoryType,
+  CategoryStatus,
 } from "./admin-data";
 import { TREK_DIFFICULTIES } from "./trek-data";
 
@@ -119,9 +121,9 @@ export type InquiryFormValues = z.infer<typeof inquirySchema>;
 
 export const categorySchema = z.object({
   name: z.string().min(2, "Category name must be at least 2 characters"),
-  type: z.enum(["Trekking", "Tours", "Expeditions", "Blogs", "Media"]),
+  type: z.nativeEnum(CategoryType),
   description: z.string().min(5, "Description must be at least 5 characters"),
-  status: z.enum(["Active", "Draft"]),
+  status: z.nativeEnum(CategoryStatus).default(CategoryStatus.ACTIVE),
 });
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;

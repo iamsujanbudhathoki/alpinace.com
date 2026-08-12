@@ -6,6 +6,7 @@ import { Plus, Calendar, Eye, Image as ImageIcon, Loader2 } from "lucide-react";
 import { BlogArticle } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { BlogService } from "@/lib/services/admin-service";
+import { BlogViewModal } from "@/components/admin/modals/blog-view-modal";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -27,6 +28,8 @@ export default function AdminBlogsPage() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [activeArticle, setActiveArticle] = useState<BlogArticle | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadArticles() {
@@ -41,6 +44,11 @@ export default function AdminBlogsPage() {
     }
     loadArticles();
   }, []);
+
+  const handleViewArticle = (article: BlogArticle) => {
+    setActiveArticle(article);
+    setIsViewModalOpen(true);
+  };
 
   const handleDeleteArticle = async (id: string, title: string) => {
     if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
@@ -163,6 +171,11 @@ export default function AdminBlogsPage() {
 
                   <AdminTableCell align="right">
                     <AdminTableActions>
+                      <AdminActionButton
+                        variant="view"
+                        onClick={() => handleViewArticle(art)}
+                        title="View Article Details"
+                      />
                       <Link href={`/admin/blogs/${art.id}/edit`}>
                         <AdminActionButton
                           variant="edit"
@@ -189,6 +202,13 @@ export default function AdminBlogsPage() {
         </AdminTable>
       </AdminTableContainer>
       )}
+
+      {/* Blog Article View Modal */}
+      <BlogViewModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        article={activeArticle}
+      />
     </div>
   );
 }

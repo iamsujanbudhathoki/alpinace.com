@@ -1,4 +1,4 @@
-import { CategoryItem, PackageItem, Booking, Inquiry, Guide, BlogArticle, BlogStatus, AssociateItem, AssociateStatus, FaqItem, FaqStatus } from "@/lib/admin-data";
+import { CategoryItem, CategoryType, PackageItem, Booking, Inquiry, Guide, BlogArticle, BlogStatus, AssociateItem, AssociateStatus, FaqItem, FaqStatus } from "@/lib/admin-data";
 import { CategoryFormValues, TrekFormValues, TourFormValues, ExpeditionFormValues, BookingFormValues, InquiryFormValues, BlogFormValues, AssociateFormValues, FaqFormValues } from "@/lib/admin-schemas";
 import { TrekItem } from "@/lib/trek-data";
 import { apiClient, axiosInstance, ApiResponse } from "@/lib/services/api-client";
@@ -28,20 +28,7 @@ export const MediaService = {
       }
     );
 
-    const resData = response.data as any;
-    if (resData && typeof resData === "object" && !Array.isArray(resData)) {
-      return {
-        success: resData.success !== undefined ? Boolean(resData.success) : response.status >= 200 && response.status < 300,
-        message: resData.message || "File uploaded successfully",
-        data: resData.data !== undefined ? resData.data : resData,
-      };
-    }
-
-    return {
-      success: response.status >= 200 && response.status < 300,
-      message: "File uploaded successfully",
-      data: resData,
-    };
+    return response.data;
   },
 
   async update(id: string, data: { title?: string; category?: string; description?: string; altText?: string }): Promise<ApiResponse<any>> {
@@ -64,7 +51,7 @@ export const CategoryService = {
     }
   },
 
-  async getByType(type: CategoryItem["type"]): Promise<CategoryItem[]> {
+  async getByType(type: CategoryType | string): Promise<CategoryItem[]> {
     try {
       const res = await apiClient.get<CategoryItem[]>(`/categories?type=${type}`);
       return Array.isArray(res?.data) ? res.data : [];
@@ -136,10 +123,14 @@ export function buildPackageQuery(params?: PackageFilterParams): string {
 export interface FilterOptionItem {
   label: string;
   value: string;
+  id?: string;
+  name?: string;
+  slug?: string;
 }
 
 export interface PackageFilterOptions {
   categoryType?: string;
+  categories?: FilterOptionItem[];
   styles: FilterOptionItem[];
   difficulties: FilterOptionItem[];
   regions: FilterOptionItem[];
@@ -155,7 +146,12 @@ export interface PackageFilterOptions {
 export const PackageFilterService = {
   async getOptions(categoryType?: "Trekking" | "Tour" | "Expedition"): Promise<PackageFilterOptions | null> {
     try {
-      const endpoint = categoryType ? `/packages/filter-options?categoryType=${categoryType}` : "/packages/filter-options";
+      let endpoint = "/packages/filter-options";
+      if (categoryType === "Trekking") endpoint = "/treks/filter-options";
+      else if (categoryType === "Tour") endpoint = "/tours/filter-options";
+      else if (categoryType === "Expedition") endpoint = "/expeditions/filter-options";
+      else if (categoryType) endpoint = `/packages/filter-options?categoryType=${categoryType}`;
+
       const res = await apiClient.get<PackageFilterOptions>(endpoint);
       return res?.data || null;
     } catch (e) {
@@ -165,18 +161,48 @@ export const PackageFilterService = {
   },
 };
 
+function cleanPackagePayload(data: any, defaultCategoryType: string) {
+  if (!data) return {};
+  const {
+    id,
+    slug,
+    category,
+    rating,
+    reviewsCount,
+    createdAt,
+    updatedAt,
+    permitsText,
+    ...rest
+  } = data;
+
+  const permitsArray = permitsText
+    ? permitsText.split(",").map((s: string) => s.trim()).filter(Boolean)
+    : Array.isArray(rest.permitsRequired)
+    ? rest.permitsRequired
+    : [];
+
+  return {
+    ...rest,
+    categoryType: rest.categoryType || defaultCategoryType,
+    permitsRequired: permitsArray,
+    durationDays: Number(rest.durationDays || 1),
+    priceUSD: Number(rest.priceUSD || 0),
+    maxAltitudeMeters: rest.maxAltitudeMeters ? Number(rest.maxAltitudeMeters) : undefined,
+  };
+}
+
 export const TrekService = {
   async getAll(filters?: PackageFilterParams): Promise<TrekItem[]> {
     try {
-      const q = buildPackageQuery({ ...filters, categoryType: "Trekking" });
-      const res = await apiClient.get<any[]>(`/packages${q}`);
+      const q = buildPackageQuery(filters);
+      const res = await apiClient.get<any[]>(`/treks${q}`);
       const packages = res?.data;
       if (Array.isArray(packages)) {
         return packages.map((p) => ({
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: p.categoryType,
+          category: p.categoryType ,
           categoryId: p.categoryId,
           rating: Number(p.rating || 5),
           reviewsCount: Number(p.reviewsCount || 0),
@@ -199,7 +225,7 @@ export const TrekService = {
 
   async getBySlug(slug: string): Promise<TrekItem | null> {
     try {
-      const res = await apiClient.get<any>(`/packages/${slug}`);
+      const res = await apiClient.get<any>(`/treks/${slug}`);
       const p = res?.data;
       if (p && p.id) {
         return {
@@ -227,58 +253,52 @@ export const TrekService = {
   },
 
   async create(data: TrekFormValues): Promise<ApiResponse<TrekItem>> {
-    const permitsArray = data.permitsText
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const res = await apiClient.post<any>("/packages", {
-      ...data,
-      categoryType: "Trekking",
-      permitsRequired: permitsArray,
-    });
-
+    const payload = cleanPackagePayload(data, "Trekking");
+    const res = await apiClient.post<any>("/packages", payload);
     const pkg = res.data;
     const trekItem: TrekItem = {
-      id: pkg.id || `trk-${Date.now()}`,
-      title: pkg.title || data.title,
-      slug: pkg.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      category: pkg.category || data.categoryId,
-      rating: Number(pkg.rating || 5),
-      reviewsCount: Number(pkg.reviewsCount || 0),
-      image: pkg.image || data.image,
-      shortDesc: pkg.shortDesc || data.shortDesc,
-      durationDays: Number(pkg.durationDays || data.durationDays),
-      difficulty: pkg.difficulty || data.difficulty,
-      bestSeason: pkg.bestSeason || data.bestSeason,
-      priceUSD: Number(pkg.priceUSD || data.priceUSD),
-      permitsRequired: permitsArray,
-      status: pkg.status || data.status,
-      region: pkg.region || data.region,
+      id: pkg?.id || `trk-${Date.now()}`,
+      title: pkg?.title || data.title,
+      slug: pkg?.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      category: pkg?.categoryType || "Trekking",
+      categoryId: pkg?.categoryId || data.categoryId,
+      rating: Number(pkg?.rating || 5),
+      reviewsCount: Number(pkg?.reviewsCount || 0),
+      image: pkg?.image || data.image,
+      shortDesc: pkg?.shortDesc || data.shortDesc,
+      durationDays: Number(pkg?.durationDays || data.durationDays),
+      difficulty: pkg?.difficulty || data.difficulty,
+      bestSeason: pkg?.bestSeason || data.bestSeason,
+      priceUSD: Number(pkg?.priceUSD || data.priceUSD),
+      permitsRequired: Array.isArray(pkg?.permitsRequired) ? pkg.permitsRequired : [],
+      status: pkg?.status || data.status,
+      region: pkg?.region || data.region,
     };
 
     return { success: res.success, message: res.message || "Trek itinerary saved successfully", data: trekItem };
   },
 
   async update(id: string, data: Partial<TrekFormValues>): Promise<ApiResponse<TrekItem>> {
-    const res = await apiClient.put<any>(`/packages/${id}`, data);
+    const payload = cleanPackagePayload(data, "Trekking");
+    const res = await apiClient.put<any>(`/packages/${id}`, payload);
     const updated = res.data;
     const trekItem: TrekItem = {
-      id: updated.id || id,
-      title: updated.title,
-      slug: updated.slug,
-      category: updated.category,
-      rating: Number(updated.rating || 5),
-      reviewsCount: Number(updated.reviewsCount || 0),
-      image: updated.image,
-      shortDesc: updated.shortDesc,
-      durationDays: Number(updated.durationDays),
-      difficulty: updated.difficulty,
-      bestSeason: updated.bestSeason,
-      priceUSD: Number(updated.priceUSD),
-      permitsRequired: Array.isArray(updated.permitsRequired) ? updated.permitsRequired : [],
-      status: updated.status,
-      region: updated.region,
+      id: updated?.id || id,
+      title: updated?.title || data.title || "",
+      slug: updated?.slug || "",
+      category: updated?.categoryType || "Trekking",
+      categoryId: updated?.categoryId || data.categoryId || "",
+      rating: Number(updated?.rating || 5),
+      reviewsCount: Number(updated?.reviewsCount || 0),
+      image: updated?.image || data.image || "",
+      shortDesc: updated?.shortDesc || data.shortDesc || "",
+      durationDays: Number(updated?.durationDays || data.durationDays || 1),
+      difficulty: updated?.difficulty || data.difficulty || "",
+      bestSeason: updated?.bestSeason || data.bestSeason || "",
+      priceUSD: Number(updated?.priceUSD || data.priceUSD || 0),
+      permitsRequired: Array.isArray(updated?.permitsRequired) ? updated.permitsRequired : [],
+      status: updated?.status || data.status || "Active",
+      region: updated?.region || data.region || "",
     };
     return { success: res.success, message: res.message || "Trek itinerary updated successfully", data: trekItem };
   },
@@ -291,8 +311,8 @@ export const TrekService = {
 export const TourService = {
   async getAll(filters?: PackageFilterParams): Promise<PackageItem[]> {
     try {
-      const q = buildPackageQuery({ ...filters, categoryType: "Tour" });
-      const res = await apiClient.get<PackageItem[]>(`/packages${q}`);
+      const q = buildPackageQuery(filters);
+      const res = await apiClient.get<PackageItem[]>(`/tours${q}`);
       return Array.isArray(res?.data) ? res.data : [];
     } catch (e) {
       console.warn("Backend tours fetch error:", e);
@@ -302,7 +322,7 @@ export const TourService = {
 
   async getBySlug(slug: string): Promise<PackageItem | null> {
     try {
-      const res = await apiClient.get<PackageItem>(`/packages/${slug}`);
+      const res = await apiClient.get<PackageItem>(`/tours/${slug}`);
       return res?.data || null;
     } catch (e) {
       return null;
@@ -310,16 +330,13 @@ export const TourService = {
   },
 
   async create(data: TourFormValues): Promise<ApiResponse<PackageItem>> {
-    const permitsArray = data.permitsText.split(",").map((s) => s.trim()).filter(Boolean);
-    return apiClient.post<PackageItem>("/packages", {
-      ...data,
-      categoryType: "Tour",
-      permitsRequired: permitsArray,
-    });
+    const payload = cleanPackagePayload(data, "Tour");
+    return apiClient.post<PackageItem>("/packages", payload);
   },
 
   async update(id: string, data: Partial<TourFormValues>): Promise<ApiResponse<PackageItem>> {
-    return apiClient.put<PackageItem>(`/packages/${id}`, data);
+    const payload = cleanPackagePayload(data, "Tour");
+    return apiClient.put<PackageItem>(`/packages/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
@@ -330,8 +347,8 @@ export const TourService = {
 export const ExpeditionService = {
   async getAll(filters?: PackageFilterParams): Promise<PackageItem[]> {
     try {
-      const q = buildPackageQuery({ ...filters, categoryType: "Expedition" });
-      const res = await apiClient.get<PackageItem[]>(`/packages${q}`);
+      const q = buildPackageQuery(filters);
+      const res = await apiClient.get<PackageItem[]>(`/expeditions${q}`);
       return Array.isArray(res?.data) ? res.data : [];
     } catch (e) {
       console.warn("Backend expeditions fetch error:", e);
@@ -341,7 +358,7 @@ export const ExpeditionService = {
 
   async getBySlug(slug: string): Promise<PackageItem | null> {
     try {
-      const res = await apiClient.get<PackageItem>(`/packages/${slug}`);
+      const res = await apiClient.get<PackageItem>(`/expeditions/${slug}`);
       return res?.data || null;
     } catch (e) {
       return null;
@@ -349,16 +366,13 @@ export const ExpeditionService = {
   },
 
   async create(data: ExpeditionFormValues): Promise<ApiResponse<PackageItem>> {
-    const permitsArray = data.permitsText.split(",").map((s) => s.trim()).filter(Boolean);
-    return apiClient.post<PackageItem>("/packages", {
-      ...data,
-      categoryType: "Expedition",
-      permitsRequired: permitsArray,
-    });
+    const payload = cleanPackagePayload(data, "Expedition");
+    return apiClient.post<PackageItem>("/packages", payload);
   },
 
   async update(id: string, data: Partial<ExpeditionFormValues>): Promise<ApiResponse<PackageItem>> {
-    return apiClient.put<PackageItem>(`/packages/${id}`, data);
+    const payload = cleanPackagePayload(data, "Expedition");
+    return apiClient.put<PackageItem>(`/packages/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
@@ -409,8 +423,8 @@ export const InquiryService = {
     return apiClient.put<Inquiry>(`/inquiries/${id}`, data);
   },
 
-  async sendQuote(id: string, data: { message: string; status?: string }): Promise<ApiResponse<any>> {
-    return apiClient.post<any>(`/inquiries/${id}/quote`, data);
+  async sendQuote(id: string, data: { message: string }): Promise<ApiResponse<any>> {
+    return apiClient.post<any>(`/inquiries/${id}/quote`, { message: data.message });
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
@@ -443,9 +457,14 @@ export const GuideService = {
 };
 
 export const BlogService = {
-  async getAll(status?: BlogStatus): Promise<BlogArticle[]> {
+  async getAll(status?: BlogStatus, categoryId?: string, search?: string): Promise<BlogArticle[]> {
     try {
-      const endpoint = status ? `/blogs?status=${status}` : "/blogs";
+      const params = new URLSearchParams();
+      if (status) params.append("status", status);
+      if (categoryId && categoryId !== "All") params.append("categoryId", categoryId);
+      if (search && search.trim() !== "") params.append("search", search.trim());
+      const query = params.toString();
+      const endpoint = query ? `/blogs?${query}` : "/blogs";
       const res = await apiClient.get<BlogArticle[]>(endpoint);
       return Array.isArray(res?.data) ? res.data : [];
     } catch (e) {

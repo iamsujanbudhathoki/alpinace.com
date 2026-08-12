@@ -59,7 +59,7 @@ export default function AdminToursPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleSaveTour = async (savedTour: PackageItem) => {
+  const handleSaveTour = async (savedTour: PackageItem): Promise<boolean> => {
     try {
       let res: ApiResponse<PackageItem>;
       if (isEditing && activeTour) {
@@ -74,13 +74,16 @@ export default function AdminToursPage() {
         }
       }
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Tour package saved successfully");
         setIsFormOpen(false);
+        return true;
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to save tour package");
+        return false;
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to save tour package");
+      return false;
     }
   };
 

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "bigger-picture/css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -204,4 +205,106 @@
 .modal-scroll {
   scrollbar-width: thin;
   scrollbar-color: #e2e8f0 transparent;
+}
+
+/* ── BiggerPicture Luxury Lightbox Styling ── */
+.bp-wrap > div:first-child {
+  background: rgba(2, 6, 23, 0.92) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.bp-controls button {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 9999px !important;
+  color: #ffffff !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.bp-controls button:hover {
+  background: rgba(217, 119, 6, 0.85) !important;
+  border-color: rgba(245, 158, 11, 0.9) !important;
+  transform: scale(1.08) !important;
+  box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.4) !important;
+}
+
+.bp-x {
+  top: 20px !important;
+  right: 20px !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 9999px !important;
+  margin: 0 !important;
+}
+
+.bp-x:before {
+  top: 5px !important;
+  right: 4px !important;
+  width: 32px !important;
+}
+
+.bp-prev,
+.bp-next {
+  width: 50px !important;
+  height: 50px !important;
+  margin-top: -25px !important;
+  border-radius: 9999px !important;
+}
+
+.bp-prev {
+  left: 24px !important;
+}
+
+.bp-next {
+  right: 24px !important;
+}
+
+.bp-prev:before,
+.bp-next:before {
+  top: 7px !important;
+  left: 5px !important;
+  width: 38px !important;
+}
+
+.bp-count {
+  top: 24px !important;
+  left: 24px !important;
+  margin: 0 !important;
+  font-family: var(--font-sans), system-ui, sans-serif !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
+  height: auto !important;
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.bp-cap {
+  bottom: 24px !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px !important;
+  color: #f8fafc !important;
+  font-family: var(--font-sans), system-ui, sans-serif !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  padding: 10px 20px !important;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5) !important;
+  max-width: min(90vw, 680px) !important;
+  text-align: center !important;
 }

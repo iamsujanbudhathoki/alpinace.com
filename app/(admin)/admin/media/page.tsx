@@ -7,6 +7,7 @@ import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { MediaService } from "@/lib/services/admin-service";
+import { openLightbox } from "@/lib/utils/lightbox";
 
 interface MediaAsset {
   id: string;
@@ -30,7 +31,6 @@ export default function AdminMediaPage() {
 
   // Modal States
   const [activeAsset, setActiveAsset] = useState<MediaAsset | null>(null);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -134,9 +134,19 @@ export default function AdminMediaPage() {
     toast.success(`Image URL for "${title}" copied to clipboard!`);
   };
 
-  const handleOpenLightbox = (asset: MediaAsset) => {
-    setActiveAsset(asset);
-    setIsLightboxOpen(true);
+  const handleOpenLightbox = (asset: MediaAsset, targetElement?: HTMLElement | EventTarget) => {
+    const position = filteredAssets.findIndex((a) => a.id === asset.id);
+    const items = filteredAssets.map((a) => ({
+      img: a.url,
+      thumb: a.url,
+      alt: a.title,
+      caption: `${a.title}${a.dimensions ? ` • ${a.dimensions}` : ""}${a.category ? ` • ${a.category}` : ""}`,
+    }));
+    openLightbox({
+      items,
+      position: position >= 0 ? position : 0,
+      el: targetElement,
+    });
   };
 
   const handleOpenEdit = (asset: MediaAsset) => {
@@ -372,7 +382,7 @@ export default function AdminMediaPage() {
                 <div className="absolute inset-0 bg-slate-950/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5">
                   <button
                     type="button"
-                    onClick={() => handleOpenLightbox(asset)}
+                    onClick={(e) => handleOpenLightbox(asset, e.currentTarget)}
                     title="View Fullscreen Lightbox"
                     className="w-9 h-9 bg-white text-slate-900 hover:bg-slate-100 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
                   >
@@ -517,20 +527,7 @@ export default function AdminMediaPage() {
         </form>
       </AdminModal>
 
-      {/* ULTRA-CLEAN FULLSCREEN LIGHTBOX MODAL */}
-      <AdminModal
-        isOpen={isLightboxOpen}
-        onClose={() => setIsLightboxOpen(false)}
-        maxWidth="full"
-        hideHeader={true}
-        variant="dark"
-        preventOutsideClose={false}
-      >
-        <div className="w-full h-[85vh] flex items-center justify-center p-2 rounded-xl bg-slate-950">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={activeAsset?.url} alt={activeAsset?.title} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" />
-        </div>
-      </AdminModal>
+
 
       {/* DELETE CONFIRMATION MODAL */}
       <AdminModal

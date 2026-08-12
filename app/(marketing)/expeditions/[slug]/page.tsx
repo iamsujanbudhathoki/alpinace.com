@@ -3,10 +3,11 @@
 import { useState, useMemo, useEffect, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, ChevronDown, Star } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, Star, Maximize2 } from "lucide-react";
 import { ExpeditionItem, initialExpeditionsData } from "@/lib/expedition-data";
 import { ExpeditionService, InquiryService } from "@/lib/services/admin-service";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
+import { openLightbox } from "@/lib/utils/lightbox";
 
 interface ExpeditionDetailPageProps {
   params: Promise<{
@@ -255,12 +256,34 @@ export default function ExpeditionDetailPage({ params }: ExpeditionDetailPagePro
 
             {/* Gallery Showcase */}
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-              <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100">
+              <div 
+                onClick={(e) => {
+                  const position = Math.max(0, gallery.indexOf(activePhoto));
+                  openLightbox({
+                    items: gallery.map((photo) => ({
+                      img: photo,
+                      thumb: photo,
+                      alt: expedition.title,
+                      caption: `${expedition.title} • ${expedition.peakHeightM.toLocaleString()}m Peak High-Resolution View`,
+                    })),
+                    position,
+                    el: e.currentTarget,
+                  });
+                }}
+                className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100 cursor-pointer group"
+                title="Click to view full screen gallery"
+              >
                 <img
                   src={activePhoto}
                   alt="Expedition Showcase View"
-                  className="w-full h-full object-cover transition-all duration-300"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-slate-950/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="inline-flex items-center gap-2 bg-white/95 text-slate-900 px-4 py-2 rounded-full text-xs font-bold shadow-lg backdrop-blur-xs transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                    <Maximize2 className="w-3.5 h-3.5 text-amber-600" />
+                    <span>View Fullscreen Gallery</span>
+                  </span>
+                </div>
               </div>
               <div className="grid grid-cols-4 gap-3">
                 {gallery.map((photo, i) => (

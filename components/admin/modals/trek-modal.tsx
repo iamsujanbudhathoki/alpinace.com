@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Image as ImageIcon, Search, Info } from "lucide-react";
+import { Edit, Image as ImageIcon, Search, Info, Loader2 } from "lucide-react";
 import { TrekItem } from "@/lib/trek-data";
+import { CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
 import { trekSchema, TrekFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
@@ -17,7 +18,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 interface TrekFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (trek: TrekItem) => void;
+  onSave: (trek: TrekItem) => Promise<boolean | void> | boolean | void;
   initialData?: TrekItem | null;
   isEditing?: boolean;
 }
@@ -31,6 +32,7 @@ export function TrekFormModal({
 }: TrekFormModalProps) {
   const [editingMode, setEditingMode] = useState(isEditing);
   const [activeTab, setActiveTab] = useState<"general" | "media" | "seo">("general");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -76,7 +78,7 @@ export function TrekFormModal({
 
   useEffect(() => {
     if (isOpen) {
-      CategoryService.getByType("Trekking").then((cats) => {
+      CategoryService.getByType(CategoryType.TREKKING).then((cats) => {
         if (cats && cats.length > 0) {
           const opts = cats.map((c) => ({ label: c.name, value: c.id }));
           setTrekCategories(opts);
@@ -144,33 +146,40 @@ export function TrekFormModal({
     setActiveTab("general");
   }, [initialData, isEditing, isOpen, reset, trekCategories]);
 
-  const onSubmit = (values: TrekFormValues) => {
-    const permitsArray = values.permitsText
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+  const onSubmit = async (values: TrekFormValues) => {
+    setIsSubmitting(true);
+    try {
+      const permitsArray = values.permitsText
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
 
-    const trekToSave: TrekItem = {
-      id: initialData?.id || `trk-${Date.now()}`,
-      title: values.title,
-      slug: initialData?.slug || values.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      category: initialData?.category || "Trekking",
-      categoryId: values.categoryId,
-      region: values.region,
-      durationDays: Number(values.durationDays),
-      difficulty: values.difficulty,
-      bestSeason: values.bestSeason,
-      priceUSD: Number(values.priceUSD),
-      status: values.status,
-      rating: initialData?.rating || 4.9,
-      reviewsCount: initialData?.reviewsCount || 1,
-      image: values.image,
-      shortDesc: values.shortDesc,
-      permitsRequired: permitsArray.length > 0 ? permitsArray : ["TIMS Card"],
-    };
+      const trekToSave: TrekItem = {
+        id: initialData?.id || "",
+        title: values.title,
+        slug: initialData?.slug || "",
+        category: initialData?.category || "Trekking",
+        categoryId: values.categoryId,
+        region: values.region,
+        durationDays: Number(values.durationDays),
+        difficulty: values.difficulty,
+        bestSeason: values.bestSeason,
+        priceUSD: Number(values.priceUSD),
+        status: values.status,
+        rating: initialData?.rating || 5,
+        reviewsCount: initialData?.reviewsCount || 0,
+        image: values.image,
+        shortDesc: values.shortDesc,
+        permitsRequired: permitsArray.length > 0 ? permitsArray : ["TIMS Card"],
+      };
 
-    onSave(trekToSave);
-    onClose();
+      const success = await onSave(trekToSave);
+      if (success !== false) {
+        onClose();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const modalTitle = !initialData
@@ -210,11 +219,23 @@ export function TrekFormModal({
         )}
       </div>
       <div className="flex items-center gap-2">
-        <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+        <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
           Cancel
         </Button>
-        <Button type="submit" form="trek-form" className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors">
-          Save Trek
+        <Button 
+          type="submit" 
+          form="trek-form" 
+          disabled={isSubmitting}
+          className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
+        >
+          {isSubmitting ? (
+            <span className="flex items-center gap-1.5">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Saving...
+            </span>
+          ) : (
+            "Save Trek"
+          )}
         </Button>
       </div>
     </div>

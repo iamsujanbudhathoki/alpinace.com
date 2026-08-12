@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit } from "lucide-react";
-import { CategoryItem } from "@/lib/admin-data";
+import { Edit, Loader2 } from "lucide-react";
+import { CategoryItem, CategoryType, CategoryStatus } from "@/lib/admin-data";
 import { categorySchema, CategoryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
@@ -15,7 +15,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 interface CategoryFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (category: CategoryItem) => void;
+  onSave: (category: CategoryItem) => Promise<boolean | void> | boolean | void;
   initialData?: CategoryItem | null;
   isEditing?: boolean;
 }
@@ -28,6 +28,7 @@ export function CategoryFormModal({
   isEditing = false,
 }: CategoryFormModalProps) {
   const [editingMode, setEditingMode] = useState(isEditing);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -39,9 +40,9 @@ export function CategoryFormModal({
     resolver: zodResolver(categorySchema) as any,
     defaultValues: {
       name: "",
-      type: "Trekking",
+      type: CategoryType.TREKKING,
       description: "",
-      status: "Active",
+      status: CategoryStatus.ACTIVE,
     },
   });
 
@@ -51,32 +52,39 @@ export function CategoryFormModal({
         name: initialData.name,
         type: initialData.type,
         description: initialData.description,
-        status: initialData.status,
+        status: (initialData.status as CategoryStatus) || CategoryStatus.ACTIVE,
       });
     } else {
       reset({
         name: "",
-        type: "Trekking",
+        type: CategoryType.TREKKING,
         description: "",
-        status: "Active",
+        status: CategoryStatus.ACTIVE,
       });
     }
     setEditingMode(isEditing || !initialData);
   }, [initialData, isEditing, isOpen, reset]);
 
-  const onSubmit = (values: CategoryFormValues) => {
-    const categoryToSave: CategoryItem = {
-      id: initialData?.id || `cat-${Date.now()}`,
-      name: values.name,
-      slug: initialData?.slug || values.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      type: values.type,
-      description: values.description,
-      itemCount: initialData?.itemCount || 0,
-      status: values.status,
-    };
+  const onSubmit = async (values: CategoryFormValues) => {
+    setIsSubmitting(true);
+    try {
+      const categoryToSave: CategoryItem = {
+        id: initialData?.id || `cat-${Date.now()}`,
+        name: values.name,
+        slug: initialData?.slug || values.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        type: values.type,
+        description: values.description,
+        itemCount: initialData?.itemCount || 0,
+        status: values.status,
+      };
 
-    onSave(categoryToSave);
-    onClose();
+      const success = await onSave(categoryToSave);
+      if (success !== false) {
+        onClose();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const modalTitle = !initialData
@@ -112,11 +120,11 @@ export function CategoryFormModal({
                 required
                 error={errors.type?.message}
                 options={[
-                  { label: "Trekking Packages", value: "Trekking" },
-                  { label: "Sightseeing Tours", value: "Tours" },
-                  { label: "Peak Expeditions", value: "Expeditions" },
-                  { label: "Blogs & Articles", value: "Blogs" },
-                  { label: "Media Assets & Gallery", value: "Media" },
+                  { label: "Trekking Packages", value: CategoryType.TREKKING },
+                  { label: "Sightseeing Tours", value: CategoryType.TOURS },
+                  { label: "Peak Expeditions", value: CategoryType.EXPEDITIONS },
+                  { label: "Blogs & Articles", value: CategoryType.BLOGS },
+                  { label: "Media Assets & Gallery", value: CategoryType.MEDIA },
                 ]}
                 {...register("type")}
               />
@@ -128,8 +136,8 @@ export function CategoryFormModal({
                 required
                 error={errors.status?.message}
                 options={[
-                  { label: "Active", value: "Active" },
-                  { label: "Draft", value: "Draft" },
+                  { label: "Active", value: CategoryStatus.ACTIVE },
+                  { label: "Draft", value: CategoryStatus.DRAFT },
                 ]}
                 {...register("status")}
               />
@@ -148,11 +156,22 @@ export function CategoryFormModal({
           </div>
 
           <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
               Cancel
             </Button>
-            <Button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors">
-              Save Category
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-1.5">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Saving...
+                </span>
+              ) : (
+                "Save Category"
+              )}
             </Button>
           </DialogFooter>
         </form>

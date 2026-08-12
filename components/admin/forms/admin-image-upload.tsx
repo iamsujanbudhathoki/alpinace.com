@@ -7,6 +7,7 @@ import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { MediaService } from "@/lib/services/admin-service";
+import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface AdminImageUploadProps {
   label?: string;
@@ -69,7 +70,6 @@ export function AdminImageUpload({
 }: AdminImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
   const [showModalUploader, setShowModalUploader] = useState(false);
 
@@ -151,7 +151,7 @@ export function AdminImageUpload({
             <div className="absolute inset-0 bg-slate-950/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <button
                 type="button"
-                onClick={() => setIsLightboxOpen(true)}
+                onClick={(e) => openSingleImage(value, label, e.currentTarget)}
                 title="View Fullscreen Image"
                 className="w-9 h-9 bg-white text-slate-800 hover:bg-slate-100 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
               >
@@ -212,20 +212,7 @@ export function AdminImageUpload({
 
       {error && <p className="text-xs font-bold text-rose-600 mt-0.5">{error}</p>}
 
-      {/* ULTRA-CLEAN FULLSCREEN LIGHTBOX MODAL */}
-      <AdminModal
-        isOpen={isLightboxOpen}
-        onClose={() => setIsLightboxOpen(false)}
-        maxWidth="full"
-        hideHeader={true}
-        variant="dark"
-        preventOutsideClose={false}
-      >
-        <div className="w-full h-[85vh] flex items-center justify-center p-2 rounded-xl bg-slate-950">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="Enlarged Cover Preview" className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" />
-        </div>
-      </AdminModal>
+
 
       {/* CONFIRM IMAGE REMOVAL MODAL */}
       <AdminModal

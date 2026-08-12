@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, Plus } from "lucide-react";
+import { Download, Plus, Tag } from "lucide-react";
 import { Booking } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { BookingService } from "@/lib/services/admin-service";
@@ -68,7 +68,7 @@ export default function AdminBookingsPage() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const handleSaveBooking = async (savedBooking: Booking) => {
+  const handleSaveBooking = async (savedBooking: Booking): Promise<boolean> => {
     try {
       const exists = bookings.some((b) => b.id === savedBooking.id);
       let res: ApiResponse<Booking>;
@@ -84,13 +84,16 @@ export default function AdminBookingsPage() {
         }
       }
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Reservation saved successfully");
         setIsFormOpen(false);
+        return true;
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to save reservation");
+        return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save booking");
+      toast.error(err.message || "Failed to save reservation");
+      return false;
     }
   };
 
@@ -224,6 +227,7 @@ export default function AdminBookingsPage() {
             <tr>
               <AdminTableHead>Ref / Guest</AdminTableHead>
               <AdminTableHead>Trip Package</AdminTableHead>
+              <AdminTableHead>Category</AdminTableHead>
               <AdminTableHead>Dates &amp; Group</AdminTableHead>
               <AdminTableHead>Total Amount</AdminTableHead>
               <AdminTableHead>Payment</AdminTableHead>
@@ -244,9 +248,18 @@ export default function AdminBookingsPage() {
                     <div className="font-semibold text-slate-900 truncate" title={bkg.packageName}>
                       {bkg.packageName}
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-medium mt-0.5 border-slate-200 text-slate-700">
-                      {bkg.packageType}
-                    </Badge>
+                  </AdminTableCell>
+                  <AdminTableCell>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border whitespace-nowrap ${
+                      bkg.packageType === "Trekking"
+                        ? "bg-amber-50 text-amber-800 border-amber-200"
+                        : bkg.packageType === "Expedition"
+                        ? "bg-rose-50 text-rose-800 border-rose-200"
+                        : "bg-blue-50 text-blue-800 border-blue-200"
+                    }`}>
+                      <Tag className="w-3 h-3 opacity-70" />
+                      <span>{bkg.packageType}</span>
+                    </span>
                   </AdminTableCell>
                   <AdminTableCell>
                     <div className="font-medium text-slate-900">{bkg.startDate} &rarr; {bkg.endDate}</div>
@@ -303,7 +316,7 @@ export default function AdminBookingsPage() {
               ))
             ) : (
               <AdminTableEmpty
-                colSpan={7}
+                colSpan={8}
                 title="No bookings found"
                 description="No client booking records match your search query or status filter."
               />

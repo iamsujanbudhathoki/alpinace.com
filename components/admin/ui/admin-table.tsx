@@ -201,20 +201,35 @@ interface AdminTableLoadingProps {
 
 export function AdminTableLoading({
   colSpan,
-  rows = 4,
-  message = "Loading records...",
+  rows = 5,
 }: AdminTableLoadingProps) {
   return (
     <>
-      <tr>
-        <td colSpan={colSpan} className="py-8 text-center text-slate-700 font-semibold animate-pulse">
-          {message}
-        </td>
-      </tr>
-      {Array.from({ length: rows - 1 }).map((_, i) => (
-        <tr key={i} className="animate-pulse">
-          <td colSpan={colSpan} className="py-3 px-4">
-            <div className="h-4 bg-slate-100 rounded w-full"></div>
+      {Array.from({ length: rows }).map((_, i) => (
+        <tr key={i} className="animate-pulse border-b border-slate-100">
+          <td className="py-3.5 px-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-6 h-6 rounded-md bg-slate-200 shrink-0"></div>
+              <div className="space-y-1 flex-1">
+                <div className="h-3.5 bg-slate-200 rounded w-3/4"></div>
+                <div className="h-2.5 bg-slate-100 rounded w-1/2"></div>
+              </div>
+            </div>
+          </td>
+          {Array.from({ length: Math.max(1, colSpan - 2) }).map((_, cIdx) => (
+            <td key={cIdx} className="py-3.5 px-4">
+              <div
+                className="h-3 bg-slate-100 rounded"
+                style={{ width: `${Math.max(40, 75 - cIdx * 10)}%` }}
+              ></div>
+            </td>
+          ))}
+          <td className="py-3.5 px-4 text-right">
+            <div className="flex items-center justify-end gap-1.5">
+              <div className="w-6 h-6 bg-slate-100 rounded"></div>
+              <div className="w-6 h-6 bg-slate-100 rounded"></div>
+              <div className="w-6 h-6 bg-slate-100 rounded"></div>
+            </div>
           </td>
         </tr>
       ))}

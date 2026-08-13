@@ -20,6 +20,7 @@ import {
   AdminTableRow,
   AdminTableCell,
   AdminTableEmpty,
+  AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
 } from "@/components/admin/ui/admin-table";
@@ -156,7 +157,9 @@ export default function AdminToursPage() {
             </tr>
           </AdminTableHeader>
           <AdminTableBody>
-            {filteredTours.length > 0 ? (
+            {loading ? (
+              <AdminTableLoading colSpan={6} rows={5} />
+            ) : filteredTours.length > 0 ? (
               filteredTours.map((tur) => (
                 <AdminTableRow key={tur.id}>
                   <AdminTableCell>

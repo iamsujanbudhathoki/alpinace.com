@@ -20,6 +20,7 @@ import {
   AdminTableRow,
   AdminTableCell,
   AdminTableEmpty,
+  AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
 } from "@/components/admin/ui/admin-table";
@@ -162,7 +163,9 @@ export default function AdminTreksPage() {
             </tr>
           </AdminTableHeader>
           <AdminTableBody>
-            {filteredTreks.length > 0 ? (
+            {loading ? (
+              <AdminTableLoading colSpan={8} rows={5} />
+            ) : filteredTreks.length > 0 ? (
               filteredTreks.map((trk) => (
                 <AdminTableRow key={trk.id}>
                   <AdminTableCell>

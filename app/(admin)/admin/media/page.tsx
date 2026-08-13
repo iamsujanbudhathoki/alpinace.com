@@ -359,10 +359,18 @@ export default function AdminMediaPage() {
       {/* Media Assets Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading ? (
-          <div className="col-span-full py-12 flex items-center justify-center gap-2 text-slate-600 font-bold text-xs">
-            <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
-            <span>Loading media library from database...</span>
-          </div>
+          Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-2xl border border-slate-200 overflow-hidden animate-pulse flex flex-col"
+            >
+              <div className="aspect-video bg-slate-200/80"></div>
+              <div className="p-4 space-y-2">
+                <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                <div className="h-3 bg-slate-100 rounded w-1/2"></div>
+              </div>
+            </div>
+          ))
         ) : filteredAssets.length > 0 ? (
           filteredAssets.map((asset) => (
             <div

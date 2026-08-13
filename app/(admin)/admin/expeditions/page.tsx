@@ -20,6 +20,7 @@ import {
   AdminTableRow,
   AdminTableCell,
   AdminTableEmpty,
+  AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
 } from "@/components/admin/ui/admin-table";
@@ -157,7 +158,9 @@ export default function AdminExpeditionsPage() {
             </tr>
           </AdminTableHeader>
           <AdminTableBody>
-            {filteredExpeditions.length > 0 ? (
+            {loading ? (
+              <AdminTableLoading colSpan={7} rows={5} />
+            ) : filteredExpeditions.length > 0 ? (
               filteredExpeditions.map((exp) => (
                 <AdminTableRow key={exp.id}>
                   <AdminTableCell>

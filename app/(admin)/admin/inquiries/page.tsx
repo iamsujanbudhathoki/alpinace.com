@@ -176,70 +176,90 @@ export default function AdminInquiriesPage() {
       </AdminFilterBar>
 
       {/* Inquiries Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredInquiries.map((inq) => (
-          <Card
-            key={inq.id}
-            className="bg-white border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between p-5 space-y-4"
-          >
-            <div className="space-y-3">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="font-bold text-slate-900 text-base leading-snug">
-                    {inq.guestName}
-                  </div>
-                  <div className="text-xs text-slate-600 font-normal">
-                    {inq.country} &bull; {formatDate(inq.createdAt)}
-                  </div>
-                </div>
-                <AdminStatusBadge status={inq.status} />
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 animate-pulse">
+              <div className="space-y-2">
+                <div className="h-4 bg-slate-200 rounded w-1/2"></div>
+                <div className="h-3 bg-slate-100 rounded w-1/3"></div>
               </div>
-
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1.5 text-xs">
-                <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span className="truncate">{inq.interestedTrip}</span>
-                </div>
-                <div className="flex items-center justify-between text-slate-700 font-medium text-xs">
-                  <span>Dates: {inq.travelDates}</span>
-                  <span>Group: {inq.groupSize} Pax</span>
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-700 line-clamp-3 font-normal leading-relaxed italic bg-stone-50 p-3 rounded-lg border border-slate-100">
-                &ldquo;{inq.message}&rdquo;
-              </p>
+              <div className="h-16 bg-slate-100 rounded-xl"></div>
+              <div className="h-12 bg-slate-50 rounded-lg"></div>
             </div>
+          ))}
+        </div>
+      ) : filteredInquiries.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredInquiries.map((inq) => (
+            <Card
+              key={inq.id}
+              className="bg-white border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between p-5 space-y-4"
+            >
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-bold text-slate-900 text-base leading-snug">
+                      {inq.guestName}
+                    </div>
+                    <div className="text-xs text-slate-600 font-normal">
+                      {inq.country} &bull; {formatDate(inq.createdAt)}
+                    </div>
+                  </div>
+                  <AdminStatusBadge status={inq.status} />
+                </div>
 
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs text-slate-700">
-                <Mail className="w-3.5 h-3.5 text-amber-600" />
-                <span className="truncate max-w-[120px] font-medium">{inq.email}</span>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1.5 text-xs">
+                  <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span className="truncate">{inq.interestedTrip}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-700 font-medium text-xs">
+                    <span>Dates: {inq.travelDates}</span>
+                    <span>Group: {inq.groupSize} Pax</span>
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-700 line-clamp-3 font-normal leading-relaxed italic bg-stone-50 p-3 rounded-lg border border-slate-100">
+                  &ldquo;{inq.message}&rdquo;
+                </p>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setActiveInquiry(inq)}
-                  className="text-xs font-semibold text-slate-800 border-slate-200 hover:bg-slate-100 cursor-pointer"
-                >
-                  <Eye className="w-3.5 h-3.5 mr-1 text-slate-700" />
-                  View &amp; Reply
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDeletingInquiry(inq)}
-                  className="h-8 w-8 p-0 text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs text-slate-700">
+                  <Mail className="w-3.5 h-3.5 text-amber-600" />
+                  <span className="truncate max-w-[120px] font-medium">{inq.email}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setActiveInquiry(inq)}
+                    className="text-xs font-semibold text-slate-800 border-slate-200 hover:bg-slate-100 cursor-pointer"
+                  >
+                    <Eye className="w-3.5 h-3.5 mr-1 text-slate-700" />
+                    View &amp; Reply
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDeletingInquiry(inq)}
+                    className="h-8 w-8 p-0 text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+          <p className="text-sm font-bold text-slate-900">No inquiries found</p>
+          <p className="text-xs text-slate-600 mt-1">No customer inquiries match your filter criteria.</p>
+        </div>
+      )}
 
       {/* MODALS */}
       <InquiryFormModal

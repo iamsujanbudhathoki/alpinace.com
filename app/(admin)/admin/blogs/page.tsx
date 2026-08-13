@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Calendar, Eye, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Plus, Calendar, Eye, Image as ImageIcon } from "lucide-react";
 import { BlogArticle } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { BlogService } from "@/lib/services/admin-service";
@@ -20,6 +20,7 @@ import {
   AdminTableRow,
   AdminTableCell,
   AdminTableEmpty,
+  AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
 } from "@/components/admin/ui/admin-table";
@@ -94,16 +95,7 @@ export default function AdminBlogsPage() {
         searchPlaceholder="Search article title or category..."
       />
 
-      {/* Loading State */}
-      {loading && (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
-          <p className="text-xs font-semibold text-slate-600">Loading blog articles...</p>
-        </div>
-      )}
-
       {/* Blogs Table */}
-      {!loading && (
       <AdminTableContainer>
         <AdminTable>
           <AdminTableHeader>
@@ -117,7 +109,9 @@ export default function AdminBlogsPage() {
             </tr>
           </AdminTableHeader>
           <AdminTableBody>
-            {filteredArticles.length > 0 ? (
+            {loading ? (
+              <AdminTableLoading colSpan={6} rows={5} />
+            ) : filteredArticles.length > 0 ? (
               filteredArticles.map((art) => (
                 <AdminTableRow key={art.id}>
                   <AdminTableCell>
@@ -201,7 +195,6 @@ export default function AdminBlogsPage() {
           </AdminTableBody>
         </AdminTable>
       </AdminTableContainer>
-      )}
 
       {/* Blog Article View Modal */}
       <BlogViewModal

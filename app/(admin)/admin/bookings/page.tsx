@@ -21,6 +21,7 @@ import {
   AdminTableRow,
   AdminTableCell,
   AdminTableEmpty,
+  AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
 } from "@/components/admin/ui/admin-table";
@@ -236,7 +237,9 @@ export default function AdminBookingsPage() {
             </tr>
           </AdminTableHeader>
           <AdminTableBody>
-            {filteredBookings.length > 0 ? (
+            {loading ? (
+              <AdminTableLoading colSpan={8} rows={5} />
+            ) : filteredBookings.length > 0 ? (
               filteredBookings.map((bkg) => (
                 <AdminTableRow key={bkg.id}>
                   <AdminTableCell>

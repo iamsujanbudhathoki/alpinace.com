@@ -860,59 +860,6 @@ export default function ExpeditionDetailPage({
               </div>
             </div>
 
-            {/* Direct Inquiry Form Box */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-              {inquirySubmitted ? (
-                <div className="text-center py-6 space-y-3 animate-in fade-in duration-200">
-                  <div className="bg-emerald-50 text-emerald-700 w-12 h-12 rounded-full flex items-center justify-center mx-auto border border-emerald-200 font-bold text-lg">
-                    &check;
-                  </div>
-                  <h3 className="font-heading text-sm font-bold text-slate-900">
-                    Expedition Inquiry Received
-                  </h3>
-                  <p className="text-slate-600 text-xs leading-normal font-normal">
-                    Our lead expedition director will contact you to review climbing resumes and permit logistics.
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={handleInquirySubmit} className="space-y-4">
-                  <div className="space-y-1">
-                    <h3 className="font-heading text-sm font-bold text-slate-900">
-                      Climbing Resume Assessment
-                    </h3>
-                    <p className="text-slate-600 text-xs leading-normal font-normal">
-                      Submit for preliminary summit clearance and private proposal.
-                    </p>
-                  </div>
-
-                  <input
-                    type="text"
-                    required
-                    placeholder="Your Full Name"
-                    value={inquiryName}
-                    onChange={(e) => setInquiryName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-slate-400 font-medium"
-                  />
-
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email Address"
-                    value={inquiryEmail}
-                    onChange={(e) => setInquiryEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-slate-400 font-medium"
-                  />
-
-                  <button
-                    type="submit"
-                    className="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs py-3.5 rounded-xl shadow-xs hover:shadow-md transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
-                  >
-                    <span>Request Summit Assessment</span>
-                    <ArrowRight className="w-4 h-4 text-amber-400" />
-                  </button>
-                </form>
-              )}
-            </div>
           </div>
         </div>
       </section>

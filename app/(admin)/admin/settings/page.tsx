@@ -5,7 +5,6 @@ import {
   Building, 
   Search, 
   Share2, 
-  CreditCard, 
   Save, 
   Check, 
   Loader2, 
@@ -59,10 +58,6 @@ export default function AdminSettingsPage() {
     tripadvisorUrl: "",
     linkedinUrl: "",
 
-    // Operations
-    currency: "",
-    depositPercentage: "",
-    enableBookings: "",
   });
 
   useEffect(() => {
@@ -433,60 +428,6 @@ export default function AdminSettingsPage() {
                 placeholder="https://linkedin.com/company/alpine-ace-expeditions"
                 className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
               />
-            </div>
-          </div>
-        </Card>
-
-        {/* 4. Booking & Currency Operations */}
-        <Card className="p-6 md:p-8 bg-white border-slate-200 shadow-xs space-y-6 rounded-2xl">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-emerald-600">
-                <CreditCard className="w-4 h-4" />
-              </div>
-              <span>Currency &amp; Operations</span>
-            </h2>
-            <span className="text-[11px] font-semibold text-slate-600">Pricing &amp; Policy</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-            <div>
-              <label className="block text-slate-700 font-bold mb-1.5">Display Currency</label>
-              <select
-                value={formData.currency}
-                onChange={(e) => handleChange("currency", e.target.value)}
-                className="w-full text-xs bg-slate-50 border border-slate-200 text-slate-900 font-semibold focus:bg-white rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-              >
-                <option value="USD">USD ($ - US Dollar)</option>
-                <option value="EUR">EUR (€ - Euro)</option>
-                <option value="GBP">GBP (£ - British Pound)</option>
-                <option value="AUD">AUD ($ - Australian Dollar)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-slate-700 font-bold mb-1.5">Booking Deposit Percentage (%)</label>
-              <Input
-                type="number"
-                min="0"
-                max="100"
-                value={formData.depositPercentage}
-                onChange={(e) => handleChange("depositPercentage", e.target.value)}
-                placeholder="20"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-700 font-bold mb-1.5">Online Direct Bookings</label>
-              <select
-                value={formData.enableBookings}
-                onChange={(e) => handleChange("enableBookings", e.target.value)}
-                className="w-full text-xs bg-slate-50 border border-slate-200 text-slate-900 font-semibold focus:bg-white rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-              >
-                <option value="true">Enabled (Accept Online Bookings)</option>
-                <option value="false">Inquiry-Only (Custom Quotes)</option>
-              </select>
             </div>
           </div>
         </Card>

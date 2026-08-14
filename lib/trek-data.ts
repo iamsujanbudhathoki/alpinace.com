@@ -1,7 +1,21 @@
-import { PackageStatus, PackageRegion } from "./admin-data";
+import { PackageStatus, PackageRegion, TripDifficulty } from "./admin-data";
 
-export const TREK_DIFFICULTIES = ["Moderate Trek", "Challenging Trek", "Strenuous Trek"] as const;
-export type TrekDifficulty = typeof TREK_DIFFICULTIES[number];
+export type TrekDifficulty = TripDifficulty;
+
+export interface TripFaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface TripReviewItem {
+  id?: string;
+  author: string;
+  country: string;
+  date?: string;
+  rating: number;
+  avatar?: string;
+  content: string;
+}
 
 export interface TrekItem {
   id: string;
@@ -14,13 +28,24 @@ export interface TrekItem {
   image: string;
   shortDesc: string;
   durationDays: number;
-  difficulty: TrekDifficulty;
+  maxAltitudeMeters?: number;
+  difficulty: TripDifficulty;
   bestSeason: string;
   priceUSD: number;
+  startEndLocation?: string;
+  accommodation?: string;
+  meals?: string;
+  groupSizeRange?: string;
   permitsRequired: string[];
+  inclusionsText?: string;
+  exclusionsText?: string;
+  faqs?: TripFaqItem[];
+  reviews?: TripReviewItem[];
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string;
   status: PackageStatus;
   region: PackageRegion;
 }
 
 export const initialTreksData: TrekItem[] = [];
-

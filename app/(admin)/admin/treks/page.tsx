@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Footprints, Clock, TrendingUp, Star } from "lucide-react";
 import { TrekItem } from "@/lib/trek-data";
+import { TripDifficulty } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { TrekService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
@@ -101,7 +102,7 @@ export default function AdminTreksPage() {
         toast.error(res.message);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete trek itinerary");
+      toast.error(err.message || "Failed to delete trek");
     }
   };
 
@@ -109,8 +110,8 @@ export default function AdminTreksPage() {
     <div className="space-y-6">
       {/* Header */}
       <AdminPageHeader
-        title="Treks Management"
-        description="Manage high-altitude Himalayan trekking itineraries, pricing, difficulty levels, and permit rules."
+        title="Trekking Itineraries & Routes"
+        description="Oversee active high-altitude routes, elevation profiles, and pricing tiers."
       >
         <Button
           size="sm"
@@ -140,9 +141,11 @@ export default function AdminTreksPage() {
             className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="All">All Difficulties</option>
-            <option value="Moderate Trek">Moderate Trek</option>
-            <option value="Challenging Trek">Challenging Trek</option>
-            <option value="Strenuous Trek">Strenuous Trek</option>
+            <option value={TripDifficulty.EASY}>Easy</option>
+            <option value={TripDifficulty.MODERATE}>Moderate</option>
+            <option value={TripDifficulty.CHALLENGING}>Challenging</option>
+            <option value={TripDifficulty.STRENUOUS}>Strenuous</option>
+            <option value={TripDifficulty.EXTREME}>Extreme</option>
           </select>
         </div>
       </AdminFilterBar>

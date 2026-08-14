@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight, Clock, TrendingUp, Star, ArrowRight } from "lucide-react";
 import { apiClient } from "@/lib/services/api-client";
 import { TravelPackage } from "@/lib/home-data";
+import { PackageStatus } from "@/lib/admin-data";
 
 export function FeaturedPackages() {
   const [packages, setPackages] = useState<TravelPackage[]>([]);
@@ -13,7 +14,7 @@ export function FeaturedPackages() {
   useEffect(() => {
     async function loadFeatured() {
       try {
-        const data = await apiClient.get<any[]>("/packages?status=Featured");
+        const data = await apiClient.get<any[]>(`/packages?status=${PackageStatus.FEATURED}`);
         if (Array.isArray(data)) {
           const mapped: TravelPackage[] = data.map((p) => ({
             id: p.id,

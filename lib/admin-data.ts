@@ -1,23 +1,138 @@
-export const PACKAGE_REGIONS = ["Everest", "Annapurna", "Langtang", "Manaslu", "Kathmandu & Pokhara", "Khumbu"] as const;
-export const PACKAGE_STATUSES = ["Active", "Draft", "Featured"] as const;
-export const PACKAGE_TYPES = ["Trekking", "Expedition", "Tour"] as const;
-export const BOOKING_STATUSES = ["Confirmed", "In Review", "Active Trek", "Completed", "Cancelled"] as const;
-export const PAYMENT_STATUSES = ["Paid", "Deposit Paid", "Pending", "Refunded"] as const;
-export const PERMIT_STATUSES = ["Issued", "Processing", "Pending Document"] as const;
+export const PACKAGE_REGIONS = [
+  "Everest",
+  "Annapurna",
+  "Langtang",
+  "Manaslu",
+  "Kathmandu & Pokhara",
+  "Khumbu",
+] as const;
 
-export enum BlogStatus {
-  PUBLISHED = "Published",
-  DRAFT = "Draft",
-  ARCHIVED = "Archived",
+export type PackageRegion = (typeof PACKAGE_REGIONS)[number] | string;
+
+export enum TripDifficulty {
+  EASY = "easy",
+  MODERATE = "moderate",
+  CHALLENGING = "challenging",
+  STRENUOUS = "strenuous",
+  EXTREME = "extreme",
 }
 
-export type PackageRegion = typeof PACKAGE_REGIONS[number];
-export type PackageStatus = typeof PACKAGE_STATUSES[number];
-export type PackageCategoryType = typeof PACKAGE_TYPES[number];
-export type BookingStatus = typeof BOOKING_STATUSES[number];
-export type PaymentStatus = typeof PAYMENT_STATUSES[number];
-export type PermitStatus = typeof PERMIT_STATUSES[number];
-export type PackageDifficulty = "Easy" | "Moderate" | "Challenging" | "Extreme (8000m+)";
+export enum PackageStatus {
+  ACTIVE = "active",
+  FEATURED = "featured",
+  DRAFT = "draft",
+}
+
+export {
+  PackageStatus as TrekStatus,
+  PackageStatus as TourStatus,
+  PackageStatus as ExpeditionStatus,
+};
+
+export enum TourType {
+  CULTURAL_HERITAGE = "cultural_heritage",
+  LUXURY_WELLNESS = "luxury_wellness",
+  WILDLIFE_SAFARI = "wildlife_safari",
+  HELICOPTER_TOUR = "helicopter_tour",
+  DAY_TOUR = "day_tour",
+  OTHER = "other",
+}
+
+export enum ClimbingGrade {
+  NON_TECHNICAL_TREKKING_PEAK = "Non-Technical Trekking Peak",
+  TECHNICAL_ALPINE_GRADE = "Technical Alpine Grade",
+  EXTREME_TECHNICAL_GRADE = "Extreme Technical Grade",
+}
+
+export enum BookingPackageType {
+  TREKKING = "trekking",
+  EXPEDITION = "expedition",
+  TOUR = "tour",
+}
+
+export enum BookingPaymentStatus {
+  PAID = "paid",
+  DEPOSIT_PAID = "deposit_paid",
+  PENDING = "pending",
+  REFUNDED = "refunded",
+}
+
+export enum BookingStatus {
+  CONFIRMED = "confirmed",
+  IN_REVIEW = "in_review",
+  ACTIVE_TREK = "active_trek",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+}
+
+export enum BookingPermitStatus {
+  ISSUED = "issued",
+  PROCESSING = "processing",
+  PENDING_DOCUMENT = "pending_document",
+}
+
+export enum CategoryType {
+  TREKKING = "trekking",
+  TOURS = "tours",
+  EXPEDITIONS = "expeditions",
+  BLOGS = "blogs",
+  MEDIA = "media",
+}
+
+export enum CategoryStatus {
+  ACTIVE = "active",
+  DRAFT = "draft",
+}
+
+export enum AssociateStatus {
+  ACTIVE = "active",
+  DRAFT = "draft",
+}
+
+export enum FaqStatus {
+  ACTIVE = "active",
+  DRAFT = "draft",
+}
+
+export enum BlogStatus {
+  PUBLISHED = "published",
+  DRAFT = "draft",
+  ARCHIVED = "archived",
+}
+
+export enum GuideRole {
+  LEAD_EXPEDITION_LEADER = "Lead Expedition Leader",
+  SENIOR_TREKKING_GUIDE = "Senior Trekking Guide",
+  HIGH_ALTITUDE_SHERPA = "High Altitude Sherpa",
+  CULTURAL_TOUR_GUIDE = "Cultural Tour Guide",
+}
+
+export enum GuideStatus {
+  AVAILABLE = "Available",
+  ON_MOUNTAIN = "On Mountain",
+  ON_LEAVE = "On Leave",
+}
+
+export enum InquiryStatus {
+  NEW = "New",
+  CONTACTED = "Contacted",
+  QUOTE_SENT = "Quote Sent",
+  BOOKED = "Booked",
+  CLOSED = "Closed",
+}
+
+export enum NotificationType {
+  INQUIRY = "inquiry",
+  BOOKING = "booking",
+  QUOTE = "quote",
+  SYSTEM = "system",
+}
+
+// Aliases for compatibility
+export type PackageCategoryType = BookingPackageType;
+export type PaymentStatus = BookingPaymentStatus;
+export type PermitStatus = BookingPermitStatus;
+export type PackageDifficulty = TripDifficulty;
 
 export interface Booking {
   id: string;
@@ -27,15 +142,15 @@ export interface Booking {
   guestPhone: string;
   country: string;
   packageName: string;
-  packageType: PackageCategoryType;
+  packageType: BookingPackageType;
   startDate: string;
   endDate: string;
   groupSize: number;
   totalAmountUSD: number;
-  paymentStatus: PaymentStatus;
+  paymentStatus: BookingPaymentStatus;
   bookingStatus: BookingStatus;
   assignedGuide?: string;
-  permitStatus: PermitStatus;
+  permitStatus: BookingPermitStatus;
   specialRequests?: string;
 }
 
@@ -48,7 +163,7 @@ export interface PackageItem {
   region: PackageRegion;
   durationDays: number;
   maxAltitudeMeters: number;
-  difficulty: PackageDifficulty;
+  difficulty: TripDifficulty;
   priceUSD: number;
   status: PackageStatus;
   totalBookings: number;
@@ -57,16 +172,41 @@ export interface PackageItem {
   image?: string;
   shortDesc?: string;
   bestSeason?: string;
+  startEndLocation?: string;
+  accommodation?: string;
+  meals?: string;
+  groupSizeRange?: string;
   permitsRequired: string[];
+  inclusionsText?: string;
+  exclusionsText?: string;
+  tourType?: TourType;
+  transportation?: string;
+  peakHeightM?: number;
+  climbingGrade?: ClimbingGrade;
+  sherpaGuideRatio?: string;
+  oxygenRequired?: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string;
+  faqs?: Array<{ question: string; answer: string }>;
+  reviews?: Array<{
+    id?: string;
+    author: string;
+    country: string;
+    date?: string;
+    rating: number;
+    avatar?: string;
+    content: string;
+  }>;
 }
 
 export interface Guide {
   id: string;
   name: string;
-  role: "Lead Expedition Leader" | "Senior Trekking Guide" | "High Altitude Sherpa" | "Cultural Tour Guide";
+  role: GuideRole;
   summitStats: string;
   certifications: string[];
-  status: "Available" | "On Mountain" | "On Leave";
+  status: GuideStatus;
   phone: string;
   email: string;
   currentAssignment?: string;
@@ -84,7 +224,7 @@ export interface Inquiry {
   groupSize: number;
   message: string;
   createdAt: string;
-  status: "New" | "Contacted" | "Quote Sent" | "Booked" | "Closed";
+  status: InquiryStatus;
   notes?: string;
 }
 
@@ -102,35 +242,6 @@ export interface BlogArticle {
   image?: string;
 }
 
-export const mockDashboardMetrics = {
-  totalRevenueUSD: 0,
-  revenueChangePercent: 0,
-  activeExpeditions: 0,
-  climbersOnMountain: 0,
-  pendingBookings: 0,
-  pendingInquiries: 0,
-  timsPermitsProcessing: 0,
-};
-
-export const mockBookings: Booking[] = [];
-export const mockPackages: PackageItem[] = [];
-export const mockGuides: Guide[] = [];
-export const mockInquiries: Inquiry[] = [];
-export const mockBlogArticles: BlogArticle[] = [];
-
-export enum CategoryType {
-  TREKKING = "Trekking",
-  TOURS = "Tours",
-  EXPEDITIONS = "Expeditions",
-  BLOGS = "Blogs",
-  MEDIA = "Media",
-}
-
-export enum CategoryStatus {
-  ACTIVE = "Active",
-  DRAFT = "Draft",
-}
-
 export interface CategoryItem {
   id: string;
   name: string;
@@ -139,13 +250,6 @@ export interface CategoryItem {
   description: string;
   itemCount: number;
   status: CategoryStatus;
-}
-
-export const mockCategories: CategoryItem[] = [];
-
-export enum AssociateStatus {
-  ACTIVE = "Active",
-  DRAFT = "Draft",
 }
 
 export interface AssociateItem {
@@ -161,11 +265,6 @@ export interface AssociateItem {
   order: number;
 }
 
-export enum FaqStatus {
-  ACTIVE = "Active",
-  DRAFT = "Draft",
-}
-
 export interface FaqItem {
   id: string;
   question: string;
@@ -175,6 +274,19 @@ export interface FaqItem {
   order: number;
 }
 
+export const mockDashboardMetrics = {
+  totalRevenueUSD: 0,
+  revenueChangePercent: 0,
+  activeExpeditions: 0,
+  climbersOnMountain: 0,
+  pendingBookings: 0,
+  pendingInquiries: 0,
+  timsPermitsProcessing: 0,
+};
 
-
-
+export const mockBookings: Booking[] = [];
+export const mockPackages: PackageItem[] = [];
+export const mockGuides: Guide[] = [];
+export const mockInquiries: Inquiry[] = [];
+export const mockBlogArticles: BlogArticle[] = [];
+export const mockCategories: CategoryItem[] = [];

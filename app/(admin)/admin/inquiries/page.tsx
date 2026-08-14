@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Eye, Mail, MessageSquare } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-import { Inquiry } from "@/lib/admin-data";
+import { Inquiry, InquiryStatus } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { InquiryService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
@@ -48,7 +48,7 @@ export default function AdminInquiriesPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleUpdateStatus = async (id: string, newStatus: Inquiry["status"]): Promise<boolean> => {
+  const handleUpdateStatus = async (id: string, newStatus: InquiryStatus): Promise<boolean> => {
     try {
       const res = await InquiryService.update(id, { status: newStatus });
       if (res.success) {
@@ -70,7 +70,7 @@ export default function AdminInquiriesPage() {
     }
   };
 
-  const handleSendQuote = async (id: string, message: string, status: Inquiry["status"]): Promise<boolean> => {
+  const handleSendQuote = async (id: string, message: string, status: InquiryStatus): Promise<boolean> => {
     try {
       if (status) {
         const statusRes = await InquiryService.update(id, { status });
@@ -100,33 +100,28 @@ export default function AdminInquiriesPage() {
     }
   };
 
-  const handleSaveInquiry = async (savedInquiry: Inquiry): Promise<boolean> => {
+  const handleSaveInquiry = async (savedInquiry: Inquiry) => {
     try {
       const res = await InquiryService.create(savedInquiry as any);
       if (res.success) {
         setInquiries([res.data, ...inquiries]);
-        setIsFormOpen(false);
-        toast.success(res.message);
-        return true;
+        toast.success(res.message || "Manual inquiry logged successfully");
       } else {
-        toast.error(res.message);
-        return false;
+        toast.error(res.message || "Failed to log inquiry");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to log inquiry");
-      return false;
     }
   };
 
   const handleDeleteInquiry = async (id: string) => {
     try {
       const res = await InquiryService.delete(id);
-      setInquiries(inquiries.filter((inq) => inq.id !== id));
-      setDeletingInquiry(null);
       if (res.success) {
-        toast.success(res.message);
+        setInquiries(inquiries.filter((inq) => inq.id !== id));
+        toast.success(res.message || "Inquiry lead deleted");
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to delete inquiry");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete inquiry");
@@ -157,7 +152,7 @@ export default function AdminInquiriesPage() {
         searchPlaceholder="Search guest, email, or trip..."
       >
         <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-          {["All", "New", "Contacted", "Quote Sent", "Booked", "Closed"].map((st) => (
+          {["All", ...Object.values(InquiryStatus)].map((st) => (
             <Button
               key={st}
               variant={statusFilter === st ? "default" : "outline"}

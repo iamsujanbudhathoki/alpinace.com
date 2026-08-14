@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Download, Plus, Tag } from "lucide-react";
-import { Booking } from "@/lib/admin-data";
+import { Booking, BookingStatus, BookingPackageType } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { BookingService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
@@ -198,9 +198,9 @@ export default function AdminBookingsPage() {
             className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="All">All Categories</option>
-            <option value="Trekking">Trekking</option>
-            <option value="Expedition">Expedition</option>
-            <option value="Tour">Tour</option>
+            <option value={BookingPackageType.TREKKING}>Trekking</option>
+            <option value={BookingPackageType.EXPEDITION}>Expedition</option>
+            <option value={BookingPackageType.TOUR}>Tour</option>
           </select>
         </div>
 
@@ -212,11 +212,11 @@ export default function AdminBookingsPage() {
             className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="All">All Statuses</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="In Review">In Review</option>
-            <option value="Active Trek">Active Trek</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
+            <option value={BookingStatus.CONFIRMED}>Confirmed</option>
+            <option value={BookingStatus.IN_REVIEW}>In Review</option>
+            <option value={BookingStatus.ACTIVE_TREK}>Active Trek</option>
+            <option value={BookingStatus.COMPLETED}>Completed</option>
+            <option value={BookingStatus.CANCELLED}>Cancelled</option>
           </select>
         </div>
       </AdminFilterBar>
@@ -254,14 +254,14 @@ export default function AdminBookingsPage() {
                   </AdminTableCell>
                   <AdminTableCell>
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border whitespace-nowrap ${
-                      bkg.packageType === "Trekking"
+                      bkg.packageType === BookingPackageType.TREKKING
                         ? "bg-amber-50 text-amber-800 border-amber-200"
-                        : bkg.packageType === "Expedition"
+                        : bkg.packageType === BookingPackageType.EXPEDITION
                         ? "bg-rose-50 text-rose-800 border-rose-200"
                         : "bg-blue-50 text-blue-800 border-blue-200"
                     }`}>
                       <Tag className="w-3 h-3 opacity-70" />
-                      <span>{bkg.packageType}</span>
+                      <span className="capitalize">{bkg.packageType}</span>
                     </span>
                   </AdminTableCell>
                   <AdminTableCell>
@@ -272,18 +272,7 @@ export default function AdminBookingsPage() {
                     ${bkg.totalAmountUSD.toLocaleString()} USD
                   </AdminTableCell>
                   <AdminTableCell>
-                    <Badge
-                      variant="secondary"
-                      className={`text-xs font-semibold ${
-                        bkg.paymentStatus === "Paid"
-                          ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
-                          : bkg.paymentStatus === "Deposit Paid"
-                          ? "bg-amber-100 text-amber-900 border border-amber-300"
-                          : "bg-slate-100 text-slate-800 border border-slate-200"
-                      }`}
-                    >
-                      {bkg.paymentStatus}
-                    </Badge>
+                    <AdminStatusBadge status={bkg.paymentStatus} />
                   </AdminTableCell>
                   <AdminTableCell>
                     <AdminStatusBadge status={bkg.bookingStatus} />

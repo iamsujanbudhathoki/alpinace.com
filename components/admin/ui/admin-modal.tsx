@@ -17,7 +17,7 @@ interface AdminModalProps {
   children: React.ReactNode;
   /** Sticky footer rendered outside the scrollable area (e.g. action buttons). */
   footer?: React.ReactNode;
-  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "full";
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "full";
   /** Max height of the scrollable body. Defaults to 75vh. Pass "none" to disable. */
   maxHeight?: string;
   preventOutsideClose?: boolean;
@@ -46,6 +46,7 @@ export function AdminModal({
     lg: "sm:max-w-2xl",
     xl: "sm:max-w-3xl",
     "2xl": "sm:max-w-5xl",
+    "3xl": "sm:max-w-6xl",
     full: "sm:max-w-[92vw]",
   }[maxWidth];
 

@@ -1,87 +1,166 @@
 import { z } from "zod";
 import {
-  PACKAGE_REGIONS,
-  PACKAGE_STATUSES,
-  PACKAGE_TYPES,
-  BOOKING_STATUSES,
-  PAYMENT_STATUSES,
-  PERMIT_STATUSES,
+  TripDifficulty,
+  PackageStatus,
+  TourType,
+  ClimbingGrade,
+  BookingPackageType,
+  BookingPaymentStatus,
+  BookingStatus,
+  BookingPermitStatus,
+  GuideRole,
+  GuideStatus,
+  InquiryStatus,
   BlogStatus,
   AssociateStatus,
   FaqStatus,
   CategoryType,
   CategoryStatus,
 } from "./admin-data";
-import { TREK_DIFFICULTIES } from "./trek-data";
 
 export const trekSchema = z.object({
-  title: z.string().min(3, "Trek title must be at least 3 characters"),
-  categoryId: z.string().min(1, "Category is required"),
-  region: z.enum(PACKAGE_REGIONS),
-  durationDays: z.preprocess((val) => Number(val), z.number().min(1, "Duration must be at least 1 day")),
-  maxAltitudeMeters: z.preprocess((val) => Number(val), z.number().min(1000, "Max altitude is required")),
-  difficulty: z.enum(TREK_DIFFICULTIES),
-  priceUSD: z.preprocess((val) => Number(val), z.number().min(100, "Price must be at least $100")),
-  bestSeason: z.string().min(3, "Best season is required"),
-  status: z.enum(PACKAGE_STATUSES),
+  title: z.string().min(1, "Trek title is required"),
+  categoryId: z.string().optional(),
+  region: z.string().optional(),
+  durationDays: z.preprocess((val) => Number(val) || 0, z.number()),
+  maxAltitudeMeters: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : undefined), z.number().optional()),
+  difficulty: z.nativeEnum(TripDifficulty).optional(),
+  priceUSD: z.preprocess((val) => Number(val) || 0, z.number()),
+  bestSeason: z.string().optional(),
+  status: z.nativeEnum(PackageStatus).default(PackageStatus.ACTIVE),
   startEndLocation: z.string().optional(),
   accommodation: z.string().optional(),
   meals: z.string().optional(),
   groupSizeRange: z.string().optional(),
-  permitsText: z.string().min(2, "At least one required permit is needed"),
+  permitsText: z.string().optional(),
   inclusionsText: z.string().optional(),
   exclusionsText: z.string().optional(),
-  shortDesc: z.string().min(10, "Short description must be at least 10 characters"),
-  image: z.string().min(5, "Cover image URL is required"),
+  shortDesc: z.string().optional(),
+  image: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
+  faqs: z
+    .array(
+      z.object({
+        question: z.string(),
+        answer: z.string(),
+      })
+    )
+    .optional(),
+  reviews: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        author: z.string(),
+        country: z.string(),
+        date: z.string().optional(),
+        rating: z.number(),
+        avatar: z.string().optional(),
+        content: z.string(),
+      })
+    )
+    .optional(),
 });
 
 export type TrekFormValues = z.infer<typeof trekSchema>;
 
 export const tourSchema = z.object({
-  title: z.string().min(3, "Tour title must be at least 3 characters"),
-  categoryId: z.string().min(1, "Category is required"),
-  region: z.enum(PACKAGE_REGIONS),
-  durationDays: z.preprocess((val) => Number(val), z.number().min(1, "Duration must be at least 1 day")),
-  maxAltitudeMeters: z.preprocess((val) => Number(val), z.number().min(100, "Max altitude is required")),
-  priceUSD: z.preprocess((val) => Number(val), z.number().min(100, "Price must be at least $100")),
-  status: z.enum(PACKAGE_STATUSES),
+  title: z.string().min(1, "Tour title is required"),
+  categoryId: z.string().optional(),
+  region: z.string().optional(),
+  tourType: z.nativeEnum(TourType).optional(),
+  transportation: z.string().optional(),
+  difficulty: z.nativeEnum(TripDifficulty).optional(),
+  bestSeason: z.string().optional(),
+  durationDays: z.preprocess((val) => Number(val) || 0, z.number()),
+  maxAltitudeMeters: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : undefined), z.number().optional()),
+  priceUSD: z.preprocess((val) => Number(val) || 0, z.number()),
+  status: z.nativeEnum(PackageStatus).default(PackageStatus.ACTIVE),
   startEndLocation: z.string().optional(),
   accommodation: z.string().optional(),
   meals: z.string().optional(),
   groupSizeRange: z.string().optional(),
-  permitsText: z.string().min(2, "At least one inclusion/permit is required"),
+  permitsText: z.string().optional(),
   inclusionsText: z.string().optional(),
   exclusionsText: z.string().optional(),
-  image: z.string().min(5, "Cover image URL is required"),
+  shortDesc: z.string().optional(),
+  image: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
+  faqs: z
+    .array(
+      z.object({
+        question: z.string(),
+        answer: z.string(),
+      })
+    )
+    .optional(),
+  reviews: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        author: z.string(),
+        country: z.string(),
+        date: z.string().optional(),
+        rating: z.number(),
+        avatar: z.string().optional(),
+        content: z.string(),
+      })
+    )
+    .optional(),
 });
 
 export type TourFormValues = z.infer<typeof tourSchema>;
 
 export const expeditionSchema = z.object({
-  title: z.string().min(3, "Expedition title must be at least 3 characters"),
-  categoryId: z.string().min(1, "Category is required"),
-  region: z.enum(PACKAGE_REGIONS),
-  maxAltitudeMeters: z.preprocess((val) => Number(val), z.number().min(4000, "Summit elevation must be at least 4,000m")),
-  durationDays: z.preprocess((val) => Number(val), z.number().min(5, "Duration must be at least 5 days")),
-  priceUSD: z.preprocess((val) => Number(val), z.number().min(500, "Price must be at least $500")),
-  status: z.enum(PACKAGE_STATUSES),
+  title: z.string().min(1, "Expedition title is required"),
+  categoryId: z.string().optional(),
+  region: z.string().optional(),
+  peakHeightM: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : undefined), z.number().optional()),
+  maxAltitudeMeters: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : undefined), z.number().optional()),
+  climbingGrade: z.nativeEnum(ClimbingGrade).optional(),
+  sherpaGuideRatio: z.string().optional(),
+  oxygenRequired: z.boolean().optional(),
+  difficulty: z.nativeEnum(TripDifficulty).optional(),
+  bestSeason: z.string().optional(),
+  durationDays: z.preprocess((val) => Number(val) || 0, z.number()),
+  priceUSD: z.preprocess((val) => Number(val) || 0, z.number()),
+  status: z.nativeEnum(PackageStatus).default(PackageStatus.ACTIVE),
   startEndLocation: z.string().optional(),
   accommodation: z.string().optional(),
   meals: z.string().optional(),
   groupSizeRange: z.string().optional(),
-  permitsText: z.string().min(2, "Mandatory permits are required"),
+  permitsText: z.string().optional(),
   inclusionsText: z.string().optional(),
   exclusionsText: z.string().optional(),
-  image: z.string().min(5, "Cover image URL is required"),
+  shortDesc: z.string().optional(),
+  image: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
+  faqs: z
+    .array(
+      z.object({
+        question: z.string(),
+        answer: z.string(),
+      })
+    )
+    .optional(),
+  reviews: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        author: z.string(),
+        country: z.string(),
+        date: z.string().optional(),
+        rating: z.number(),
+        avatar: z.string().optional(),
+        content: z.string(),
+      })
+    )
+    .optional(),
 });
 
 export type ExpeditionFormValues = z.infer<typeof expeditionSchema>;
@@ -92,15 +171,15 @@ export const bookingSchema = z.object({
   guestPhone: z.string().min(5, "Contact phone number is required"),
   country: z.string().min(2, "Country is required"),
   packageName: z.string().min(3, "Package name is required"),
-  packageType: z.enum(PACKAGE_TYPES),
+  packageType: z.nativeEnum(BookingPackageType),
   startDate: z.string().min(4, "Start date is required"),
   endDate: z.string().min(4, "End date is required"),
   groupSize: z.preprocess((val) => Number(val), z.number().min(1, "Group size must be at least 1")),
   totalAmountUSD: z.preprocess((val) => Number(val), z.number().min(100, "Total amount must be at least $100")),
-  paymentStatus: z.enum(PAYMENT_STATUSES),
-  bookingStatus: z.enum(BOOKING_STATUSES),
+  paymentStatus: z.nativeEnum(BookingPaymentStatus),
+  bookingStatus: z.nativeEnum(BookingStatus),
   assignedGuide: z.string().optional(),
-  permitStatus: z.enum(PERMIT_STATUSES),
+  permitStatus: z.nativeEnum(BookingPermitStatus),
   specialRequests: z.string().optional(),
 });
 
@@ -115,9 +194,24 @@ export const inquirySchema = z.object({
   travelDates: z.string().min(2, "Travel dates are required"),
   groupSize: z.preprocess((val) => Number(val), z.number().min(1, "Group size must be at least 1")),
   message: z.string().min(5, "Message must be at least 5 characters"),
+  status: z.nativeEnum(InquiryStatus).optional(),
 });
 
 export type InquiryFormValues = z.infer<typeof inquirySchema>;
+
+export const guideSchema = z.object({
+  name: z.string().min(2, "Guide name is required"),
+  role: z.nativeEnum(GuideRole),
+  summitStats: z.string().optional(),
+  certifications: z.array(z.string()).optional(),
+  status: z.nativeEnum(GuideStatus).default(GuideStatus.AVAILABLE),
+  phone: z.string().min(5, "Phone number is required"),
+  email: z.string().email("Valid email address is required"),
+  currentAssignment: z.string().optional(),
+  avatarUrl: z.string().min(5, "Avatar URL is required"),
+});
+
+export type GuideFormValues = z.infer<typeof guideSchema>;
 
 export const categorySchema = z.object({
   name: z.string().min(2, "Category name must be at least 2 characters"),
@@ -164,7 +258,3 @@ export const faqSchema = z.object({
 });
 
 export type FaqFormValues = z.infer<typeof faqSchema>;
-
-
-
-

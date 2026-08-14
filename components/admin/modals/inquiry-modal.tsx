@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send, Mail, Phone, Globe } from "lucide-react";
-import { Inquiry } from "@/lib/admin-data";
+import { Inquiry, InquiryStatus } from "@/lib/admin-data";
 import { inquirySchema, InquiryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
@@ -31,10 +31,10 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
       guestName: "",
       email: "",
       phone: "",
-      country: "United States",
-      interestedTrip: "Everest Base Camp Luxury Trek",
-      travelDates: "October 2026",
-      groupSize: 2,
+      country: "",
+      interestedTrip: "",
+      travelDates: "",
+      groupSize: 1,
       message: "",
     },
   });
@@ -45,10 +45,10 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         guestName: "",
         email: "",
         phone: "",
-        country: "United States",
-        interestedTrip: "Everest Base Camp Luxury Trek",
-        travelDates: "October 2026",
-        groupSize: 2,
+        country: "",
+        interestedTrip: "",
+        travelDates: "",
+        groupSize: 1,
         message: "",
       });
     }
@@ -66,7 +66,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
       groupSize: Number(values.groupSize),
       message: values.message,
       createdAt: "Just now",
-      status: "New",
+      status: InquiryStatus.NEW,
       notes: "Logged via admin CRM desk.",
     };
 
@@ -171,8 +171,8 @@ interface ReplyInquiryModalProps {
   isOpen: boolean;
   onClose: () => void;
   inquiry: Inquiry | null;
-  onUpdateStatus: (id: string, newStatus: Inquiry["status"]) => Promise<boolean> | void;
-  onSendQuote?: (id: string, message: string, status: Inquiry["status"]) => Promise<boolean>;
+  onUpdateStatus: (id: string, newStatus: InquiryStatus) => Promise<boolean> | void;
+  onSendQuote?: (id: string, message: string, status: InquiryStatus) => Promise<boolean>;
 }
 
 export function ReplyInquiryModal({
@@ -184,7 +184,7 @@ export function ReplyInquiryModal({
 }: ReplyInquiryModalProps) {
   const [replyText, setReplyText] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<Inquiry["status"]>(inquiry?.status || "New");
+  const [selectedStatus, setSelectedStatus] = useState<InquiryStatus>(inquiry?.status || InquiryStatus.NEW);
 
   // Sync selectedStatus when inquiry changes
   useEffect(() => {
@@ -192,7 +192,7 @@ export function ReplyInquiryModal({
     if (!isOpen) setReplyText("");
   }, [inquiry, isOpen]);
 
-  const handleStatusClick = async (st: Inquiry["status"]) => {
+  const handleStatusClick = async (st: InquiryStatus) => {
     if (!inquiry) return;
     setSelectedStatus(st);
     await onUpdateStatus(inquiry.id, st);
@@ -276,7 +276,7 @@ export function ReplyInquiryModal({
         <div className="space-y-1.5 pt-2 border-t border-slate-100">
           <span className="font-bold text-slate-900 block">Update Lead Status:</span>
           <div className="flex flex-wrap gap-2">
-            {(["New", "Contacted", "Quote Sent", "Booked", "Closed"] as Inquiry["status"][]).map((st) => (
+            {Object.values(InquiryStatus).map((st) => (
               <Button
                 key={st}
                 type="button"

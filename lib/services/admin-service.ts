@@ -1,5 +1,29 @@
-import { CategoryItem, CategoryType, PackageItem, Booking, Inquiry, Guide, BlogArticle, BlogStatus, AssociateItem, AssociateStatus, FaqItem, FaqStatus } from "@/lib/admin-data";
-import { CategoryFormValues, TrekFormValues, TourFormValues, ExpeditionFormValues, BookingFormValues, InquiryFormValues, BlogFormValues, AssociateFormValues, FaqFormValues } from "@/lib/admin-schemas";
+import {
+  CategoryItem,
+  CategoryType,
+  PackageItem,
+  Booking,
+  Inquiry,
+  Guide,
+  BlogArticle,
+  BlogStatus,
+  AssociateItem,
+  AssociateStatus,
+  FaqItem,
+  FaqStatus,
+  NotificationType,
+} from "@/lib/admin-data";
+import {
+  CategoryFormValues,
+  TrekFormValues,
+  TourFormValues,
+  ExpeditionFormValues,
+  BookingFormValues,
+  InquiryFormValues,
+  BlogFormValues,
+  AssociateFormValues,
+  FaqFormValues,
+} from "@/lib/admin-schemas";
 import { TrekItem } from "@/lib/trek-data";
 import { apiClient, axiosInstance, ApiResponse } from "@/lib/services/api-client";
 
@@ -161,14 +185,16 @@ export const PackageFilterService = {
   },
 };
 
-function cleanPackagePayload(data: any, defaultCategoryType: string) {
+function cleanPackagePayload(data: any) {
   if (!data) return {};
   const {
     id,
     slug,
     category,
+    categoryType,
     rating,
     reviewsCount,
+    totalBookings,
     createdAt,
     updatedAt,
     permitsText,
@@ -181,13 +207,113 @@ function cleanPackagePayload(data: any, defaultCategoryType: string) {
     ? rest.permitsRequired
     : [];
 
-  return {
+  const payload: any = {
     ...rest,
-    categoryType: rest.categoryType || defaultCategoryType,
     permitsRequired: permitsArray,
-    durationDays: Number(rest.durationDays || 1),
+    durationDays: Number(rest.durationDays || 0),
     priceUSD: Number(rest.priceUSD || 0),
-    maxAltitudeMeters: rest.maxAltitudeMeters ? Number(rest.maxAltitudeMeters) : undefined,
+  };
+
+  if (rest.categoryId && typeof rest.categoryId === "string" && rest.categoryId.trim() !== "" && rest.categoryId !== "All") {
+    payload.categoryId = rest.categoryId.trim();
+  } else {
+    delete payload.categoryId;
+  }
+
+  if (rest.maxAltitudeMeters !== undefined && rest.maxAltitudeMeters !== null && rest.maxAltitudeMeters !== "") {
+    payload.maxAltitudeMeters = Number(rest.maxAltitudeMeters);
+  } else {
+    delete payload.maxAltitudeMeters;
+  }
+
+  if (rest.peakHeightM !== undefined && rest.peakHeightM !== null && rest.peakHeightM !== "") {
+    payload.peakHeightM = Number(rest.peakHeightM);
+  } else {
+    delete payload.peakHeightM;
+  }
+
+  delete payload.totalBookings;
+  delete payload.rating;
+  delete payload.reviewsCount;
+  delete payload.category;
+  delete payload.categoryType;
+  delete payload.permitsText;
+
+  return payload;
+}
+
+export function formatBackendTrek(p: any): TrekItem {
+  if (!p) return null as any;
+  return {
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    category: p.categoryType || p.category,
+    categoryId: p.categoryId,
+    rating: Number(p.rating),
+    reviewsCount: Number(p.reviewsCount),
+    image: p.image,
+    shortDesc: p.shortDesc,
+    durationDays: Number(p.durationDays),
+    maxAltitudeMeters: p.maxAltitudeMeters !== undefined && p.maxAltitudeMeters !== null ? Number(p.maxAltitudeMeters) : undefined,
+    difficulty: p.difficulty,
+    bestSeason: p.bestSeason,
+    priceUSD: Number(p.priceUSD),
+    startEndLocation: p.startEndLocation,
+    accommodation: p.accommodation,
+    meals: p.meals,
+    groupSizeRange: p.groupSizeRange,
+    permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
+    inclusionsText: p.inclusionsText,
+    exclusionsText: p.exclusionsText,
+    faqs: Array.isArray(p.faqs) ? p.faqs : [],
+    reviews: Array.isArray(p.reviews) ? p.reviews : [],
+    metaTitle: p.metaTitle,
+    metaDescription: p.metaDescription,
+    keywords: p.keywords,
+    status: p.status,
+    region: p.region,
+  };
+}
+
+export function formatBackendPackage(p: any): PackageItem {
+  if (!p) return null as any;
+  return {
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    category: p.categoryType || p.category,
+    categoryId: p.categoryId,
+    rating: Number(p.rating),
+    reviewsCount: Number(p.reviewsCount),
+    image: p.image,
+    shortDesc: p.shortDesc,
+    durationDays: Number(p.durationDays),
+    maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
+    difficulty: p.difficulty,
+    priceUSD: Number(p.priceUSD),
+    status: p.status,
+    totalBookings: Number(p.totalBookings || 0),
+    bestSeason: p.bestSeason,
+    startEndLocation: p.startEndLocation,
+    accommodation: p.accommodation,
+    meals: p.meals,
+    groupSizeRange: p.groupSizeRange,
+    permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
+    inclusionsText: p.inclusionsText,
+    exclusionsText: p.exclusionsText,
+    tourType: p.tourType,
+    transportation: p.transportation,
+    peakHeightM: p.peakHeightM !== undefined && p.peakHeightM !== null ? Number(p.peakHeightM) : undefined,
+    climbingGrade: p.climbingGrade,
+    sherpaGuideRatio: p.sherpaGuideRatio,
+    oxygenRequired: p.oxygenRequired !== undefined ? Boolean(p.oxygenRequired) : undefined,
+    metaTitle: p.metaTitle,
+    metaDescription: p.metaDescription,
+    keywords: p.keywords,
+    faqs: Array.isArray(p.faqs) ? p.faqs : [],
+    reviews: Array.isArray(p.reviews) ? p.reviews : [],
+    region: p.region,
   };
 }
 
@@ -196,115 +322,43 @@ export const TrekService = {
     try {
       const q = buildPackageQuery(filters);
       const res = await apiClient.get<any[]>(`/treks${q}`);
-      const packages = res?.data;
-      if (Array.isArray(packages)) {
-        return packages.map((p) => ({
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          category: p.categoryType ,
-          categoryId: p.categoryId,
-          rating: Number(p.rating || 5),
-          reviewsCount: Number(p.reviewsCount || 0),
-          image: p.image,
-          shortDesc: p.shortDesc,
-          durationDays: Number(p.durationDays),
-          difficulty: p.difficulty,
-          bestSeason: p.bestSeason,
-          priceUSD: Number(p.priceUSD),
-          permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
-          status: p.status,
-          region: p.region,
-        }));
-      }
+      return Array.isArray(res?.data) ? res.data.map(formatBackendTrek) : [];
     } catch (e) {
       console.warn("Backend treks fetch error:", e);
+      return [];
     }
-    return [];
   },
 
   async getBySlug(slug: string): Promise<TrekItem | null> {
     try {
       const res = await apiClient.get<any>(`/treks/${slug}`);
-      const p = res?.data;
-      if (p && p.id) {
-        return {
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          category: p.categoryType || p.category,
-          rating: Number(p.rating || 5),
-          reviewsCount: Number(p.reviewsCount || 0),
-          image: p.image,
-          shortDesc: p.shortDesc,
-          durationDays: Number(p.durationDays),
-          difficulty: p.difficulty,
-          bestSeason: p.bestSeason,
-          priceUSD: Number(p.priceUSD),
-          permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
-          status: p.status,
-          region: p.region,
-        };
-      }
+      return res?.data ? formatBackendTrek(res.data) : null;
     } catch (e) {
       console.warn("Backend trek by slug fetch error:", e);
+      return null;
     }
-    return null;
   },
 
   async create(data: TrekFormValues): Promise<ApiResponse<TrekItem>> {
-    const payload = cleanPackagePayload(data, "Trekking");
-    const res = await apiClient.post<any>("/packages", payload);
-    const pkg = res.data;
-    const trekItem: TrekItem = {
-      id: pkg?.id || `trk-${Date.now()}`,
-      title: pkg?.title || data.title,
-      slug: pkg?.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      category: pkg?.categoryType || "Trekking",
-      categoryId: pkg?.categoryId || data.categoryId,
-      rating: Number(pkg?.rating || 5),
-      reviewsCount: Number(pkg?.reviewsCount || 0),
-      image: pkg?.image || data.image,
-      shortDesc: pkg?.shortDesc || data.shortDesc,
-      durationDays: Number(pkg?.durationDays || data.durationDays),
-      difficulty: pkg?.difficulty || data.difficulty,
-      bestSeason: pkg?.bestSeason || data.bestSeason,
-      priceUSD: Number(pkg?.priceUSD || data.priceUSD),
-      permitsRequired: Array.isArray(pkg?.permitsRequired) ? pkg.permitsRequired : [],
-      status: pkg?.status || data.status,
-      region: pkg?.region || data.region,
+    const payload = cleanPackagePayload(data);
+    const res = await apiClient.post<any>("/treks", payload);
+    return {
+      ...res,
+      data: res.data ? formatBackendTrek(res.data) : (null as any),
     };
-
-    return { success: res.success, message: res.message || "Trek itinerary saved successfully", data: trekItem };
   },
 
   async update(id: string, data: Partial<TrekFormValues>): Promise<ApiResponse<TrekItem>> {
-    const payload = cleanPackagePayload(data, "Trekking");
-    const res = await apiClient.put<any>(`/packages/${id}`, payload);
-    const updated = res.data;
-    const trekItem: TrekItem = {
-      id: updated?.id || id,
-      title: updated?.title || data.title || "",
-      slug: updated?.slug || "",
-      category: updated?.categoryType || "Trekking",
-      categoryId: updated?.categoryId || data.categoryId || "",
-      rating: Number(updated?.rating || 5),
-      reviewsCount: Number(updated?.reviewsCount || 0),
-      image: updated?.image || data.image || "",
-      shortDesc: updated?.shortDesc || data.shortDesc || "",
-      durationDays: Number(updated?.durationDays || data.durationDays || 1),
-      difficulty: updated?.difficulty || data.difficulty || "",
-      bestSeason: updated?.bestSeason || data.bestSeason || "",
-      priceUSD: Number(updated?.priceUSD || data.priceUSD || 0),
-      permitsRequired: Array.isArray(updated?.permitsRequired) ? updated.permitsRequired : [],
-      status: updated?.status || data.status || "Active",
-      region: updated?.region || data.region || "",
+    const payload = cleanPackagePayload(data);
+    const res = await apiClient.put<any>(`/treks/${id}`, payload);
+    return {
+      ...res,
+      data: res.data ? formatBackendTrek(res.data) : (null as any),
     };
-    return { success: res.success, message: res.message || "Trek itinerary updated successfully", data: trekItem };
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/packages/${id}`);
+    return apiClient.delete<boolean>(`/treks/${id}`);
   },
 };
 
@@ -312,8 +366,8 @@ export const TourService = {
   async getAll(filters?: PackageFilterParams): Promise<PackageItem[]> {
     try {
       const q = buildPackageQuery(filters);
-      const res = await apiClient.get<PackageItem[]>(`/tours${q}`);
-      return Array.isArray(res?.data) ? res.data : [];
+      const res = await apiClient.get<any[]>(`/tours${q}`);
+      return Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
     } catch (e) {
       console.warn("Backend tours fetch error:", e);
       return [];
@@ -322,25 +376,34 @@ export const TourService = {
 
   async getBySlug(slug: string): Promise<PackageItem | null> {
     try {
-      const res = await apiClient.get<PackageItem>(`/tours/${slug}`);
-      return res?.data || null;
+      const res = await apiClient.get<any>(`/tours/${slug}`);
+      return res?.data ? formatBackendPackage(res.data) : null;
     } catch (e) {
+      console.warn("Backend tour by slug fetch error:", e);
       return null;
     }
   },
 
   async create(data: TourFormValues): Promise<ApiResponse<PackageItem>> {
-    const payload = cleanPackagePayload(data, "Tour");
-    return apiClient.post<PackageItem>("/packages", payload);
+    const payload = cleanPackagePayload(data);
+    const res = await apiClient.post<any>("/tours", payload);
+    return {
+      ...res,
+      data: res.data ? formatBackendPackage(res.data) : (null as any),
+    };
   },
 
   async update(id: string, data: Partial<TourFormValues>): Promise<ApiResponse<PackageItem>> {
-    const payload = cleanPackagePayload(data, "Tour");
-    return apiClient.put<PackageItem>(`/packages/${id}`, payload);
+    const payload = cleanPackagePayload(data);
+    const res = await apiClient.put<any>(`/tours/${id}`, payload);
+    return {
+      ...res,
+      data: res.data ? formatBackendPackage(res.data) : (null as any),
+    };
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/packages/${id}`);
+    return apiClient.delete<boolean>(`/tours/${id}`);
   },
 };
 
@@ -348,8 +411,8 @@ export const ExpeditionService = {
   async getAll(filters?: PackageFilterParams): Promise<PackageItem[]> {
     try {
       const q = buildPackageQuery(filters);
-      const res = await apiClient.get<PackageItem[]>(`/expeditions${q}`);
-      return Array.isArray(res?.data) ? res.data : [];
+      const res = await apiClient.get<any[]>(`/expeditions${q}`);
+      return Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
     } catch (e) {
       console.warn("Backend expeditions fetch error:", e);
       return [];
@@ -358,25 +421,34 @@ export const ExpeditionService = {
 
   async getBySlug(slug: string): Promise<PackageItem | null> {
     try {
-      const res = await apiClient.get<PackageItem>(`/expeditions/${slug}`);
-      return res?.data || null;
+      const res = await apiClient.get<any>(`/expeditions/${slug}`);
+      return res?.data ? formatBackendPackage(res.data) : null;
     } catch (e) {
+      console.warn("Backend expedition by slug fetch error:", e);
       return null;
     }
   },
 
   async create(data: ExpeditionFormValues): Promise<ApiResponse<PackageItem>> {
-    const payload = cleanPackagePayload(data, "Expedition");
-    return apiClient.post<PackageItem>("/packages", payload);
+    const payload = cleanPackagePayload(data);
+    const res = await apiClient.post<any>("/expeditions", payload);
+    return {
+      ...res,
+      data: res.data ? formatBackendPackage(res.data) : (null as any),
+    };
   },
 
   async update(id: string, data: Partial<ExpeditionFormValues>): Promise<ApiResponse<PackageItem>> {
-    const payload = cleanPackagePayload(data, "Expedition");
-    return apiClient.put<PackageItem>(`/packages/${id}`, payload);
+    const payload = cleanPackagePayload(data);
+    const res = await apiClient.put<any>(`/expeditions/${id}`, payload);
+    return {
+      ...res,
+      data: res.data ? formatBackendPackage(res.data) : (null as any),
+    };
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/packages/${id}`);
+    return apiClient.delete<boolean>(`/expeditions/${id}`);
   },
 };
 
@@ -528,7 +600,7 @@ export interface AppNotification {
   id: string;
   title: string;
   body: string;
-  type: "inquiry" | "booking" | "quote" | "system";
+  type: NotificationType;
   isRead: boolean;
   refId?: string;
   createdAt: string;

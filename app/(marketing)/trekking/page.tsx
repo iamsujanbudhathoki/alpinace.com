@@ -59,7 +59,7 @@ export default function TrekkingPage() {
           difficulty: selectedDifficulty === "All" ? undefined : selectedDifficulty,
           maxDuration: maxDuration < (filterOptions?.maxDuration || 30) ? maxDuration : undefined,
           sortBy,
-          status: "Active",
+          status: "active",
         });
         if (!isCancelled) {
           setTreks(data);

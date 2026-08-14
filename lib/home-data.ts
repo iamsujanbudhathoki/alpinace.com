@@ -1,3 +1,5 @@
+import { TripDifficulty, PackageStatus } from "./admin-data";
+
 export interface TravelPackage {
   id: string;
   title: string;
@@ -6,13 +8,13 @@ export interface TravelPackage {
   region: string;
   durationDays: number;
   maxAltitudeMeters: number;
-  difficulty: string;
+  difficulty: TripDifficulty;
   priceUSD: number;
   rating: number;
   reviewsCount: number;
   image: string;
   shortDesc: string;
-  status: string;
+  status: PackageStatus;
 }
 
 export interface Destination {

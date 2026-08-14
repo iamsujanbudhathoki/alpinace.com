@@ -24,9 +24,6 @@ export interface SiteSettings {
   youtubeUrl: string;
   tripadvisorUrl: string;
   linkedinUrl: string;
-  currency: string;
-  depositPercentage: string;
-  enableBookings: string;
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -50,9 +47,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   youtubeUrl: "",
   tripadvisorUrl: "",
   linkedinUrl: "",
-  currency: "",
-  depositPercentage: "",
-  enableBookings: "",
 };
 
 interface SettingsContextType {

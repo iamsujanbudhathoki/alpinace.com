@@ -4,10 +4,17 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Mail, Phone, Globe, Calendar, ShieldCheck, Loader2 } from "lucide-react";
-import { Booking } from "@/lib/admin-data";
+import {
+  Booking,
+  BookingPackageType,
+  BookingPaymentStatus,
+  BookingStatus,
+  BookingPermitStatus,
+} from "@/lib/admin-data";
 import { bookingSchema, BookingFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DialogFooter } from "@/components/ui/dialog";
@@ -35,24 +42,23 @@ export function BookingFormModal({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<BookingFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } = useForm<BookingFormValues, any, BookingFormValues>({
     resolver: zodResolver(bookingSchema) as any,
     defaultValues: {
       guestName: "",
       guestEmail: "",
-      guestPhone: "+1 (555) 234-5678",
-      country: "United States",
-      packageName: "Everest Base Camp Luxury Helicopter Trek",
-      packageType: "Trekking",
-      startDate: "2026-09-15",
-      endDate: "2026-09-28",
-      groupSize: 2,
-      totalAmountUSD: 4800,
-      paymentStatus: "Deposit Paid",
-      bookingStatus: "Confirmed",
-      assignedGuide: "Lakpa Tenzing Sherpa",
-      permitStatus: "Issued",
+      guestPhone: "",
+      country: "",
+      packageName: "",
+      packageType: BookingPackageType.TREKKING,
+      startDate: "",
+      endDate: "",
+      groupSize: 1,
+      totalAmountUSD: 100,
+      paymentStatus: BookingPaymentStatus.PENDING,
+      bookingStatus: BookingStatus.IN_REVIEW,
+      assignedGuide: "",
+      permitStatus: BookingPermitStatus.PROCESSING,
       specialRequests: "",
     },
   });
@@ -80,18 +86,18 @@ export function BookingFormModal({
       reset({
         guestName: "",
         guestEmail: "",
-        guestPhone: "+1 (555) 234-5678",
-        country: "United States",
-        packageName: "Everest Base Camp Luxury Helicopter Trek",
-        packageType: "Trekking",
-        startDate: "2026-09-15",
-        endDate: "2026-09-28",
-        groupSize: 2,
-        totalAmountUSD: 4800,
-        paymentStatus: "Deposit Paid",
-        bookingStatus: "Confirmed",
-        assignedGuide: "Lakpa Tenzing Sherpa",
-        permitStatus: "Issued",
+        guestPhone: "",
+        country: "",
+        packageName: "",
+        packageType: BookingPackageType.TREKKING,
+        startDate: "",
+        endDate: "",
+        groupSize: 1,
+        totalAmountUSD: 100,
+        paymentStatus: BookingPaymentStatus.PENDING,
+        bookingStatus: BookingStatus.IN_REVIEW,
+        assignedGuide: "",
+        permitStatus: BookingPermitStatus.PROCESSING,
         specialRequests: "",
       });
     }
@@ -194,9 +200,9 @@ export function BookingFormModal({
               required
               error={errors.packageType?.message}
               options={[
-                { label: "Trekking", value: "Trekking" },
-                { label: "Expedition", value: "Expedition" },
-                { label: "Tour", value: "Tour" },
+                { label: "Trekking", value: BookingPackageType.TREKKING },
+                { label: "Expedition", value: BookingPackageType.EXPEDITION },
+                { label: "Tour", value: BookingPackageType.TOUR },
               ]}
               {...register("packageType")}
             />
@@ -238,10 +244,10 @@ export function BookingFormModal({
               required
               error={errors.paymentStatus?.message}
               options={[
-                { label: "Deposit Paid", value: "Deposit Paid" },
-                { label: "Paid", value: "Paid" },
-                { label: "Pending", value: "Pending" },
-                { label: "Refunded", value: "Refunded" },
+                { label: "Deposit Paid", value: BookingPaymentStatus.DEPOSIT_PAID },
+                { label: "Paid", value: BookingPaymentStatus.PAID },
+                { label: "Pending", value: BookingPaymentStatus.PENDING },
+                { label: "Refunded", value: BookingPaymentStatus.REFUNDED },
               ]}
               {...register("paymentStatus")}
             />
@@ -251,11 +257,11 @@ export function BookingFormModal({
               required
               error={errors.bookingStatus?.message}
               options={[
-                { label: "Confirmed", value: "Confirmed" },
-                { label: "In Review", value: "In Review" },
-                { label: "Active Trek", value: "Active Trek" },
-                { label: "Completed", value: "Completed" },
-                { label: "Cancelled", value: "Cancelled" },
+                { label: "Confirmed", value: BookingStatus.CONFIRMED },
+                { label: "In Review", value: BookingStatus.IN_REVIEW },
+                { label: "Active Trek", value: BookingStatus.ACTIVE_TREK },
+                { label: "Completed", value: BookingStatus.COMPLETED },
+                { label: "Cancelled", value: BookingStatus.CANCELLED },
               ]}
               {...register("bookingStatus")}
             />
@@ -265,9 +271,9 @@ export function BookingFormModal({
               required
               error={errors.permitStatus?.message}
               options={[
-                { label: "Issued", value: "Issued" },
-                { label: "Processing", value: "Processing" },
-                { label: "Pending Document", value: "Pending Document" },
+                { label: "Issued", value: BookingPermitStatus.ISSUED },
+                { label: "Processing", value: BookingPermitStatus.PROCESSING },
+                { label: "Pending Document", value: BookingPermitStatus.PENDING_DOCUMENT },
               ]}
               {...register("permitStatus")}
             />
@@ -347,17 +353,12 @@ export function BookingFormModal({
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
               <span className="text-slate-500 font-semibold block">Payment Status</span>
-              <Badge variant="outline" className="font-semibold text-slate-800 bg-white">
-                {initialData?.paymentStatus}
-              </Badge>
+              <AdminStatusBadge status={initialData?.paymentStatus || ""} />
             </div>
 
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
               <span className="text-slate-500 font-semibold block">Permit Status</span>
-              <div className="flex items-center gap-1 font-medium text-slate-800">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{initialData?.permitStatus}</span>
-              </div>
+              <AdminStatusBadge status={initialData?.permitStatus || ""} />
             </div>
 
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">

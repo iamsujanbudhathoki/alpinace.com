@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Compass, Clock } from "lucide-react";
 import { toast } from "sonner";
-import { PackageItem } from "@/lib/admin-data";
+import { PackageItem, PackageStatus } from "@/lib/admin-data";
 import { TourService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
@@ -56,7 +56,7 @@ export default function AdminToursPage() {
       tur.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tur.region.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
-      statusFilter === "All" || tur.status === statusFilter;
+      statusFilter === "All" || (tur.status || "").toLowerCase() === statusFilter.toLowerCase();
     return matchesSearch && matchesStatus;
   });
 
@@ -136,9 +136,9 @@ export default function AdminToursPage() {
             className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="All">All Statuses</option>
-            <option value="Active">Active</option>
-            <option value="Featured">Featured</option>
-            <option value="Draft">Draft</option>
+            <option value={PackageStatus.ACTIVE}>Active</option>
+            <option value={PackageStatus.FEATURED}>Featured</option>
+            <option value={PackageStatus.DRAFT}>Draft</option>
           </select>
         </div>
       </AdminFilterBar>

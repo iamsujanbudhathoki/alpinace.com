@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Mountain, TrendingUp } from "lucide-react";
-import { PackageItem } from "@/lib/admin-data";
+import { PackageItem, PackageStatus } from "@/lib/admin-data";
 import { toast } from "sonner";
 import { ExpeditionService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
@@ -56,7 +56,7 @@ export default function AdminExpeditionsPage() {
       exp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       exp.region.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
-      statusFilter === "All" || exp.status === statusFilter;
+      statusFilter === "All" || (exp.status || "").toLowerCase() === statusFilter.toLowerCase();
     return matchesSearch && matchesStatus;
   });
 
@@ -136,9 +136,9 @@ export default function AdminExpeditionsPage() {
             className="bg-transparent text-slate-900 font-bold focus:outline-none cursor-pointer"
           >
             <option value="All">All Statuses</option>
-            <option value="Active">Active</option>
-            <option value="Featured">Featured</option>
-            <option value="Draft">Draft</option>
+            <option value={PackageStatus.ACTIVE}>Active</option>
+            <option value={PackageStatus.FEATURED}>Featured</option>
+            <option value={PackageStatus.DRAFT}>Draft</option>
           </select>
         </div>
       </AdminFilterBar>

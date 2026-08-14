@@ -40,6 +40,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { NotificationType } from "@/lib/admin-data";
 
 interface AdminHeaderProps {
   onToggleMobileSidebar?: () => void;
@@ -117,11 +118,11 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
     );
   };
 
-  const typeColor: Record<string, string> = {
-    inquiry: "bg-amber-500",
-    booking: "bg-emerald-500",
-    quote: "bg-blue-500",
-    system: "bg-slate-400",
+  const typeColor: Record<NotificationType, string> = {
+    [NotificationType.INQUIRY]: "bg-amber-500",
+    [NotificationType.BOOKING]: "bg-emerald-500",
+    [NotificationType.QUOTE]: "bg-blue-500",
+    [NotificationType.SYSTEM]: "bg-slate-400",
   };
 
   const userInitials = user?.name

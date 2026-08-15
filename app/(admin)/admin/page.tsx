@@ -28,9 +28,11 @@ import {
   AdminTableBody,
   AdminTableRow,
   AdminTableCell,
+  AdminTableLoading,
 } from "@/components/admin/ui/admin-table";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminDashboardPage() {
   const [metrics, setMetrics] = useState(mockDashboardMetrics);
@@ -91,39 +93,56 @@ export default function AdminDashboardPage() {
 
       {/* Metric Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <AdminStatsCard
-          label="Total Revenue"
-          value={`$${metrics.totalRevenueUSD.toLocaleString()}`}
-          trendText={`+${metrics.revenueChangePercent}% vs last season`}
-          trendType="positive"
-          icon={DollarSign}
-          iconColorClass="bg-emerald-50 border-emerald-200 text-emerald-600"
-        />
+        {loading ? (
+          [...Array(4)].map((_, i) => (
+            <Card key={i} className="p-5 bg-white border-slate-200 shadow-xs space-y-3 relative overflow-hidden">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-28 bg-slate-200/60" />
+                <Skeleton className="w-9 h-9 rounded-xl bg-slate-200/60 shrink-0" />
+              </div>
+              <div className="space-y-2 pt-1">
+                <Skeleton className="h-7 w-20 bg-slate-200/60" />
+                <Skeleton className="h-3.5 w-32 bg-slate-200/60" />
+              </div>
+            </Card>
+          ))
+        ) : (
+          <>
+            <AdminStatsCard
+              label="Total Revenue"
+              value={`$${metrics.totalRevenueUSD.toLocaleString()}`}
+              trendText={`+${metrics.revenueChangePercent}% vs last season`}
+              trendType="positive"
+              icon={DollarSign}
+              iconColorClass="bg-emerald-50 border-emerald-200 text-emerald-600"
+            />
 
-        <AdminStatsCard
-          label="Active Expeditions"
-          value={`${metrics.activeExpeditions}`}
-          subtext={`${metrics.climbersOnMountain} climbers on peak`}
-          icon={Mountain}
-          iconColorClass="bg-amber-50 border-amber-200 text-amber-600"
-        />
+            <AdminStatsCard
+              label="Active Expeditions"
+              value={`${metrics.activeExpeditions}`}
+              subtext={`${metrics.climbersOnMountain} climbers on peak`}
+              icon={Mountain}
+              iconColorClass="bg-amber-50 border-amber-200 text-amber-600"
+            />
 
-        <AdminStatsCard
-          label="Pending Bookings"
-          value={`${metrics.pendingBookings}`}
-          trendText="Requires guide assignment"
-          trendType="warning"
-          icon={Clock}
-          iconColorClass="bg-sky-50 border-sky-200 text-sky-600"
-        />
+            <AdminStatsCard
+              label="Pending Bookings"
+              value={`${metrics.pendingBookings}`}
+              trendText="Requires guide assignment"
+              trendType="warning"
+              icon={Clock}
+              iconColorClass="bg-sky-50 border-sky-200 text-sky-600"
+            />
 
-        <AdminStatsCard
-          label="Permits Processing"
-          value={`${metrics.timsPermitsProcessing}`}
-          subtext="TIMS & Sagarmatha clearances"
-          icon={FileCheck}
-          iconColorClass="bg-purple-50 border-purple-200 text-purple-600"
-        />
+            <AdminStatsCard
+              label="Permits Processing"
+              value={`${metrics.timsPermitsProcessing}`}
+              subtext="TIMS & Sagarmatha clearances"
+              icon={FileCheck}
+              iconColorClass="bg-purple-50 border-purple-200 text-purple-600"
+            />
+          </>
+        )}
       </div>
 
       {/* Main Content Grid */}
@@ -157,28 +176,32 @@ export default function AdminDashboardPage() {
                   </tr>
                 </AdminTableHeader>
                 <AdminTableBody>
-                  {recentBookings.map((bkg) => (
-                    <AdminTableRow key={bkg.id}>
-                      <AdminTableCell>
-                        <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
-                          {bkg.guestName}
-                        </div>
-                        <div className="text-xs text-slate-600 font-normal">{bkg.reference} • {bkg.country}</div>
-                      </AdminTableCell>
-                      <AdminTableCell className="max-w-[180px] truncate">
-                        {bkg.packageName}
-                      </AdminTableCell>
-                      <AdminTableCell>
-                        {bkg.startDate}
-                      </AdminTableCell>
-                      <AdminTableCell className="font-bold text-slate-900">
-                        ${bkg.totalAmountUSD.toLocaleString()}
-                      </AdminTableCell>
-                      <AdminTableCell align="right">
-                        <AdminStatusBadge status={bkg.bookingStatus} />
-                      </AdminTableCell>
-                    </AdminTableRow>
-                  ))}
+                  {loading ? (
+                    <AdminTableLoading colSpan={5} rows={5} />
+                  ) : (
+                    recentBookings.map((bkg) => (
+                      <AdminTableRow key={bkg.id}>
+                        <AdminTableCell>
+                          <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                            {bkg.guestName}
+                          </div>
+                          <div className="text-xs text-slate-600 font-normal">{bkg.reference} • {bkg.country}</div>
+                        </AdminTableCell>
+                        <AdminTableCell className="max-w-[180px] truncate">
+                          {bkg.packageName}
+                        </AdminTableCell>
+                        <AdminTableCell>
+                          {bkg.startDate}
+                        </AdminTableCell>
+                        <AdminTableCell className="font-bold text-slate-900">
+                          ${bkg.totalAmountUSD.toLocaleString()}
+                        </AdminTableCell>
+                        <AdminTableCell align="right">
+                          <AdminStatusBadge status={bkg.bookingStatus} />
+                        </AdminTableCell>
+                      </AdminTableRow>
+                    ))
+                  )}
                 </AdminTableBody>
               </AdminTable>
             </div>
@@ -199,18 +222,33 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="space-y-3">
-              {topExpeditions.map((pkg) => (
-                <div
-                  key={pkg.id}
-                  className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs"
-                >
-                  <div>
-                    <div className="font-bold text-slate-900 line-clamp-1">{pkg.title}</div>
-                    <div className="text-xs text-slate-600 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
+              {loading ? (
+                [...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4 animate-pulse"
+                  >
+                    <div className="space-y-2 flex-grow">
+                      <Skeleton className="h-4 w-32 bg-slate-200" />
+                      <Skeleton className="h-3 w-20 bg-slate-200" />
+                    </div>
+                    <Skeleton className="h-4 w-12 bg-slate-200 shrink-0 animate-pulse" />
                   </div>
-                  <span className="font-bold text-slate-900 shrink-0">${pkg.priceUSD}</span>
-                </div>
-              ))}
+                ))
+              ) : (
+                topExpeditions.map((pkg) => (
+                  <div
+                    key={pkg.id}
+                    className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs"
+                  >
+                    <div>
+                      <div className="font-bold text-slate-900 line-clamp-1">{pkg.title}</div>
+                      <div className="text-xs text-slate-600 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
+                    </div>
+                    <span className="font-bold text-slate-900 shrink-0">${pkg.priceUSD}</span>
+                  </div>
+                ))
+              )}
             </div>
           </Card>
         </div>

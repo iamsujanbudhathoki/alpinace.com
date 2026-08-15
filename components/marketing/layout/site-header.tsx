@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, Phone } from "lucide-react";
 import { navLinks } from "@/lib/site-config";
@@ -23,10 +24,13 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  // Close mobile menu on route change without triggering cascading effect renders
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setMobileMenuOpen(false);
-  }, [pathname]);
+  }
 
   // Lock background body scroll when full-screen mobile menu is active & listen for Escape key
   useEffect(() => {
@@ -61,9 +65,12 @@ export function SiteHeader() {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 md:px-10">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <img
+            <Image
               src="/logo.jpg"
               alt="AlpineAce Logo"
+              width={36}
+              height={36}
+              priority
               className="h-9 w-9 object-cover rounded-lg border border-stone-200"
             />
             <span className="flex flex-col leading-none">
@@ -139,9 +146,11 @@ export function SiteHeader() {
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-3"
             >
-              <img
+              <Image
                 src="/logo.jpg"
                 alt="AlpineAce Logo"
+                width={36}
+                height={36}
                 className="h-9 w-9 object-cover rounded-lg border border-slate-200"
               />
               <span className="font-heading text-base font-bold text-slate-900">

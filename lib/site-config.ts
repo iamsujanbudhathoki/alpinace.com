@@ -14,19 +14,21 @@ export const siteConfig = {
   ],
 } as const;
 
+import { CategoryType } from "@/lib/admin-data";
+
 export type NavLink = {
   label: string;
   href: string;
+  categoryType?: CategoryType;
 };
 
-// Routes beyond "/" aren't built yet — links will 404 until those pages exist.
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "Trekking", href: "/trekking" },
-  { label: "Tours", href: "/tours" },
-  { label: "Expeditions", href: "/expeditions" },
+  { label: "Trekking", href: "/trekking", categoryType: CategoryType.TREKKING },
+  { label: "Tours", href: "/tours", categoryType: CategoryType.TOURS },
+  { label: "Expeditions", href: "/expeditions", categoryType: CategoryType.EXPEDITIONS },
   { label: "About", href: "/about" },
-  { label: "Blog", href: "/blog" },
+  { label: "Blog", href: "/blog", categoryType: CategoryType.BLOGS },
   { label: "Contact", href: "/contact" },
 ];
 

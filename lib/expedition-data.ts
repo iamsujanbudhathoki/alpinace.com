@@ -1,5 +1,5 @@
 import { PackageStatus, PackageRegion, ClimbingGrade, TripDifficulty } from "./admin-data";
-import { TripFaqItem, TripReviewItem } from "./trek-data";
+import { TripFaqItem, TripItineraryDay, TripReviewItem } from "./trek-data";
 
 export { ClimbingGrade };
 
@@ -28,6 +28,7 @@ export interface ExpeditionItem {
   permitsRequired: string[];
   inclusionsText?: string;
   exclusionsText?: string;
+  itinerary?: TripItineraryDay[];
   faqs?: TripFaqItem[];
   reviews?: TripReviewItem[];
   categoryId?: string;

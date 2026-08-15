@@ -193,6 +193,9 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
     const list: { key: string; label: string }[] = [
       { key: "overview", label: "Overview" },
     ];
+    if (trek?.itinerary && trek.itinerary.length > 0) {
+      list.push({ key: "itinerary", label: "Detailed Itinerary" });
+    }
     if (costIncludes.length > 0 || costExclusions.length > 0) {
       list.push({ key: "cost", label: "Inclusions & Exclusions" });
     }
@@ -200,7 +203,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
       list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
-  }, [costIncludes, costExclusions, displayFaqs]);
+  }, [trek?.itinerary, costIncludes, costExclusions, displayFaqs]);
 
   const [activeTab, setActiveTab] = useState<string>("overview");
 
@@ -395,7 +398,16 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 </div>
               )}
 
-              {/* TAB 2: INCLUSIONS & EXCLUSIONS */}
+              {/* TAB 2: DETAILED ITINERARY */}
+              {currentActiveTab === "itinerary" && trek.itinerary && (
+                <PackageItinerary
+                  days={trek.itinerary}
+                  title="Detailed Itinerary"
+                  subtitle={`${trek.itinerary.length} Days journey across ${trek.region}`}
+                />
+              )}
+
+              {/* TAB 3: INCLUSIONS & EXCLUSIONS */}
               {currentActiveTab === "cost" && (
                 <PackageInclusions
                   inclusions={costIncludes}
@@ -403,7 +415,7 @@ export default function TrekDetailPage({ params }: TrekDetailPageProps) {
                 />
               )}
 
-              {/* TAB 3: FAQS */}
+              {/* TAB 4: FAQS */}
               {currentActiveTab === "faqs" && <PackageFaqs faqs={displayFaqs} />}
             </div>
 

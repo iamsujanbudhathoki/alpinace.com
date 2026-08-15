@@ -31,6 +31,7 @@ import {
   PackageQuickFacts,
   PackageGallery,
   PackageTabsNav,
+  PackageItinerary,
   PackageInclusions,
   PackageFaqs,
   PackageReviews,
@@ -254,6 +255,9 @@ export default function ExpeditionDetailPage({
     const list: { key: string; label: string }[] = [
       { key: "overview", label: "Overview" },
     ];
+    if (expedition?.itinerary && expedition.itinerary.length > 0) {
+      list.push({ key: "itinerary", label: "Detailed Itinerary" });
+    }
     if (costIncludes.length > 0 || costExclusions.length > 0) {
       list.push({ key: "cost", label: "Inclusions & Exclusions" });
     }
@@ -261,7 +265,7 @@ export default function ExpeditionDetailPage({
       list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
-  }, [costIncludes, costExclusions, displayFaqs]);
+  }, [expedition?.itinerary, costIncludes, costExclusions, displayFaqs]);
 
   const [activeTab, setActiveTab] = useState<string>("overview");
 
@@ -473,7 +477,16 @@ export default function ExpeditionDetailPage({
                 </div>
               )}
 
-              {/* TAB 2: INCLUSIONS & EXCLUSIONS */}
+              {/* TAB 2: DETAILED ITINERARY */}
+              {currentActiveTab === "itinerary" && expedition.itinerary && (
+                <PackageItinerary
+                  days={expedition.itinerary}
+                  title="Detailed Itinerary"
+                  subtitle={`${expedition.itinerary.length} Days Alpine Expedition Route`}
+                />
+              )}
+
+              {/* TAB 3: INCLUSIONS & EXCLUSIONS */}
               {currentActiveTab === "cost" && (
                 <PackageInclusions
                   inclusions={costIncludes}
@@ -481,7 +494,7 @@ export default function ExpeditionDetailPage({
                 />
               )}
 
-              {/* TAB 3: FAQS */}
+              {/* TAB 4: FAQS */}
               {currentActiveTab === "faqs" && <PackageFaqs faqs={displayFaqs} />}
             </div>
 

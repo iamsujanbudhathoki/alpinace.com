@@ -1,26 +1,38 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw } from "lucide-react";
 import { TourItem, TourType } from "@/lib/tour-data";
 import { TourService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
 import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 
-export default function ToursPage() {
+function ToursPageContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("categoryId") || "All";
+
   const [tours, setTours] = useState<TourItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(null);
   const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
 
   // Filter States
+  const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedType, setSelectedType] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(10);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Sync categoryId safely during render when query param changes without triggering cascading effect renders
+  if (categoryParam !== prevCategoryParam) {
+    setPrevCategoryParam(categoryParam);
+    setSelectedCategory(categoryParam);
+  }
 
   // Fetch filter options from backend
   useEffect(() => {
@@ -56,6 +68,7 @@ export default function ToursPage() {
       try {
         const raw = await TourService.getAll({
           search: debouncedSearch,
+          categoryId: selectedCategory === "All" ? undefined : selectedCategory,
           region: selectedType === "All" ? undefined : selectedType,
           maxDuration: maxDuration < (filterOptions?.maxDuration || 10) ? maxDuration : undefined,
           sortBy,
@@ -91,10 +104,11 @@ export default function ToursPage() {
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
+  }, [debouncedSearch, selectedCategory, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const resetFilters = () => {
     setSearchQuery("");
+    setSelectedCategory("All");
     setSelectedType("All");
     setMaxDuration(filterOptions?.maxDuration || 10);
     setSortBy("rating");
@@ -103,11 +117,12 @@ export default function ToursPage() {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (searchQuery.trim() !== "") count++;
+    if (selectedCategory !== "All") count++;
     if (selectedType !== "All") count++;
     if (maxDuration < (filterOptions?.maxDuration || 10)) count++;
     if (sortBy !== "rating") count++;
     return count;
-  }, [searchQuery, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
+  }, [searchQuery, selectedCategory, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const filteredTours = tours;
 
@@ -444,5 +459,13 @@ export default function ToursPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function ToursPage() {
+  return (
+    <Suspense fallback={<PackageGridSkeleton count={6} />}>
+      <ToursPageContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,5 @@
 import { Hero } from "@/components/marketing/sections/hero";
 import { FeaturedPackages } from "@/components/marketing/sections/featured-packages";
-import { DestinationsSection } from "@/components/marketing/sections/destinations";
 import { WhyChooseUs } from "@/components/marketing/sections/why-choose-us";
 import { TravelProcess } from "@/components/marketing/sections/travel-process";
 import { TestimonialsSection } from "@/components/marketing/sections/testimonials";
@@ -18,10 +17,7 @@ export default function Home() {
       {/* 2. Featured Trekking & Expedition Packages */}
       <FeaturedPackages />
 
-      {/* 3. Nepal Destinations */}
-      <DestinationsSection />
-
-      {/* 4. Why Travel With Us */}
+      {/* 3. Why Travel With Us */}
       <WhyChooseUs />
 
       {/* 5. Travel Process (4-Step Journey) */}

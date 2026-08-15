@@ -1,26 +1,38 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw } from "lucide-react";
 import { ClimbingGrade, ExpeditionItem } from "@/lib/expedition-data";
 import { ExpeditionService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
 import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 
-export default function ExpeditionsPage() {
+function ExpeditionsPageContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("categoryId") || "All";
+
   const [expeditions, setExpeditions] = useState<ExpeditionItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(null);
   const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
 
   // Filter States
+  const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedGrade, setSelectedGrade] = useState<string>("All");
   const [minPeakHeight, setMinPeakHeight] = useState<number>(6000);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Sync categoryId safely during render when query param changes without triggering cascading effect renders
+  if (categoryParam !== prevCategoryParam) {
+    setPrevCategoryParam(categoryParam);
+    setSelectedCategory(categoryParam);
+  }
 
   // Fetch filter options from backend
   useEffect(() => {
@@ -56,6 +68,7 @@ export default function ExpeditionsPage() {
       try {
         const raw = await ExpeditionService.getAll({
           search: debouncedSearch,
+          categoryId: selectedCategory === "All" ? undefined : selectedCategory,
           difficulty: selectedGrade === "All" ? undefined : selectedGrade,
           sortBy,
           status: "active",
@@ -91,10 +104,11 @@ export default function ExpeditionsPage() {
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedGrade, minPeakHeight, sortBy]);
+  }, [debouncedSearch, selectedCategory, selectedGrade, minPeakHeight, sortBy]);
 
   const resetFilters = () => {
     setSearchQuery("");
+    setSelectedCategory("All");
     setSelectedGrade("All");
     setMinPeakHeight(filterOptions?.minAltitude || 5500);
     setSortBy("rating");
@@ -103,11 +117,12 @@ export default function ExpeditionsPage() {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (searchQuery.trim() !== "") count++;
+    if (selectedCategory !== "All") count++;
     if (selectedGrade !== "All") count++;
     if (minPeakHeight > (filterOptions?.minAltitude || 5500)) count++;
     if (sortBy !== "rating") count++;
     return count;
-  }, [searchQuery, selectedGrade, minPeakHeight, sortBy, filterOptions?.minAltitude]);
+  }, [searchQuery, selectedCategory, selectedGrade, minPeakHeight, sortBy, filterOptions?.minAltitude]);
 
   const filteredExpeditions = expeditions;
 
@@ -445,5 +460,13 @@ export default function ExpeditionsPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function ExpeditionsPage() {
+  return (
+    <Suspense fallback={<PackageGridSkeleton count={6} />}>
+      <ExpeditionsPageContent />
+    </Suspense>
   );
 }

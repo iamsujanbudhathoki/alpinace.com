@@ -179,6 +179,16 @@ export interface PackageItem {
   permitsRequired: string[];
   inclusionsText?: string;
   exclusionsText?: string;
+  itinerary?: Array<{
+    day: number;
+    title: string;
+    description: string;
+    maxAltitude?: string;
+    accommodation?: string;
+    meals?: string;
+    details?: Array<{ label: string; value: string }>;
+    [key: string]: any;
+  }>;
   tourType?: TourType;
   transportation?: string;
   peakHeightM?: number;

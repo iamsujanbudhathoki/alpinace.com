@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { ChevronDown, HelpCircle, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { FaqService } from "@/lib/services/admin-service";
 import { FaqItem, FaqStatus } from "@/lib/admin-data";
-import { COMPANY_FAQS } from "@/lib/home-data";
 
 export function FaqsSection() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
@@ -16,33 +15,11 @@ export function FaqsSection() {
     async function loadFaqs() {
       try {
         const liveFaqs = await FaqService.getAll(FaqStatus.ACTIVE);
-        if (liveFaqs && liveFaqs.length > 0) {
+        if (liveFaqs && Array.isArray(liveFaqs)) {
           setFaqs(liveFaqs);
-        } else {
-          // Fallback to initial seed items
-          setFaqs(
-            COMPANY_FAQS.map((f, i) => ({
-              id: f.id,
-              question: f.question,
-              answer: f.answer,
-              category: "General",
-              status: FaqStatus.ACTIVE,
-              order: i + 1,
-            }))
-          );
         }
       } catch (err) {
-        console.warn("Failed to load live FAQs, using initial data:", err);
-        setFaqs(
-          COMPANY_FAQS.map((f, i) => ({
-            id: f.id,
-            question: f.question,
-            answer: f.answer,
-            category: "General",
-            status: FaqStatus.ACTIVE,
-            order: i + 1,
-          }))
-        );
+        console.warn("Failed to load live FAQs from backend:", err);
       } finally {
         setLoading(false);
       }
@@ -63,6 +40,10 @@ export function FaqsSection() {
   const toggleFaq = (id: string) => {
     setActiveFaq(activeFaq === id ? null : id);
   };
+
+  if (!loading && faqs.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-24 bg-white border-b border-stone-200">

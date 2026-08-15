@@ -232,6 +232,56 @@ function cleanPackagePayload(data: any) {
     delete payload.peakHeightM;
   }
 
+  if (Array.isArray(rest.itinerary)) {
+    payload.itinerary = rest.itinerary
+      .filter((day: any) => day && (typeof day.title === "string" ? day.title.trim() : true))
+      .map((day: any, idx: number) => {
+        const cleanDetails = Array.isArray(day.details)
+          ? day.details
+              .filter((d: any) => d && typeof d === "object" && (d.label?.trim() || d.value?.trim()))
+              .map((d: any) => ({
+                label: (d.label || "Detail").trim(),
+                value: (d.value || "").trim(),
+              }))
+              .filter((d: any) => d.label && d.value)
+          : undefined;
+
+        return {
+          day: Number(day.day) || idx + 1,
+          title: (day.title || `Day ${idx + 1}`).trim(),
+          description: (day.description || "").trim(),
+          maxAltitude: day.maxAltitude && typeof day.maxAltitude === "string" && day.maxAltitude.trim() ? day.maxAltitude.trim() : undefined,
+          accommodation: day.accommodation && typeof day.accommodation === "string" && day.accommodation.trim() ? day.accommodation.trim() : undefined,
+          meals: day.meals && typeof day.meals === "string" && day.meals.trim() ? day.meals.trim() : undefined,
+          ...(cleanDetails && cleanDetails.length > 0 ? { details: cleanDetails } : {}),
+        };
+      });
+  }
+
+  if (Array.isArray(rest.faqs)) {
+    payload.faqs = rest.faqs
+      .filter((f: any) => f && f.question?.trim() && f.answer?.trim())
+      .map((f: any) => ({
+        id: f.id,
+        question: f.question.trim(),
+        answer: f.answer.trim(),
+      }));
+  }
+
+  if (Array.isArray(rest.reviews)) {
+    payload.reviews = rest.reviews
+      .filter((r: any) => r && r.author?.trim() && r.content?.trim())
+      .map((r: any) => ({
+        id: r.id,
+        author: r.author.trim(),
+        country: (r.country || "Traveler").trim(),
+        rating: Number(r.rating) || 5,
+        content: r.content.trim(),
+        date: r.date || new Date().toISOString().split("T")[0],
+        avatar: r.avatar || undefined,
+      }));
+  }
+
   delete payload.totalBookings;
   delete payload.rating;
   delete payload.reviewsCount;
@@ -266,6 +316,7 @@ export function formatBackendTrek(p: any): TrekItem {
     permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
     inclusionsText: p.inclusionsText,
     exclusionsText: p.exclusionsText,
+    itinerary: Array.isArray(p.itinerary) ? p.itinerary : [],
     faqs: Array.isArray(p.faqs) ? p.faqs : [],
     reviews: Array.isArray(p.reviews) ? p.reviews : [],
     metaTitle: p.metaTitle,
@@ -302,6 +353,7 @@ export function formatBackendPackage(p: any): PackageItem {
     permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
     inclusionsText: p.inclusionsText,
     exclusionsText: p.exclusionsText,
+    itinerary: Array.isArray(p.itinerary) ? p.itinerary : [],
     tourType: p.tourType,
     transportation: p.transportation,
     peakHeightM: p.peakHeightM !== undefined && p.peakHeightM !== null ? Number(p.peakHeightM) : undefined,

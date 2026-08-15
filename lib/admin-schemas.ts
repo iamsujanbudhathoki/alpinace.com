@@ -18,6 +18,23 @@ import {
   CategoryStatus,
 } from "./admin-data";
 
+export const itineraryDaySchema = z.object({
+  day: z.preprocess((val) => Number(val) || 1, z.number().min(1, "Day number must be at least 1")),
+  title: z.string().trim().min(1, "Day title is required"),
+  description: z.string().trim().min(1, "Day description is required"),
+  maxAltitude: z.string().optional(),
+  accommodation: z.string().optional(),
+  meals: z.string().optional(),
+  details: z
+    .array(
+      z.object({
+        label: z.string().default(""),
+        value: z.string().default(""),
+      })
+    )
+    .optional(),
+});
+
 export const trekSchema = z.object({
   title: z.string().min(1, "Trek title is required"),
   categoryId: z.string().optional(),
@@ -40,6 +57,7 @@ export const trekSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
+  itinerary: z.array(itineraryDaySchema).optional(),
   faqs: z
     .array(
       z.object({
@@ -89,6 +107,7 @@ export const tourSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
+  itinerary: z.array(itineraryDaySchema).optional(),
   faqs: z
     .array(
       z.object({
@@ -140,6 +159,7 @@ export const expeditionSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
+  itinerary: z.array(itineraryDaySchema).optional(),
   faqs: z
     .array(
       z.object({

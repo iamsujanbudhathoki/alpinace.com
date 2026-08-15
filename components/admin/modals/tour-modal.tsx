@@ -22,6 +22,7 @@ import {
   BedDouble,
   Star,
   Sparkles,
+  Calendar,
 } from "lucide-react";
 import { PackageItem, CategoryType, TourType, TripDifficulty, PackageStatus } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
@@ -38,6 +39,7 @@ import {
   TripFaqItem,
   TripReviewItem,
 } from "@/components/admin/forms/trip-faqs-reviews-fields";
+import { TripItineraryManager } from "@/components/admin/forms/trip-itinerary-manager";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
@@ -50,7 +52,7 @@ interface TourFormModalProps {
   isEditing?: boolean;
 }
 
-type TabType = "general" | "inclusions" | "faqs" | "reviews" | "media" | "seo";
+type TabType = "general" | "itinerary" | "inclusions" | "faqs" | "reviews" | "media" | "seo";
 
 export function TourFormModal({
   isOpen,
@@ -98,6 +100,7 @@ export function TourFormModal({
       metaTitle: "",
       metaDescription: "",
       keywords: "",
+      itinerary: [],
       faqs: [],
       reviews: [],
     },
@@ -105,6 +108,7 @@ export function TourFormModal({
 
   const watchTitle = watch("title");
   const watchMetaDesc = watch("metaDescription");
+  const watchItinerary = watch("itinerary") || [];
   const watchFaqs = watch("faqs") || [];
   const watchReviews = watch("reviews") || [];
 
@@ -147,6 +151,7 @@ export function TourFormModal({
         permitsText: initialData.permitsRequired ? initialData.permitsRequired.join(", ") : "",
         inclusionsText: initialData.inclusionsText || "",
         exclusionsText: initialData.exclusionsText || "",
+        itinerary: Array.isArray(initialData.itinerary) ? initialData.itinerary : [],
         shortDesc: initialData.shortDesc || "",
         image: initialData.image || "",
         metaTitle: initialData.metaTitle || "",
@@ -175,6 +180,7 @@ export function TourFormModal({
         permitsText: "",
         inclusionsText: "",
         exclusionsText: "",
+        itinerary: [],
         shortDesc: "",
         image: "",
         metaTitle: "",
@@ -218,6 +224,7 @@ export function TourFormModal({
         permitsRequired: permitsArray,
         inclusionsText: values.inclusionsText,
         exclusionsText: values.exclusionsText,
+        itinerary: values.itinerary || [],
         shortDesc: values.shortDesc || "",
         image: values.image || "",
         metaTitle: values.metaTitle,
@@ -251,13 +258,37 @@ export function TourFormModal({
     ? "Modify tour attributes, transportation specs, FAQs, and metadata."
     : "Tour package details and inclusions.";
 
-  const tabs: { id: TabType; label: string; icon: any; count?: number }[] = [
-    { id: "general", label: "General & Specs", icon: Info },
-    { id: "inclusions", label: "Inclusions & Exclusions", icon: CheckCircle2 },
-    { id: "faqs", label: "Tour FAQs", icon: HelpCircle, count: watchFaqs.length },
-    { id: "reviews", label: "Client Reviews", icon: MessageSquareQuote, count: watchReviews.length },
-    { id: "media", label: "Media & Cover", icon: ImageIcon },
-    { id: "seo", label: "SEO & Search", icon: Search },
+  const hasGeneralErrors = !!(
+    errors.title ||
+    errors.categoryId ||
+    errors.region ||
+    errors.tourType ||
+    errors.transportation ||
+    errors.durationDays ||
+    errors.maxAltitudeMeters ||
+    errors.difficulty ||
+    errors.priceUSD ||
+    errors.status ||
+    errors.shortDesc
+  );
+  const hasItineraryErrors = !!(
+    errors.itinerary &&
+    (Array.isArray(errors.itinerary) ? errors.itinerary.some(Boolean) : true)
+  );
+  const hasInclusionsErrors = !!(errors.inclusionsText || errors.exclusionsText);
+  const hasFaqErrors = !!(errors.faqs);
+  const hasReviewErrors = !!(errors.reviews);
+  const hasMediaErrors = !!(errors.image);
+  const hasSeoErrors = !!(errors.metaTitle || errors.metaDescription || errors.keywords);
+
+  const tabs: { id: TabType; label: string; icon: any; count?: number; hasError?: boolean }[] = [
+    { id: "general", label: "General & Specs", icon: Info, hasError: hasGeneralErrors },
+    { id: "itinerary", label: "Detailed Itinerary", icon: Calendar, count: watchItinerary.length, hasError: hasItineraryErrors },
+    { id: "inclusions", label: "Inclusions & Exclusions", icon: CheckCircle2, hasError: hasInclusionsErrors },
+    { id: "faqs", label: "Tour FAQs", icon: HelpCircle, count: watchFaqs.length, hasError: hasFaqErrors },
+    { id: "reviews", label: "Client Reviews", icon: MessageSquareQuote, count: watchReviews.length, hasError: hasReviewErrors },
+    { id: "media", label: "Media & Cover", icon: ImageIcon, hasError: hasMediaErrors },
+    { id: "seo", label: "SEO & Search", icon: Search, hasError: hasSeoErrors },
   ];
 
   const editFooter = (
@@ -331,6 +362,7 @@ export function TourFormModal({
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
+              const isTabError = tab.hasError;
               return (
                 <button
                   key={tab.id}
@@ -339,12 +371,17 @@ export function TourFormModal({
                   className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
                     isActive
                       ? "bg-slate-900 text-white shadow-xs"
+                      : isTabError
+                      ? "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : "text-slate-500"}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : isTabError ? "text-rose-500" : "text-slate-500"}`} />
                   <span>{tab.label}</span>
-                  {tab.count !== undefined && tab.count > 0 && (
+                  {isTabError && (
+                    <span className="w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
+                  )}
+                  {tab.count !== undefined && tab.count > 0 && !isTabError && (
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                         isActive
@@ -553,7 +590,23 @@ export function TourFormModal({
               </div>
             )}
 
-            {/* 2. INCLUSIONS & EXCLUSIONS TAB */}
+            {/* 2. DETAILED ITINERARY TAB */}
+            {activeTab === "itinerary" && (
+              <Controller
+                name="itinerary"
+                control={control}
+                render={({ field }) => (
+                  <TripItineraryManager
+                    itinerary={field.value || []}
+                    onChange={(newDays) => field.onChange(newDays)}
+                    durationDays={Number(watch("durationDays") || 0)}
+                    errors={errors.itinerary}
+                  />
+                )}
+              />
+            )}
+
+            {/* 3. INCLUSIONS & EXCLUSIONS TAB */}
             {activeTab === "inclusions" && (
               <div className="space-y-4 max-h-[460px] overflow-y-auto pr-1">
                 <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200/80 space-y-2">

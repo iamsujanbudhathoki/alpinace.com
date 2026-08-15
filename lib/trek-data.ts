@@ -2,6 +2,22 @@ import { PackageStatus, PackageRegion, TripDifficulty } from "./admin-data";
 
 export type TrekDifficulty = TripDifficulty;
 
+export interface TripItineraryDetail {
+  label: string;
+  value: string;
+}
+
+export interface TripItineraryDay {
+  day: number;
+  title: string;
+  description: string;
+  maxAltitude?: string;
+  accommodation?: string;
+  meals?: string;
+  details?: TripItineraryDetail[];
+  [key: string]: any;
+}
+
 export interface TripFaqItem {
   question: string;
   answer: string;
@@ -39,6 +55,7 @@ export interface TrekItem {
   permitsRequired: string[];
   inclusionsText?: string;
   exclusionsText?: string;
+  itinerary?: TripItineraryDay[];
   faqs?: TripFaqItem[];
   reviews?: TripReviewItem[];
   metaTitle?: string;

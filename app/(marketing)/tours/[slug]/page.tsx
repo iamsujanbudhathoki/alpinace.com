@@ -22,6 +22,7 @@ import {
   PackageQuickFacts,
   PackageGallery,
   PackageTabsNav,
+  PackageItinerary,
   PackageInclusions,
   PackageFaqs,
   PackageReviews,
@@ -233,6 +234,9 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
     const list: { key: string; label: string }[] = [
       { key: "overview", label: "Overview" },
     ];
+    if (tour?.itinerary && tour.itinerary.length > 0) {
+      list.push({ key: "itinerary", label: "Detailed Itinerary" });
+    }
     if (costIncludes.length > 0 || costExclusions.length > 0) {
       list.push({ key: "cost", label: "Inclusions & Exclusions" });
     }
@@ -240,7 +244,7 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
       list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
-  }, [costIncludes, costExclusions, displayFaqs]);
+  }, [tour?.itinerary, costIncludes, costExclusions, displayFaqs]);
 
   const [activeTab, setActiveTab] = useState<string>("overview");
 
@@ -407,7 +411,16 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
                 </div>
               )}
 
-              {/* TAB 2: INCLUSIONS & EXCLUSIONS */}
+              {/* TAB 2: DETAILED ITINERARY */}
+              {currentActiveTab === "itinerary" && tour.itinerary && (
+                <PackageItinerary
+                  days={tour.itinerary}
+                  title="Detailed Itinerary"
+                  subtitle={`${tour.itinerary.length} Days Nepal Cultural Journey`}
+                />
+              )}
+
+              {/* TAB 3: INCLUSIONS & EXCLUSIONS */}
               {currentActiveTab === "cost" && (
                 <PackageInclusions
                   inclusions={costIncludes}
@@ -415,7 +428,7 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
                 />
               )}
 
-              {/* TAB 3: FAQS */}
+              {/* TAB 4: FAQS */}
               {currentActiveTab === "faqs" && <PackageFaqs faqs={displayFaqs} />}
             </div>
 

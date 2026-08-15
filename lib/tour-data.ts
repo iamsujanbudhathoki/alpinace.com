@@ -1,5 +1,5 @@
 import { PackageStatus, PackageRegion, TourType, TripDifficulty } from "./admin-data";
-import { TripFaqItem, TripReviewItem } from "./trek-data";
+import { TripFaqItem, TripItineraryDay, TripReviewItem } from "./trek-data";
 
 export { TourType };
 
@@ -27,6 +27,7 @@ export interface TourItem {
   permitsRequired?: string[];
   inclusionsText?: string;
   exclusionsText?: string;
+  itinerary?: TripItineraryDay[];
   faqs?: TripFaqItem[];
   reviews?: TripReviewItem[];
   categoryId?: string;

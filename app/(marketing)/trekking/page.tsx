@@ -1,26 +1,38 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw } from "lucide-react";
 import { TrekItem } from "@/lib/trek-data";
 import { TrekService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
 import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 
-export default function TrekkingPage() {
+function TrekkingPageContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("categoryId") || "All";
+
   const [treks, setTreks] = useState<TrekItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(null);
   const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
 
   // Filter States
+  const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(30);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Sync categoryId safely during render when query param changes without triggering cascading effect renders
+  if (categoryParam !== prevCategoryParam) {
+    setPrevCategoryParam(categoryParam);
+    setSelectedCategory(categoryParam);
+  }
 
   // Fetch filter options from backend
   useEffect(() => {
@@ -56,6 +68,7 @@ export default function TrekkingPage() {
       try {
         const data = await TrekService.getAll({
           search: debouncedSearch,
+          categoryId: selectedCategory === "All" ? undefined : selectedCategory,
           difficulty: selectedDifficulty === "All" ? undefined : selectedDifficulty,
           maxDuration: maxDuration < (filterOptions?.maxDuration || 30) ? maxDuration : undefined,
           sortBy,
@@ -74,10 +87,11 @@ export default function TrekkingPage() {
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedDifficulty, maxDuration, sortBy, filterOptions?.maxDuration]);
+  }, [debouncedSearch, selectedCategory, selectedDifficulty, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const resetFilters = () => {
     setSearchQuery("");
+    setSelectedCategory("All");
     setSelectedDifficulty("All");
     setMaxDuration(filterOptions?.maxDuration || 30);
     setSortBy("rating");
@@ -86,11 +100,12 @@ export default function TrekkingPage() {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (searchQuery.trim() !== "") count++;
+    if (selectedCategory !== "All") count++;
     if (selectedDifficulty !== "All") count++;
     if (maxDuration < (filterOptions?.maxDuration || 30)) count++;
     if (sortBy !== "rating") count++;
     return count;
-  }, [searchQuery, selectedDifficulty, maxDuration, sortBy, filterOptions?.maxDuration]);
+  }, [searchQuery, selectedCategory, selectedDifficulty, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const filteredTreks = treks;
 
@@ -426,5 +441,13 @@ export default function TrekkingPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function TrekkingPage() {
+  return (
+    <Suspense fallback={<PackageGridSkeleton count={6} />}>
+      <TrekkingPageContent />
+    </Suspense>
   );
 }

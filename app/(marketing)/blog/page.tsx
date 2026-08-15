@@ -1,21 +1,32 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Search, Loader2, BookOpen, Mountain, X } from "lucide-react";
 import { BlogPost } from "@/lib/home-data";
 import { BlogService, CategoryService } from "@/lib/services/admin-service";
 import { BlogStatus, CategoryType } from "@/lib/admin-data";
 import { BlogGridSkeleton } from "@/components/marketing/skeletons/blog-grid-skeleton";
 
-export default function BlogPage() {
+function BlogPageContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("categoryId") || "All";
+
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("All");
+  const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(categoryParam);
+
+  // Sync categoryId safely during render when query param changes without triggering cascading effect renders
+  if (categoryParam !== prevCategoryParam) {
+    setPrevCategoryParam(categoryParam);
+    setSelectedCategoryId(categoryParam);
+  }
 
   // Debounce search input to avoid spamming the backend on every keystroke
   useEffect(() => {
@@ -279,5 +290,13 @@ export default function BlogPage() {
 
       </section>
     </div>
+  );
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={<BlogGridSkeleton count={6} />}>
+      <BlogPageContent />
+    </Suspense>
   );
 }

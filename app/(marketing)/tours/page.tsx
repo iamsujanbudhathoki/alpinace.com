@@ -155,24 +155,20 @@ export default function ToursPage() {
         <label className="block text-xs font-bold text-slate-800">
           Tour Style
         </label>
-        <div className="space-y-1">
-          {styles.map((item) => {
-            const isSelected = selectedType === item.value;
-            return (
-              <button
-                key={item.value}
-                onClick={() => setSelectedType(item.value)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  isSelected
-                    ? "bg-slate-900 text-white font-bold shadow-xs"
-                    : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-transparent"
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
+        <select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs font-medium rounded-lg px-3 py-2 focus:outline-none cursor-pointer"
+        >
+          {!styles.some((s) => s.value === "All") && (
+            <option value="All">All Styles</option>
+          )}
+          {styles.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Max Duration Range */}

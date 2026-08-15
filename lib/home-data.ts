@@ -44,9 +44,9 @@ export interface BlogPost {
   category: string;
   date: string;
   readTime: string;
-  excerpt: string;
-  content: string;
-  image: string;
+  excerpt?: string;
+  content?: string;
+  image?: string;
 }
 
 export interface CompanyFaq {

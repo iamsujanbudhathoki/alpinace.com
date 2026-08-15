@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { BlogPost } from "@/lib/home-data";
 import { BlogService } from "@/lib/services/admin-service";
@@ -21,9 +22,9 @@ export function FeaturedBlogs() {
           category: b.category,
           date: b.publishedDate,
           readTime: b.readTime,
-          excerpt: b.excerpt || "",
-          content: b.content || "",
-          image: b.image || "",
+          excerpt: b?.excerpt || "",
+          content: b?.content || "",
+          image: b?.image || "",
         }));
         setPosts(mapped);
       } catch (e) {
@@ -64,12 +65,14 @@ export function FeaturedBlogs() {
               <div className="bg-white rounded-2xl overflow-hidden border border-stone-200 hover:border-amber-400/60 transition-all duration-300 flex flex-col h-full cursor-pointer group">
                 {post.image && (
                   <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
-                    <img
+                    <Image
                       src={post.image}
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    <span className="absolute top-4 left-4 bg-zinc-900 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-md">
+                    <span className="absolute top-4 left-4 bg-zinc-900 text-amber-400 text-xs font-semibold px-2.5 py-1 rounded-md z-10">
                       {post.category}
                     </span>
                   </div>

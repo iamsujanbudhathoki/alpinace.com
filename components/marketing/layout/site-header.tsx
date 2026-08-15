@@ -80,19 +80,24 @@ export function SiteHeader() {
           <nav className="hidden items-center gap-7 lg:flex">
             {navLinks.map((link) => {
               const isActive =
-                link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(link.href);
 
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors ${
+                  className={`relative pb-1 text-sm font-medium transition-colors ${
                     isActive
-                      ? "text-slate-900 font-semibold"
-                      : "text-slate-600 hover:text-slate-900"
+                      ? "text-amber-800 font-semibold"
+                      : "text-slate-600 hover:text-amber-800"
                   }`}
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-700 rounded-full" />
+                  )}
                 </Link>
               );
             })}
@@ -159,7 +164,9 @@ export function SiteHeader() {
             <nav className="flex flex-col space-y-1">
               {navLinks.map((link) => {
                 const isActive =
-                  link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
 
                 return (
                   <Link
@@ -168,8 +175,8 @@ export function SiteHeader() {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`py-3 px-3 rounded-lg text-xl font-medium transition-colors ${
                       isActive
-                        ? "text-slate-900 font-bold bg-slate-100/80"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                        ? "text-amber-800 font-bold bg-amber-50/80"
+                        : "text-slate-600 hover:text-amber-800 hover:bg-slate-50"
                     }`}
                   >
                     {link.label}
@@ -193,13 +200,21 @@ export function SiteHeader() {
                   <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                   <div className="flex flex-wrap justify-center gap-1.5 text-[11px] font-bold text-slate-800">
                     {settings.contactPhone && (
-                      <a href={`tel:${settings.contactPhone.replace(/\s+/g, "")}`} className="hover:text-amber-700 transition-colors">
+                      <a
+                        href={`tel:${settings.contactPhone.replace(/\s+/g, "")}`}
+                        className="hover:text-amber-700 transition-colors"
+                      >
                         {settings.contactPhone}
                       </a>
                     )}
-                    {settings.contactPhone && settings.emergencyPhone && <span>/</span>}
+                    {settings.contactPhone && settings.emergencyPhone && (
+                      <span>/</span>
+                    )}
                     {settings.emergencyPhone && (
-                      <a href={`tel:${settings.emergencyPhone.replace(/\s+/g, "")}`} className="hover:text-amber-700 transition-colors text-slate-600">
+                      <a
+                        href={`tel:${settings.emergencyPhone.replace(/\s+/g, "")}`}
+                        className="hover:text-amber-700 transition-colors text-slate-600"
+                      >
                         {settings.emergencyPhone}
                       </a>
                     )}
@@ -213,6 +228,3 @@ export function SiteHeader() {
     </>
   );
 }
-
-
-

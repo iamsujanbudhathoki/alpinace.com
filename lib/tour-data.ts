@@ -1,6 +1,8 @@
 import { PackageStatus, PackageRegion, TourType, TripDifficulty } from "./admin-data";
 import { TripFaqItem, TripReviewItem } from "./trek-data";
 
+export { TourType };
+
 export interface TourItem {
   id: string;
   title: string;

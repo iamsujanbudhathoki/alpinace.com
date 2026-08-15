@@ -1,30 +1,33 @@
 "use client";
 
 import { useState, useMemo, useEffect, use } from "react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowLeft,
-  ArrowRight,
-  ChevronDown,
-  Star,
-  Maximize2,
   Calendar,
-  Compass,
-  MapPin,
-  Users,
-  Utensils,
   BedDouble,
-  ShieldCheck,
-  HelpCircle,
+  MapPin,
+  Utensils,
+  Users,
   Car,
+  Compass,
 } from "lucide-react";
 import { TourItem, initialToursData } from "@/lib/tour-data";
-import { TourService, InquiryService } from "@/lib/services/admin-service";
-import { BookingPackageType } from "@/lib/admin-data";
+import { TourService, FaqService, SettingService } from "@/lib/services/admin-service";
+import { BookingPackageType, TourType, FaqItem, FaqStatus } from "@/lib/admin-data";
+import { Testimonial } from "@/lib/home-data";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
-import { openLightbox } from "@/lib/utils/lightbox";
+import {
+  PackageDetailHero,
+  PackageQuickFacts,
+  PackageGallery,
+  PackageTabsNav,
+  PackageInclusions,
+  PackageFaqs,
+  PackageReviews,
+  PackageBookingSidebar,
+  PackageRelatedTrips,
+} from "@/components/marketing/package-details";
 
 interface TourDetailPageProps {
   params: Promise<{
@@ -38,6 +41,13 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
   const [loading, setLoading] = useState(true);
   const [relatedTours, setRelatedTours] = useState<TourItem[]>([]);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  // Dynamic FAQs from backend
+  const [globalFaqs, setGlobalFaqs] = useState<FaqItem[]>([]);
+  // Dynamic Reviews from backend
+  const [globalReviews, setGlobalReviews] = useState<Testimonial[]>([]);
+
+  const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
 
   useEffect(() => {
     async function loadData() {
@@ -55,7 +65,7 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
             shortDesc: raw.shortDesc || "",
             durationDays: Number(raw.durationDays),
             maxAltitudeMeters: raw.maxAltitudeMeters,
-            tourType: raw.tourType || (raw.category as any),
+            tourType: raw.tourType || (raw.category as unknown as TourType),
             bestSeason: raw.bestSeason || "",
             priceUSD: Number(raw.priceUSD),
             startEndLocation: raw.startEndLocation,
@@ -78,28 +88,48 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
           setTour(staticMatch || null);
         }
 
+        // Live FAQs
+        const liveFaqs = await FaqService.getAll(FaqStatus.ACTIVE);
+        if (liveFaqs && Array.isArray(liveFaqs)) {
+          setGlobalFaqs(liveFaqs);
+        }
+
+        // Live Testimonials
+        const settings = await SettingService.getAll();
+        if (settings?.testimonials) {
+          try {
+            const parsed = JSON.parse(settings.testimonials);
+            if (Array.isArray(parsed)) {
+              setGlobalReviews(parsed);
+            }
+          } catch (e) {
+            console.warn("Failed to parse dynamic testimonials:", e);
+          }
+        }
+
+        // Related Tours
         const all = await TourService.getAll();
-        if (all && all.length > 0) {
+        if (all && Array.isArray(all)) {
           setRelatedTours(
             all
               .filter((t) => t.slug !== resolvedParams.slug)
-              .slice(0, 2)
-              .map((raw) => ({
-                id: raw.id,
-                title: raw.title,
-                slug: raw.slug,
-                category: raw.category,
-                rating: Number(raw.rating),
-                reviewsCount: Number(raw.reviewsCount),
-                image: raw.image || "",
-                shortDesc: raw.shortDesc || "",
-                durationDays: Number(raw.durationDays),
-                tourType: raw.tourType || (raw.category as any),
-                bestSeason: raw.bestSeason || "",
-                priceUSD: Number(raw.priceUSD),
-                highlights: raw.permitsRequired || [],
-                status: raw.status,
-                region: raw.region,
+              .slice(0, 3)
+              .map((r) => ({
+                id: r.id,
+                title: r.title,
+                slug: r.slug,
+                category: r.category,
+                rating: Number(r.rating),
+                reviewsCount: Number(r.reviewsCount),
+                image: r.image || "",
+                shortDesc: r.shortDesc || "",
+                durationDays: Number(r.durationDays),
+                tourType: r.tourType || (r.category as unknown as TourType),
+                bestSeason: r.bestSeason || "",
+                priceUSD: Number(r.priceUSD),
+                highlights: r.permitsRequired || [],
+                status: r.status,
+                region: r.region,
               })),
           );
         }
@@ -116,189 +146,108 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
     loadData();
   }, [resolvedParams.slug]);
 
-  // Interactive tab state
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "itinerary" | "cost" | "faqs"
-  >("overview");
-  const [openItineraryDay, setOpenItineraryDay] = useState<number>(1);
-  const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
-  const [vipAddon, setVipAddon] = useState<boolean>(false);
-  const [activeFaqIndex, setActiveFaqIndex] = useState<number | null>(null);
-
-  // Gallery state
+  // Gallery state from backend data
   const gallery = useMemo(() => {
-    return [
-      tour?.image ||
-        "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-    ];
-  }, [tour?.image]);
-
-  const [activePhoto, setActivePhoto] = useState<string>(gallery[0]);
-
-  useEffect(() => {
-    if (gallery[0]) setActivePhoto(gallery[0]);
-  }, [gallery]);
-
-  // Lead inquiry state
-  const [inquiryName, setInquiryName] = useState("");
-  const [inquiryEmail, setInquiryEmail] = useState("");
-  const [inquirySubmitted, setInquirySubmitted] = useState(false);
-
-  // Price calculations
-  const baseCostPerPerson = tour?.priceUSD || 1200;
-  const vipCostPerPerson = 250;
-  const totalPrice = useMemo(() => {
-    const addonPrice = vipAddon ? vipCostPerPerson : 0;
-    return (baseCostPerPerson + addonPrice) * calculatorTravelers;
-  }, [baseCostPerPerson, vipAddon, calculatorTravelers]);
-
-  const handleInquirySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!tour) return;
-    try {
-      await InquiryService.create({
-        guestName: inquiryName,
-        email: inquiryEmail,
-        phone: "+1 000-000-0000",
-        country: "International",
-        interestedTrip: tour.title,
-        travelDates: "Upcoming Season",
-        groupSize: calculatorTravelers,
-        message: `Inquiry for ${tour.title}. Travelers: ${calculatorTravelers}. VIP Guide: ${vipAddon ? "Yes" : "No"}. Estimated Price: $${totalPrice}`,
-      });
-    } catch (e) {
-      console.warn("Failed to create inquiry via API:", e);
-    }
-    setInquirySubmitted(true);
-  };
-
-  // Day-by-day itinerary data
-  const itineraryDays = useMemo(() => {
-    if (!tour) return [];
-    const days = [];
-    const total = Math.max(1, tour.durationDays);
-    for (let i = 1; i <= total; i++) {
-      if (i === 1) {
-        days.push({
-          day: 1,
-          title: "VIP Airport Meet & Luxury Heritage Reception",
-          description:
-            "Private executive escort to your five-star boutique hotel. Welcome high-tea briefing with your cultural historian guide.",
-          overnight: "Luxury Heritage Palace / Boutique Hotel",
-          meals: "Welcome Dinner",
-        });
-      } else if (i === total) {
-        days.push({
-          day: total,
-          title: "Leisure Morning & Executive Airport Transfer",
-          description:
-            "Enjoy a final leisurely breakfast with mountain views. Private chauffeur transfer to Tribhuvan International Airport.",
-          overnight: "Homeward Bound",
-          meals: "Breakfast",
-        });
-      } else {
-        days.push({
-          day: i,
-          title: `Guided Exploration of ${tour.region || "Heritage Landmarks"} (Day ${i})`,
-          description:
-            "Private guided excursions to sacred shrines, royal courtyards, artisan workshops, and scenic viewpoints with private transport.",
-          overnight: "Boutique Resort / Heritage Hotel",
-          meals: "Breakfast, Lunch, Dinner",
-        });
-      }
-    }
-    return days;
-  }, [tour]);
-
-  // Inclusions vs Exclusions
-  const costIncludes = useMemo(() => {
-    if (tour?.inclusionsText && tour.inclusionsText.trim()) {
-      return tour.inclusionsText
-        .split(/[\n,]+/)
+    if (!tour || !tour.image) return [];
+    if (tour.image.includes(",")) {
+      return tour.image
+        .split(",")
         .map((s) => s.trim())
         .filter(Boolean);
     }
-    return [
-      "All domestic transfers and private vehicle transport",
-      "Handpicked luxury hotel & resort accommodations",
-      "100% certified local expert historian guide throughout",
-      "All entrance passes to UNESCO World Heritage monuments & national parks",
-      "Daily gourmet breakfast and curated welcome dinner",
-      "24/7 private concierge support desk",
-    ];
+    return [tour.image];
+  }, [tour]);
+
+  // Price calculations
+  const baseCostPerPerson = tour?.priceUSD || 0;
+  const totalPrice = useMemo(() => {
+    let discount = 1;
+    if (calculatorTravelers >= 4) discount = 0.95;
+    if (calculatorTravelers >= 8) discount = 0.9;
+    return Math.round(baseCostPerPerson * calculatorTravelers * discount);
+  }, [baseCostPerPerson, calculatorTravelers]);
+
+  // Inclusions vs Exclusions parsed from backend
+  const costIncludes = useMemo(() => {
+    if (!tour?.inclusionsText || !tour.inclusionsText.trim()) return [];
+    return tour.inclusionsText
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
   }, [tour]);
 
   const costExclusions = useMemo(() => {
-    if (tour?.exclusionsText && tour.exclusionsText.trim()) {
-      return tour.exclusionsText
-        .split(/[\n,]+/)
-        .map((s) => s.trim())
-        .filter(Boolean);
-    }
-    return [
-      "International airfare to and from Kathmandu",
-      "Nepal tourist visa fees ($50 USD at airport)",
-      "Personal travel & medical insurance",
-      "Personal alcoholic beverages & premium bottled refreshments",
-      "Gratuities for guides and chauffeurs (discretionary)",
-    ];
+    if (!tour?.exclusionsText || !tour.exclusionsText.trim()) return [];
+    return tour.exclusionsText
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
   }, [tour]);
 
-  // Specific FAQs from JSONB
+  // FAQs
   const displayFaqs = useMemo(() => {
     if (tour?.faqs && Array.isArray(tour.faqs) && tour.faqs.length > 0) {
-      return tour.faqs;
+      return tour.faqs.map((f, i) => ({
+        id: `tour-faq-${i}`,
+        question: f.question,
+        answer: f.answer,
+      }));
     }
-    return [
-      {
-        question: "What physical fitness level is required for this tour?",
-        answer:
-          "Our luxury cultural and wellness tours are suitable for travelers of all ages. Transportation is provided via private air-conditioned vehicles with gentle walking tours.",
-      },
-      {
-        question: "Are monument entry tickets and permits included?",
-        answer:
-          "Yes, all entrance tickets, monument passes, and national park permits are 100% included in the package rate.",
-      },
-      {
-        question: "Can special dietary requests be accommodated?",
-        answer:
-          "Yes, our team coordinates directly with luxury hotel partners and boutique restaurants to cater to vegan, vegetarian, gluten-free, and halal dietary needs.",
-      },
-    ];
-  }, [tour]);
+    if (globalFaqs && globalFaqs.length > 0) {
+      return globalFaqs.map((f) => ({
+        id: f.id,
+        question: f.question,
+        answer: f.answer,
+      }));
+    }
+    return [];
+  }, [tour, globalFaqs]);
 
-  // Specific Reviews from JSONB
+  // Reviews
   const displayReviews = useMemo(() => {
     if (tour?.reviews && Array.isArray(tour.reviews) && tour.reviews.length > 0) {
-      return tour.reviews;
+      return tour.reviews.map((r, i) => ({
+        id: r.id || `tour-rev-${i}`,
+        author: r.author,
+        country: r.country,
+        content: r.content,
+        avatar: r.avatar,
+        rating: r.rating,
+      }));
     }
-    return [
-      {
-        author: "Jonathan Vance",
-        country: "United States",
-        date: "May 2026",
-        rating: 5,
-        avatar:
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-        content:
-          "The private guide and heritage hotel made this trip unforgettable. AlpineAce sets the gold standard in luxury Nepal travel.",
-      },
-      {
-        author: "Elena Rostova",
-        country: "Germany",
-        date: "April 2026",
-        rating: 5,
-        avatar:
-          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
-        content:
-          "Every detail was handled with care, from private transfers to the resort itself. Genuinely five-star from start to finish.",
-      },
+    if (globalReviews && globalReviews.length > 0) {
+      return globalReviews.map((r) => ({
+        id: r.id,
+        author: r.author,
+        country: r.country,
+        content: r.content,
+        avatar: r.avatar,
+        rating: r.rating,
+      }));
+    }
+    return [];
+  }, [tour, globalReviews]);
+
+  // Dynamic tabs based on backend data
+  const availableTabs = useMemo(() => {
+    const list: { key: string; label: string }[] = [
+      { key: "overview", label: "Overview" },
     ];
-  }, [tour]);
+    if (costIncludes.length > 0 || costExclusions.length > 0) {
+      list.push({ key: "cost", label: "Inclusions & Exclusions" });
+    }
+    if (displayFaqs.length > 0) {
+      list.push({ key: "faqs", label: "FAQs" });
+    }
+    return list;
+  }, [costIncludes, costExclusions, displayFaqs]);
+
+  const [activeTab, setActiveTab] = useState<string>("overview");
+
+  // Derive active tab safely during render without cascading useEffect renders
+  const currentActiveTab = availableTabs.some((t) => t.key === activeTab)
+    ? activeTab
+    : (availableTabs[0]?.key || "overview");
 
   if (loading) {
     return <PackageDetailSkeleton />;
@@ -308,541 +257,199 @@ export default function TourDetailPage({ params }: TourDetailPageProps) {
     return notFound();
   }
 
+  const quickFacts = [
+    ...(tour.tourType || tour.category
+      ? [
+          {
+            icon: <Car className="w-5 h-5" />,
+            label: "Tour Style",
+            value: (
+              <span className="capitalize">
+                {tour.tourType || tour.category}
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...(tour.bestSeason
+      ? [
+          {
+            icon: <Calendar className="w-5 h-5" />,
+            label: "Best Season",
+            value: tour.bestSeason,
+          },
+        ]
+      : []),
+    ...(tour.accommodation
+      ? [
+          {
+            icon: <BedDouble className="w-5 h-5" />,
+            label: "Accommodation",
+            value: tour.accommodation,
+          },
+        ]
+      : []),
+    ...(tour.groupSizeRange
+      ? [
+          {
+            icon: <Users className="w-5 h-5" />,
+            label: "Group Type",
+            value: tour.groupSizeRange,
+          },
+        ]
+      : []),
+  ];
+
+
+
   return (
-    <div className="pt-20 min-h-screen bg-stone-50 text-slate-900 pb-24 font-sans">
-      {/* 1. HERO BANNER */}
-      <section className="relative h-96 sm:h-112 md:h-128 w-full overflow-hidden text-white">
-        <div className="absolute inset-0 z-0">
-          <img
-            src={tour.image}
-            alt={tour.title}
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent" />
-        </div>
+    <div className="min-h-screen bg-[#FBF9F5] text-[#1E2420] antialiased">
+      {/* 1. HERO HEADER */}
+      <PackageDetailHero
+        title={tour.title}
+        image={tour.image}
+        backHref="/tours"
+        backLabel="All Tour Packages"
+        priceUSD={tour.priceUSD}
+        onBookClick={() => setIsBookingModalOpen(true)}
+        bookButtonLabel="Reserve Private Tour"
+        badges={[
+          ...(tour.region
+            ? [{ label: `${tour.region} Region`, highlight: true }]
+            : []),
+          ...(tour.durationDays ? [{ label: `${tour.durationDays} Days` }] : []),
+          ...(tour.tourType || tour.category
+            ? [{ label: `${tour.tourType || tour.category} Tour` }]
+            : []),
+        ]}
+      />
 
-        {/* Back Link */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-6">
-          <Link
-            href="/tours"
-            className="inline-flex items-center gap-2 bg-white/95 text-slate-900 hover:bg-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full border border-slate-200 shadow-sm transition-all cursor-pointer"
-          >
-            <ArrowLeft className="h-4 w-4 text-slate-700" />
-            <span>Back to Tours Catalog</span>
-          </Link>
-        </div>
+      {/* 2. QUICK FACTS BAR */}
+      {quickFacts.length > 0 && <PackageQuickFacts facts={quickFacts} />}
 
-        {/* Title Overlay */}
-        <div className="absolute bottom-10 left-0 right-0 z-10">
-          <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-3 max-w-4xl">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="bg-amber-600 text-white text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-md shadow-xs">
-                  {tour.region}
-                </span>
-                <span className="bg-white/90 border border-slate-200 text-slate-900 text-xs px-3 py-1 rounded-md font-bold">
-                  {tour.durationDays} {tour.durationDays === 1 ? "Day" : "Days"}
-                </span>
-                <span className="bg-white/90 border border-slate-200 text-slate-900 text-xs px-3 py-1 rounded-md font-bold">
-                  {tour.category || "Luxury Tour"}
-                </span>
-              </div>
-              <h1 className="font-heading text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white drop-shadow-md leading-tight">
-                {tour.title}
-              </h1>
-            </div>
-
-            <button
-              onClick={() => setIsBookingModalOpen(true)}
-              className="bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs sm:text-sm px-6 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 shrink-0 border border-amber-400/40"
-            >
-              <ShieldCheck className="w-4 h-4 text-amber-200" />
-              <span>Book Tour &bull; ${Number(tour.priceUSD).toLocaleString()}</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. MAIN CONTENT LAYOUT */}
-      <section className="py-12 max-w-7xl mx-auto px-6 md:px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Block */}
+      {/* 3. MAIN CONTENT & SIDEBAR */}
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+          {/* Main Column */}
           <div className="lg:col-span-8 space-y-10">
             {/* Gallery Showcase */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-              <div
-                onClick={(e) => {
-                  const position = Math.max(0, gallery.indexOf(activePhoto));
-                  openLightbox({
-                    items: gallery.map((photo) => ({
-                      img: photo,
-                      thumb: photo,
-                      alt: tour.title,
-                      caption: `${tour.title} • Tour Gallery`,
-                    })),
-                    position,
-                    el: e.currentTarget,
-                  });
-                }}
-                className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 cursor-pointer group"
-                title="Click to view full screen gallery"
-              >
-                <img
-                  src={activePhoto}
-                  alt="Tour Showcase View"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-slate-950/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="inline-flex items-center gap-2 bg-white/95 text-slate-900 px-4 py-2 rounded-full text-xs font-bold shadow-lg backdrop-blur-xs transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                    <Maximize2 className="w-3.5 h-3.5 text-amber-600" />
-                    <span>View Fullscreen Gallery</span>
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-4 gap-3">
-                {gallery.map((photo, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActivePhoto(photo)}
-                    className={`relative aspect-4/3 rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${
-                      activePhoto === photo
-                        ? "border-amber-600 shadow-xs scale-102"
-                        : "border-transparent opacity-75 hover:opacity-100"
-                    }`}
-                  >
-                    <img
-                      src={photo}
-                      alt="Thumbnail"
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
+            {gallery.length > 0 && (
+              <PackageGallery title={tour.title} images={gallery} />
+            )}
 
-            {/* Quick Facts Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white text-slate-900 p-6 rounded-3xl border border-slate-200 shadow-xs">
-              <div className="space-y-1 border-r border-slate-100 pr-4">
-                <span className="text-xs text-slate-500 uppercase tracking-widest font-heading font-extrabold flex items-center gap-1.5">
-                  <Car className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Transport</span>
-                </span>
-                <span className="text-xs sm:text-sm font-extrabold block text-amber-700 truncate">
-                  Private AC Fleet
-                </span>
-              </div>
-              <div className="space-y-1 sm:border-r border-slate-100 sm:px-4">
-                <span className="text-xs text-slate-500 uppercase tracking-widest font-heading font-extrabold flex items-center gap-1.5">
-                  <Compass className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Pace</span>
-                </span>
-                <span className="text-xs sm:text-sm font-extrabold block text-slate-900">
-                  Relaxed &bull; Luxury
-                </span>
-              </div>
-              <div className="space-y-1 border-r border-slate-100 px-4">
-                <span className="text-xs text-slate-500 uppercase tracking-widest font-heading font-extrabold flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Season</span>
-                </span>
-                <span className="text-xs sm:text-sm font-extrabold block text-slate-900 truncate">
-                  {tour.bestSeason}
-                </span>
-              </div>
-              <div className="space-y-1 pl-4">
-                <span className="text-xs text-slate-500 uppercase tracking-widest font-heading font-extrabold flex items-center gap-1.5">
-                  <BedDouble className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Lodging</span>
-                </span>
-                <span className="text-xs sm:text-sm font-extrabold block text-slate-900 truncate">
-                  {tour.accommodation || "Heritage Hotels"}
-                </span>
-              </div>
-            </div>
+            {/* Navigation Tabs */}
+            {availableTabs.length > 1 && (
+              <PackageTabsNav
+                tabs={availableTabs}
+                activeTab={currentActiveTab}
+                onTabChange={setActiveTab}
+              />
+            )}
 
-            {/* Custom Tab Selector */}
-            <div className="border-b border-slate-200 flex flex-wrap gap-1">
-              {(["overview", "itinerary", "cost", "faqs"] as const).map(
-                (tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-5 py-3 font-heading text-xs font-extrabold uppercase tracking-wider border-b-2 transition-colors cursor-pointer capitalize ${
-                      activeTab === tab
-                        ? "border-slate-900 text-slate-900 font-extrabold"
-                        : "border-transparent text-slate-500 hover:text-slate-900 font-bold"
-                    }`}
-                  >
-                    {tab === "cost" ? "Inclusions & Costs" : tab}
-                  </button>
-                ),
-              )}
-            </div>
-
-            {/* Active Tab Panel */}
-            <div className="bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-xs leading-relaxed">
+            {/* TAB CONTENT AREA */}
+            <div className="space-y-8">
               {/* TAB 1: OVERVIEW */}
-              {activeTab === "overview" && (
-                <div className="space-y-6">
-                  <h2 className="font-heading text-xl font-bold text-slate-900">
-                    Tour Highlights &amp; Experience
-                  </h2>
-                  <p className="text-slate-800 text-sm font-normal leading-relaxed">
-                    {tour.shortDesc}
-                  </p>
-
-                  <div className="pt-4 border-t border-slate-100 space-y-3">
-                    <h3 className="font-heading text-xs font-bold text-slate-900 uppercase tracking-wider">
-                      Included Highlights &amp; Entries
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {(tour.highlights?.length > 0
-                        ? tour.highlights
-                        : ["UNESCO Monument Passes", "Private Guide Escort"]
-                      ).map((h, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-amber-50 border border-amber-200 text-amber-950 text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-2xs"
-                        >
-                          {h}
-                        </span>
-                      ))}
+              {currentActiveTab === "overview" && (
+                <div className="space-y-8">
+                  {tour.shortDesc && (
+                    <div className="space-y-4">
+                      <h2 className="font-heading text-2xl font-bold text-[#1E2420]">
+                        Tour Overview
+                      </h2>
+                      <p className="text-[#3A423C] text-base leading-relaxed font-normal">
+                        {tour.shortDesc}
+                      </p>
                     </div>
-                  </div>
-                </div>
-              )}
+                  )}
 
-              {/* TAB 2: ITINERARY ACCORDION */}
-              {activeTab === "itinerary" && (
-                <div className="space-y-4">
-                  <h2 className="font-heading text-xl font-bold text-slate-900 mb-4">
-                    Day-By-Day Tour Itinerary
-                  </h2>
-
-                  <div className="space-y-3">
-                    {itineraryDays.map((day) => {
-                      const isOpen = openItineraryDay === day.day;
-                      return (
-                        <div
-                          key={day.day}
-                          className="border border-slate-200 rounded-2xl overflow-hidden bg-stone-50/60 transition-all"
-                        >
-                          <button
-                            onClick={() =>
-                              setOpenItineraryDay(isOpen ? 0 : day.day)
-                            }
-                            className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 focus:outline-none cursor-pointer hover:bg-stone-100/70"
-                          >
-                            <span className="font-heading text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-3">
-                              <span className="bg-slate-900 text-amber-400 w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0">
-                                D{day.day}
-                              </span>
-                              {day.title}
-                            </span>
-                            <ChevronDown
-                              className={`h-4 w-4 text-slate-600 transition-transform duration-300 shrink-0 ${
-                                isOpen ? "rotate-180 text-amber-700" : ""
-                              }`}
-                            />
-                          </button>
-
-                          {isOpen && (
-                            <div className="p-6 bg-white border-t border-slate-200 space-y-3 text-xs sm:text-sm text-slate-800 font-normal leading-relaxed animate-in fade-in duration-150">
-                              <p>{day.description}</p>
-                              <div className="flex flex-wrap gap-4 pt-3 border-t border-slate-100 text-xs font-bold text-slate-700">
-                                <span>
-                                  Meals:{" "}
-                                  <strong className="text-slate-900">
-                                    {day.meals}
-                                  </strong>
-                                </span>
-                                <span>
-                                  Overnight:{" "}
-                                  <strong className="text-slate-900">
-                                    {day.overnight}
-                                  </strong>
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 3: COST INCLUSIONS & EXCLUSIONS */}
-              {activeTab === "cost" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <h3 className="font-heading text-xs font-extrabold text-emerald-800 uppercase tracking-wider border-b border-emerald-100 pb-2.5 flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      <span>Cost Inclusions</span>
-                    </h3>
-                    <ul className="space-y-3 text-xs text-slate-800 font-normal leading-relaxed">
-                      {costIncludes.map((inc, i) => (
-                        <li key={i} className="flex items-start gap-2.5">
-                          <span className="text-emerald-600 font-bold">&check;</span>
-                          <span>{inc}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-heading text-xs font-extrabold text-slate-700 uppercase tracking-wider border-b border-slate-200 pb-2.5 flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-slate-400" />
-                      <span>Cost Exclusions</span>
-                    </h3>
-                    <ul className="space-y-3 text-xs text-slate-800 font-normal leading-relaxed">
-                      {costExclusions.map((exc, i) => (
-                        <li key={i} className="flex items-start gap-2.5">
-                          <span className="text-slate-400 font-bold">&bull;</span>
-                          <span>{exc}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: FAQS */}
-              {activeTab === "faqs" && (
-                <div className="space-y-4">
-                  <h2 className="font-heading text-xl font-bold text-slate-900">
-                    Tour FAQs
-                  </h2>
-                  <div className="space-y-3">
-                    {displayFaqs.map((faq, idx) => {
-                      const isOpen = activeFaqIndex === idx;
-                      return (
-                        <div
-                          key={idx}
-                          className="border border-slate-200 rounded-2xl overflow-hidden bg-stone-50/60"
-                        >
-                          <button
-                            onClick={() =>
-                              setActiveFaqIndex(isOpen ? null : idx)
-                            }
-                            className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-stone-100/70"
-                          >
-                            <span className="font-heading text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2.5">
-                              <HelpCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                              <span>{faq.question}</span>
-                            </span>
-                            <ChevronDown
-                              className={`h-4 w-4 text-slate-500 transition-transform duration-300 shrink-0 ${
-                                isOpen ? "rotate-180 text-amber-700" : ""
-                              }`}
-                            />
-                          </button>
-                          {isOpen && (
-                            <div className="p-5 bg-white border-t border-slate-200 text-xs sm:text-sm text-slate-800 font-normal leading-relaxed">
-                              {faq.answer}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Client Chronicles & Reviews Pane */}
-            <div className="bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-xs space-y-6">
-              <h3 className="font-heading text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
-                Client Chronicles &amp; Reviews
-              </h3>
-
-              <div className="space-y-6 divide-y divide-slate-100">
-                {displayReviews.map((rev, idx) => (
-                  <div key={idx} className="pt-6 first:pt-0 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={rev.avatar}
-                          alt={rev.author}
-                          className="w-10 h-10 rounded-full object-cover border border-slate-200"
-                        />
-                        <div>
-                          <h4 className="text-xs font-bold text-slate-900 leading-snug">
-                            {rev.author}
-                          </h4>
-                          <span className="text-xs text-slate-500 font-medium leading-none">
-                            {rev.country} {rev.date ? `\u2014 ${rev.date}` : ""}
+                  {/* Highlights Grid */}
+                  {(tour.startEndLocation ||
+                    tour.meals ||
+                    tour.groupSizeRange) && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#E6E0D5]">
+                      {tour.startEndLocation && (
+                        <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
+                          <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-[#2D4536]" />
+                            <span>Start &amp; Finish</span>
                           </span>
+                          <p className="text-sm font-semibold text-[#1E2420]">
+                            {tour.startEndLocation}
+                          </p>
                         </div>
-                      </div>
+                      )}
 
-                      <div className="flex gap-0.5 text-amber-500">
-                        {[...Array(rev.rating || 5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="h-3.5 w-3.5 fill-amber-500 text-amber-500"
-                          />
-                        ))}
-                      </div>
+                      {tour.meals && (
+                        <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
+                          <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
+                            <Utensils className="w-3.5 h-3.5 text-[#2D4536]" />
+                            <span>Dining &amp; Meals</span>
+                          </span>
+                          <p className="text-sm font-semibold text-[#1E2420]">
+                            {tour.meals}
+                          </p>
+                        </div>
+                      )}
+
+                      {tour.groupSizeRange && (
+                        <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
+                          <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
+                            <Users className="w-3.5 h-3.5 text-[#2D4536]" />
+                            <span>Group Size</span>
+                          </span>
+                          <p className="text-sm font-semibold text-[#1E2420]">
+                            {tour.groupSizeRange}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    <p className="text-slate-800 text-xs leading-relaxed italic font-normal">
-                      &ldquo;{rev.content}&rdquo;
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Pure Interactive Calculator & Lead Inquiry Box */}
-          <div className="lg:col-span-4 space-y-6 sticky top-24">
-            {/* Live Calculator Box */}
-            <div className="bg-white text-slate-900 rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="bg-slate-900 p-5 text-white">
-                <span className="text-xs uppercase font-black tracking-widest text-amber-400 block">
-                  Bespoke Tour Rate Estimator
-                </span>
-                <h3 className="font-heading text-sm font-extrabold text-white">
-                  Trip Estimate &amp; Calculator
-                </h3>
-              </div>
-
-              <div className="p-6 space-y-6">
-                {/* Traveler Counter */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-xs font-heading font-extrabold tracking-wider text-slate-900">
-                    <span>NUMBER OF TRAVELERS</span>
-                    <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
-                      {calculatorTravelers}{" "}
-                      {calculatorTravelers === 1 ? "Person" : "People"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      disabled={calculatorTravelers <= 1}
-                      onClick={() =>
-                        setCalculatorTravelers(calculatorTravelers - 1)
-                      }
-                      className="bg-slate-100 text-slate-900 hover:bg-slate-200 disabled:opacity-40 w-11 h-11 rounded-xl flex items-center justify-center font-extrabold border border-slate-200 cursor-pointer text-lg"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="text"
-                      readOnly
-                      value={calculatorTravelers}
-                      className="flex-grow bg-slate-50 border border-slate-200 text-center text-base font-extrabold rounded-xl py-2 text-slate-900 focus:outline-none"
-                    />
-                    <button
-                      disabled={calculatorTravelers >= 12}
-                      onClick={() =>
-                        setCalculatorTravelers(calculatorTravelers + 1)
-                      }
-                      className="bg-slate-100 text-slate-900 hover:bg-slate-200 disabled:opacity-40 w-11 h-11 rounded-xl flex items-center justify-center font-extrabold border border-slate-200 cursor-pointer text-lg"
-                    >
-                      +
-                    </button>
-                  </div>
+                  )}
                 </div>
+              )}
 
-                {/* VIP Addon Switcher */}
-                <div className="bg-stone-50 p-4 rounded-2xl border border-slate-200 flex items-start gap-3 justify-between">
-                  <div className="space-y-1">
-                    <span className="font-heading text-xs font-bold text-slate-900">
-                      Private VIP Guide Upgrade
-                    </span>
-                    <p className="text-xs text-slate-600 leading-normal font-medium">
-                      Dedicated private expert historian guide (+$250/person)
-                    </p>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={vipAddon}
-                    onChange={(e) => setVipAddon(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded accent-amber-600 shrink-0 cursor-pointer"
-                  />
-                </div>
+              {/* TAB 2: INCLUSIONS & EXCLUSIONS */}
+              {currentActiveTab === "cost" && (
+                <PackageInclusions
+                  inclusions={costIncludes}
+                  exclusions={costExclusions}
+                />
+              )}
 
-                {/* Dynamic Price Display */}
-                <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
-                  <div>
-                    <span className="text-xs text-slate-500 block font-heading font-extrabold tracking-wider">
-                      ESTIMATED TOUR PRICE
-                    </span>
-                    <span className="text-xs text-amber-700 block font-extrabold">
-                      Hotels, transport &amp; passes
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-heading text-2xl sm:text-3xl font-black text-slate-900">
-                      ${totalPrice.toLocaleString()}{" "}
-                      <span className="text-xs font-normal text-slate-500">
-                        USD
-                      </span>
-                    </span>
-                    <span className="text-xs text-slate-500 block font-medium">
-                      For {calculatorTravelers} travelers
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setIsBookingModalOpen(true)}
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs sm:text-sm py-4 rounded-2xl shadow-md hover:shadow-lg transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border border-amber-500/50"
-                >
-                  <ShieldCheck className="w-4 h-4 text-amber-200" />
-                  <span>Secure Reservation Now</span>
-                </button>
-              </div>
+              {/* TAB 3: FAQS */}
+              {currentActiveTab === "faqs" && <PackageFaqs faqs={displayFaqs} />}
             </div>
 
-       
+            {/* TESTIMONIALS / REVIEWS */}
+            {displayReviews.length > 0 && (
+              <PackageReviews reviews={displayReviews} />
+            )}
+          </div>
+
+          {/* Sidebar Booking / Rate Estimator Widget */}
+          <div className="lg:col-span-4 lg:sticky lg:top-36">
+            <PackageBookingSidebar
+              tripTitle={tour.title}
+              durationDays={tour.durationDays}
+              travelers={calculatorTravelers}
+              onTravelersChange={setCalculatorTravelers}
+              totalPrice={totalPrice}
+              onBookClick={() => setIsBookingModalOpen(true)}
+              bookButtonLabel="Reserve Private Tour"
+            />
           </div>
         </div>
-      </section>
+      </main>
 
-      {/* SECTION 2: OTHER PRESTIGIOUS TOURS */}
-      <section className="py-16 bg-white border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <h3 className="font-heading text-lg font-extrabold text-slate-900 mb-8">
-            Other Prestigious Nepal Tours
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-            {(relatedTours.length > 0
-              ? relatedTours
-              : initialToursData.filter((t) => t.slug !== tour.slug).slice(0, 2)
-            ).map((p) => (
-              <Link key={p.id} href={`/tours/${p.slug}`}>
-                <div className="bg-stone-50 border border-slate-200 rounded-2xl p-5 flex gap-4 hover:border-slate-300 transition-all cursor-pointer group shadow-xs">
-                  <img
-                    src={p.image}
-                    alt={p.title}
-                    className="w-24 h-24 rounded-xl object-cover shrink-0"
-                  />
-                  <div className="space-y-1.5 flex-grow">
-                    <span className="text-amber-700 text-xs uppercase font-extrabold tracking-widest block">
-                      {p.region} &bull; {p.durationDays}{" "}
-                      {p.durationDays === 1 ? "DAY" : "DAYS"}
-                    </span>
-                    <h4 className="font-heading text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-amber-700 transition-colors leading-snug">
-                      {p.title}
-                    </h4>
-                    <p className="text-slate-600 text-xs line-clamp-2 leading-relaxed font-normal">
-                      {p.shortDesc}
-                    </p>
-                    <span className="text-xs font-extrabold text-slate-900 block pt-1">
-                      From ${Number(p.priceUSD).toLocaleString()} USD
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* 4. RELATED TOURS SECTION */}
+      {relatedTours.length > 0 && (
+        <PackageRelatedTrips
+          trips={relatedTours}
+          categoryPath="/tours"
+          title="Other Recommended Cultural & Luxury Tours"
+        />
+      )}
 
-      {/* SECURE PUBLIC BOOKING MODAL */}
+      {/* 5. BOOKING MODAL */}
       <PublicBookingModal
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}

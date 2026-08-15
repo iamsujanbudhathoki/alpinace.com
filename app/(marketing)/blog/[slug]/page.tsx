@@ -273,7 +273,7 @@ export default function BlogDetailPage({ params }: BlogDetailPageProps) {
               [&_th]:bg-stone-100 [&_th]:border-b [&_th]:border-stone-200 [&_th]:p-3 [&_th]:text-xs [&_th]:font-bold [&_th]:text-slate-900 [&_th]:text-left
               [&_td]:p-3 [&_td]:border-b [&_td]:border-stone-100 [&_td]:text-xs [&_td]:text-slate-700
               [&_a]:text-amber-600 [&_a]:underline [&_a]:underline-offset-4 [&_a]:decoration-amber-300 [&_a]:hover:decoration-amber-600 [&_a]:font-semibold [&_a]:transition-colors"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: post.content || "" }}
           />
 
           {/* Social Share & Tag Footer */}

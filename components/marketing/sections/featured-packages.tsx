@@ -14,26 +14,69 @@ export function FeaturedPackages() {
   useEffect(() => {
     async function loadFeatured() {
       try {
-        const data = await apiClient.get<any[]>(`/packages?status=${PackageStatus.FEATURED}`);
-        if (Array.isArray(data)) {
-          const mapped: TravelPackage[] = data.map((p) => ({
-            id: p.id,
-            title: p.title,
-            slug: p.slug,
-            category: p.categoryType || p.category,
-            region: p.region,
-            durationDays: Number(p.durationDays),
-            maxAltitudeMeters: Number(p.maxAltitudeMeters),
-            difficulty: p.difficulty,
-            priceUSD: Number(p.priceUSD),
-            rating: Number(p.rating),
-            reviewsCount: Number(p.reviewsCount),
-            image: p.image,
-            shortDesc: p.shortDesc,
-            status: p.status,
-          }));
-          setPackages(mapped);
-        }
+        const [treksRes, toursRes, expeditionsRes] = await Promise.all([
+          apiClient.get<any[]>(`/treks?status=${PackageStatus.FEATURED}`),
+          apiClient.get<any[]>(`/tours?status=${PackageStatus.FEATURED}`),
+          apiClient.get<any[]>(`/expeditions?status=${PackageStatus.FEATURED}`),
+        ]);
+
+        const treks = treksRes && treksRes.success && Array.isArray(treksRes.data) ? treksRes.data : [];
+        const tours = toursRes && toursRes.success && Array.isArray(toursRes.data) ? toursRes.data : [];
+        const expeditions = expeditionsRes && expeditionsRes.success && Array.isArray(expeditionsRes.data) ? expeditionsRes.data : [];
+
+        const mappedTreks: TravelPackage[] = treks.map((p) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          category: p.categoryType || p.category,
+          region: p.region,
+          durationDays: Number(p.durationDays || 0),
+          maxAltitudeMeters: Number(p.maxAltitudeMeters || 0),
+          difficulty: p.difficulty,
+          priceUSD: Number(p.priceUSD || 0),
+          rating: Number(p.rating || 5),
+          reviewsCount: Number(p.reviewsCount || 0),
+          image: p.image,
+          shortDesc: p.shortDesc,
+          status: p.status,
+        }));
+
+        const mappedTours: TravelPackage[] = tours.map((p) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          category: p.categoryType || p.category,
+          region: p.region,
+          durationDays: Number(p.durationDays || 0),
+          maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
+          difficulty: p.difficulty,
+          priceUSD: Number(p.priceUSD || 0),
+          rating: Number(p.rating || 5),
+          reviewsCount: Number(p.reviewsCount || 0),
+          image: p.image,
+          shortDesc: p.shortDesc,
+          status: p.status,
+        }));
+
+        const mappedExpeditions: TravelPackage[] = expeditions.map((p) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          category: p.categoryType || p.category,
+          region: p.region,
+          durationDays: Number(p.durationDays || 0),
+          maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
+          difficulty: p.difficulty,
+          priceUSD: Number(p.priceUSD || 0),
+          rating: Number(p.rating || 5),
+          reviewsCount: Number(p.reviewsCount || 0),
+          image: p.image,
+          shortDesc: p.shortDesc,
+          status: p.status,
+        }));
+
+        const combined = [...mappedTreks, ...mappedTours, ...mappedExpeditions];
+        setPackages(combined);
       } catch (e) {
         console.warn("Failed to fetch featured packages from backend:", e);
       } finally {
@@ -42,6 +85,13 @@ export function FeaturedPackages() {
     }
     loadFeatured();
   }, []);
+
+  const getPackageLink = (pkg: TravelPackage) => {
+    const cat = (pkg.category || "").toLowerCase();
+    if (cat.includes("tour")) return `/tours/${pkg.slug}`;
+    if (cat.includes("expedition")) return `/expeditions/${pkg.slug}`;
+    return `/trekking/${pkg.slug}`;
+  };
 
   return (
     <section className="py-24 bg-stone-50/80 border-b border-stone-200">
@@ -79,7 +129,7 @@ export function FeaturedPackages() {
                 key={pkg.id}
                 className="bg-white rounded-2xl border border-stone-200 overflow-hidden flex flex-col justify-between group hover:border-amber-400/60 transition-all"
               >
-                <Link href={`/trekking/${pkg.slug}`} className="block">
+                <Link href={getPackageLink(pkg)} className="block">
                   <div className="relative h-56 w-full overflow-hidden bg-stone-100">
                     <img
                       src={pkg.image}
@@ -129,7 +179,7 @@ export function FeaturedPackages() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Link href={`/trekking/${pkg.slug}`}>
+                      <Link href={getPackageLink(pkg)}>
                         <button className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-stone-100/80 border border-stone-200 text-zinc-800 hover:bg-stone-200/60 transition-all cursor-pointer">
                           Details
                         </button>

@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Mountain, TrendingUp } from "lucide-react";
-import { PackageItem, PackageStatus } from "@/lib/admin-data";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Plus, Mountain, TrendingUp, Tag, ExternalLink, Maximize2, Image as ImageIcon } from "lucide-react";
+import { PackageItem, PackageStatus, CategoryType, CategoryItem } from "@/lib/admin-data";
 import { toast } from "sonner";
-import { ExpeditionService } from "@/lib/services/admin-service";
+import { ExpeditionService, CategoryService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
+import { openSingleImage } from "@/lib/utils/lightbox";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
-import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { ExpeditionFormModal, DeleteExpeditionModal } from "@/components/admin/modals/expedition-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +28,18 @@ import {
   AdminActionButton,
 } from "@/components/admin/ui/admin-table";
 
+const STATUS_OPTIONS: InlineSelectOption[] = [
+  { value: PackageStatus.ACTIVE, label: "Active" },
+  { value: PackageStatus.FEATURED, label: "Featured" },
+  { value: PackageStatus.DRAFT, label: "Draft" },
+];
+
 export default function AdminExpeditionsPage() {
+  const searchParams = useSearchParams();
+  const viewId = searchParams?.get("viewId");
+
   const [expeditions, setExpeditions] = useState<PackageItem[]>([]);
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [loading, setLoading] = useState(true);
@@ -38,18 +51,43 @@ export default function AdminExpeditionsPage() {
   const [deletingExp, setDeletingExp] = useState<PackageItem | null>(null);
 
   useEffect(() => {
-    async function loadExpeditions() {
+    async function loadData() {
       try {
-        const data = await ExpeditionService.getAll();
-        setExpeditions(data);
+        const [expData, catsData] = await Promise.all([
+          ExpeditionService.getAll(),
+          CategoryService.getByType(CategoryType.EXPEDITIONS),
+        ]);
+        setExpeditions(expData);
+        setCategories(catsData);
       } catch (err) {
         console.error("Failed to load expeditions:", err);
       } finally {
         setLoading(false);
       }
     }
-    loadExpeditions();
+    loadData();
   }, []);
+
+  // Auto-open view modal when viewId is in query params & remove viewId from URL
+  useEffect(() => {
+    if (viewId && expeditions.length > 0) {
+      const match = expeditions.find((e) => e.id === viewId || e.slug === viewId);
+      if (match) {
+        setActiveExp(match);
+        setIsEditing(false);
+        setIsFormOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [viewId, expeditions]);
+
+  const categoryOptions: InlineSelectOption[] = categories.map((c) => ({
+    value: c.id,
+    label: c.name,
+    icon: <Tag className="w-3 h-3 opacity-70" />,
+  }));
 
   const filteredExpeditions = expeditions.filter((exp) => {
     const matchesSearch =
@@ -84,6 +122,49 @@ export default function AdminExpeditionsPage() {
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to save expedition");
+      return false;
+    }
+  };
+
+  const handleInlineStatusChange = async (exp: PackageItem, newStatus: string): Promise<boolean> => {
+    try {
+      const res = await ExpeditionService.update(exp.id, { status: newStatus as PackageStatus });
+      if (res.success) {
+        setExpeditions((prev) =>
+          prev.map((e) => (e.id === exp.id ? { ...e, status: newStatus as PackageStatus } : e))
+        );
+        toast.success(`Expedition "${exp.title}" status updated`);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update status");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update status");
+      return false;
+    }
+  };
+
+  const handleInlineCategoryChange = async (exp: PackageItem, newCatId: string): Promise<boolean> => {
+    try {
+      const res = await ExpeditionService.update(exp.id, { categoryId: newCatId });
+      if (res.success) {
+        const matchedCat = categories.find((c) => c.id === newCatId);
+        setExpeditions((prev) =>
+          prev.map((e) =>
+            e.id === exp.id
+              ? { ...e, categoryId: newCatId, category: matchedCat ? matchedCat.name : e.category }
+              : e
+          )
+        );
+        toast.success(`Expedition "${exp.title}" category updated`);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update category");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update category");
       return false;
     }
   };
@@ -149,6 +230,7 @@ export default function AdminExpeditionsPage() {
           <AdminTableHeader>
             <tr>
               <AdminTableHead>Peak / Expedition Title</AdminTableHead>
+              <AdminTableHead>Category</AdminTableHead>
               <AdminTableHead>Summit Elevation</AdminTableHead>
               <AdminTableHead>Duration</AdminTableHead>
               <AdminTableHead>Price (USD)</AdminTableHead>
@@ -159,67 +241,134 @@ export default function AdminExpeditionsPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={7} rows={5} />
+              <AdminTableLoading colSpan={8} rows={5} />
             ) : filteredExpeditions.length > 0 ? (
-              filteredExpeditions.map((exp) => (
-                <AdminTableRow key={exp.id}>
-                  <AdminTableCell>
-                    <div className="font-bold text-slate-900 flex items-center gap-2">
-                      <Mountain className="w-4 h-4 text-amber-600 shrink-0" />
-                      <span>{exp.title}</span>
-                    </div>
-                    <div className="text-xs text-slate-600 mt-0.5 font-normal">
-                      Permits: {exp.permitsRequired ? exp.permitsRequired.join(", ") : "NMA Summit Permit"}
-                    </div>
-                  </AdminTableCell>
-                  <AdminTableCell className="font-medium text-slate-900">
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
-                      <span>{(exp.maxAltitudeMeters || 6000).toLocaleString()}m</span>
-                    </div>
-                  </AdminTableCell>
-                  <AdminTableCell className="font-medium text-slate-800">{exp.durationDays} Days</AdminTableCell>
-                  <AdminTableCell className="font-bold text-slate-900 text-sm">
-                    ${exp.priceUSD.toLocaleString()} USD
-                  </AdminTableCell>
-                  <AdminTableCell className="font-medium text-slate-800">
-                    {exp.totalBookings || 0} Climbers
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <AdminStatusBadge status={exp.status} />
-                  </AdminTableCell>
-                  <AdminTableCell align="right">
-                    <AdminTableActions>
-                      <AdminActionButton
-                        variant="view"
-                        onClick={() => {
-                          setActiveExp(exp);
-                          setIsEditing(false);
-                          setIsFormOpen(true);
-                        }}
-                        title="View Expedition"
+              filteredExpeditions.map((exp) => {
+                const currentCatId =
+                  exp.categoryId ||
+                  categories.find((c) => c.name.toLowerCase() === (exp.category || "").toLowerCase())?.id ||
+                  "";
+
+                return (
+                  <AdminTableRow key={exp.id}>
+                    <AdminTableCell>
+                      <div className="flex items-center gap-3">
+                        {exp.image ? (
+                           <div
+                            role="button"
+                            tabIndex={0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openSingleImage(exp.image!, exp.title, e.currentTarget);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.stopPropagation();
+                                openSingleImage(exp.image!, exp.title, e.currentTarget);
+                              }
+                            }}
+                            className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-amber-400 transition-all"
+                            title="Click to view image in lightbox"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={exp.image}
+                              alt={exp.title}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                              <Maximize2 className="w-3.5 h-3.5 text-white drop-shadow-md" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-12 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
+                            <ImageIcon className="w-5 h-5" />
+                          </div>
+                        )}
+                        <div>
+                          <Link
+                            href={`/expeditions/${exp.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group/link inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-amber-600 transition-colors"
+                            title="Open expedition in public marketing page"
+                          >
+                            <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-amber-500 underline-offset-2 transition-all">
+                              {exp.title}
+                            </span>
+                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
+                          </Link>
+                          <div className="text-xs text-slate-600 mt-0.5 font-normal">
+                            Permits: {exp.permitsRequired ? exp.permitsRequired.join(", ") : "NMA Summit Permit"}
+                          </div>
+                        </div>
+                      </div>
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={currentCatId}
+                        options={categoryOptions}
+                        onChange={(newVal) => handleInlineCategoryChange(exp, newVal)}
+                        variant="category"
+                        placeholder={exp.category || "Select category"}
+                        title="Click to change expedition category"
                       />
-                      <AdminActionButton
-                        variant="edit"
-                        onClick={() => {
-                          setActiveExp(exp);
-                          setIsEditing(true);
-                          setIsFormOpen(true);
-                        }}
-                        title="Edit Expedition"
+                    </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-900">
+                      <div className="flex items-center gap-1">
+                        <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
+                        <span>{(exp.maxAltitudeMeters || 6000).toLocaleString()}m</span>
+                      </div>
+                    </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">{exp.durationDays} Days</AdminTableCell>
+                    <AdminTableCell className="font-bold text-slate-900 text-sm">
+                      ${exp.priceUSD.toLocaleString()} USD
+                    </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">
+                      {exp.totalBookings || 0} Climbers
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={exp.status}
+                        options={STATUS_OPTIONS}
+                        onChange={(newVal) => handleInlineStatusChange(exp, newVal)}
+                        variant="badge"
+                        title="Click to change expedition status"
                       />
-                      <AdminActionButton
-                        variant="delete"
-                        onClick={() => setDeletingExp(exp)}
-                        title="Delete Expedition"
-                      />
-                    </AdminTableActions>
-                  </AdminTableCell>
-                </AdminTableRow>
-              ))
+                    </AdminTableCell>
+                    <AdminTableCell align="right">
+                      <AdminTableActions>
+                        <AdminActionButton
+                          variant="view"
+                          onClick={() => {
+                            setActiveExp(exp);
+                            setIsEditing(false);
+                            setIsFormOpen(true);
+                          }}
+                          title="View Expedition"
+                        />
+                        <AdminActionButton
+                          variant="edit"
+                          onClick={() => {
+                            setActiveExp(exp);
+                            setIsEditing(true);
+                            setIsFormOpen(true);
+                          }}
+                          title="Edit Expedition"
+                        />
+                        <AdminActionButton
+                          variant="delete"
+                          onClick={() => setDeletingExp(exp)}
+                          title="Delete Expedition"
+                        />
+                      </AdminTableActions>
+                    </AdminTableCell>
+                  </AdminTableRow>
+                );
+              })
             ) : (
               <AdminTableEmpty
-                colSpan={7}
+                colSpan={8}
                 title="No expeditions found"
                 description="No peak climbing packages match your search query or status filter."
               />
@@ -246,3 +395,4 @@ export default function AdminExpeditionsPage() {
     </div>
   );
 }
+

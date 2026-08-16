@@ -1,39 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  HelpCircle, 
-  Loader2, 
-  X, 
-  Layers, 
-  GripVertical,
-  ArrowUp,
-  ArrowDown
-} from "lucide-react";
-import { toast } from "sonner";
-import { FaqItem, FaqStatus } from "@/lib/admin-data";
-import { FaqService } from "@/lib/services/admin-service";
+import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
-import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import {
-  AdminTableContainer,
-  AdminTable,
-  AdminTableHeader,
-  AdminTableHead,
-  AdminTableBody,
-  AdminTableRow,
-  AdminTableCell,
-  AdminTableEmpty,
-  AdminTableLoading,
-  AdminTableActions,
   AdminActionButton,
+  AdminTable,
+  AdminTableActions,
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableContainer,
+  AdminTableEmpty,
+  AdminTableHead,
+  AdminTableHeader,
+  AdminTableLoading,
+  AdminTableRow,
 } from "@/components/admin/ui/admin-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FaqItem, FaqStatus } from "@/lib/admin-data";
+import { FaqService } from "@/lib/services/admin-service";
+import {
+  ArrowDown,
+  ArrowUp,
+  GripVertical,
+  HelpCircle,
+  Layers,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+  X
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+const STATUS_OPTIONS: InlineSelectOption[] = [
+  { value: FaqStatus.ACTIVE, label: "Active" },
+  { value: FaqStatus.DRAFT, label: "Draft" },
+];
 
 export default function AdminFaqsPage() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
@@ -76,6 +80,25 @@ export default function AdminFaqsPage() {
   useEffect(() => {
     loadFaqs();
   }, []);
+
+  const handleInlineStatusChange = async (faq: FaqItem, newStatus: string): Promise<boolean> => {
+    try {
+      const res = await FaqService.update(faq.id, { status: newStatus as FaqStatus });
+      if (res.success) {
+        setFaqs((prev) =>
+          prev.map((f) => (f.id === faq.id ? { ...f, status: newStatus as FaqStatus } : f))
+        );
+        toast.success(`FAQ #${faq.order} status updated`);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update FAQ status");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update FAQ status");
+      return false;
+    }
+  };
 
   const openCreateModal = () => {
     setEditingFaq(null);
@@ -423,8 +446,12 @@ export default function AdminFaqsPage() {
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <AdminStatusBadge
-                        status={faq.status === FaqStatus.ACTIVE ? "Active" : "Draft"}
+                      <AdminInlineSelect
+                        value={faq.status}
+                        options={STATUS_OPTIONS}
+                        onChange={(newVal) => handleInlineStatusChange(faq, newVal)}
+                        variant="badge"
+                        title="Click to change FAQ status"
                       />
                     </AdminTableCell>
 

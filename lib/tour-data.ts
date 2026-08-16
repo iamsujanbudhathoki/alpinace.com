@@ -23,7 +23,7 @@ export interface TourItem {
   accommodation?: string;
   meals?: string;
   groupSizeRange?: string;
-  highlights: string[];
+  highlights?: string[];
   permitsRequired?: string[];
   inclusionsText?: string;
   exclusionsText?: string;

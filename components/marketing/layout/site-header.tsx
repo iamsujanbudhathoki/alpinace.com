@@ -8,7 +8,7 @@ import { Menu, X, Phone, ChevronDown, ChevronRight, ArrowRight, MessageCircle } 
 import { navLinks, NavLink } from "@/lib/site-config";
 import { useSettings } from "@/lib/settings-context";
 import { categoryCache } from "@/lib/services/category-cache";
-import { CategoryItem } from "@/lib/admin-data";
+import { CategoryItem, CategoryType } from "@/lib/admin-data";
 
 export function SiteHeader() {
   const { settings } = useSettings();
@@ -36,6 +36,42 @@ export function SiteHeader() {
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Pre-fetch all Trekking, Tours, and Expeditions categories immediately on page load
+  useEffect(() => {
+    async function loadAllNavbarCategories() {
+      const types = [CategoryType.TREKKING, CategoryType.TOURS, CategoryType.EXPEDITIONS];
+
+      // Populate from existing cache if available
+      const initialMap: Record<string, CategoryItem[]> = {};
+      types.forEach((type) => {
+        const cached = categoryCache.getCached(type);
+        if (cached) initialMap[type] = cached;
+      });
+      if (Object.keys(initialMap).length > 0) {
+        setCategoriesMap((prev) => ({ ...prev, ...initialMap }));
+      }
+
+      // Fetch all concurrently on mount
+      try {
+        const results = await Promise.all(
+          types.map(async (type) => {
+            const data = await categoryCache.prefetch(type);
+            return { type, data };
+          })
+        );
+        const newMap: Record<string, CategoryItem[]> = {};
+        results.forEach(({ type, data }) => {
+          newMap[type] = data;
+        });
+        setCategoriesMap((prev) => ({ ...prev, ...newMap }));
+      } catch (err) {
+        console.error("Failed to load navbar categories on page load:", err);
+      }
+    }
+
+    loadAllNavbarCategories();
   }, []);
 
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -77,14 +113,16 @@ export function SiteHeader() {
     };
   }, []);
 
-  // Desktop Hover-Intent & Prefetch Handlers
+  // Desktop Hover-Intent Handlers (Instant open since data is preloaded on mount)
   const handleMouseEnter = (link: NavLink) => {
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
 
-    if (!link.categoryType) {
+    const hasDropdown = Boolean(link.categoryType || (link.items && link.items.length > 0));
+
+    if (!hasDropdown) {
       if (hoverIntentTimerRef.current) {
         clearTimeout(hoverIntentTimerRef.current);
         hoverIntentTimerRef.current = null;
@@ -93,33 +131,13 @@ export function SiteHeader() {
       return;
     }
 
-    const catType = link.categoryType;
-
-    // Check if already in cache
-    const cached = categoryCache.getCached(catType);
-    if (cached) {
-      setCategoriesMap((prev) => ({ ...prev, [catType]: cached }));
-      setLoadingMap((prev) => ({ ...prev, [catType]: false }));
-    }
-
     if (hoverIntentTimerRef.current) {
       clearTimeout(hoverIntentTimerRef.current);
     }
 
-    // ~120ms hover intent delay before triggering network prefetch & opening dropdown
-    hoverIntentTimerRef.current = setTimeout(async () => {
-      setActiveDropdown(link.href);
-
-      if (!cached) {
-        setLoadingMap((prev) => ({ ...prev, [catType]: true }));
-        try {
-          const data = await categoryCache.prefetch(catType);
-          setCategoriesMap((prev) => ({ ...prev, [catType]: data }));
-        } finally {
-          setLoadingMap((prev) => ({ ...prev, [catType]: false }));
-        }
-      }
-    }, 120);
+    hoverIntentTimerRef.current = setTimeout(() => {
+      setActiveDropdown(link.label);
+    }, 60);
   };
 
   const handleMouseLeave = () => {
@@ -148,29 +166,28 @@ export function SiteHeader() {
   };
 
   // Mobile Accordion Toggle
-  const handleMobileToggleCategory = async (link: NavLink) => {
-    if (!link.categoryType) return;
-    const catType = link.categoryType;
-    const isCurrentlyOpen = !!mobileExpanded[link.href];
+  const handleMobileToggle = async (link: NavLink) => {
+    const isCurrentlyOpen = !!mobileExpanded[link.label];
 
     setMobileExpanded((prev) => ({
       ...prev,
-      [link.href]: !isCurrentlyOpen,
+      [link.label]: !isCurrentlyOpen,
     }));
 
-    if (!isCurrentlyOpen) {
-      const cached = categoryCache.getCached(catType);
-      if (cached) {
-        setCategoriesMap((prev) => ({ ...prev, [catType]: cached }));
+    if (!link.categoryType || isCurrentlyOpen) return;
+    const catType = link.categoryType;
+
+    const cached = categoryCache.getCached(catType);
+    if (cached) {
+      setCategoriesMap((prev) => ({ ...prev, [catType]: cached }));
+      setLoadingMap((prev) => ({ ...prev, [catType]: false }));
+    } else {
+      setLoadingMap((prev) => ({ ...prev, [catType]: true }));
+      try {
+        const data = await categoryCache.prefetch(catType);
+        setCategoriesMap((prev) => ({ ...prev, [catType]: data }));
+      } finally {
         setLoadingMap((prev) => ({ ...prev, [catType]: false }));
-      } else {
-        setLoadingMap((prev) => ({ ...prev, [catType]: true }));
-        try {
-          const data = await categoryCache.prefetch(catType);
-          setCategoriesMap((prev) => ({ ...prev, [catType]: data }));
-        } finally {
-          setLoadingMap((prev) => ({ ...prev, [catType]: false }));
-        }
       }
     }
   };
@@ -215,17 +232,19 @@ export function SiteHeader() {
               const isActive =
                 link.href === "/"
                   ? pathname === "/"
+                  : link.items
+                  ? link.items.some((item) => pathname.startsWith(item.href))
                   : pathname.startsWith(link.href);
 
-              const hasCategories = Boolean(link.categoryType);
-              const isDropdownOpen = activeDropdown === link.href && hasCategories;
+              const hasDropdown = Boolean(link.categoryType || (link.items && link.items.length > 0));
+              const isDropdownOpen = activeDropdown === link.label && hasDropdown;
               const catType = link.categoryType || "";
               const categories = categoriesMap[catType] || [];
               const isLoading = !!loadingMap[catType];
 
               return (
                 <div
-                  key={link.href}
+                  key={link.label}
                   className="relative flex items-center"
                   onMouseEnter={() => handleMouseEnter(link)}
                   onMouseLeave={handleMouseLeave}
@@ -240,7 +259,7 @@ export function SiteHeader() {
                     }`}
                   >
                     <span>{link.label}</span>
-                    {hasCategories && (
+                    {hasDropdown && (
                       <ChevronDown
                         className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-400 group-hover:text-amber-700 ${
                           isDropdownOpen ? "rotate-180 text-amber-700" : ""
@@ -253,42 +272,30 @@ export function SiteHeader() {
                   </Link>
 
                   {/* Desktop Dropdown Menu */}
-                  {hasCategories && isDropdownOpen && (
+                  {hasDropdown && isDropdownOpen && (
                     <div
                       onMouseEnter={handleDropdownMouseEnter}
                       onMouseLeave={handleDropdownMouseLeave}
                       className="absolute top-full left-0 pt-2 w-72 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
                     >
                       <div className="bg-white rounded-xl border border-stone-200 shadow-lg shadow-stone-950/5 p-1.5 space-y-0.5">
-                        {isLoading ? (
-                          <div className="space-y-1 p-2">
-                            {[1, 2, 3].map((n) => (
-                              <div key={n} className="py-2 px-2 space-y-1.5 animate-pulse">
-                                <div className="h-3 bg-stone-200/80 rounded w-2/3" />
-                                <div className="h-2 bg-stone-100 rounded w-1/2" />
-                              </div>
-                            ))}
-                          </div>
-                        ) : categories.length === 0 ? (
-                          <div className="py-4 px-3 text-center text-xs text-stone-500 font-medium">
-                            No categories available.
-                          </div>
-                        ) : (
+                        {/* Static Sub-Items (e.g. Resources: Blogs, Contacts) */}
+                        {link.items && link.items.length > 0 ? (
                           <div className="space-y-0.5">
-                            {categories.map((cat) => (
+                            {link.items.map((subItem) => (
                               <Link
-                                key={cat.id}
-                                href={getCategoryLink(link.href, cat)}
+                                key={subItem.href}
+                                href={subItem.href}
                                 onClick={() => setActiveDropdown(null)}
-                                className="group/item flex items-center justify-between px-3 py-2 rounded-lg hover:bg-stone-50 transition-colors cursor-pointer"
+                                className="group/item flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-amber-50/50 transition-colors cursor-pointer"
                               >
                                 <div className="space-y-0.5 pr-2">
                                   <div className="text-xs font-semibold text-stone-800 group-hover/item:text-amber-800 transition-colors">
-                                    {cat.name}
+                                    {subItem.label}
                                   </div>
-                                  {cat.description && (
+                                  {subItem.description && (
                                     <p className="text-[11px] text-stone-600 line-clamp-1 leading-snug">
-                                      {cat.description}
+                                      {subItem.description}
                                     </p>
                                   )}
                                 </div>
@@ -297,18 +304,60 @@ export function SiteHeader() {
                               </Link>
                             ))}
                           </div>
-                        )}
+                        ) : (
+                          /* Dynamic Categories (Trekking, Tours, Expeditions) */
+                          <>
+                            {isLoading ? (
+                              <div className="space-y-1 p-2">
+                                {[1, 2, 3].map((n) => (
+                                  <div key={n} className="py-2 px-2 space-y-1.5 animate-pulse">
+                                    <div className="h-3 bg-stone-200/80 rounded w-2/3" />
+                                    <div className="h-2 bg-stone-100 rounded w-1/2" />
+                                  </div>
+                                ))}
+                              </div>
+                            ) : categories.length === 0 ? (
+                              <div className="py-4 px-3 text-center text-xs text-stone-500 font-medium">
+                                No categories available.
+                              </div>
+                            ) : (
+                              <div className="space-y-0.5">
+                                {categories.map((cat) => (
+                                  <Link
+                                    key={cat.id}
+                                    href={getCategoryLink(link.href, cat)}
+                                    onClick={() => setActiveDropdown(null)}
+                                    className="group/item flex items-center justify-between px-3 py-2 rounded-lg hover:bg-stone-50 transition-colors cursor-pointer"
+                                  >
+                                    <div className="space-y-0.5 pr-2">
+                                      <div className="text-xs font-semibold text-stone-800 group-hover/item:text-amber-800 transition-colors">
+                                        {cat.name}
+                                      </div>
+                                      {cat.description && (
+                                        <p className="text-[11px] text-stone-600 line-clamp-1 leading-snug">
+                                          {cat.description}
+                                        </p>
+                                      )}
+                                    </div>
 
-                        <div className="pt-1.5 border-t border-stone-100 mt-1">
-                          <Link
-                            href={link.href}
-                            onClick={() => setActiveDropdown(null)}
-                            className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-stone-700 hover:text-amber-800 hover:bg-amber-50/60 transition-colors"
-                          >
-                            <span>All {link.label}</span>
-                            <ArrowRight className="w-3 h-3 text-amber-700" />
-                          </Link>
-                        </div>
+                                    <ChevronRight className="w-3.5 h-3.5 text-stone-400 opacity-0 group-hover/item:opacity-100 group-hover/item:text-amber-700 -translate-x-1 group-hover/item:translate-x-0 transition-all duration-150 shrink-0" />
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+
+                            <div className="pt-1.5 border-t border-stone-100 mt-1">
+                              <Link
+                                href={link.href}
+                                onClick={() => setActiveDropdown(null)}
+                                className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-stone-700 hover:text-amber-800 hover:bg-amber-50/60 transition-colors"
+                              >
+                                <span>All {link.label}</span>
+                                <ArrowRight className="w-3 h-3 text-amber-700" />
+                              </Link>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   )}
@@ -389,16 +438,18 @@ export function SiteHeader() {
                 const isActive =
                   link.href === "/"
                     ? pathname === "/"
+                    : link.items
+                    ? link.items.some((item) => pathname.startsWith(item.href))
                     : pathname.startsWith(link.href);
 
-                const hasCategories = Boolean(link.categoryType);
-                const isExpanded = !!mobileExpanded[link.href];
+                const hasDropdown = Boolean(link.categoryType || (link.items && link.items.length > 0));
+                const isExpanded = !!mobileExpanded[link.label];
                 const catType = link.categoryType || "";
                 const categories = categoriesMap[catType] || [];
                 const isLoading = !!loadingMap[catType];
 
                 return (
-                  <div key={link.href} className="flex flex-col">
+                  <div key={link.label} className="flex flex-col">
                     <div
                       className={`flex items-center justify-between rounded-xl transition-colors ${
                         isActive
@@ -417,12 +468,12 @@ export function SiteHeader() {
                         {link.label}
                       </Link>
 
-                      {/* Chevron button toggles the sub-categories */}
-                      {hasCategories && (
+                      {/* Chevron button toggles the sub-items/sub-categories */}
+                      {hasDropdown && (
                         <button
-                          onClick={() => handleMobileToggleCategory(link)}
+                          onClick={() => handleMobileToggle(link)}
                           className="p-3 text-stone-500 hover:text-amber-800 transition-colors cursor-pointer"
-                          aria-label={`Toggle ${link.label} categories`}
+                          aria-label={`Toggle ${link.label} items`}
                           aria-expanded={isExpanded}
                         >
                           <ChevronDown
@@ -434,47 +485,76 @@ export function SiteHeader() {
                       )}
                     </div>
 
-                    {/* Mobile Expandable Categories */}
-                    {hasCategories && isExpanded && (
+                    {/* Mobile Expandable Menu */}
+                    {hasDropdown && isExpanded && (
                       <div className="pl-4 pr-2 py-2 space-y-1 bg-stone-50/70 rounded-xl mt-1 mb-2 border border-stone-200/60 animate-in fade-in duration-150">
-                        {isLoading ? (
-                          <div className="p-3 text-xs text-stone-500 animate-pulse">
-                            Loading {link.label} categories...
-                          </div>
-                        ) : categories.length === 0 ? (
-                          <div className="p-3 text-xs text-stone-500">
-                            No subcategories available.
-                          </div>
-                        ) : (
+                        {/* Static Sub-Items (Resources: Blogs, Contacts) */}
+                        {link.items && link.items.length > 0 ? (
                           <>
-                            {categories.map((cat) => (
+                            {link.items.map((subItem) => (
                               <Link
-                                key={cat.id}
-                                href={getCategoryLink(link.href, cat)}
+                                key={subItem.href}
+                                href={subItem.href}
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="flex items-center justify-between p-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-amber-800 hover:bg-amber-50 transition-colors"
                               >
-                                <span className="font-semibold text-xs text-slate-800">
-                                  {cat.name}
-                                </span>
-                                {cat.itemCount > 0 && (
-                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white text-stone-600 border border-stone-200/80">
-                                    {cat.itemCount}
-                                  </span>
-                                )}
+                                <div>
+                                  <div className="font-semibold text-xs text-slate-800">
+                                    {subItem.label}
+                                  </div>
+                                  {subItem.description && (
+                                    <p className="text-[11px] text-slate-500 line-clamp-1">
+                                      {subItem.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                               </Link>
                             ))}
+                          </>
+                        ) : (
+                          /* Dynamic Categories */
+                          <>
+                            {isLoading ? (
+                              <div className="p-3 text-xs text-stone-500 animate-pulse">
+                                Loading {link.label} categories...
+                              </div>
+                            ) : categories.length === 0 ? (
+                              <div className="p-3 text-xs text-stone-500">
+                                No subcategories available.
+                              </div>
+                            ) : (
+                              <>
+                                {categories.map((cat) => (
+                                  <Link
+                                    key={cat.id}
+                                    href={getCategoryLink(link.href, cat)}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center justify-between p-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-amber-800 hover:bg-amber-50 transition-colors"
+                                  >
+                                    <span className="font-semibold text-xs text-slate-800">
+                                      {cat.name}
+                                    </span>
+                                    {cat.itemCount > 0 && (
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white text-stone-600 border border-stone-200/80">
+                                        {cat.itemCount}
+                                      </span>
+                                    )}
+                                  </Link>
+                                ))}
 
-                            <div className="pt-1.5 mt-1 border-t border-stone-200/60">
-                              <Link
-                                href={link.href}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="flex items-center justify-between p-2 text-xs font-bold text-amber-800 hover:underline"
-                              >
-                                <span>All {link.label}</span>
-                                <ArrowRight className="w-3.5 h-3.5" />
-                              </Link>
-                            </div>
+                                <div className="pt-1.5 mt-1 border-t border-stone-200/60">
+                                  <Link
+                                    href={link.href}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center justify-between p-2 text-xs font-bold text-amber-800 hover:underline"
+                                  >
+                                    <span>All {link.label}</span>
+                                    <ArrowRight className="w-3.5 h-3.5" />
+                                  </Link>
+                                </div>
+                              </>
+                            )}
                           </>
                         )}
                       </div>

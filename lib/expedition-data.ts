@@ -25,7 +25,7 @@ export interface ExpeditionItem {
   accommodation?: string;
   meals?: string;
   groupSizeRange?: string;
-  permitsRequired: string[];
+  permitsRequired?: string[];
   inclusionsText?: string;
   exclusionsText?: string;
   itinerary?: TripItineraryDay[];

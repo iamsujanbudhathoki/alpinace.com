@@ -250,6 +250,9 @@ export interface BlogArticle {
   excerpt?: string;
   content?: string;
   image?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string;
 }
 
 export interface CategoryItem {

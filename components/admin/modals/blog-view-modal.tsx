@@ -9,7 +9,8 @@ import {
   ExternalLink, 
   Tag, 
   BookOpen, 
-  Image as ImageIcon 
+  Image as ImageIcon,
+  Globe
 } from "lucide-react";
 import { BlogArticle } from "@/lib/admin-data";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
@@ -159,6 +160,38 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
             />
           </div>
         )}
+
+        {/* SEO Information Block */}
+        <div className="space-y-2">
+          <span className="font-bold text-slate-900 block text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+            <Globe className="w-3.5 h-3.5 text-blue-600" />
+            SEO &amp; Search Engine Metadata
+          </span>
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+            <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1 shadow-2xs">
+              <div className="text-[11px] font-bold text-emerald-800 truncate">
+                https://alpineace.com/blog/{article.slug || article.id}
+              </div>
+              <div className="text-xs font-extrabold text-blue-700 truncate">
+                {article.metaTitle || `${article.title} | AlpineAce Journal`}
+              </div>
+              <div className="text-[11px] text-slate-700 font-medium line-clamp-2 leading-relaxed">
+                {article.metaDescription || article.excerpt || "Read Himalayan preparation guides and stories on AlpineAce."}
+              </div>
+            </div>
+
+            {article.keywords && (
+              <div className="flex flex-wrap items-center gap-1 pt-1">
+                <span className="text-[10px] font-bold text-slate-500 mr-1">Keywords:</span>
+                {article.keywords.split(",").map((kw, i) => kw.trim() && (
+                  <span key={i} className="text-[10px] font-semibold bg-white border border-slate-200 text-slate-700 px-1.5 py-0.5 rounded">
+                    {kw.trim()}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Public Slug URL Indicator */}
         <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-between gap-3">

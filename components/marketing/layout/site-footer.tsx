@@ -141,7 +141,7 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link href="/about" className="hover:text-amber-700 transition-colors inline-block py-0.5 cursor-pointer">
-                  About Our Heritage
+                  About AlpineAce
                 </Link>
               </li>
               <li>

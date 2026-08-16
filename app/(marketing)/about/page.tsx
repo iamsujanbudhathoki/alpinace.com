@@ -1,4 +1,23 @@
 import React from 'react';
+import type { Metadata } from 'next';
+import { siteConfig } from '@/lib/site-config';
+
+export const metadata: Metadata = {
+  title: 'About AlpineAce | Our Heritage, IFMGA Sherpa Masters & Philosophy',
+  description:
+    'Learn about AlpineAce Expeditions. Founded by veteran Himalayan mountaineers and multi-summit Sherpas dedicated to safe, eco-conscious luxury expeditions.',
+  alternates: {
+    canonical: `${siteConfig.url}/about`,
+  },
+  openGraph: {
+    title: 'About AlpineAce | Himalayan Masters & Eco-Luxury Expeditions',
+    description:
+      'Founded by veteran Himalayan mountaineers and multi-summit Sherpas dedicated to safe, eco-conscious luxury expeditions.',
+    url: `${siteConfig.url}/about`,
+    siteName: siteConfig.name,
+    type: 'website',
+  },
+};
 
 export default function AboutView() {
   const team = [

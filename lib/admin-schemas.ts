@@ -190,12 +190,12 @@ export const bookingSchema = z.object({
   guestEmail: z.string().email("Please enter a valid email address"),
   guestPhone: z.string().min(5, "Contact phone number is required"),
   country: z.string().min(2, "Country is required"),
-  packageName: z.string().min(3, "Package name is required"),
+  packageName: z.string().min(1, "Please select an item to reserve"),
   packageType: z.nativeEnum(BookingPackageType),
   startDate: z.string().min(4, "Start date is required"),
   endDate: z.string().min(4, "End date is required"),
-  groupSize: z.preprocess((val) => Number(val), z.number().min(1, "Group size must be at least 1")),
-  totalAmountUSD: z.preprocess((val) => Number(val), z.number().min(100, "Total amount must be at least $100")),
+  groupSize: z.preprocess((val) => Number(val) || 1, z.number().min(1, "Group size must be at least 1")),
+  totalAmountUSD: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : 0), z.number().min(0, "Total amount cannot be negative")),
   paymentStatus: z.nativeEnum(BookingPaymentStatus),
   bookingStatus: z.nativeEnum(BookingStatus),
   assignedGuide: z.string().optional(),
@@ -251,6 +251,9 @@ export const blogSchema = z.object({
   excerpt: z.string().optional(),
   content: z.string().optional(),
   image: z.string().min(5, "Featured image URL is required"),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  keywords: z.string().optional(),
 });
 
 export type BlogFormValues = z.infer<typeof blogSchema>;

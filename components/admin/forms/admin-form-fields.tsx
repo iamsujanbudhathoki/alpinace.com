@@ -4,7 +4,7 @@ import React from "react";
 import { FormLabel } from "@/components/ui/form-label";
 
 interface AdminInputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: string;
   error?: string;
 }
 
@@ -12,7 +12,7 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
   ({ label, error, required, className = "", ...props }, ref) => {
     return (
       <div className="space-y-1">
-        <FormLabel required={required}>{label}</FormLabel>
+        {label && <FormLabel required={required}>{label}</FormLabel>}
         <input
           ref={ref}
           {...props}
@@ -28,7 +28,7 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
 AdminInputField.displayName = "AdminInputField";
 
 interface AdminSelectFieldProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label: string;
+  label?: string;
   error?: string;
   options: { label: string; value: string }[];
 }
@@ -37,7 +37,7 @@ export const AdminSelectField = React.forwardRef<HTMLSelectElement, AdminSelectF
   ({ label, error, required, options, className = "", ...props }, ref) => {
     return (
       <div className="space-y-1">
-        <FormLabel required={required}>{label}</FormLabel>
+        {label && <FormLabel required={required}>{label}</FormLabel>}
         <select
           ref={ref}
           {...props}
@@ -59,7 +59,7 @@ export const AdminSelectField = React.forwardRef<HTMLSelectElement, AdminSelectF
 AdminSelectField.displayName = "AdminSelectField";
 
 interface AdminTextareaFieldProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label: string;
+  label?: string;
   error?: string;
 }
 
@@ -67,13 +67,13 @@ export const AdminTextareaField = React.forwardRef<HTMLTextAreaElement, AdminTex
   ({ label, error, required, className = "", ...props }, ref) => {
     return (
       <div className="space-y-1">
-        <FormLabel required={required}>{label}</FormLabel>
+        {label && <FormLabel required={required}>{label}</FormLabel>}
         <textarea
           ref={ref}
           {...props}
           className={`w-full bg-slate-50/50 border ${
             error ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" : "border-slate-200 focus:border-amber-500 focus:ring-amber-500/20"
-          } rounded-xl px-3 py-2 text-slate-900 font-medium text-xs leading-relaxed focus:outline-none focus:ring-2 focus:bg-white transition-all placeholder:text-slate-400 ${className}`}
+          } rounded-xl px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none focus:ring-2 focus:bg-white transition-all placeholder:text-slate-400 resize-y ${className}`}
         />
         {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
       </div>

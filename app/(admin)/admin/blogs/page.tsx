@@ -1,29 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Plus, Calendar, Eye, Image as ImageIcon } from "lucide-react";
-import { BlogArticle } from "@/lib/admin-data";
-import { toast } from "sonner";
-import { BlogService } from "@/lib/services/admin-service";
 import { BlogViewModal } from "@/components/admin/modals/blog-view-modal";
-import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
-import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
-import { Button } from "@/components/ui/button";
+import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
+import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import {
-  AdminTableContainer,
-  AdminTable,
-  AdminTableHeader,
-  AdminTableHead,
-  AdminTableBody,
-  AdminTableRow,
-  AdminTableCell,
-  AdminTableEmpty,
-  AdminTableLoading,
-  AdminTableActions,
   AdminActionButton,
+  AdminTable,
+  AdminTableActions,
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableContainer,
+  AdminTableEmpty,
+  AdminTableHead,
+  AdminTableHeader,
+  AdminTableLoading,
+  AdminTableRow,
 } from "@/components/admin/ui/admin-table";
+import { Button } from "@/components/ui/button";
+import { BlogArticle, BlogStatus } from "@/lib/admin-data";
+import { BlogService } from "@/lib/services/admin-service";
+import { openSingleImage } from "@/lib/utils/lightbox";
+import { Calendar, Eye, Image as ImageIcon, Plus, ExternalLink, Maximize2 } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+const STATUS_OPTIONS: InlineSelectOption[] = [
+  { value: BlogStatus.PUBLISHED, label: "Published" },
+  { value: BlogStatus.DRAFT, label: "Draft" },
+  { value: BlogStatus.ARCHIVED, label: "Archived" },
+];
 
 export default function AdminBlogsPage() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
@@ -49,6 +56,25 @@ export default function AdminBlogsPage() {
   const handleViewArticle = (article: BlogArticle) => {
     setActiveArticle(article);
     setIsViewModalOpen(true);
+  };
+
+  const handleInlineStatusChange = async (art: BlogArticle, newStatus: string): Promise<boolean> => {
+    try {
+      const res = await BlogService.update(art.id, { status: newStatus as BlogStatus });
+      if (res.success) {
+        setArticles((prev) =>
+          prev.map((a) => (a.id === art.id ? { ...a, status: newStatus as BlogStatus } : a))
+        );
+        toast.success(`Article "${art.title}" status updated`);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update article status");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update article status");
+      return false;
+    }
   };
 
   const handleDeleteArticle = async (id: string, title: string) => {
@@ -117,21 +143,50 @@ export default function AdminBlogsPage() {
                   <AdminTableCell>
                     <div className="flex items-center gap-3">
                       {art.image ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
-                          src={art.image}
-                          alt={art.title}
-                          className="w-12 h-10 object-cover rounded-lg border border-slate-200 shrink-0"
-                        />
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openSingleImage(art.image!, art.title, e.currentTarget);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.stopPropagation();
+                              openSingleImage(art.image!, art.title, e.currentTarget);
+                            }
+                          }}
+                          className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-amber-400 transition-all"
+                          title="Click to view image in lightbox"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={art.image}
+                            alt={art.title}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                            <Maximize2 className="w-3.5 h-3.5 text-white drop-shadow-md" />
+                          </div>
+                        </div>
                       ) : (
-                        <div className="w-12 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
-                          <ImageIcon className="w-5 h-5 text-slate-400" />
+                        <div className="w-12 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
+                          <ImageIcon className="w-5 h-5" />
                         </div>
                       )}
                       <div>
-                        <div className="font-bold text-slate-900 line-clamp-1">
-                          {art.title}
-                        </div>
+                        <Link
+                          href={`/blog/${art.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group/link inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-amber-600 transition-colors"
+                          title="Open article in public marketing page"
+                        >
+                          <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-amber-500 underline-offset-2 transition-all">
+                            {art.title}
+                          </span>
+                          <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
+                        </Link>
                         <div className="text-xs text-slate-600 font-normal">
                           Read time: {art.readTime}
                         </div>
@@ -160,7 +215,13 @@ export default function AdminBlogsPage() {
                   </AdminTableCell>
 
                   <AdminTableCell>
-                    <AdminStatusBadge status={art.status} />
+                    <AdminInlineSelect
+                      value={art.status}
+                      options={STATUS_OPTIONS}
+                      onChange={(newVal) => handleInlineStatusChange(art, newVal)}
+                      variant="badge"
+                      title="Click to change article status"
+                    />
                   </AdminTableCell>
 
                   <AdminTableCell align="right">
@@ -205,3 +266,4 @@ export default function AdminBlogsPage() {
     </div>
   );
 }
+

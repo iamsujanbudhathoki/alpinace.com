@@ -1,31 +1,31 @@
 import {
-  CategoryItem,
-  CategoryType,
-  PackageItem,
-  Booking,
-  Inquiry,
-  Guide,
-  BlogArticle,
-  BlogStatus,
   AssociateItem,
   AssociateStatus,
+  BlogArticle,
+  BlogStatus,
+  Booking,
+  CategoryItem,
+  CategoryType,
   FaqItem,
   FaqStatus,
+  Guide,
+  Inquiry,
   NotificationType,
+  PackageItem,
 } from "@/lib/admin-data";
 import {
-  CategoryFormValues,
-  TrekFormValues,
-  TourFormValues,
-  ExpeditionFormValues,
-  BookingFormValues,
-  InquiryFormValues,
-  BlogFormValues,
   AssociateFormValues,
+  BlogFormValues,
+  BookingFormValues,
+  CategoryFormValues,
+  ExpeditionFormValues,
   FaqFormValues,
+  InquiryFormValues,
+  TourFormValues,
+  TrekFormValues,
 } from "@/lib/admin-schemas";
+import { ApiResponse, apiClient, axiosInstance } from "@/lib/services/api-client";
 import { TrekItem } from "@/lib/trek-data";
-import { apiClient, axiosInstance, ApiResponse } from "@/lib/services/api-client";
 
 export const MediaService = {
   async getAllMedia(): Promise<any[]> {
@@ -201,34 +201,41 @@ function cleanPackagePayload(data: any) {
     ...rest
   } = data;
 
-  const permitsArray = permitsText
-    ? permitsText.split(",").map((s: string) => s.trim()).filter(Boolean)
-    : Array.isArray(rest.permitsRequired)
-    ? rest.permitsRequired
-    : [];
+  const payload: any = { ...rest };
 
-  const payload: any = {
-    ...rest,
-    permitsRequired: permitsArray,
-    durationDays: Number(rest.durationDays || 0),
-    priceUSD: Number(rest.priceUSD || 0),
-  };
+  if (permitsText !== undefined) {
+    payload.permitsRequired = permitsText
+      ? permitsText.split(",").map((s: string) => s.trim()).filter(Boolean)
+      : [];
+  } else if (Array.isArray(rest.permitsRequired)) {
+    payload.permitsRequired = rest.permitsRequired;
+  }
 
-  if (rest.categoryId && typeof rest.categoryId === "string" && rest.categoryId.trim() !== "" && rest.categoryId !== "All") {
-    payload.categoryId = rest.categoryId.trim();
-  } else {
-    delete payload.categoryId;
+  if (rest.durationDays !== undefined && rest.durationDays !== null && rest.durationDays !== "") {
+    payload.durationDays = Number(rest.durationDays);
+  }
+
+  if (rest.priceUSD !== undefined && rest.priceUSD !== null && rest.priceUSD !== "") {
+    payload.priceUSD = Number(rest.priceUSD);
+  }
+
+  if (rest.categoryId !== undefined) {
+    if (typeof rest.categoryId === "string" && rest.categoryId.trim() !== "" && rest.categoryId !== "All") {
+      payload.categoryId = rest.categoryId.trim();
+    } else {
+      delete payload.categoryId;
+    }
   }
 
   if (rest.maxAltitudeMeters !== undefined && rest.maxAltitudeMeters !== null && rest.maxAltitudeMeters !== "") {
     payload.maxAltitudeMeters = Number(rest.maxAltitudeMeters);
-  } else {
+  } else if (rest.maxAltitudeMeters !== undefined) {
     delete payload.maxAltitudeMeters;
   }
 
   if (rest.peakHeightM !== undefined && rest.peakHeightM !== null && rest.peakHeightM !== "") {
     payload.peakHeightM = Number(rest.peakHeightM);
-  } else {
+  } else if (rest.peakHeightM !== undefined) {
     delete payload.peakHeightM;
   }
 
@@ -504,6 +511,54 @@ export const ExpeditionService = {
   },
 };
 
+function cleanBookingPayload(data: any) {
+  if (!data) return {};
+  const {
+    id,
+    reference,
+    propertyId,
+    propertyReference,
+    createdAt,
+    updatedAt,
+    ...rest
+  } = data;
+
+  const payload: any = {};
+  if (rest.guestName !== undefined) payload.guestName = String(rest.guestName).trim();
+  if (rest.guestEmail !== undefined) payload.guestEmail = String(rest.guestEmail).trim();
+  if (rest.guestPhone !== undefined) payload.guestPhone = String(rest.guestPhone).trim();
+  if (rest.country !== undefined) payload.country = String(rest.country).trim();
+  if (rest.packageName !== undefined) payload.packageName = String(rest.packageName).trim();
+  if (rest.packageType !== undefined) payload.packageType = rest.packageType;
+  if (rest.startDate !== undefined) payload.startDate = String(rest.startDate).trim();
+  if (rest.endDate !== undefined) payload.endDate = String(rest.endDate).trim();
+  if (rest.groupSize !== undefined && rest.groupSize !== null && rest.groupSize !== "") {
+    payload.groupSize = Number(rest.groupSize);
+  }
+  if (rest.totalAmountUSD !== undefined && rest.totalAmountUSD !== null && rest.totalAmountUSD !== "") {
+    payload.totalAmountUSD = Number(rest.totalAmountUSD);
+  }
+  if (rest.paymentStatus !== undefined) payload.paymentStatus = rest.paymentStatus;
+  if (rest.bookingStatus !== undefined) payload.bookingStatus = rest.bookingStatus;
+  if (rest.assignedGuide !== undefined) {
+    if (typeof rest.assignedGuide === "string" && rest.assignedGuide.trim() !== "") {
+      payload.assignedGuide = rest.assignedGuide.trim();
+    } else {
+      payload.assignedGuide = undefined;
+    }
+  }
+  if (rest.permitStatus !== undefined) payload.permitStatus = rest.permitStatus;
+  if (rest.specialRequests !== undefined) {
+    if (typeof rest.specialRequests === "string" && rest.specialRequests.trim() !== "") {
+      payload.specialRequests = rest.specialRequests.trim();
+    } else {
+      payload.specialRequests = undefined;
+    }
+  }
+
+  return payload;
+}
+
 export const BookingService = {
   async getAll(): Promise<Booking[]> {
     try {
@@ -516,11 +571,13 @@ export const BookingService = {
   },
 
   async create(data: BookingFormValues): Promise<ApiResponse<Booking>> {
-    return apiClient.post<Booking>("/bookings", data);
+    const payload = cleanBookingPayload(data);
+    return apiClient.post<Booking>("/bookings", payload);
   },
 
   async update(id: string, data: Partial<BookingFormValues>): Promise<ApiResponse<Booking>> {
-    return apiClient.put<Booking>(`/bookings/${id}`, data);
+    const payload = cleanBookingPayload(data);
+    return apiClient.put<Booking>(`/bookings/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {

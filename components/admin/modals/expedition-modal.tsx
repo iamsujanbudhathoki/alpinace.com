@@ -24,9 +24,14 @@ import {
   Flame,
   Activity,
   Calendar,
+  Globe,
+  ExternalLink,
+  Maximize2,
 } from "lucide-react";
+import Link from "next/link";
 import { PackageItem, CategoryType, ClimbingGrade, TripDifficulty, PackageStatus } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
+import { openSingleImage } from "@/lib/utils/lightbox";
 import { expeditionSchema, ExpeditionFormValues } from "@/lib/admin-schemas";
 import {
   AdminInputField,
@@ -110,7 +115,11 @@ export function ExpeditionFormModal({
   });
 
   const watchTitle = watch("title");
+  const watchMetaTitle = watch("metaTitle");
   const watchMetaDesc = watch("metaDescription");
+  const watchKeywords = watch("keywords");
+  const watchDuration = watch("durationDays");
+  const watchShortDesc = watch("shortDesc");
   const watchItinerary = watch("itinerary") || [];
   const watchFaqs = watch("faqs") || [];
   const watchReviews = watch("reviews") || [];
@@ -726,70 +735,177 @@ export function ExpeditionFormModal({
 
             {/* 6. SEO TAB */}
             {activeTab === "seo" && (
-              <div className="space-y-4 max-h-[460px] overflow-y-auto pr-1">
+              <div className="space-y-5 max-h-[460px] overflow-y-auto pr-1">
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                  <span className="font-extrabold text-slate-950 text-xs block">
-                    Google Search Preview Snippet
-                  </span>
-                  <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
-                    <div className="text-xs font-bold text-emerald-800 truncate">
-                      https://alpineace.com/expeditions/
-                      {watchTitle
-                        ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-")
-                        : "expedition-slug"}
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold text-slate-950 text-xs flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-blue-600" />
+                      Live Google Search SERP Preview
+                    </span>
+                    <span className="text-[10px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                      Marketing Page Dynamic Synced
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1.5 shadow-2xs">
+                    <div className="text-xs font-bold text-emerald-800 truncate flex items-center gap-1">
+                      <span>https://alpineace.com/expeditions/</span>
+                      <span className="font-semibold text-emerald-700">
+                        {watchTitle
+                          ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+                          : "expedition-slug"}
+                      </span>
                     </div>
+
                     <div className="text-sm font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
-                      {watchTitle
-                        ? `${watchTitle} | Alpine Ace Peak Expeditions`
-                        : "Peak Expedition Title Preview"}
+                      {watchMetaTitle?.trim() ||
+                        (watchTitle
+                          ? `${watchTitle} - ${watchDuration ? `${watchDuration} Days ` : ""}Himalayan Expedition | AlpineAce`
+                          : "Expedition Package Title Preview | AlpineAce")}
                     </div>
+
                     <div className="text-xs text-slate-800 font-semibold line-clamp-2 leading-relaxed">
-                      {watchMetaDesc || "Technical climbing details and summit schedule for search engines..."}
+                      {watchMetaDesc?.trim() ||
+                        watchShortDesc?.trim() ||
+                        "Summit high-altitude Himalayan peaks with 1:1 certified Sherpa guides, high-altitude medical support, and luxury logistics."}
                     </div>
+
+                    {watchKeywords && (
+                      <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1 items-center">
+                        <span className="text-[10px] font-bold text-slate-500 mr-1">Target Keywords:</span>
+                        {watchKeywords.split(",").map((kw, i) => kw.trim() && (
+                          <span key={i} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                            {kw.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <AdminInputField
-                  label="Meta Search Title Tag"
-                  placeholder="e.g. Ama Dablam 6,812m Climbing Expedition | Alpine Ace"
-                  {...register("metaTitle")}
-                />
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-800">
+                      Meta Search Title Tag
+                    </label>
+                    <span className={`text-[10px] font-semibold ${
+                      (watchMetaTitle?.length || 0) > 60
+                        ? "text-rose-600"
+                        : (watchMetaTitle?.length || 0) >= 30
+                        ? "text-emerald-600"
+                        : "text-slate-500"
+                    }`}>
+                      {watchMetaTitle?.length || 0} / 60 characters
+                    </span>
+                  </div>
+                  <AdminInputField
+                    placeholder="e.g. Ama Dablam 6,812m Climbing Expedition | Alpine Ace"
+                    {...register("metaTitle")}
+                  />
+                  <p className="text-[10px] text-slate-700 font-medium">
+                    Recommended: 40-60 characters. Overrides the automated page title tag.
+                  </p>
+                </div>
 
-                <AdminTextareaField
-                  label="Meta Search Description Snippet"
-                  rows={3}
-                  placeholder="Compelling 150-character summary for Google SERP display..."
-                  {...register("metaDescription")}
-                />
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-800">
+                      Meta Search Description Snippet
+                    </label>
+                    <span className={`text-[10px] font-semibold ${
+                      (watchMetaDesc?.length || 0) > 160
+                        ? "text-rose-600"
+                        : (watchMetaDesc?.length || 0) >= 120
+                        ? "text-emerald-600"
+                        : "text-slate-500"
+                    }`}>
+                      {watchMetaDesc?.length || 0} / 160 characters
+                    </span>
+                  </div>
+                  <AdminTextareaField
+                    rows={3}
+                    placeholder="Compelling 150-character summary for Google search result snippets and social media previews..."
+                    {...register("metaDescription")}
+                  />
+                  <p className="text-[10px] text-slate-700 font-medium">
+                    Recommended: 120-160 characters. If left empty, short description is used automatically.
+                  </p>
+                </div>
 
-                <AdminInputField
-                  label="Focus SEO Keywords (Comma Separated)"
-                  placeholder="e.g. Peak Expedition Nepal, 7000m Climbing, Ama Dablam Summit, Sherpa Expedition"
-                  {...register("keywords")}
-                />
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Focus SEO Keywords (Comma Separated)
+                  </label>
+                  <AdminInputField
+                    placeholder="e.g. Peak Expedition Nepal, 7000m Climbing, Ama Dablam Summit, Sherpa Expedition"
+                    {...register("keywords")}
+                  />
+                </div>
               </div>
             )}
           </form>
         </div>
       ) : (
         /* READ-ONLY VIEW MODE */
-        <div className="space-y-4 py-2 text-xs max-h-[500px] overflow-y-auto pr-1">
+        <div className="space-y-4 py-2 text-xs max-h-[520px] overflow-y-auto pr-1">
           {/* Header Card */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="aspect-video rounded-xl bg-slate-100 border border-slate-200 overflow-hidden col-span-1 relative flex items-center justify-center">
+            <div className="aspect-video rounded-xl bg-slate-100 border border-slate-200 overflow-hidden col-span-1 relative flex items-center justify-center group/cover">
               {initialData?.image ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={initialData?.image}
-                  alt={initialData?.title}
-                  className="w-full h-full object-cover"
-                />
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openSingleImage(initialData.image!, initialData.title, e.currentTarget);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.stopPropagation();
+                      openSingleImage(initialData.image!, initialData.title, e.currentTarget);
+                    }
+                  }}
+                  className="w-full h-full cursor-zoom-in relative"
+                  title="Click to view cover image in lightbox"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={initialData?.image}
+                    alt={initialData?.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover/cover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover/cover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="w-5 h-5 text-white drop-shadow-md" />
+                  </div>
+                </div>
               ) : (
                 <Mountain className="w-8 h-8 text-slate-300" />
               )}
             </div>
 
             <div className="col-span-2 grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="col-span-2 pb-1 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                    Public Marketing Route
+                  </span>
+                  <Link
+                    href={`/expeditions/${initialData?.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/link inline-flex items-center gap-1.5 font-extrabold text-slate-900 hover:text-amber-600 transition-colors"
+                  >
+                    <span className="underline decoration-transparent group-hover/link:decoration-amber-500 underline-offset-2">
+                      {initialData?.title}
+                    </span>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 transition-colors shrink-0" />
+                  </Link>
+                </div>
+                <div>
+                  <AdminStatusBadge status={initialData?.status || "active"} />
+                </div>
+              </div>
+
               <div>
                 <span className="text-slate-600 font-semibold block text-[11px]">Peak Elevation:</span>
                 <span className="text-slate-950 font-bold flex items-center gap-1 mt-0.5">
@@ -808,11 +924,11 @@ export function ExpeditionFormModal({
                 <span className="text-slate-600 font-semibold block text-[11px]">Sherpa Ratio:</span>
                 <span className="text-slate-950 font-bold flex items-center gap-1 mt-0.5 truncate">
                   <Activity className="w-3.5 h-3.5 text-emerald-500" />
-                  {initialData?.sherpaGuideRatio || "—"}
+                  {initialData?.sherpaGuideRatio || "1:1 Summit Sherpa"}
                 </span>
               </div>
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Price:</span>
+                <span className="text-slate-600 font-semibold block text-[11px]">Starting Price:</span>
                 <span className="text-slate-950 font-black text-sm text-emerald-800">
                   ${(initialData?.priceUSD || 0).toLocaleString()} USD
                 </span>
@@ -820,14 +936,15 @@ export function ExpeditionFormModal({
               <div>
                 <span className="text-slate-600 font-semibold block text-[11px]">Technical Grade:</span>
                 <span className="text-slate-950 font-bold truncate block">
-                  {initialData?.climbingGrade || "—"}
+                  {initialData?.climbingGrade || "Alpine Grade III"}
                 </span>
               </div>
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Status:</span>
-                <div className="mt-0.5">
-                  <AdminStatusBadge status={initialData?.status || "active"} />
-                </div>
+                <span className="text-slate-600 font-semibold block text-[11px]">Region:</span>
+                <span className="text-slate-950 font-bold flex items-center gap-1 mt-0.5">
+                  <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                  {initialData?.region || "Khumbu / Everest"}
+                </span>
               </div>
             </div>
           </div>
@@ -836,11 +953,11 @@ export function ExpeditionFormModal({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
             <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
               <span className="text-slate-500 font-medium block">Best Climbing Season</span>
-              <span className="text-slate-900 font-bold">{initialData?.bestSeason || "—"}</span>
+              <span className="text-slate-900 font-bold">{initialData?.bestSeason || "Spring & Autumn"}</span>
             </div>
             <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
               <span className="text-slate-500 font-medium block">Team Size</span>
-              <span className="text-slate-900 font-bold">{initialData?.groupSizeRange || "—"}</span>
+              <span className="text-slate-900 font-bold">{initialData?.groupSizeRange || "2 - 8 Climbers"}</span>
             </div>
             <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
               <span className="text-slate-500 font-medium block">Supplemental Oxygen</span>
@@ -850,42 +967,92 @@ export function ExpeditionFormModal({
             </div>
             <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
               <span className="text-slate-500 font-medium block">Basecamp Meals</span>
-              <span className="text-slate-900 font-bold truncate block">{initialData?.meals || "—"}</span>
+              <span className="text-slate-900 font-bold truncate block">{initialData?.meals || "Full Basecamp Chef Catering"}</span>
             </div>
           </div>
 
           {/* Short Description */}
           {initialData?.shortDesc && (
             <div className="space-y-1">
-              <span className="font-bold text-slate-900 block">Climbing Overview:</span>
+              <span className="font-bold text-slate-900 block">Climbing Overview &amp; Route Summary:</span>
               <p className="text-slate-800 leading-relaxed font-medium bg-slate-50 p-3 rounded-lg border border-slate-200">
                 {initialData.shortDesc}
               </p>
             </div>
           )}
 
-          {/* Permits & Deposits */}
-          <div className="space-y-1">
-            <span className="font-bold text-slate-900 block">Mandatory Climbing Permits:</span>
-            <div className="flex flex-wrap gap-1.5">
-              {initialData?.permitsRequired && initialData.permitsRequired.length > 0 ? (
-                initialData.permitsRequired.map((p, i) => (
-                  <span
-                    key={i}
-                    className="bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded text-amber-900 font-semibold"
-                  >
-                    {p}
-                  </span>
-                ))
-              ) : (
-                <span className="text-slate-400">None specified</span>
-              )}
+          {/* Detailed Day-by-Day Itinerary Section */}
+          <div className="space-y-2 pt-1">
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200">
+              <span className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                <Calendar className="w-4 h-4 text-amber-600" />
+                Detailed Itinerary ({initialData?.itinerary?.length || 0} Days)
+              </span>
+              <span className="text-[11px] text-slate-500 font-medium">
+                Acclimatization &amp; summit rotation plan
+              </span>
             </div>
+
+            {initialData?.itinerary && initialData.itinerary.length > 0 ? (
+              <div className="space-y-2">
+                {initialData.itinerary.map((dayItem, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 hover:border-amber-300 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black text-[11px] shrink-0">
+                          Day {dayItem.day || idx + 1}
+                        </span>
+                        <h4 className="font-bold text-slate-900 text-xs">
+                          {dayItem.title || `Day ${dayItem.day || idx + 1}`}
+                        </h4>
+                      </div>
+
+                      {dayItem.maxAltitude && (
+                        <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-bold text-[10px] border border-emerald-200 flex items-center gap-1 shrink-0">
+                          <Mountain className="w-3 h-3 text-emerald-600" />
+                          {dayItem.maxAltitude}
+                        </span>
+                      )}
+                    </div>
+
+                    {dayItem.description && (
+                      <p className="text-slate-700 text-[11px] leading-relaxed pl-1 border-l-2 border-amber-300">
+                        {dayItem.description}
+                      </p>
+                    )}
+
+                    {(dayItem.accommodation || dayItem.meals) && (
+                      <div className="flex flex-wrap items-center gap-3 text-[10px] text-slate-600 pt-1 border-t border-slate-200/60">
+                        {dayItem.accommodation && (
+                          <div className="flex items-center gap-1">
+                            <BedDouble className="w-3 h-3 text-slate-400" />
+                            <span>Stay: <strong>{dayItem.accommodation}</strong></span>
+                          </div>
+                        )}
+                        {dayItem.meals && (
+                          <div className="flex items-center gap-1">
+                            <Utensils className="w-3 h-3 text-slate-400" />
+                            <span>Meals: <strong>{dayItem.meals}</strong></span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 text-center text-slate-500 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                No day-by-day itinerary entries configured yet.
+              </div>
+            )}
           </div>
 
           {/* Inclusions & Exclusions */}
           {(initialData?.inclusionsText || initialData?.exclusionsText) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
               {initialData.inclusionsText && (
                 <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200/80 space-y-1">
                   <span className="font-bold text-emerald-900 text-[11px] flex items-center gap-1">
@@ -910,6 +1077,35 @@ export function ExpeditionFormModal({
               )}
             </div>
           )}
+
+          {/* SEO & Search Engine Preview */}
+          <div className="space-y-2 pt-1">
+            <span className="font-bold text-slate-900 flex items-center gap-1.5 text-xs pb-1 border-b border-slate-200">
+              <Globe className="w-4 h-4 text-blue-600" />
+              SEO &amp; Search Engine Meta Information
+            </span>
+
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+              <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+                <div className="text-[11px] font-bold text-emerald-800 truncate">
+                  https://alpineace.com/expeditions/{initialData?.slug || "expedition-slug"}
+                </div>
+                <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
+                  {initialData?.metaTitle || `${initialData?.title} | Alpine Ace Himalayan Expeditions`}
+                </div>
+                <div className="text-[11px] text-slate-700 font-medium line-clamp-2 leading-relaxed">
+                  {initialData?.metaDescription || initialData?.shortDesc || "Join elite Sherpa-guided mountain expeditions in the Himalayas."}
+                </div>
+              </div>
+
+              {initialData?.keywords && (
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-600 pt-1">
+                  <span className="font-bold text-slate-800">Keywords:</span>
+                  <span className="text-slate-600 font-medium">{initialData.keywords}</span>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* FAQs & Reviews Summary */}
           <div className="grid grid-cols-2 gap-3 pt-1">

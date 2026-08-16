@@ -12,6 +12,7 @@ import {
   Clock, 
   Tag, 
   Loader2,
+  Globe,
 } from "lucide-react";
 import { toast } from "sonner";
 import { BlogArticle, BlogStatus, CategoryType } from "@/lib/admin-data";
@@ -56,6 +57,9 @@ export function BlogArticleForm({
     excerpt: initialData?.excerpt || "",
     content: initialData?.content || "",
     image: initialData?.image || "",
+    metaTitle: (initialData as any)?.metaTitle || "",
+    metaDescription: (initialData as any)?.metaDescription || "",
+    keywords: (initialData as any)?.keywords || "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -99,6 +103,9 @@ export function BlogArticleForm({
         excerpt: initialData.excerpt || "",
         content: initialData.content || "",
         image: initialData.image || "",
+        metaTitle: (initialData as any)?.metaTitle || "",
+        metaDescription: (initialData as any)?.metaDescription || "",
+        keywords: (initialData as any)?.keywords || "",
       });
     }
   }, [initialData]);
@@ -327,6 +334,115 @@ export function BlogArticleForm({
               onChange={(e) => handleChange("readTime", e.target.value)}
               error={errors.readTime}
             />
+          </div>
+
+          {/* SEO & Search Engine Optimization Card */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-blue-600" />
+              SEO &amp; Search Engine Metadata
+            </h2>
+
+            {/* Live SERP Preview Snippet */}
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+              <span className="font-bold text-slate-900 text-[11px] block">
+                Google SERP Snippet Preview
+              </span>
+              <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1 shadow-2xs">
+                <div className="text-[11px] font-bold text-emerald-800 truncate">
+                  https://alpineace.com/blog/
+                  {formData.title
+                    ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+                    : "article-slug"}
+                </div>
+                <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
+                  {formData.metaTitle?.trim() ||
+                    (formData.title
+                      ? `${formData.title} | AlpineAce Journal`
+                      : "Article Title Preview | AlpineAce Journal")}
+                </div>
+                <div className="text-[11px] text-slate-700 font-medium line-clamp-2 leading-relaxed">
+                  {formData.metaDescription?.trim() ||
+                    formData.excerpt?.trim() ||
+                    "Read expert Himalayan trekking and mountaineering guides on the AlpineAce journal."}
+                </div>
+                {formData.keywords && (
+                  <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1 items-center">
+                    <span className="text-[10px] font-bold text-slate-500 mr-1">Target Keywords:</span>
+                    {formData.keywords.split(",").map((kw, i) => kw.trim() && (
+                      <span key={i} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                        {kw.trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-800">
+                  Meta Search Title
+                </label>
+                <span className={`text-[10px] font-semibold ${
+                  (formData.metaTitle?.length || 0) > 60
+                    ? "text-rose-600"
+                    : (formData.metaTitle?.length || 0) >= 30
+                    ? "text-emerald-600"
+                    : "text-slate-500"
+                }`}>
+                  {formData.metaTitle?.length || 0} / 60 chars
+                </span>
+              </div>
+              <AdminInputField
+                placeholder="e.g. Essential Gear List for Everest Base Camp Trek | AlpineAce"
+                value={formData.metaTitle || ""}
+                onChange={(e) => handleChange("metaTitle", e.target.value)}
+                error={errors.metaTitle}
+              />
+              <p className="text-[10px] text-slate-700 font-medium">
+                Recommended: 40-60 characters. Overrides the default HTML title tag.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-800">
+                  Meta Search Description
+                </label>
+                <span className={`text-[10px] font-semibold ${
+                  (formData.metaDescription?.length || 0) > 160
+                    ? "text-rose-600"
+                    : (formData.metaDescription?.length || 0) >= 120
+                    ? "text-emerald-600"
+                    : "text-slate-500"
+                }`}>
+                  {formData.metaDescription?.length || 0} / 160 chars
+                </span>
+              </div>
+              <AdminTextareaField
+                rows={3}
+                placeholder="Compelling 150-character summary for Google search result snippets and social media cards..."
+                value={formData.metaDescription || ""}
+                onChange={(e) => handleChange("metaDescription", e.target.value)}
+                error={errors.metaDescription}
+              />
+              <p className="text-[10px] text-slate-700 font-medium">
+                Recommended: 120-160 characters. If omitted, article excerpt is used.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-800 block">
+                Focus SEO Keywords (Comma Separated)
+              </label>
+              <AdminInputField
+                placeholder="e.g. Everest packing list, Nepal gear, trekking advice, Sherpa guides"
+                value={formData.keywords || ""}
+                onChange={(e) => handleChange("keywords", e.target.value)}
+                error={errors.keywords}
+              />
+            </div>
           </div>
 
         </div>

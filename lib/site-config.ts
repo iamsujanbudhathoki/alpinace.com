@@ -16,10 +16,17 @@ export const siteConfig = {
 
 import { CategoryType } from "@/lib/admin-data";
 
+export type NavSubItem = {
+  label: string;
+  href: string;
+  description?: string;
+};
+
 export type NavLink = {
   label: string;
   href: string;
   categoryType?: CategoryType;
+  items?: NavSubItem[];
 };
 
 export const navLinks: NavLink[] = [
@@ -27,9 +34,22 @@ export const navLinks: NavLink[] = [
   { label: "Trekking", href: "/trekking", categoryType: CategoryType.TREKKING },
   { label: "Tours", href: "/tours", categoryType: CategoryType.TOURS },
   { label: "Expeditions", href: "/expeditions", categoryType: CategoryType.EXPEDITIONS },
-  { label: "About", href: "/about" },
-  { label: "Blog", href: "/blog", categoryType: CategoryType.BLOGS },
-  { label: "Contact", href: "/contact" },
+  {
+    label: "Resources",
+    href: "/blog",
+    items: [
+      {
+        label: "Blogs & Articles",
+        href: "/blog",
+        description: "Expedition preparation guides, packing lists & Sherpa stories.",
+      },
+      {
+        label: "Contact & Inquiries",
+        href: "/contact",
+        description: "Speak with mountain specialists & get custom route quotes.",
+      },
+    ],
+  },
 ];
 
 export const contact = {

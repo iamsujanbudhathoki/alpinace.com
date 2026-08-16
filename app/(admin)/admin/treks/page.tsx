@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Footprints, Clock, TrendingUp, Star } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Plus, Footprints, Clock, TrendingUp, Star, Tag, ExternalLink, Maximize2, Image as ImageIcon } from "lucide-react";
 import { TrekItem } from "@/lib/trek-data";
-import { TripDifficulty } from "@/lib/admin-data";
+import { TripDifficulty, PackageStatus, CategoryType, CategoryItem } from "@/lib/admin-data";
 import { toast } from "sonner";
-import { TrekService } from "@/lib/services/admin-service";
+import { TrekService, CategoryService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
+import { openSingleImage } from "@/lib/utils/lightbox";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
-import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { TrekFormModal, DeleteTrekModal } from "@/components/admin/modals/trek-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +29,18 @@ import {
   AdminActionButton,
 } from "@/components/admin/ui/admin-table";
 
+const STATUS_OPTIONS: InlineSelectOption[] = [
+  { value: PackageStatus.ACTIVE, label: "Active" },
+  { value: PackageStatus.FEATURED, label: "Featured" },
+  { value: PackageStatus.DRAFT, label: "Draft" },
+];
+
 export default function AdminTreksPage() {
+  const searchParams = useSearchParams();
+  const viewId = searchParams?.get("viewId");
+
   const [treks, setTreks] = useState<TrekItem[]>([]);
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [loading, setLoading] = useState(true);
@@ -39,18 +52,43 @@ export default function AdminTreksPage() {
   const [deletingTrek, setDeletingTrek] = useState<TrekItem | null>(null);
 
   useEffect(() => {
-    async function loadTreks() {
+    async function loadData() {
       try {
-        const data = await TrekService.getAll();
-        setTreks(data);
+        const [treksData, catsData] = await Promise.all([
+          TrekService.getAll(),
+          CategoryService.getByType(CategoryType.TREKKING),
+        ]);
+        setTreks(treksData);
+        setCategories(catsData);
       } catch (err) {
         console.error("Failed to load treks:", err);
       } finally {
         setLoading(false);
       }
     }
-    loadTreks();
+    loadData();
   }, []);
+
+  // Auto-open view modal when viewId is in query params & remove viewId from URL
+  useEffect(() => {
+    if (viewId && treks.length > 0) {
+      const match = treks.find((t) => t.id === viewId || t.slug === viewId);
+      if (match) {
+        setActiveTrek(match);
+        setIsEditing(false);
+        setIsFormOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [viewId, treks]);
+
+  const categoryOptions: InlineSelectOption[] = categories.map((c) => ({
+    value: c.id,
+    label: c.name,
+    icon: <Tag className="w-3 h-3 opacity-70" />,
+  }));
 
   const filteredTreks = treks.filter((trk) => {
     const matchesSearch =
@@ -87,6 +125,49 @@ export default function AdminTreksPage() {
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to save trek itinerary");
+      return false;
+    }
+  };
+
+  const handleInlineStatusChange = async (trk: TrekItem, newStatus: string): Promise<boolean> => {
+    try {
+      const res = await TrekService.update(trk.id, { status: newStatus as PackageStatus });
+      if (res.success) {
+        setTreks((prev) =>
+          prev.map((t) => (t.id === trk.id ? { ...t, status: newStatus as PackageStatus } : t))
+        );
+        toast.success(`Trek "${trk.title}" status updated`);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update status");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update status");
+      return false;
+    }
+  };
+
+  const handleInlineCategoryChange = async (trk: TrekItem, newCatId: string): Promise<boolean> => {
+    try {
+      const res = await TrekService.update(trk.id, { categoryId: newCatId });
+      if (res.success) {
+        const matchedCat = categories.find((c) => c.id === newCatId);
+        setTreks((prev) =>
+          prev.map((t) =>
+            t.id === trk.id
+              ? { ...t, categoryId: newCatId, category: matchedCat ? matchedCat.name : t.category }
+              : t
+          )
+        );
+        toast.success(`Trek "${trk.title}" category updated`);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update category");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update category");
       return false;
     }
   };
@@ -156,6 +237,7 @@ export default function AdminTreksPage() {
           <AdminTableHeader>
             <tr>
               <AdminTableHead>Trek Package Title</AdminTableHead>
+              <AdminTableHead>Category</AdminTableHead>
               <AdminTableHead>Region &amp; Duration</AdminTableHead>
               <AdminTableHead>Difficulty Level</AdminTableHead>
               <AdminTableHead>Best Season</AdminTableHead>
@@ -167,77 +249,144 @@ export default function AdminTreksPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={8} rows={5} />
+              <AdminTableLoading colSpan={9} rows={5} />
             ) : filteredTreks.length > 0 ? (
-              filteredTreks.map((trk) => (
-                <AdminTableRow key={trk.id}>
-                  <AdminTableCell>
-                    <div className="font-bold text-slate-900 flex items-center gap-2">
-                      <Footprints className="w-4 h-4 text-amber-600 shrink-0" />
-                      <span>{trk.title}</span>
-                    </div>
-                    <div className="text-xs text-slate-600 mt-0.5 font-normal">
-                      Permits: {trk.permitsRequired ? trk.permitsRequired.join(", ") : "Standard Permits"}
-                    </div>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <div className="font-semibold text-slate-900">{trk.region} Region</div>
-                    <div className="flex items-center gap-1 text-slate-600 text-xs font-medium">
-                      <Clock className="w-3.5 h-3.5 text-slate-600" />
-                      <span>{trk.durationDays} Days</span>
-                    </div>
-                  </AdminTableCell>
-                  <AdminTableCell className="font-medium text-slate-800">
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
-                      <span>{trk.difficulty}</span>
-                    </div>
-                  </AdminTableCell>
-                  <AdminTableCell className="font-medium text-slate-800">{trk.bestSeason}</AdminTableCell>
-                  <AdminTableCell className="font-bold text-slate-900 text-sm">
-                    ${trk.priceUSD.toLocaleString()} USD
-                  </AdminTableCell>
-                  <AdminTableCell className="font-semibold text-slate-900">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span>{trk.rating || 5.0} ({trk.reviewsCount || 0})</span>
-                    </div>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <AdminStatusBadge status={trk.status} />
-                  </AdminTableCell>
-                  <AdminTableCell align="right">
-                    <AdminTableActions>
-                      <AdminActionButton
-                        variant="view"
-                        onClick={() => {
-                          setActiveTrek(trk);
-                          setIsEditing(false);
-                          setIsFormOpen(true);
-                        }}
-                        title="View Trek"
+              filteredTreks.map((trk) => {
+                const currentCatId =
+                  trk.categoryId ||
+                  categories.find((c) => c.name.toLowerCase() === (trk.category || "").toLowerCase())?.id ||
+                  "";
+
+                return (
+                  <AdminTableRow key={trk.id}>
+                    <AdminTableCell>
+                      <div className="flex items-center gap-3">
+                        {trk.image ? (
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openSingleImage(trk.image!, trk.title, e.currentTarget);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.stopPropagation();
+                                openSingleImage(trk.image!, trk.title, e.currentTarget);
+                              }
+                            }}
+                            className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-amber-400 transition-all"
+                            title="Click to view image in lightbox"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={trk.image}
+                              alt={trk.title}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                              <Maximize2 className="w-3.5 h-3.5 text-white drop-shadow-md" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-12 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
+                            <ImageIcon className="w-5 h-5" />
+                          </div>
+                        )}
+                        <div>
+                          <Link
+                            href={`/trekking/${trk.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group/link inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-amber-600 transition-colors"
+                            title="Open trek in public marketing page"
+                          >
+                            <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-amber-500 underline-offset-2 transition-all">
+                              {trk.title}
+                            </span>
+                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
+                          </Link>
+                          <div className="text-xs text-slate-600 mt-0.5 font-normal">
+                            Permits: {trk.permitsRequired ? trk.permitsRequired.join(", ") : "Standard Permits"}
+                          </div>
+                        </div>
+                      </div>
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={currentCatId}
+                        options={categoryOptions}
+                        onChange={(newVal) => handleInlineCategoryChange(trk, newVal)}
+                        variant="category"
+                        placeholder={trk.category || "Select category"}
+                        title="Click to change trek category"
                       />
-                      <AdminActionButton
-                        variant="edit"
-                        onClick={() => {
-                          setActiveTrek(trk);
-                          setIsEditing(true);
-                          setIsFormOpen(true);
-                        }}
-                        title="Edit Trek"
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <div className="font-semibold text-slate-900">{trk.region} Region</div>
+                      <div className="flex items-center gap-1 text-slate-600 text-xs font-medium">
+                        <Clock className="w-3.5 h-3.5 text-slate-600" />
+                        <span>{trk.durationDays} Days</span>
+                      </div>
+                    </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">
+                      <div className="flex items-center gap-1">
+                        <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
+                        <span>{trk.difficulty}</span>
+                      </div>
+                    </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">{trk.bestSeason}</AdminTableCell>
+                    <AdminTableCell className="font-bold text-slate-900 text-sm">
+                      ${trk.priceUSD.toLocaleString()} USD
+                    </AdminTableCell>
+                    <AdminTableCell className="font-semibold text-slate-900">
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                        <span>{trk.rating || 5.0} ({trk.reviewsCount || 0})</span>
+                      </div>
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={trk.status}
+                        options={STATUS_OPTIONS}
+                        onChange={(newVal) => handleInlineStatusChange(trk, newVal)}
+                        variant="badge"
+                        title="Click to change trek status"
                       />
-                      <AdminActionButton
-                        variant="delete"
-                        onClick={() => setDeletingTrek(trk)}
-                        title="Delete Trek"
-                      />
-                    </AdminTableActions>
-                  </AdminTableCell>
-                </AdminTableRow>
-              ))
+                    </AdminTableCell>
+                    <AdminTableCell align="right">
+                      <AdminTableActions>
+                        <AdminActionButton
+                          variant="view"
+                          onClick={() => {
+                            setActiveTrek(trk);
+                            setIsEditing(false);
+                            setIsFormOpen(true);
+                          }}
+                          title="View Trek"
+                        />
+                        <AdminActionButton
+                          variant="edit"
+                          onClick={() => {
+                            setActiveTrek(trk);
+                            setIsEditing(true);
+                            setIsFormOpen(true);
+                          }}
+                          title="Edit Trek"
+                        />
+                        <AdminActionButton
+                          variant="delete"
+                          onClick={() => setDeletingTrek(trk)}
+                          title="Delete Trek"
+                        />
+                      </AdminTableActions>
+                    </AdminTableCell>
+                  </AdminTableRow>
+                );
+              })
             ) : (
               <AdminTableEmpty
-                colSpan={8}
+                colSpan={9}
                 title="No trekking packages found"
                 description="No trek itineraries match your search query or difficulty filter."
               />
@@ -264,3 +413,4 @@ export default function AdminTreksPage() {
     </div>
   );
 }
+

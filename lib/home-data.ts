@@ -38,6 +38,10 @@ export interface BlogPost {
   excerpt?: string;
   content?: string;
   image?: string;
+  author?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string;
 }
 
 export const HOME_STATS: { number: string; label: string; desc: string }[] = [];

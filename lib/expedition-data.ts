@@ -1,4 +1,4 @@
-import { PackageStatus, PackageRegion, ClimbingGrade, TripDifficulty } from "./admin-data";
+import { ClimbingGrade, PackageRegion, PackageStatus, TripDifficulty } from "./admin-data";
 import { TripFaqItem, TripItineraryDay, TripReviewItem } from "./trek-data";
 
 export { ClimbingGrade };

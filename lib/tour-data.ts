@@ -1,4 +1,4 @@
-import { PackageStatus, PackageRegion, TourType, TripDifficulty } from "./admin-data";
+import { PackageRegion, PackageStatus, TourType, TripDifficulty } from "./admin-data";
 import { TripFaqItem, TripItineraryDay, TripReviewItem } from "./trek-data";
 
 export { TourType };

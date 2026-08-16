@@ -1,34 +1,33 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { notFound } from "next/navigation";
-import {
-  Calendar,
-  BedDouble,
-  MapPin,
-  Utensils,
-  Users,
-  Car,
-  Compass,
-} from "lucide-react";
-import { TourItem, initialToursData } from "@/lib/tour-data";
-import { TourService, FaqService, SettingService } from "@/lib/services/admin-service";
-import { BookingPackageType, TourType, FaqItem, FaqStatus } from "@/lib/admin-data";
-import { Testimonial } from "@/lib/home-data";
-import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import {
-  PackageDetailHero,
-  PackageQuickFacts,
-  PackageGallery,
-  PackageTabsNav,
-  PackageItinerary,
-  PackageInclusions,
-  PackageFaqs,
-  PackageReviews,
   PackageBookingSidebar,
+  PackageDetailHero,
+  PackageFaqs,
+  PackageGallery,
+  PackageInclusions,
+  PackageItinerary,
+  PackageQuickFacts,
   PackageRelatedTrips,
+  PackageReviews,
+  PackageTabsNav,
 } from "@/components/marketing/package-details";
+import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
+import { BookingPackageType, FaqItem, FaqStatus, TourType } from "@/lib/admin-data";
+import { Testimonial } from "@/lib/home-data";
+import { FaqService, SettingService, TourService } from "@/lib/services/admin-service";
+import { TourItem, initialToursData } from "@/lib/tour-data";
+import {
+  BedDouble,
+  Calendar,
+  Compass,
+  MapPin,
+  Users,
+  Utensils
+} from "lucide-react";
+import { notFound } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 interface TourDetailClientProps {
   initialTour: TourItem | any | null;

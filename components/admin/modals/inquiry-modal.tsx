@@ -6,11 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Send, Mail, Phone, Globe } from "lucide-react";
 import { Inquiry, InquiryStatus } from "@/lib/admin-data";
 import { inquirySchema, InquiryFormValues } from "@/lib/admin-schemas";
-import { AdminInputField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
+import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
+import { COUNTRY_OPTIONS } from "@/lib/country-list";
 
 interface InquiryFormModalProps {
   isOpen: boolean;
@@ -32,9 +33,9 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
       email: "",
       phone: "",
       country: "",
-      interestedTrip: "",
-      travelDates: "",
-      groupSize: 1,
+      interestedTrip: "Everest Region (Khumbu)",
+      travelDates: "Upcoming Season",
+      groupSize: 2,
       message: "",
     },
   });
@@ -46,9 +47,9 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         email: "",
         phone: "",
         country: "",
-        interestedTrip: "",
-        travelDates: "",
-        groupSize: 1,
+        interestedTrip: "Everest Region (Khumbu)",
+        travelDates: "Upcoming Season",
+        groupSize: 2,
         message: "",
       });
     }
@@ -87,7 +88,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
           <AdminInputField
             label="Guest Name"
             required
-            placeholder="e.g. Sarah Jenkins"
+            placeholder="e.g. Dr. Jennifer Vance"
             error={errors.guestName?.message}
             {...register("guestName")}
           />
@@ -96,7 +97,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
             label="Email Address"
             type="email"
             required
-            placeholder="e.g. sarah@example.com"
+            placeholder="e.g. jennifer@luxuryexpeditions.com"
             error={errors.email?.message}
             {...register("email")}
           />
@@ -104,50 +105,66 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
           <AdminInputField
             label="Phone / WhatsApp"
             required
-            placeholder="+44 7700 900077"
+            placeholder="e.g. +1 (415) 555-0199"
             error={errors.phone?.message}
             {...register("phone")}
           />
 
-          <AdminInputField
-            label="Country"
+          <AdminSelectField
+            label="Country of Residence"
             required
-            placeholder="United Kingdom"
+            options={[
+              { label: "Select Country...", value: "" },
+              ...COUNTRY_OPTIONS,
+            ]}
             error={errors.country?.message}
             {...register("country")}
           />
 
-          <div className="col-span-2">
-            <AdminInputField
-              label="Interested Expedition / Trek"
-              required
-              error={errors.interestedTrip?.message}
-              {...register("interestedTrip")}
-            />
-          </div>
-
-          <AdminInputField
-            label="Target Dates"
+          <AdminSelectField
+            label="Region / Trip of Interest"
             required
-            placeholder="October 2026"
-            error={errors.travelDates?.message}
-            {...register("travelDates")}
+            options={[
+              { label: "Everest Region (Khumbu)", value: "Everest Region (Khumbu)" },
+              { label: "Annapurna Region", value: "Annapurna Region" },
+              { label: "Kathmandu Valley & Culture", value: "Kathmandu Valley & Culture" },
+              { label: "Peak Climbing Expeditions", value: "Peak Climbing Expeditions" },
+              { label: "Manaslu & Langtang Wilderness", value: "Manaslu & Langtang Wilderness" },
+              { label: "Other / Custom Wilderness", value: "Other / Custom Wilderness" },
+            ]}
+            error={errors.interestedTrip?.message}
+            {...register("interestedTrip")}
           />
 
-          <AdminInputField
-            label="Group Size"
-            type="number"
+          <AdminSelectField
+            label="Number of Travelers"
             required
+            options={[
+              { label: "1 (Solo Traveler)", value: "1" },
+              { label: "2 (Couple / Friends)", value: "2" },
+              { label: "3 to 5 (Private Group)", value: "3" },
+              { label: "6+ Travelers (Expedition Team)", value: "6" },
+            ]}
             error={errors.groupSize?.message}
             {...register("groupSize")}
           />
 
           <div className="col-span-2">
+            <AdminInputField
+              label="Target Travel Dates / Season"
+              required
+              placeholder="e.g. October 2026 / Autumn Season"
+              error={errors.travelDates?.message}
+              {...register("travelDates")}
+            />
+          </div>
+
+          <div className="col-span-2">
             <AdminTextareaField
-              label="Inquiry Message / Special Goals"
+              label="Inquiry Message / Goals & Notes"
               required
               rows={3}
-              placeholder="Notes from initial conversation..."
+              placeholder="Notes from initial conversation, desired altitude goals, physical preparation level..."
               error={errors.message?.message}
               {...register("message")}
             />

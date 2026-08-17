@@ -10,6 +10,7 @@ import { InquiryService } from '@/lib/services/admin-service';
 import { useSettings } from '@/lib/settings-context';
 import { FormLabel } from '@/components/ui/form-label';
 import { cn } from '@/lib/utils';
+import { COUNTRY_OPTIONS } from '@/lib/country-list';
 
 const contactSchema = z.object({
   fullName: z
@@ -22,6 +23,7 @@ const contactSchema = z.object({
     .min(1, 'Email address is required')
     .email('Please enter a valid email address'),
   phone: z.string().optional(),
+  country: z.string().min(1, 'Please select your country'),
   destination: z.string().min(1, 'Please select a region of interest'),
   travelers: z.string().min(1, 'Please select number of travelers'),
   message: z
@@ -47,6 +49,7 @@ export default function ContactView() {
       fullName: '',
       email: '',
       phone: '',
+      country: '',
       destination: 'Everest Region (Khumbu)',
       travelers: '2',
       message: '',
@@ -59,7 +62,7 @@ export default function ContactView() {
         guestName: data.fullName,
         email: data.email,
         phone: data.phone || '+1 000-000-0000',
-        country: 'International',
+        country: data.country || 'International',
         interestedTrip: data.destination,
         travelDates: 'Upcoming Season',
         groupSize: Number(data.travelers) || 1,
@@ -294,6 +297,29 @@ export default function ContactView() {
                   </div>
 
                   <div className="space-y-1">
+                    <FormLabel required>Country of Residence</FormLabel>
+                    <select
+                      {...register("country")}
+                      className={cn(
+                        "w-full bg-stone-50/80 border text-xs rounded-lg px-4 py-3 focus:outline-none transition-colors cursor-pointer",
+                        errors.country
+                          ? "border-rose-400 focus:border-rose-500 bg-rose-50/20"
+                          : "border-stone-200 focus:border-amber-500"
+                      )}
+                    >
+                      <option value="">Select Country...</option>
+                      {COUNTRY_OPTIONS.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.country && (
+                      <p className="text-xs font-medium text-rose-500 mt-1">{errors.country.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
                     <FormLabel>Region of Interest</FormLabel>
                     <select
                       {...register("destination")}
@@ -307,7 +333,7 @@ export default function ContactView() {
                     </select>
                   </div>
 
-                  <div className="space-y-1 sm:col-span-2">
+                  <div className="space-y-1">
                     <FormLabel>Number of Travelers</FormLabel>
                     <select
                       {...register("travelers")}

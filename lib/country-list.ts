@@ -4,7 +4,7 @@ export const COUNTRY_LIST = [
   {name: 'Albania', code: 'AL'}, 
   {name: 'Algeria', code: 'DZ'}, 
   {name: 'American Samoa', code: 'AS'}, 
-  {name: 'AndorrA', code: 'AD'}, 
+  {name: 'Andorra', code: 'AD'}, 
   {name: 'Angola', code: 'AO'}, 
   {name: 'Anguilla', code: 'AI'}, 
   {name: 'Antarctica', code: 'AQ'}, 
@@ -180,7 +180,7 @@ export const COUNTRY_LIST = [
   {name: 'Reunion', code: 'RE'}, 
   {name: 'Romania', code: 'RO'}, 
   {name: 'Russian Federation', code: 'RU'}, 
-  {name: 'RWANDA', code: 'RW'}, 
+  {name: 'Rwanda', code: 'RW'}, 
   {name: 'Saint Helena', code: 'SH'}, 
   {name: 'Saint Kitts and Nevis', code: 'KN'}, 
   {name: 'Saint Lucia', code: 'LC'}, 
@@ -246,3 +246,8 @@ export const COUNTRY_LIST = [
 
 export type Country = { name: string; code: string };
 export const COUNTRIES = COUNTRY_LIST;
+
+export const COUNTRY_OPTIONS: { label: string; value: string }[] = COUNTRY_LIST.map((c) => ({
+  label: c.name,
+  value: c.name,
+}));

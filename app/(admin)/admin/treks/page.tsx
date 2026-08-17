@@ -27,6 +27,7 @@ import {
   AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
+  AdminTablePagination,
 } from "@/components/admin/ui/admin-table";
 
 const STATUS_OPTIONS: InlineSelectOption[] = [
@@ -42,8 +43,15 @@ export default function AdminTreksPage() {
   const [treks, setTreks] = useState<TrekItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [loading, setLoading] = useState(true);
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Modal states
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -51,23 +59,60 @@ export default function AdminTreksPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [deletingTrek, setDeletingTrek] = useState<TrekItem | null>(null);
 
+  // Load categories once
   useEffect(() => {
-    async function loadData() {
+    async function loadCategories() {
       try {
-        const [treksData, catsData] = await Promise.all([
-          TrekService.getAll(),
-          CategoryService.getByType(CategoryType.TREKKING),
-        ]);
-        setTreks(treksData);
+        const catsData = await CategoryService.getByType(CategoryType.TREKKING);
         setCategories(catsData);
       } catch (err) {
-        console.error("Failed to load treks:", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to load categories:", err);
       }
     }
-    loadData();
+    loadCategories();
   }, []);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page to 1 when search or difficulty changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, selectedDifficulty]);
+
+  // Load treks from backend
+  const loadTreks = async () => {
+    setLoading(true);
+    try {
+      const data = await TrekService.getAll({
+        search: debouncedSearch,
+        difficulty: selectedDifficulty,
+        page,
+        limit,
+      });
+      setTreks(data);
+      if ((data as any).pagination) {
+        setTotalItems((data as any).pagination.count);
+        setTotalPages((data as any).pagination.lastPage);
+      } else {
+        setTotalItems(data.length);
+        setTotalPages(Math.max(1, Math.ceil(data.length / limit)));
+      }
+    } catch (err) {
+      console.error("Failed to load treks:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTreks();
+  }, [debouncedSearch, selectedDifficulty, page, limit]);
 
   // Auto-open view modal when viewId is in query params & remove viewId from URL
   useEffect(() => {
@@ -90,84 +135,25 @@ export default function AdminTreksPage() {
     icon: <Tag className="w-3 h-3 opacity-70" />,
   }));
 
-  const filteredTreks = treks.filter((trk) => {
-    const matchesSearch =
-      trk.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      trk.region.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesDifficulty =
-      selectedDifficulty === "All" || trk.difficulty === selectedDifficulty;
-
-    return matchesSearch && matchesDifficulty;
-  });
-
   const handleSaveTrek = async (savedTrek: TrekItem): Promise<boolean> => {
     try {
       let res: ApiResponse<TrekItem>;
       if (isEditing && activeTrek) {
         res = await TrekService.update(activeTrek.id, savedTrek as any);
-        if (res.success) {
-          setTreks((prev) => prev.map((t) => (t.id === activeTrek.id ? res.data : t)));
-        }
       } else {
         res = await TrekService.create(savedTrek as any);
-        if (res.success) {
-          setTreks((prev) => [res.data, ...prev]);
-        }
       }
       if (res.success) {
         toast.success(res.message || "Trek itinerary saved successfully");
         setIsFormOpen(false);
+        await loadTreks();
         return true;
       } else {
         toast.error(res.message || "Failed to save trek itinerary");
         return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save trek itinerary");
-      return false;
-    }
-  };
-
-  const handleInlineStatusChange = async (trk: TrekItem, newStatus: string): Promise<boolean> => {
-    try {
-      const res = await TrekService.update(trk.id, { status: newStatus as PackageStatus });
-      if (res.success) {
-        setTreks((prev) =>
-          prev.map((t) => (t.id === trk.id ? { ...t, status: newStatus as PackageStatus } : t))
-        );
-        toast.success(`Trek "${trk.title}" status updated`);
-        return true;
-      } else {
-        toast.error(res.message || "Failed to update status");
-        return false;
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update status");
-      return false;
-    }
-  };
-
-  const handleInlineCategoryChange = async (trk: TrekItem, newCatId: string): Promise<boolean> => {
-    try {
-      const res = await TrekService.update(trk.id, { categoryId: newCatId });
-      if (res.success) {
-        const matchedCat = categories.find((c) => c.id === newCatId);
-        setTreks((prev) =>
-          prev.map((t) =>
-            t.id === trk.id
-              ? { ...t, categoryId: newCatId, category: matchedCat ? matchedCat.name : t.category }
-              : t
-          )
-        );
-        toast.success(`Trek "${trk.title}" category updated`);
-        return true;
-      } else {
-        toast.error(res.message || "Failed to update category");
-        return false;
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update category");
+      toast.error(err.message || "An unexpected error occurred");
       return false;
     }
   };
@@ -175,24 +161,64 @@ export default function AdminTreksPage() {
   const handleDeleteTrek = async (id: string) => {
     try {
       const res = await TrekService.delete(id);
-      setTreks((prev) => prev.filter((t) => t.id !== id));
-      setDeletingTrek(null);
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Trek itinerary deleted successfully");
+        setDeletingTrek(null);
+        await loadTreks();
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to delete trek");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete trek");
     }
   };
 
+  const handleInlineStatusChange = async (trk: TrekItem, newStatus: string) => {
+    try {
+      const res = await TrekService.update(trk.id, { status: newStatus as PackageStatus });
+      if (res.success) {
+        setTreks((prev) =>
+          prev.map((t) => (t.id === trk.id ? { ...t, status: newStatus as PackageStatus } : t))
+        );
+        toast.success(`Updated "${trk.title}" status to ${newStatus}`);
+      } else {
+        toast.error(res.message || "Failed to update status");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update status");
+    }
+  };
+
+  const handleInlineCategoryChange = async (trk: TrekItem, newCategoryId: string) => {
+    const selectedCat = categories.find((c) => c.id === newCategoryId);
+    try {
+      const res = await TrekService.update(trk.id, {
+        categoryId: newCategoryId,
+        category: selectedCat?.name || trk.category,
+      } as any);
+      if (res.success) {
+        setTreks((prev) =>
+          prev.map((t) =>
+            t.id === trk.id
+              ? { ...t, categoryId: newCategoryId, category: selectedCat?.name || t.category }
+              : t
+          )
+        );
+        toast.success(`Updated "${trk.title}" category to ${selectedCat?.name || newCategoryId}`);
+      } else {
+        toast.error(res.message || "Failed to update category");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update category");
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Page Header */}
       <AdminPageHeader
-        title="Trekking Itineraries & Routes"
-        description="Oversee active high-altitude routes, elevation profiles, and pricing tiers."
+        title="Trekking Itineraries"
+        description="Manage high-altitude routes, tea-house circuits, permits, and pricing."
       >
         <Button
           size="sm"
@@ -236,6 +262,7 @@ export default function AdminTreksPage() {
         <AdminTable>
           <AdminTableHeader>
             <tr>
+              <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead>Trek Package Title</AdminTableHead>
               <AdminTableHead>Category</AdminTableHead>
               <AdminTableHead>Region &amp; Duration</AdminTableHead>
@@ -249,16 +276,20 @@ export default function AdminTreksPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={9} rows={5} />
-            ) : filteredTreks.length > 0 ? (
-              filteredTreks.map((trk) => {
+              <AdminTableLoading colSpan={10} rows={limit > 10 ? 10 : limit} />
+            ) : treks.length > 0 ? (
+              treks.map((trk, idx) => {
                 const currentCatId =
                   trk.categoryId ||
                   categories.find((c) => c.name.toLowerCase() === (trk.category || "").toLowerCase())?.id ||
                   "";
+                const serialNumber = (page - 1) * limit + idx + 1;
 
                 return (
                   <AdminTableRow key={trk.id}>
+                    <AdminTableCell className="text-center font-semibold text-slate-500">
+                      {serialNumber}
+                    </AdminTableCell>
                     <AdminTableCell>
                       <div className="flex items-center gap-3">
                         {trk.image ? (
@@ -386,13 +417,24 @@ export default function AdminTreksPage() {
               })
             ) : (
               <AdminTableEmpty
-                colSpan={9}
+                colSpan={10}
                 title="No trekking packages found"
                 description="No trek itineraries match your search query or difficulty filter."
               />
             )}
           </AdminTableBody>
         </AdminTable>
+        <AdminTablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={limit}
+          onPageChange={setPage}
+          onPageSizeChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </AdminTableContainer>
 
       {/* MODALS */}

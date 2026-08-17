@@ -20,14 +20,23 @@ import {
   AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
+  AdminTablePagination,
 } from "@/components/admin/ui/admin-table";
 import { Button } from "@/components/ui/button";
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [allCategoriesForStats, setAllCategoriesForStats] = useState<CategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedType, setSelectedType] = useState<string>("All");
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Modal States
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -35,26 +44,61 @@ export default function AdminCategoriesPage() {
   const [activeCategory, setActiveCategory] = useState<CategoryItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Fetch categories using CategoryService DAOs
+  // Load all categories once for stats summary cards
+  const loadStats = async () => {
+    try {
+      const data = await CategoryService.getAll();
+      setAllCategoriesForStats(data);
+    } catch (e) {
+      console.warn("Failed to load category stats:", e);
+    }
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page to 1 on filter or search changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, selectedType]);
+
+  // Fetch paginated categories from backend
   const loadCategories = async () => {
     setIsLoading(true);
-    const data = await CategoryService.getAll();
-    setCategories(data);
-    setIsLoading(false);
+    try {
+      const data = await CategoryService.getAll({
+        type: selectedType === "All" ? undefined : selectedType,
+        search: debouncedSearch,
+        page,
+        limit,
+      });
+      setCategories(data);
+      if (data.pagination) {
+        setTotalItems(data.pagination.count);
+        setTotalPages(data.pagination.lastPage);
+      } else {
+        setTotalItems(data.length);
+        setTotalPages(Math.max(1, Math.ceil(data.length / limit)));
+      }
+    } catch (err) {
+      console.error("Failed to load categories:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
     loadCategories();
-  }, []);
-
-  // Filter Categories
-  const filteredCategories = categories.filter((cat) => {
-    const matchesSearch =
-      cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cat.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = selectedType === "All" || cat.type === selectedType;
-    return matchesSearch && matchesType;
-  });
+  }, [debouncedSearch, selectedType, page, limit]);
 
   const handleCreateNew = () => {
     setActiveCategory(null);
@@ -84,13 +128,13 @@ export default function AdminCategoriesPage() {
     try {
       const res = await CategoryService.delete(activeCategory.id);
       if (res.success) {
-        setCategories((prev) => prev.filter((c) => c.id !== activeCategory.id));
-        toast.success(res.message );
+        toast.success(res.message || "Category deleted successfully");
+        await Promise.all([loadCategories(), loadStats()]);
       } else {
-        toast.error(res.message );
+        toast.error(res.message || "Failed to delete category");
       }
     } catch (err: any) {
-      toast.error(err.message );
+      toast.error(err.message || "Failed to delete category");
     } finally {
       setIsDeleteModalOpen(false);
     }
@@ -100,38 +144,21 @@ export default function AdminCategoriesPage() {
     try {
       let res: ApiResponse<CategoryItem>;
       if (isEditing && activeCategory) {
-        res = await CategoryService.update(activeCategory.id, {
-          name: savedCategory.name,
-          type: savedCategory.type,
-          description: savedCategory.description,
-          status: savedCategory.status,
-        });
-        if (res.success) {
-          setCategories((prev) =>
-            prev.map((c) => (c.id === activeCategory.id ? res.data : c))
-          );
-        }
+        res = await CategoryService.update(activeCategory.id, savedCategory as any);
       } else {
-        res = await CategoryService.create({
-          name: savedCategory.name,
-          type: savedCategory.type,
-          description: savedCategory.description,
-          status: savedCategory.status,
-        });
-        if (res.success) {
-          setCategories((prev) => [res.data, ...prev]);
-        }
+        res = await CategoryService.create(savedCategory as any);
       }
       if (res.success) {
-        toast.success(res.message || "Category saved successfully.");
+        toast.success(res.message || "Category saved successfully");
         setIsFormModalOpen(false);
+        await Promise.all([loadCategories(), loadStats()]);
         return true;
       } else {
-        toast.error(res.message || "Failed to save category.");
+        toast.error(res.message || "Failed to save category");
         return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save category.");
+      toast.error(err.message || "An unexpected error occurred");
       return false;
     }
   };
@@ -139,69 +166,66 @@ export default function AdminCategoriesPage() {
   const getTypeIcon = (type: CategoryType) => {
     switch (type) {
       case CategoryType.TREKKING:
-        return <Compass className="w-3.5 h-3.5 text-amber-600" />;
-      case CategoryType.EXPEDITIONS:
-        return <Mountain className="w-3.5 h-3.5 text-rose-600" />;
+        return <Mountain className="w-3.5 h-3.5 text-amber-500" />;
       case CategoryType.TOURS:
-        return <MapPin className="w-3.5 h-3.5 text-blue-600" />;
+        return <Compass className="w-3.5 h-3.5 text-blue-500" />;
+      case CategoryType.EXPEDITIONS:
+        return <MapPin className="w-3.5 h-3.5 text-red-500" />;
       case CategoryType.BLOGS:
-        return <BookOpen className="w-3.5 h-3.5 text-purple-600" />;
+        return <BookOpen className="w-3.5 h-3.5 text-purple-500" />;
       case CategoryType.MEDIA:
-        return <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />;
+        return <ImageIcon className="w-3.5 h-3.5 text-emerald-500" />;
       default:
-        return <Tag className="w-3.5 h-3.5 text-slate-600" />;
+        return <Tag className="w-3.5 h-3.5 text-slate-500" />;
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <Tag className="w-5 h-5 text-amber-500" />
-            Categories
-          </h1>
-          <p className="text-xs text-slate-600 font-normal">
-            Manage categories across Treks, Tours, Expeditions, Blogs &amp; Media
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Category Taxonomy</h1>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
+            Manage hierarchical classifications and trip styles across packages, media, and blogs.
           </p>
         </div>
       </div>
 
-      {/* Overview Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+      {/* Top Stat Overview Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold">
-            <Compass className="w-5 h-5" />
+            <Mountain className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">Trekking Categories</div>
+            <div className="text-sm font-bold text-slate-900">Trek Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === CategoryType.TREKKING).length}
+              {allCategoriesForStats.filter((c) => c.type === CategoryType.TREKKING).length}
             </div>
           </div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center font-bold">
-            <Mountain className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center font-bold">
+            <MapPin className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">Expedition Categories</div>
+            <div className="text-sm font-bold text-slate-900">Expeditions</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === CategoryType.EXPEDITIONS).length}
+              {allCategoriesForStats.filter((c) => c.type === CategoryType.EXPEDITIONS).length}
             </div>
           </div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center font-bold">
-            <MapPin className="w-5 h-5" />
+            <Compass className="w-5 h-5" />
           </div>
           <div>
             <div className="text-sm font-bold text-slate-900">Tour Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === CategoryType.TOURS).length}
+              {allCategoriesForStats.filter((c) => c.type === CategoryType.TOURS).length}
             </div>
           </div>
         </div>
@@ -213,7 +237,7 @@ export default function AdminCategoriesPage() {
           <div>
             <div className="text-sm font-bold text-slate-900">Blog Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === CategoryType.BLOGS).length}
+              {allCategoriesForStats.filter((c) => c.type === CategoryType.BLOGS).length}
             </div>
           </div>
         </div>
@@ -225,7 +249,7 @@ export default function AdminCategoriesPage() {
           <div>
             <div className="text-sm font-bold text-slate-900">Media Categories</div>
             <div className="text-lg font-bold text-slate-900">
-              {categories.filter((c) => c.type === CategoryType.MEDIA).length}
+              {allCategoriesForStats.filter((c) => c.type === CategoryType.MEDIA).length}
             </div>
           </div>
         </div>
@@ -278,6 +302,7 @@ export default function AdminCategoriesPage() {
         <AdminTable>
           <AdminTableHeader>
             <tr>
+              <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead>Category Name</AdminTableHead>
               <AdminTableHead>Target Domain</AdminTableHead>
               <AdminTableHead>Slug</AdminTableHead>
@@ -288,57 +313,74 @@ export default function AdminCategoriesPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {isLoading ? (
-              <AdminTableLoading colSpan={6} message="Loading category taxonomy..." />
-            ) : filteredCategories.length > 0 ? (
-              filteredCategories.map((cat) => (
-                <AdminTableRow key={cat.id}>
-                  <AdminTableCell>
-                    <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
-                      {cat.name}
-                    </div>
-                    <div className="text-xs text-slate-600 line-clamp-1 max-w-md font-normal">{cat.description}</div>
-                  </AdminTableCell>
-                  <AdminTableCell className="font-medium text-slate-800">
-                    <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md w-fit">
-                      {getTypeIcon(cat.type)}
-                      <span>{cat.type}</span>
-                    </div>
-                  </AdminTableCell>
-                  <AdminTableCell className="text-slate-600 text-xs font-normal">/{cat.slug}</AdminTableCell>
-                  <AdminTableCell className="font-medium text-slate-800">{cat.itemCount} Items</AdminTableCell>
-                  <AdminTableCell>
-                    <AdminStatusBadge status={cat.status} />
-                  </AdminTableCell>
-                  <AdminTableCell align="right">
-                    <AdminTableActions>
-                      <AdminActionButton
-                        variant="view"
-                        onClick={() => handleView(cat)}
-                        title="View Details"
-                      />
-                      <AdminActionButton
-                        variant="edit"
-                        onClick={() => handleEdit(cat)}
-                        title="Edit Category"
-                      />
-                      <AdminActionButton
-                        variant="delete"
-                        onClick={() => handleDeletePrompt(cat)}
-                        title="Delete Category"
-                      />
-                    </AdminTableActions>
-                  </AdminTableCell>
-                </AdminTableRow>
-              ))
+              <AdminTableLoading colSpan={7} rows={limit > 10 ? 10 : limit} message="Loading category taxonomy..." />
+            ) : categories.length > 0 ? (
+              categories.map((cat, idx) => {
+                const serialNumber = (page - 1) * limit + idx + 1;
+                return (
+                  <AdminTableRow key={cat.id}>
+                    <AdminTableCell className="text-center font-semibold text-slate-500">
+                      {serialNumber}
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                        {cat.name}
+                      </div>
+                      <div className="text-xs text-slate-600 line-clamp-1 max-w-md font-normal">{cat.description}</div>
+                    </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">
+                      <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md w-fit">
+                        {getTypeIcon(cat.type)}
+                        <span>{cat.type}</span>
+                      </div>
+                    </AdminTableCell>
+                    <AdminTableCell className="text-slate-600 text-xs font-normal">/{cat.slug}</AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">{cat.itemCount} Items</AdminTableCell>
+                    <AdminTableCell>
+                      <AdminStatusBadge status={cat.status} />
+                    </AdminTableCell>
+                    <AdminTableCell align="right">
+                      <AdminTableActions>
+                        <AdminActionButton
+                          variant="view"
+                          onClick={() => handleView(cat)}
+                          title="View Details"
+                        />
+                        <AdminActionButton
+                          variant="edit"
+                          onClick={() => handleEdit(cat)}
+                          title="Edit Category"
+                        />
+                        <AdminActionButton
+                          variant="delete"
+                          onClick={() => handleDeletePrompt(cat)}
+                          title="Delete Category"
+                        />
+                      </AdminTableActions>
+                    </AdminTableCell>
+                  </AdminTableRow>
+                );
+              })
             ) : (
               <AdminTableEmpty
-                colSpan={6}
+                colSpan={7}
                 title="No categories found"
                 description="No categories matching your search or module filter query."
               />
             )}
           </AdminTableBody>
         </AdminTable>
+        <AdminTablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={limit}
+          onPageChange={setPage}
+          onPageSizeChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </AdminTableContainer>
 
       {/* Category Create/Edit Modal */}

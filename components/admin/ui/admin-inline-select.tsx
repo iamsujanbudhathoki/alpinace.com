@@ -100,7 +100,9 @@ export function AdminInlineSelect({
 
   const handleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value;
-    if (newValue === value) return;
+    // Allow onChange to be called even if the selected value is the same as the current value.
+    // This ensures that the change handler runs in cases where there is only a single selectable option.
+
 
     setIsUpdating(true);
     try {
@@ -162,6 +164,11 @@ export function AdminInlineSelect({
         aria-label={title || "Select value"}
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed text-xs"
       >
+        {(!value && options.length > 0) && (
+          <option value="" disabled hidden>
+            {placeholder}
+          </option>
+        )}
         {options.map((opt) => (
           <option key={opt.value} value={opt.value} className="text-slate-900 bg-white py-1">
             {opt.label}

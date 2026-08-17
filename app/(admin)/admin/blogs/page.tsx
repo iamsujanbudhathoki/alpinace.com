@@ -15,6 +15,7 @@ import {
   AdminTableHead,
   AdminTableHeader,
   AdminTableLoading,
+  AdminTablePagination,
   AdminTableRow,
 } from "@/components/admin/ui/admin-table";
 import { Button } from "@/components/ui/button";
@@ -35,23 +36,57 @@ const STATUS_OPTIONS: InlineSelectOption[] = [
 export default function AdminBlogsPage() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeArticle, setActiveArticle] = useState<BlogArticle | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Debounce search query
   useEffect(() => {
-    async function loadArticles() {
-      try {
-        const data = await BlogService.getAll();
-        setArticles(data);
-      } catch (err) {
-        console.error("Failed to load blog articles:", err);
-      } finally {
-        setLoading(false);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page to 1 on search change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
+  // Load articles from backend
+  const loadArticles = async () => {
+    setLoading(true);
+    try {
+      const data = await BlogService.getAll({
+        search: debouncedSearch,
+        page,
+        limit,
+      });
+      setArticles(data);
+      if (data.pagination) {
+        setTotalItems(data.pagination.count);
+        setTotalPages(data.pagination.lastPage);
+      } else {
+        setTotalItems(data.length);
+        setTotalPages(Math.max(1, Math.ceil(data.length / limit)));
       }
+    } catch (err) {
+      console.error("Failed to load blog articles:", err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadArticles();
-  }, []);
+  }, [debouncedSearch, page, limit]);
 
   const handleViewArticle = (article: BlogArticle) => {
     setActiveArticle(article);
@@ -81,9 +116,9 @@ export default function AdminBlogsPage() {
     if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
     try {
       const res = await BlogService.delete(id);
-      setArticles((prev) => prev.filter((a) => a.id !== id));
       if (res.success) {
         toast.success(res.message || "Article deleted successfully.");
+        await loadArticles();
       } else {
         toast.error(res.message || "Failed to delete article.");
       }
@@ -91,12 +126,6 @@ export default function AdminBlogsPage() {
       toast.error(err.message || "Failed to delete blog article");
     }
   };
-
-  const filteredArticles = articles.filter(
-    (art) =>
-      art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      art.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="space-y-6">
@@ -107,14 +136,15 @@ export default function AdminBlogsPage() {
         <Link href="/admin/blogs/new">
           <Button
             size="sm"
-            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer shadow-xs"
           >
             <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
-            Create New Article
+            Write New Article
           </Button>
         </Link>
       </AdminPageHeader>
 
+      {/* Filter Bar */}
       <AdminFilterBar
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
@@ -126,6 +156,7 @@ export default function AdminBlogsPage() {
         <AdminTable>
           <AdminTableHeader>
             <tr>
+              <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead>Article Title</AdminTableHead>
               <AdminTableHead>Category</AdminTableHead>
               <AdminTableHead>Published Date</AdminTableHead>
@@ -136,125 +167,142 @@ export default function AdminBlogsPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={6} rows={5} />
-            ) : filteredArticles.length > 0 ? (
-              filteredArticles.map((art) => (
-                <AdminTableRow key={art.id}>
-                  <AdminTableCell>
-                    <div className="flex items-center gap-3">
-                      {art.image ? (
-                        <div
-                          role="button"
-                          tabIndex={0}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openSingleImage(art.image!, art.title, e.currentTarget);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
+              <AdminTableLoading colSpan={7} rows={limit > 10 ? 10 : limit} />
+            ) : articles.length > 0 ? (
+              articles.map((art, idx) => {
+                const serialNumber = (page - 1) * limit + idx + 1;
+                return (
+                  <AdminTableRow key={art.id}>
+                    <AdminTableCell className="text-center font-semibold text-slate-500">
+                      {serialNumber}
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <div className="flex items-center gap-3">
+                        {art.image ? (
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            onClick={(e) => {
                               e.stopPropagation();
                               openSingleImage(art.image!, art.title, e.currentTarget);
-                            }
-                          }}
-                          className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-amber-400 transition-all"
-                          title="Click to view image in lightbox"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={art.image}
-                            alt={art.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
-                          />
-                          <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
-                            <Maximize2 className="w-3.5 h-3.5 text-white drop-shadow-md" />
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.stopPropagation();
+                                openSingleImage(art.image!, art.title, e.currentTarget);
+                              }
+                            }}
+                            className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-amber-400 transition-all"
+                            title="Click to view image in lightbox"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={art.image}
+                              alt={art.title}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                              <Maximize2 className="w-3.5 h-3.5 text-white drop-shadow-md" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-12 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
+                            <ImageIcon className="w-5 h-5" />
+                          </div>
+                        )}
+                        <div>
+                          <Link
+                            href={`/blog/${art.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group/link inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-amber-600 transition-colors"
+                            title="Open article in public marketing page"
+                          >
+                            <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-amber-500 underline-offset-2 transition-all">
+                              {art.title}
+                            </span>
+                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
+                          </Link>
+                          <div className="text-xs text-slate-600 font-normal">
+                            Read time: {art.readTime}
                           </div>
                         </div>
-                      ) : (
-                        <div className="w-12 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
-                          <ImageIcon className="w-5 h-5" />
-                        </div>
-                      )}
-                      <div>
-                        <Link
-                          href={`/blog/${art.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group/link inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-amber-600 transition-colors"
-                          title="Open article in public marketing page"
-                        >
-                          <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-amber-500 underline-offset-2 transition-all">
-                            {art.title}
-                          </span>
-                          <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
-                        </Link>
-                        <div className="text-xs text-slate-600 font-normal">
-                          Read time: {art.readTime}
-                        </div>
                       </div>
-                    </div>
-                  </AdminTableCell>
+                    </AdminTableCell>
 
-                  <AdminTableCell className="font-medium text-slate-800">
-                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700">
-                      {art.category}
-                    </span>
-                  </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700">
+                        {art.category}
+                      </span>
+                    </AdminTableCell>
 
-                  <AdminTableCell className="font-medium text-slate-800">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-slate-600" />
-                      <span>{art.publishedDate}</span>
-                    </div>
-                  </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-slate-600" />
+                        <span>{art.publishedDate}</span>
+                      </div>
+                    </AdminTableCell>
 
-                  <AdminTableCell className="font-medium text-slate-800">
-                    <div className="flex items-center gap-1">
-                      <Eye className="w-3.5 h-3.5 text-slate-600" />
-                      <span>{(art.views || 0).toLocaleString()}</span>
-                    </div>
-                  </AdminTableCell>
+                    <AdminTableCell className="font-medium text-slate-800">
+                      <div className="flex items-center gap-1">
+                        <Eye className="w-3.5 h-3.5 text-slate-600" />
+                        <span>{(art.views || 0).toLocaleString()}</span>
+                      </div>
+                    </AdminTableCell>
 
-                  <AdminTableCell>
-                    <AdminInlineSelect
-                      value={art.status}
-                      options={STATUS_OPTIONS}
-                      onChange={(newVal) => handleInlineStatusChange(art, newVal)}
-                      variant="badge"
-                      title="Click to change article status"
-                    />
-                  </AdminTableCell>
-
-                  <AdminTableCell align="right">
-                    <AdminTableActions>
-                      <AdminActionButton
-                        variant="view"
-                        onClick={() => handleViewArticle(art)}
-                        title="View Article Details"
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={art.status}
+                        options={STATUS_OPTIONS}
+                        onChange={(newVal) => handleInlineStatusChange(art, newVal)}
+                        variant="badge"
+                        title="Click to change article status"
                       />
-                      <Link href={`/admin/blogs/${art.id}/edit`}>
+                    </AdminTableCell>
+
+                    <AdminTableCell align="right">
+                      <AdminTableActions>
                         <AdminActionButton
-                          variant="edit"
-                          title="Edit Article"
+                          variant="view"
+                          onClick={() => handleViewArticle(art)}
+                          title="View Article Details"
                         />
-                      </Link>
-                      <AdminActionButton
-                        variant="delete"
-                        onClick={() => handleDeleteArticle(art.id, art.title)}
-                        title="Delete Article"
-                      />
-                    </AdminTableActions>
-                  </AdminTableCell>
-                </AdminTableRow>
-              ))
+                        <Link href={`/admin/blogs/${art.id}/edit`}>
+                          <AdminActionButton
+                            variant="edit"
+                            title="Edit Article"
+                          />
+                        </Link>
+                        <AdminActionButton
+                          variant="delete"
+                          onClick={() => handleDeleteArticle(art.id, art.title)}
+                          title="Delete Article"
+                        />
+                      </AdminTableActions>
+                    </AdminTableCell>
+                  </AdminTableRow>
+                );
+              })
             ) : (
               <AdminTableEmpty
-                colSpan={6}
+                colSpan={7}
                 title="No articles found"
                 description="No blog articles match your search criteria."
               />
             )}
           </AdminTableBody>
         </AdminTable>
+        <AdminTablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={limit}
+          onPageChange={setPage}
+          onPageSizeChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </AdminTableContainer>
 
       {/* Blog Article View Modal */}

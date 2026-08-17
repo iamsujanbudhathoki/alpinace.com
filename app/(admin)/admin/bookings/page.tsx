@@ -25,6 +25,7 @@ import {
   AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
+  AdminTablePagination,
 } from "@/components/admin/ui/admin-table";
 
 const CATEGORY_OPTIONS: InlineSelectOption[] = [
@@ -54,9 +55,16 @@ export default function AdminBookingsPage() {
   const [tours, setTours] = useState<PackageItem[]>([]);
   const [expeditions, setExpeditions] = useState<PackageItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
   const [selectedType, setSelectedType] = useState<string>("All");
   const [loading, setLoading] = useState(true);
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Modals
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -64,27 +72,67 @@ export default function AdminBookingsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
 
+  // Load package options for links/modals
   useEffect(() => {
-    async function loadData() {
+    async function loadPackages() {
       try {
-        const [bookingsData, treksData, toursData, expeditionsData] = await Promise.all([
-          BookingService.getAll(),
+        const [treksData, toursData, expeditionsData] = await Promise.all([
           TrekService.getAll(),
           TourService.getAll(),
           ExpeditionService.getAll(),
         ]);
-        setBookings(bookingsData);
         setTreks(treksData);
         setTours(toursData);
         setExpeditions(expeditionsData);
       } catch (err) {
-        console.error("Failed to load bookings data:", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to load packages for bookings:", err);
       }
     }
-    loadData();
+    loadPackages();
   }, []);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page to 1 on filter or search changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, selectedStatus, selectedType]);
+
+  // Load bookings from backend
+  const loadBookings = async () => {
+    setLoading(true);
+    try {
+      const data = await BookingService.getAll({
+        search: debouncedSearch,
+        status: selectedStatus === "All" ? undefined : selectedStatus,
+        packageType: selectedType === "All" ? undefined : selectedType,
+        page,
+        limit,
+      });
+      setBookings(data);
+      if (data.pagination) {
+        setTotalItems(data.pagination.count);
+        setTotalPages(data.pagination.lastPage);
+      } else {
+        setTotalItems(data.length);
+        setTotalPages(Math.max(1, Math.ceil(data.length / limit)));
+      }
+    } catch (err) {
+      console.error("Failed to load bookings:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBookings();
+  }, [debouncedSearch, selectedStatus, selectedType, page, limit]);
 
   const getPackageLink = (bkg: Booking) => {
     if (bkg.packageType === BookingPackageType.TREKKING) {
@@ -99,104 +147,25 @@ export default function AdminBookingsPage() {
     }
   };
 
-  const filteredBookings = bookings.filter((bkg) => {
-    const matchesSearch =
-      bkg.guestName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      bkg.reference.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      bkg.packageName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      bkg.country.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesStatus =
-      selectedStatus === "All" || bkg.bookingStatus === selectedStatus;
-
-    const matchesType =
-      selectedType === "All" || bkg.packageType === selectedType;
-
-    return matchesSearch && matchesStatus && matchesType;
-  });
-
   const handleSaveBooking = async (savedBooking: Booking): Promise<boolean> => {
     try {
-      const exists = bookings.some((b) => b.id === savedBooking.id);
       let res: ApiResponse<Booking>;
-      if (exists) {
-        res = await BookingService.update(savedBooking.id, savedBooking as any);
-        if (res.success) {
-          setBookings(bookings.map((b) => (b.id === res.data.id ? res.data : b)));
-        }
+      if (isEditing && activeBooking) {
+        res = await BookingService.update(activeBooking.id, savedBooking as any);
       } else {
         res = await BookingService.create(savedBooking as any);
-        if (res.success) {
-          setBookings([res.data, ...bookings]);
-        }
       }
       if (res.success) {
-        toast.success(res.message || "Reservation saved successfully");
+        toast.success(res.message || "Booking saved successfully");
         setIsFormOpen(false);
+        await loadBookings();
         return true;
       } else {
-        toast.error(res.message || "Failed to save reservation");
+        toast.error(res.message || "Failed to save booking");
         return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save reservation");
-      return false;
-    }
-  };
-
-  const handleInlineStatusChange = async (bkg: Booking, newStatus: string): Promise<boolean> => {
-    try {
-      const res = await BookingService.update(bkg.id, { bookingStatus: newStatus as BookingStatus });
-      if (res.success) {
-        setBookings((prev) =>
-          prev.map((b) => (b.id === bkg.id ? { ...b, bookingStatus: newStatus as BookingStatus } : b))
-        );
-        toast.success(`Booking ${bkg.reference} status updated`);
-        return true;
-      } else {
-        toast.error(res.message || "Failed to update booking status");
-        return false;
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update booking status");
-      return false;
-    }
-  };
-
-  const handleInlinePaymentChange = async (bkg: Booking, newPayment: string): Promise<boolean> => {
-    try {
-      const res = await BookingService.update(bkg.id, { paymentStatus: newPayment as BookingPaymentStatus });
-      if (res.success) {
-        setBookings((prev) =>
-          prev.map((b) => (b.id === bkg.id ? { ...b, paymentStatus: newPayment as BookingPaymentStatus } : b))
-        );
-        toast.success(`Booking ${bkg.reference} payment status updated`);
-        return true;
-      } else {
-        toast.error(res.message || "Failed to update payment status");
-        return false;
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update payment status");
-      return false;
-    }
-  };
-
-  const handleInlineCategoryChange = async (bkg: Booking, newType: string): Promise<boolean> => {
-    try {
-      const res = await BookingService.update(bkg.id, { packageType: newType as BookingPackageType });
-      if (res.success) {
-        setBookings((prev) =>
-          prev.map((b) => (b.id === bkg.id ? { ...b, packageType: newType as BookingPackageType } : b))
-        );
-        toast.success(`Booking ${bkg.reference} category updated`);
-        return true;
-      } else {
-        toast.error(res.message || "Failed to update booking category");
-        return false;
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update booking category");
+      toast.error(err.message || "An unexpected error occurred");
       return false;
     }
   };
@@ -204,15 +173,71 @@ export default function AdminBookingsPage() {
   const handleDeleteBooking = async (id: string) => {
     try {
       const res = await BookingService.delete(id);
-      setBookings(bookings.filter((b) => b.id !== id));
-      setDeletingBooking(null);
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Booking deleted successfully");
+        setDeletingBooking(null);
+        await loadBookings();
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to delete booking");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete booking");
+    }
+  };
+
+  const handleInlineStatusChange = async (bkg: Booking, newStatus: string) => {
+    try {
+      const res = await BookingService.update(bkg.id, { bookingStatus: newStatus as BookingStatus });
+      if (res.success) {
+        setBookings((prev) =>
+          prev.map((b) => (b.id === bkg.id ? { ...b, bookingStatus: newStatus as BookingStatus } : b))
+        );
+        toast.success(`Booking ${bkg.reference} marked as ${newStatus}`);
+      } else {
+        toast.error(res.message || "Failed to update status");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update status");
+    }
+  };
+
+  const handleInlinePaymentChange = async (bkg: Booking, newPayment: string) => {
+    try {
+      const res = await BookingService.update(bkg.id, {
+        paymentStatus: newPayment as BookingPaymentStatus,
+      });
+      if (res.success) {
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === bkg.id ? { ...b, paymentStatus: newPayment as BookingPaymentStatus } : b
+          )
+        );
+        toast.success(`Payment status for ${bkg.reference} updated to ${newPayment}`);
+      } else {
+        toast.error(res.message || "Failed to update payment");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update payment");
+    }
+  };
+
+  const handleInlineCategoryChange = async (bkg: Booking, newCategory: string) => {
+    try {
+      const res = await BookingService.update(bkg.id, {
+        packageType: newCategory as BookingPackageType,
+      });
+      if (res.success) {
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === bkg.id ? { ...b, packageType: newCategory as BookingPackageType } : b
+          )
+        );
+        toast.success(`Category for ${bkg.reference} updated to ${newCategory}`);
+      } else {
+        toast.error(res.message || "Failed to update category");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update category");
     }
   };
 
@@ -221,19 +246,22 @@ export default function AdminBookingsPage() {
       "Reference",
       "Guest Name",
       "Email",
+      "Phone",
       "Country",
-      "Package",
-      "Type",
+      "Package Name",
+      "Category",
       "Start Date",
       "End Date",
-      "Amount (USD)",
+      "Total Amount USD",
       "Payment Status",
       "Booking Status",
     ];
-    const rows = filteredBookings.map((b) => [
+
+    const rows = bookings.map((b) => [
       b.reference,
       b.guestName,
       b.guestEmail,
+      b.guestPhone,
       b.country,
       b.packageName,
       b.packageType,
@@ -329,6 +357,7 @@ export default function AdminBookingsPage() {
         <AdminTable>
           <AdminTableHeader>
             <tr>
+              <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead>Ref / Guest</AdminTableHead>
               <AdminTableHead>Trip Package</AdminTableHead>
               <AdminTableHead>Category</AdminTableHead>
@@ -341,99 +370,116 @@ export default function AdminBookingsPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={8} rows={5} />
-            ) : filteredBookings.length > 0 ? (
-              filteredBookings.map((bkg) => (
-                <AdminTableRow key={bkg.id}>
-                  <AdminTableCell>
-                    <div className="text-xs font-bold text-amber-600">{bkg.reference}</div>
-                    <div className="font-bold text-slate-900">{bkg.guestName}</div>
-                    <div className="text-xs text-slate-600 font-normal">{bkg.country}</div>
-                  </AdminTableCell>
-                  <AdminTableCell className="max-w-xs">
-                    <Link
-                      href={getPackageLink(bkg)}
-                      className="group inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-amber-600 transition-colors max-w-full"
-                      title={`Open "${bkg.packageName}" in package manager`}
-                    >
-                      <span className="truncate underline decoration-transparent group-hover:decoration-amber-500 underline-offset-2 transition-all">
-                        {bkg.packageName}
-                      </span>
-                      <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 opacity-0 group-hover:opacity-100 transition-all shrink-0" />
-                    </Link>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <AdminInlineSelect
-                      value={bkg.packageType}
-                      options={CATEGORY_OPTIONS}
-                      onChange={(newVal) => handleInlineCategoryChange(bkg, newVal)}
-                      variant="category"
-                      title="Click to change booking category"
-                    />
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <div className="font-medium text-slate-900">{bkg.startDate} &rarr; {bkg.endDate}</div>
-                    <div className="text-xs text-slate-600 font-normal">{bkg.groupSize} {bkg.groupSize === 1 ? "Guest" : "Guests"}</div>
-                  </AdminTableCell>
-                  <AdminTableCell className="font-bold text-slate-900 text-sm">
-                    ${bkg.totalAmountUSD.toLocaleString()} USD
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <AdminInlineSelect
-                      value={bkg.paymentStatus}
-                      options={PAYMENT_OPTIONS}
-                      onChange={(newVal) => handleInlinePaymentChange(bkg, newVal)}
-                      variant="badge"
-                      title="Click to change payment status"
-                    />
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <AdminInlineSelect
-                      value={bkg.bookingStatus}
-                      options={STATUS_OPTIONS}
-                      onChange={(newVal) => handleInlineStatusChange(bkg, newVal)}
-                      variant="badge"
-                      title="Click to change booking status"
-                    />
-                  </AdminTableCell>
-                  <AdminTableCell align="right">
-                    <AdminTableActions>
-                      <AdminActionButton
-                        variant="view"
-                        onClick={() => {
-                          setActiveBooking(bkg);
-                          setIsEditing(false);
-                          setIsFormOpen(true);
-                        }}
-                        title="View Booking"
+              <AdminTableLoading colSpan={9} rows={limit > 10 ? 10 : limit} />
+            ) : bookings.length > 0 ? (
+              bookings.map((bkg, idx) => {
+                const serialNumber = (page - 1) * limit + idx + 1;
+                return (
+                  <AdminTableRow key={bkg.id}>
+                    <AdminTableCell className="text-center font-semibold text-slate-500">
+                      {serialNumber}
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <div className="text-xs font-bold text-amber-600">{bkg.reference}</div>
+                      <div className="font-bold text-slate-900">{bkg.guestName}</div>
+                      <div className="text-xs text-slate-600 font-normal">{bkg.country}</div>
+                    </AdminTableCell>
+                    <AdminTableCell className="max-w-xs">
+                      <Link
+                        href={getPackageLink(bkg)}
+                        className="group inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-amber-600 transition-colors max-w-full"
+                        title={`Open "${bkg.packageName}" in package manager`}
+                      >
+                        <span className="truncate underline decoration-transparent group-hover:decoration-amber-500 underline-offset-2 transition-all">
+                          {bkg.packageName}
+                        </span>
+                        <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 opacity-0 group-hover:opacity-100 transition-all shrink-0" />
+                      </Link>
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={bkg.packageType}
+                        options={CATEGORY_OPTIONS}
+                        onChange={(newVal) => handleInlineCategoryChange(bkg, newVal)}
+                        variant="category"
+                        title="Click to change booking category"
                       />
-                      <AdminActionButton
-                        variant="edit"
-                        onClick={() => {
-                          setActiveBooking(bkg);
-                          setIsEditing(true);
-                          setIsFormOpen(true);
-                        }}
-                        title="Edit Booking"
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <div className="font-medium text-slate-900">{bkg.startDate} &rarr; {bkg.endDate}</div>
+                      <div className="text-xs text-slate-600 font-normal">{bkg.groupSize} {bkg.groupSize === 1 ? "Guest" : "Guests"}</div>
+                    </AdminTableCell>
+                    <AdminTableCell className="font-bold text-slate-900 text-sm">
+                      ${bkg.totalAmountUSD.toLocaleString()} USD
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={bkg.paymentStatus}
+                        options={PAYMENT_OPTIONS}
+                        onChange={(newVal) => handleInlinePaymentChange(bkg, newVal)}
+                        variant="badge"
+                        title="Click to change payment status"
                       />
-                      <AdminActionButton
-                        variant="delete"
-                        onClick={() => setDeletingBooking(bkg)}
-                        title="Delete Booking"
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={bkg.bookingStatus}
+                        options={STATUS_OPTIONS}
+                        onChange={(newVal) => handleInlineStatusChange(bkg, newVal)}
+                        variant="badge"
+                        title="Click to change booking status"
                       />
-                    </AdminTableActions>
-                  </AdminTableCell>
-                </AdminTableRow>
-              ))
+                    </AdminTableCell>
+                    <AdminTableCell align="right">
+                      <AdminTableActions>
+                        <AdminActionButton
+                          variant="view"
+                          onClick={() => {
+                            setActiveBooking(bkg);
+                            setIsEditing(false);
+                            setIsFormOpen(true);
+                          }}
+                          title="View Booking"
+                        />
+                        <AdminActionButton
+                          variant="edit"
+                          onClick={() => {
+                            setActiveBooking(bkg);
+                            setIsEditing(true);
+                            setIsFormOpen(true);
+                          }}
+                          title="Edit Booking"
+                        />
+                        <AdminActionButton
+                          variant="delete"
+                          onClick={() => setDeletingBooking(bkg)}
+                          title="Delete Booking"
+                        />
+                      </AdminTableActions>
+                    </AdminTableCell>
+                  </AdminTableRow>
+                );
+              })
             ) : (
               <AdminTableEmpty
-                colSpan={8}
+                colSpan={9}
                 title="No bookings found"
                 description="No client booking records match your search query or status filter."
               />
             )}
           </AdminTableBody>
         </AdminTable>
+        <AdminTablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={limit}
+          onPageChange={setPage}
+          onPageSizeChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </AdminTableContainer>
 
       {/* MODALS */}

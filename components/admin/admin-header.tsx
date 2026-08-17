@@ -49,6 +49,7 @@ interface AdminHeaderProps {
 export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [totalNotifications, setTotalNotifications] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [notifOffset, setNotifOffset] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const PAGE_SIZE = 10;
@@ -57,15 +58,18 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
   const { user, logout } = useAdminAuth();
   const router = useRouter();
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
   const hasMore = notifications.length < totalNotifications;
 
-  const fetchNotifications = useCallback(async (reset = false) => {
-    const offset = reset ? 0 : 0; // always load from 0 on initial fetch
-    const res = await NotificationService.getPaged(PAGE_SIZE, offset);
+  const fetchNotifications = useCallback(async () => {
+    const res = await NotificationService.getPaged(PAGE_SIZE, 0);
     setNotifications(res.items);
     setTotalNotifications(res.total);
     setNotifOffset(res.items.length);
+    if (typeof res.unreadCount === "number") {
+      setUnreadCount(res.unreadCount);
+    } else {
+      setUnreadCount(res.items.filter((n) => !n.isRead).length);
+    }
   }, []);
 
   const handleLoadMore = async () => {
@@ -78,6 +82,9 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
     });
     setTotalNotifications(res.total);
     setNotifOffset((prev) => prev + res.items.length);
+    if (typeof res.unreadCount === "number") {
+      setUnreadCount(res.unreadCount);
+    }
     setIsLoadingMore(false);
   };
 
@@ -107,15 +114,37 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
   };
 
   const handleMarkAllRead = async () => {
-    await NotificationService.markAllRead();
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    setUnreadCount(0);
+    try {
+      await NotificationService.markAllRead();
+    } catch (err) {
+      console.error("Failed to mark all notifications as read:", err);
+    }
   };
 
-  const handleMarkRead = async (id: string) => {
-    await NotificationService.markRead(id);
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-    );
+  const handleNotificationClick = async (notif: AppNotification) => {
+    if (!notif.isRead) {
+      // Optimistically mark single clicked notification as read
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+
+      // Sync read state with backend API
+      try {
+        await NotificationService.markRead(notif.id);
+      } catch (err) {
+        console.error("Failed to mark notification as read:", err);
+      }
+    }
+
+    // Navigate to related admin modules if applicable
+    if (notif.type === NotificationType.INQUIRY || notif.type === NotificationType.QUOTE) {
+      router.push("/admin/inquiries");
+    } else if (notif.type === NotificationType.BOOKING) {
+      router.push("/admin/bookings");
+    }
   };
 
   const typeColor: Record<NotificationType, string> = {
@@ -168,7 +197,9 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
           <PopoverTrigger className="p-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 hover:text-slate-950 hover:border-slate-400 transition-colors relative cursor-pointer focus:outline-none">
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="w-2 h-2 rounded-full bg-amber-500 absolute top-1.5 right-1.5 ring-2 ring-white" />
+              <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 leading-none shadow-xs border-2 border-white pointer-events-none animate-in fade-in zoom-in duration-200">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
             )}
           </PopoverTrigger>
 
@@ -178,11 +209,11 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
               <div className="flex items-center gap-2">
                 <span className="font-bold text-xs text-slate-900">Notifications</span>
                 {unreadCount > 0 ? (
-                  <span className="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-200">
-                    {unreadCount} new
+                  <span className="text-xs font-bold bg-red-50 text-red-700 px-2 py-0.5 rounded-full border border-red-200">
+                    {unreadCount} unread
                   </span>
                 ) : (
-                  <span className="text-xs font-bold text-slate-700">All caught up</span>
+                  <span className="text-xs font-medium text-slate-500">All caught up</span>
                 )}
               </div>
 
@@ -192,7 +223,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
                   className="text-xs font-bold text-slate-800 hover:text-slate-950 flex items-center gap-1 cursor-pointer transition-colors"
                 >
                   <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
-                  <span>Mark read</span>
+                  <span>Mark all read</span>
                 </button>
               )}
             </div>
@@ -208,18 +239,42 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
                 notifications.map((notif) => (
                   <div
                     key={notif.id}
-                    onClick={() => !notif.isRead && handleMarkRead(notif.id)}
-                    className={`p-3.5 hover:bg-slate-50/80 transition-colors flex gap-3 cursor-pointer ${
-                      !notif.isRead ? "bg-amber-50/30" : ""
+                    onClick={() => handleNotificationClick(notif)}
+                    className={`p-3.5 transition-colors flex gap-3 cursor-pointer relative border-l-2 ${
+                      !notif.isRead
+                        ? "bg-amber-50/40 hover:bg-amber-50/70 border-l-amber-500"
+                        : "bg-white hover:bg-slate-50/80 border-l-transparent"
                     }`}
                   >
-                    <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${typeColor[notif.type] ?? "bg-slate-400"}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${
+                        typeColor[notif.type] ?? "bg-slate-400"
+                      }`}
+                    />
                     <div className="space-y-0.5 flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-slate-900 truncate">{notif.title}</span>
-                        <span className="text-xs text-slate-500 font-semibold shrink-0">{formatDate(notif.createdAt)}</span>
+                        <span
+                          className={`text-xs truncate ${
+                            !notif.isRead
+                              ? "font-bold text-slate-950"
+                              : "font-medium text-slate-700"
+                          }`}
+                        >
+                          {notif.title}
+                        </span>
+                        <span className="text-[11px] text-slate-400 font-medium shrink-0">
+                          {formatDate(notif.createdAt)}
+                        </span>
                       </div>
-                      <p className="text-slate-700 leading-relaxed font-medium">{notif.body}</p>
+                      <p
+                        className={`text-xs leading-relaxed line-clamp-2 ${
+                          !notif.isRead
+                            ? "text-slate-800 font-medium"
+                            : "text-slate-500 font-normal"
+                        }`}
+                      >
+                        {notif.body}
+                      </p>
                     </div>
                   </div>
                 ))

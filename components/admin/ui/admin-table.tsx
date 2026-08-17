@@ -302,7 +302,7 @@ export function AdminTableActions({
 
 /**
  * AdminTablePagination
- * Footer bar for tables displaying current page, total items count, and Next/Prev controls.
+ * Footer bar for tables displaying current page, total items count, page size selector, and Next/Prev controls.
  */
 interface AdminTablePaginationProps {
   currentPage?: number;
@@ -310,6 +310,8 @@ interface AdminTablePaginationProps {
   totalItems?: number;
   itemsPerPage?: number;
   onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
   className?: string;
 }
 
@@ -319,23 +321,46 @@ export function AdminTablePagination({
   totalItems = 0,
   itemsPerPage = 10,
   onPageChange,
+  onPageSizeChange,
+  pageSizeOptions = [10, 20, 50, 100],
   className = "",
 }: AdminTablePaginationProps) {
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const safeTotalPages = Math.max(1, totalPages);
 
   return (
     <div
       className={cn(
-        "px-4 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600 font-medium select-none",
+        "px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 font-medium select-none",
         className
       )}
     >
-      <div>
-        Showing <span className="font-bold text-slate-900">{startItem}</span> to{" "}
-        <span className="font-bold text-slate-900">{endItem}</span> of{" "}
-        <span className="font-bold text-slate-900">{totalItems}</span> items
+      <div className="flex items-center gap-4 flex-wrap">
+        <div>
+          Showing <span className="font-bold text-slate-900">{startItem}</span> to{" "}
+          <span className="font-bold text-slate-900">{endItem}</span> of{" "}
+          <span className="font-bold text-slate-900">{totalItems}</span> items
+        </div>
+
+        {onPageSizeChange && (
+          <div className="flex items-center gap-1.5 text-xs text-slate-600 ml-auto">
+            <span>Rows:</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              className="h-7 px-2 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer shadow-2xs"
+            >
+              {pageSizeOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
+
       <div className="flex items-center gap-1.5">
         <Button
           variant="outline"
@@ -347,15 +372,15 @@ export function AdminTablePagination({
           <ChevronLeft className="w-3.5 h-3.5 mr-1" />
           Previous
         </Button>
-        <span className="px-2 font-bold text-slate-900">
-          {currentPage} / {totalPages}
+        <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-xs font-bold text-slate-900">
+          {currentPage} / {safeTotalPages}
         </span>
         <Button
           variant="outline"
           size="sm"
-          disabled={currentPage >= totalPages}
+          disabled={currentPage >= safeTotalPages}
           onClick={() => onPageChange?.(currentPage + 1)}
-          className="h-7 px-2.5 text-xs border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-50 cursor-pointer"
+          className="h-7 px-2.5 text-xs border-slate-200 text-slate-800 font-semibold bg-white hover:bg-slate-100 disabled:opacity-50 cursor-pointer"
         >
           Next
           <ChevronRight className="w-3.5 h-3.5 ml-1" />
@@ -364,3 +389,4 @@ export function AdminTablePagination({
     </div>
   );
 }
+

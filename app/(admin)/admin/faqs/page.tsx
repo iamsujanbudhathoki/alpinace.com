@@ -13,6 +13,7 @@ import {
   AdminTableHead,
   AdminTableHeader,
   AdminTableLoading,
+  AdminTablePagination,
   AdminTableRow,
 } from "@/components/admin/ui/admin-table";
 import { Button } from "@/components/ui/button";
@@ -41,9 +42,17 @@ const STATUS_OPTIONS: InlineSelectOption[] = [
 
 export default function AdminFaqsPage() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
+  const [allFaqsForCategories, setAllFaqsForCategories] = useState<FaqItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Drag & Drop State
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -64,11 +73,47 @@ export default function AdminFaqsPage() {
   const [status, setStatus] = useState<FaqStatus>(FaqStatus.ACTIVE);
   const [order, setOrder] = useState<number>(0);
 
+  const loadCategoryOptions = async () => {
+    try {
+      const data = await FaqService.getAll();
+      setAllFaqsForCategories(data);
+    } catch (e) {
+      console.warn("Failed to load FAQ categories:", e);
+    }
+  };
+
+  useEffect(() => {
+    loadCategoryOptions();
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, categoryFilter]);
+
   const loadFaqs = async () => {
     setLoading(true);
     try {
-      const data = await FaqService.getAll();
-      setFaqs(data);
+      const res = await FaqService.getAll({
+        category: categoryFilter === "All" ? undefined : categoryFilter,
+        search: debouncedSearch,
+        page,
+        limit,
+      });
+      setFaqs(res);
+      if (res.pagination) {
+        setTotalItems(res.pagination.count);
+        setTotalPages(res.pagination.lastPage);
+      } else {
+        setTotalItems(res.length);
+        setTotalPages(Math.max(1, Math.ceil(res.length / limit)));
+      }
     } catch (err) {
       console.error("Failed to load FAQs:", err);
       toast.error("Failed to load FAQs from backend");
@@ -79,7 +124,7 @@ export default function AdminFaqsPage() {
 
   useEffect(() => {
     loadFaqs();
-  }, []);
+  }, [debouncedSearch, categoryFilter, page, limit]);
 
   const handleInlineStatusChange = async (faq: FaqItem, newStatus: string): Promise<boolean> => {
     try {
@@ -106,7 +151,7 @@ export default function AdminFaqsPage() {
     setAnswer("");
     setCategory("General");
     setStatus(FaqStatus.ACTIVE);
-    setOrder(faqs.length + 1);
+    setOrder(totalItems + 1);
     setModalOpen(true);
   };
 
@@ -145,7 +190,7 @@ export default function AdminFaqsPage() {
         if (res.success) {
           toast.success("FAQ updated successfully!");
           setModalOpen(false);
-          loadFaqs();
+          await Promise.all([loadFaqs(), loadCategoryOptions()]);
         } else {
           toast.error(res.message || "Failed to update FAQ");
         }
@@ -160,13 +205,12 @@ export default function AdminFaqsPage() {
         if (res.success) {
           toast.success("FAQ created successfully!");
           setModalOpen(false);
-          loadFaqs();
+          await Promise.all([loadFaqs(), loadCategoryOptions()]);
         } else {
           toast.error(res.message || "Failed to create FAQ");
         }
       }
     } catch (err: any) {
-      console.error("Error saving FAQ:", err);
       toast.error(err.message || "Failed to save FAQ");
     } finally {
       setIsSubmitting(false);
@@ -182,19 +226,48 @@ export default function AdminFaqsPage() {
         toast.success("FAQ deleted successfully!");
         setDeleteModalOpen(false);
         setDeletingFaq(null);
-        loadFaqs();
+        await Promise.all([loadFaqs(), loadCategoryOptions()]);
       } else {
         toast.error(res.message || "Failed to delete FAQ");
       }
     } catch (err: any) {
-      console.error("Error deleting FAQ:", err);
       toast.error(err.message || "Failed to delete FAQ");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Drag and drop reordering
+  const syncReorder = async (updatedFaqs: FaqItem[]) => {
+    setIsReordering(true);
+    try {
+      const payload = updatedFaqs.map((f, idx) => ({ id: f.id, order: idx + 1 }));
+      const res = await FaqService.reorder(payload);
+      if (res.success) {
+        toast.success("FAQ order saved!");
+      } else {
+        toast.error(res.message || "Failed to save reorder");
+      }
+    } catch (err) {
+      toast.error("Failed to save reordered list");
+      loadFaqs();
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
+  const handleMove = (index: number, direction: "up" | "down") => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= faqs.length) return;
+
+    const reordered = [...faqs];
+    const [movedItem] = reordered.splice(index, 1);
+    reordered.splice(targetIndex, 0, movedItem);
+
+    const updated = reordered.map((item, idx) => ({ ...item, order: idx + 1 }));
+    setFaqs(updated);
+    syncReorder(updated);
+  };
+
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = "move";
@@ -207,7 +280,7 @@ export default function AdminFaqsPage() {
     }
   };
 
-  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault();
     if (draggedIndex === null || draggedIndex === targetIndex) {
       setDraggedIndex(null);
@@ -219,80 +292,19 @@ export default function AdminFaqsPage() {
     const [movedItem] = reordered.splice(draggedIndex, 1);
     reordered.splice(targetIndex, 0, movedItem);
 
-    // Re-assign sequential order numbers
-    const updated = reordered.map((item, idx) => ({
-      ...item,
-      order: idx + 1,
-    }));
-
+    const updated = reordered.map((item, idx) => ({ ...item, order: idx + 1 }));
     setFaqs(updated);
     setDraggedIndex(null);
     setDragOverIndex(null);
-
-    // Save to backend
-    setIsReordering(true);
-    try {
-      const payload = updated.map((f) => ({ id: f.id, order: f.order }));
-      const res = await FaqService.reorder(payload);
-      if (res.success) {
-        toast.success("FAQ order updated!");
-      }
-    } catch (err) {
-      console.error("Failed to reorder FAQs:", err);
-      toast.error("Failed to save reordered list");
-      loadFaqs();
-    } finally {
-      setIsReordering(false);
-    }
-  };
-
-  const handleMove = async (index: number, direction: "up" | "down") => {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= faqs.length) return;
-
-    const reordered = [...faqs];
-    const [movedItem] = reordered.splice(index, 1);
-    reordered.splice(targetIndex, 0, movedItem);
-
-    const updated = reordered.map((item, idx) => ({
-      ...item,
-      order: idx + 1,
-    }));
-
-    setFaqs(updated);
-
-    setIsReordering(true);
-    try {
-      const payload = updated.map((f) => ({ id: f.id, order: f.order }));
-      const res = await FaqService.reorder(payload);
-      if (res.success) {
-        toast.success("FAQ moved!");
-      }
-    } catch (err) {
-      console.error("Failed to move FAQ:", err);
-      toast.error("Failed to save new order");
-      loadFaqs();
-    } finally {
-      setIsReordering(false);
-    }
+    syncReorder(updated);
   };
 
   const categories = Array.from(
-    new Set(faqs.map((f) => f.category).filter(Boolean))
+    new Set(allFaqsForCategories.map((f) => f.category || "General").filter(Boolean))
   );
-
-  const filteredFaqs = faqs.filter((faq) => {
-    const matchesSearch =
-      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      categoryFilter === "All" || faq.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
 
   return (
     <div className="space-y-6 max-w-6xl pb-16">
-      {/* Header */}
       <AdminPageHeader
         title="Pre-Trip Consultations &amp; FAQs"
         description="Manage consultation Q&amp;As, high-altitude advice, and booking FAQs displayed on the marketing homepage."
@@ -306,7 +318,6 @@ export default function AdminFaqsPage() {
         </Button>
       </AdminPageHeader>
 
-      {/* Filter & Search Bar */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -326,7 +337,7 @@ export default function AdminFaqsPage() {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="text-xs bg-slate-50 border border-slate-200 text-slate-900 font-semibold focus:bg-white rounded-xl px-3 py-2 focus:outline-none"
           >
-            <option value="All">All Categories ({faqs.length})</option>
+            <option value="All">All Categories ({totalItems})</option>
             {categories.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -336,7 +347,6 @@ export default function AdminFaqsPage() {
         </div>
       </div>
 
-      {/* Tip Banner */}
       <div className="flex items-center justify-between bg-amber-50/80 border border-amber-200/80 rounded-xl px-4 py-2.5 text-xs text-amber-900 font-medium">
         <div className="flex items-center gap-2">
           <GripVertical className="w-4 h-4 text-amber-600 shrink-0" />
@@ -352,11 +362,11 @@ export default function AdminFaqsPage() {
         )}
       </div>
 
-      {/* FAQs Table */}
       <AdminTableContainer>
         <AdminTable>
           <AdminTableHeader>
             <AdminTableRow>
+              <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead className="w-20 text-center">Order</AdminTableHead>
               <AdminTableHead className="w-64">Question</AdminTableHead>
               <AdminTableHead>Answer</AdminTableHead>
@@ -368,10 +378,10 @@ export default function AdminFaqsPage() {
 
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={6} />
-            ) : filteredFaqs.length === 0 ? (
+              <AdminTableLoading colSpan={7} rows={limit > 10 ? 10 : limit} />
+            ) : faqs.length === 0 ? (
               <AdminTableEmpty
-                colSpan={6}
+                colSpan={7}
                 title="No FAQs found"
                 description={
                   searchQuery
@@ -380,9 +390,10 @@ export default function AdminFaqsPage() {
                 }
               />
             ) : (
-              filteredFaqs.map((faq, index) => {
+              faqs.map((faq, index) => {
                 const isDragging = draggedIndex === index;
                 const isOver = dragOverIndex === index;
+                const serialNumber = (page - 1) * limit + index + 1;
 
                 return (
                   <AdminTableRow
@@ -399,6 +410,9 @@ export default function AdminFaqsPage() {
                       isDragging ? "opacity-40 bg-amber-50/50" : ""
                     } ${isOver ? "border-t-2 border-amber-500 bg-amber-50/30" : ""}`}
                   >
+                    <AdminTableCell className="text-center font-semibold text-slate-500 text-xs">
+                      {serialNumber}
+                    </AdminTableCell>
                     <AdminTableCell className="text-center font-bold text-slate-500 text-xs">
                       <div className="flex items-center justify-center gap-1">
                         <GripVertical className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700 shrink-0 cursor-grab active:cursor-grabbing" />
@@ -475,6 +489,17 @@ export default function AdminFaqsPage() {
             )}
           </AdminTableBody>
         </AdminTable>
+        <AdminTablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={limit}
+          onPageChange={setPage}
+          onPageSizeChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </AdminTableContainer>
 
       {/* Create / Edit Modal */}

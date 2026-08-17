@@ -24,17 +24,35 @@ import {
   TourFormValues,
   TrekFormValues,
 } from "@/lib/admin-schemas";
-import { ApiResponse, apiClient, axiosInstance } from "@/lib/services/api-client";
+import { ApiResponse, PaginationMeta, apiClient, axiosInstance } from "@/lib/services/api-client";
 import { TrekItem } from "@/lib/trek-data";
 
+export type PaginatedList<T> = T[] & { pagination?: PaginationMeta };
+
+export function makePaginatedList<T>(data: T[], pagination?: PaginationMeta): PaginatedList<T> {
+  const list = [...data] as PaginatedList<T>;
+  if (pagination) {
+    list.pagination = pagination;
+  }
+  return list;
+}
+
 export const MediaService = {
-  async getAllMedia(): Promise<any[]> {
+  async getAllMedia(params?: { category?: string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<any>> {
     try {
-      const res = await apiClient.get<any[]>("/media");
-      return Array.isArray(res?.data) ? res.data : [];
+      const query = new URLSearchParams();
+      if (params?.category && params.category !== "All") query.set("category", params.category);
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<any[]>(`/media${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend media fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 
@@ -65,13 +83,21 @@ export const MediaService = {
 };
 
 export const CategoryService = {
-  async getAll(): Promise<CategoryItem[]> {
+  async getAll(params?: { type?: CategoryType | string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<CategoryItem>> {
     try {
-      const res = await apiClient.get<CategoryItem[]>("/categories");
-      return Array.isArray(res?.data) ? res.data : [];
+      const query = new URLSearchParams();
+      if (params?.type && params.type !== "All") query.set("type", params.type);
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<CategoryItem[]>(`/categories${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend categories fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 
@@ -377,14 +403,15 @@ export function formatBackendPackage(p: any): PackageItem {
 }
 
 export const TrekService = {
-  async getAll(filters?: PackageFilterParams): Promise<TrekItem[]> {
+  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<TrekItem>> {
     try {
       const q = buildPackageQuery(filters);
       const res = await apiClient.get<any[]>(`/treks${q}`);
-      return Array.isArray(res?.data) ? res.data.map(formatBackendTrek) : [];
+      const items = Array.isArray(res?.data) ? res.data.map(formatBackendTrek) : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend treks fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 
@@ -422,14 +449,15 @@ export const TrekService = {
 };
 
 export const TourService = {
-  async getAll(filters?: PackageFilterParams): Promise<PackageItem[]> {
+  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
     try {
       const q = buildPackageQuery(filters);
       const res = await apiClient.get<any[]>(`/tours${q}`);
-      return Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
+      const items = Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend tours fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 
@@ -467,14 +495,15 @@ export const TourService = {
 };
 
 export const ExpeditionService = {
-  async getAll(filters?: PackageFilterParams): Promise<PackageItem[]> {
+  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
     try {
       const q = buildPackageQuery(filters);
       const res = await apiClient.get<any[]>(`/expeditions${q}`);
-      return Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
+      const items = Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend expeditions fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 
@@ -560,13 +589,30 @@ function cleanBookingPayload(data: any) {
 }
 
 export const BookingService = {
-  async getAll(): Promise<Booking[]> {
+  async getAll(params?: {
+    search?: string;
+    status?: string;
+    packageType?: string;
+    paymentStatus?: string;
+    limit?: number;
+    page?: number;
+  }): Promise<PaginatedList<Booking>> {
     try {
-      const res = await apiClient.get<Booking[]>("/bookings");
-      return Array.isArray(res?.data) ? res.data : [];
+      const query = new URLSearchParams();
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.status && params.status !== "All") query.set("status", params.status);
+      if (params?.packageType && params.packageType !== "All") query.set("packageType", params.packageType);
+      if (params?.paymentStatus && params.paymentStatus !== "All") query.set("paymentStatus", params.paymentStatus);
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<Booking[]>(`/bookings${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend bookings fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 
@@ -586,13 +632,26 @@ export const BookingService = {
 };
 
 export const InquiryService = {
-  async getAll(): Promise<Inquiry[]> {
+  async getAll(params?: {
+    status?: string;
+    search?: string;
+    limit?: number;
+    page?: number;
+  }): Promise<PaginatedList<Inquiry>> {
     try {
-      const res = await apiClient.get<Inquiry[]>("/inquiries");
-      return Array.isArray(res?.data) ? res.data : [];
+      const query = new URLSearchParams();
+      if (params?.status && params.status !== "All") query.set("status", params.status);
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<Inquiry[]>(`/inquiries${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend inquiries fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 
@@ -650,19 +709,37 @@ export const GuideService = {
 };
 
 export const BlogService = {
-  async getAll(status?: BlogStatus, categoryId?: string, search?: string): Promise<BlogArticle[]> {
+  async getAll(
+    statusOrParams?: BlogStatus | string | { status?: BlogStatus | string; categoryId?: string; category?: string; search?: string; limit?: number; page?: number },
+    categoryId?: string,
+    search?: string,
+    limit?: number,
+    page?: number
+  ): Promise<PaginatedList<BlogArticle>> {
     try {
       const params = new URLSearchParams();
-      if (status) params.append("status", status);
-      if (categoryId && categoryId !== "All") params.append("categoryId", categoryId);
-      if (search && search.trim() !== "") params.append("search", search.trim());
+      if (statusOrParams && typeof statusOrParams === "object") {
+        if (statusOrParams.status && statusOrParams.status !== "All") params.append("status", statusOrParams.status);
+        if (statusOrParams.categoryId && statusOrParams.categoryId !== "All") params.append("categoryId", statusOrParams.categoryId);
+        if (statusOrParams.category && statusOrParams.category !== "All") params.append("category", statusOrParams.category);
+        if (statusOrParams.search && statusOrParams.search.trim() !== "") params.append("search", statusOrParams.search.trim());
+        if (statusOrParams.limit) params.append("limit", String(statusOrParams.limit));
+        if (statusOrParams.page) params.append("page", String(statusOrParams.page));
+      } else {
+        if (statusOrParams && statusOrParams !== "All") params.append("status", statusOrParams);
+        if (categoryId && categoryId !== "All") params.append("categoryId", categoryId);
+        if (search && search.trim() !== "") params.append("search", search.trim());
+        if (limit) params.append("limit", String(limit));
+        if (page) params.append("page", String(page));
+      }
       const query = params.toString();
       const endpoint = query ? `/blogs?${query}` : "/blogs";
       const res = await apiClient.get<BlogArticle[]>(endpoint);
-      return Array.isArray(res?.data) ? res.data : [];
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend blog articles fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 
@@ -757,6 +834,7 @@ export interface AppNotification {
 export interface PaginatedNotifications {
   items: AppNotification[];
   total: number;
+  unreadCount?: number;
   limit: number;
   offset: number;
 }
@@ -777,10 +855,20 @@ export const NotificationService = {
       const res = await apiClient.get<PaginatedNotifications>(
         `/notifications/paged?limit=${limit}&offset=${offset}`
       );
-      return res?.data ?? { items: [], total: 0, limit, offset };
+      return res?.data ?? { items: [], total: 0, unreadCount: 0, limit, offset };
     } catch (e) {
       console.warn("Notifications paged fetch error:", e);
-      return { items: [], total: 0, limit, offset };
+      return { items: [], total: 0, unreadCount: 0, limit, offset };
+    }
+  },
+
+  async getUnreadCount(): Promise<number> {
+    try {
+      const res = await apiClient.get<number>("/notifications/unread-count");
+      return typeof res?.data === "number" ? res.data : 0;
+    } catch (e) {
+      console.warn("Unread count fetch error:", e);
+      return 0;
     }
   },
 
@@ -833,14 +921,28 @@ export const AssociateService = {
 };
 
 export const FaqService = {
-  async getAll(status?: FaqStatus): Promise<FaqItem[]> {
+  async getAll(
+    statusOrParams?: FaqStatus | string | { status?: FaqStatus | string; category?: string; search?: string; limit?: number; page?: number }
+  ): Promise<PaginatedList<FaqItem>> {
     try {
-      const endpoint = status ? `/faqs?status=${status}` : "/faqs";
+      const params = new URLSearchParams();
+      if (statusOrParams && typeof statusOrParams === "object") {
+        if (statusOrParams.status && statusOrParams.status !== "All") params.append("status", statusOrParams.status);
+        if (statusOrParams.category && statusOrParams.category !== "All") params.append("category", statusOrParams.category);
+        if (statusOrParams.search && statusOrParams.search.trim() !== "") params.append("search", statusOrParams.search.trim());
+        if (statusOrParams.limit) params.append("limit", String(statusOrParams.limit));
+        if (statusOrParams.page) params.append("page", String(statusOrParams.page));
+      } else if (statusOrParams && statusOrParams !== "All") {
+        params.append("status", statusOrParams);
+      }
+      const query = params.toString();
+      const endpoint = query ? `/faqs?${query}` : "/faqs";
       const res = await apiClient.get<FaqItem[]>(endpoint);
-      return Array.isArray(res?.data) ? res.data : [];
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
     } catch (e) {
       console.warn("Backend faqs fetch error:", e);
-      return [];
+      return makePaginatedList([]);
     }
   },
 

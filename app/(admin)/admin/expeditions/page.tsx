@@ -26,6 +26,7 @@ import {
   AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
+  AdminTablePagination,
 } from "@/components/admin/ui/admin-table";
 
 const STATUS_OPTIONS: InlineSelectOption[] = [
@@ -41,8 +42,15 @@ export default function AdminExpeditionsPage() {
   const [expeditions, setExpeditions] = useState<PackageItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [loading, setLoading] = useState(true);
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Modals
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -50,23 +58,60 @@ export default function AdminExpeditionsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [deletingExp, setDeletingExp] = useState<PackageItem | null>(null);
 
+  // Load categories once
   useEffect(() => {
-    async function loadData() {
+    async function loadCategories() {
       try {
-        const [expData, catsData] = await Promise.all([
-          ExpeditionService.getAll(),
-          CategoryService.getByType(CategoryType.EXPEDITIONS),
-        ]);
-        setExpeditions(expData);
+        const catsData = await CategoryService.getByType(CategoryType.EXPEDITIONS);
         setCategories(catsData);
       } catch (err) {
-        console.error("Failed to load expeditions:", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to load expedition categories:", err);
       }
     }
-    loadData();
+    loadCategories();
   }, []);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page to 1 on filter or search changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
+
+  // Load expeditions from backend
+  const loadExpeditions = async () => {
+    setLoading(true);
+    try {
+      const data = await ExpeditionService.getAll({
+        search: debouncedSearch,
+        status: statusFilter === "All" ? undefined : statusFilter,
+        page,
+        limit,
+      });
+      setExpeditions(data);
+      if (data.pagination) {
+        setTotalItems(data.pagination.count);
+        setTotalPages(data.pagination.lastPage);
+      } else {
+        setTotalItems(data.length);
+        setTotalPages(Math.max(1, Math.ceil(data.length / limit)));
+      }
+    } catch (err) {
+      console.error("Failed to load expeditions:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadExpeditions();
+  }, [debouncedSearch, statusFilter, page, limit]);
 
   // Auto-open view modal when viewId is in query params & remove viewId from URL
   useEffect(() => {
@@ -89,95 +134,78 @@ export default function AdminExpeditionsPage() {
     icon: <Tag className="w-3 h-3 opacity-70" />,
   }));
 
-  const filteredExpeditions = expeditions.filter((exp) => {
-    const matchesSearch =
-      exp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exp.region.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "All" || (exp.status || "").toLowerCase() === statusFilter.toLowerCase();
-    return matchesSearch && matchesStatus;
-  });
-
   const handleSaveExpedition = async (savedExp: PackageItem): Promise<boolean> => {
     try {
       let res: ApiResponse<PackageItem>;
       if (isEditing && activeExp) {
         res = await ExpeditionService.update(activeExp.id, savedExp as any);
-        if (res.success) {
-          setExpeditions((prev) => prev.map((e) => (e.id === activeExp.id ? res.data : e)));
-        }
       } else {
         res = await ExpeditionService.create(savedExp as any);
-        if (res.success) {
-          setExpeditions((prev) => [res.data, ...prev]);
-        }
       }
       if (res.success) {
-        toast.success(res.message || "Expedition saved successfully");
+        toast.success(res.message || "Expedition itinerary saved successfully");
         setIsFormOpen(false);
+        await loadExpeditions();
         return true;
       } else {
-        toast.error(res.message || "Failed to save expedition");
+        toast.error(res.message || "Failed to save expedition itinerary");
         return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save expedition");
+      toast.error(err.message || "An unexpected error occurred");
       return false;
     }
   };
 
-  const handleInlineStatusChange = async (exp: PackageItem, newStatus: string): Promise<boolean> => {
+  const handleInlineStatusChange = async (exp: PackageItem, newStatus: string) => {
     try {
       const res = await ExpeditionService.update(exp.id, { status: newStatus as PackageStatus });
       if (res.success) {
         setExpeditions((prev) =>
           prev.map((e) => (e.id === exp.id ? { ...e, status: newStatus as PackageStatus } : e))
         );
-        toast.success(`Expedition "${exp.title}" status updated`);
-        return true;
+        toast.success(`Updated "${exp.title}" status to ${newStatus}`);
       } else {
         toast.error(res.message || "Failed to update status");
-        return false;
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to update status");
-      return false;
     }
   };
 
-  const handleInlineCategoryChange = async (exp: PackageItem, newCatId: string): Promise<boolean> => {
+  const handleInlineCategoryChange = async (exp: PackageItem, newCategoryId: string) => {
+    const selectedCat = categories.find((c) => c.id === newCategoryId);
     try {
-      const res = await ExpeditionService.update(exp.id, { categoryId: newCatId });
+      const res = await ExpeditionService.update(exp.id, {
+        categoryId: newCategoryId,
+        category: selectedCat?.name || exp.category,
+      } as any);
       if (res.success) {
-        const matchedCat = categories.find((c) => c.id === newCatId);
         setExpeditions((prev) =>
           prev.map((e) =>
             e.id === exp.id
-              ? { ...e, categoryId: newCatId, category: matchedCat ? matchedCat.name : e.category }
+              ? { ...e, categoryId: newCategoryId, category: selectedCat?.name || e.category }
               : e
           )
         );
-        toast.success(`Expedition "${exp.title}" category updated`);
-        return true;
+        toast.success(`Updated "${exp.title}" category to ${selectedCat?.name || newCategoryId}`);
       } else {
         toast.error(res.message || "Failed to update category");
-        return false;
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to update category");
-      return false;
     }
   };
 
   const handleDeleteExpedition = async (id: string) => {
     try {
       const res = await ExpeditionService.delete(id);
-      setExpeditions((prev) => prev.filter((eItem) => eItem.id !== id));
-      setDeletingExp(null);
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Expedition itinerary deleted successfully");
+        setDeletingExp(null);
+        await loadExpeditions();
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to delete expedition");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to delete expedition");
@@ -187,8 +215,8 @@ export default function AdminExpeditionsPage() {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="Peak Expeditions Management"
-        description="Manage 6000m - 8000m technical peak climbing logistics, Sherpa ratios, and permits."
+        title="Mountaineering Expeditions"
+        description="Manage 8000m peaks, 7000m training climbs, climbing permits, and logistical services."
       >
         <Button
           size="sm"
@@ -200,7 +228,7 @@ export default function AdminExpeditionsPage() {
           className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer shadow-xs"
         >
           <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
-          Add Peak Expedition
+          Add New Expedition
         </Button>
       </AdminPageHeader>
 
@@ -229,6 +257,7 @@ export default function AdminExpeditionsPage() {
         <AdminTable>
           <AdminTableHeader>
             <tr>
+              <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead>Peak / Expedition Title</AdminTableHead>
               <AdminTableHead>Category</AdminTableHead>
               <AdminTableHead>Summit Elevation</AdminTableHead>
@@ -241,16 +270,20 @@ export default function AdminExpeditionsPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={8} rows={5} />
-            ) : filteredExpeditions.length > 0 ? (
-              filteredExpeditions.map((exp) => {
+              <AdminTableLoading colSpan={9} rows={limit > 10 ? 10 : limit} />
+            ) : expeditions.length > 0 ? (
+              expeditions.map((exp, idx) => {
                 const currentCatId =
                   exp.categoryId ||
                   categories.find((c) => c.name.toLowerCase() === (exp.category || "").toLowerCase())?.id ||
                   "";
+                const serialNumber = (page - 1) * limit + idx + 1;
 
                 return (
                   <AdminTableRow key={exp.id}>
+                    <AdminTableCell className="text-center font-semibold text-slate-500">
+                      {serialNumber}
+                    </AdminTableCell>
                     <AdminTableCell>
                       <div className="flex items-center gap-3">
                         {exp.image ? (
@@ -368,13 +401,24 @@ export default function AdminExpeditionsPage() {
               })
             ) : (
               <AdminTableEmpty
-                colSpan={8}
+                colSpan={9}
                 title="No expeditions found"
                 description="No peak climbing packages match your search query or status filter."
               />
             )}
           </AdminTableBody>
         </AdminTable>
+        <AdminTablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={limit}
+          onPageChange={setPage}
+          onPageSizeChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </AdminTableContainer>
 
       {/* MODALS */}

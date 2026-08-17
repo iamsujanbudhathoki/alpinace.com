@@ -168,6 +168,7 @@ export default function AdminDashboardPage() {
               <AdminTable>
                 <AdminTableHeader>
                   <tr>
+                    <AdminTableHead className="w-12 text-center">S.N.</AdminTableHead>
                     <AdminTableHead>Guest</AdminTableHead>
                     <AdminTableHead>Package</AdminTableHead>
                     <AdminTableHead>Start Date</AdminTableHead>
@@ -177,10 +178,13 @@ export default function AdminDashboardPage() {
                 </AdminTableHeader>
                 <AdminTableBody>
                   {loading ? (
-                    <AdminTableLoading colSpan={5} rows={5} />
+                    <AdminTableLoading colSpan={6} rows={5} />
                   ) : (
-                    recentBookings.map((bkg) => (
+                    recentBookings.map((bkg, idx) => (
                       <AdminTableRow key={bkg.id}>
+                        <AdminTableCell className="text-center font-semibold text-slate-500">
+                          {idx + 1}
+                        </AdminTableCell>
                         <AdminTableCell>
                           <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
                             {bkg.guestName}

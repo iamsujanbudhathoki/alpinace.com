@@ -26,6 +26,7 @@ import {
   AdminTableLoading,
   AdminTableActions,
   AdminActionButton,
+  AdminTablePagination,
 } from "@/components/admin/ui/admin-table";
 
 const STATUS_OPTIONS: InlineSelectOption[] = [
@@ -41,8 +42,15 @@ export default function AdminToursPage() {
   const [tours, setTours] = useState<PackageItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [loading, setLoading] = useState(true);
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Modals
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -50,23 +58,60 @@ export default function AdminToursPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [deletingTour, setDeletingTour] = useState<PackageItem | null>(null);
 
+  // Load categories once
   useEffect(() => {
-    async function loadData() {
+    async function loadCategories() {
       try {
-        const [toursData, catsData] = await Promise.all([
-          TourService.getAll(),
-          CategoryService.getByType(CategoryType.TOURS),
-        ]);
-        setTours(toursData);
+        const catsData = await CategoryService.getByType(CategoryType.TOURS);
         setCategories(catsData);
       } catch (err) {
-        console.error("Failed to load tours:", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to load tour categories:", err);
       }
     }
-    loadData();
+    loadCategories();
   }, []);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page to 1 on filter or search changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
+
+  // Load tours from backend
+  const loadTours = async () => {
+    setLoading(true);
+    try {
+      const data = await TourService.getAll({
+        search: debouncedSearch,
+        status: statusFilter === "All" ? undefined : statusFilter,
+        page,
+        limit,
+      });
+      setTours(data);
+      if ((data as any).pagination) {
+        setTotalItems((data as any).pagination.count);
+        setTotalPages((data as any).pagination.lastPage);
+      } else {
+        setTotalItems(data.length);
+        setTotalPages(Math.max(1, Math.ceil(data.length / limit)));
+      }
+    } catch (err) {
+      console.error("Failed to load tours:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTours();
+  }, [debouncedSearch, statusFilter, page, limit]);
 
   // Auto-open view modal when viewId is in query params & remove viewId from URL
   useEffect(() => {
@@ -89,82 +134,25 @@ export default function AdminToursPage() {
     icon: <Tag className="w-3 h-3 opacity-70" />,
   }));
 
-  const filteredTours = tours.filter((tur) => {
-    const matchesSearch =
-      tur.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tur.region.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "All" || (tur.status || "").toLowerCase() === statusFilter.toLowerCase();
-    return matchesSearch && matchesStatus;
-  });
-
   const handleSaveTour = async (savedTour: PackageItem): Promise<boolean> => {
     try {
       let res: ApiResponse<PackageItem>;
       if (isEditing && activeTour) {
         res = await TourService.update(activeTour.id, savedTour as any);
-        if (res.success) {
-          setTours((prev) => prev.map((t) => (t.id === activeTour.id ? res.data : t)));
-        }
       } else {
         res = await TourService.create(savedTour as any);
-        if (res.success) {
-          setTours((prev) => [res.data, ...prev]);
-        }
       }
       if (res.success) {
         toast.success(res.message || "Tour package saved successfully");
         setIsFormOpen(false);
+        await loadTours();
         return true;
       } else {
         toast.error(res.message || "Failed to save tour package");
         return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save tour package");
-      return false;
-    }
-  };
-
-  const handleInlineStatusChange = async (tur: PackageItem, newStatus: string): Promise<boolean> => {
-    try {
-      const res = await TourService.update(tur.id, { status: newStatus as PackageStatus });
-      if (res.success) {
-        setTours((prev) =>
-          prev.map((t) => (t.id === tur.id ? { ...t, status: newStatus as PackageStatus } : t))
-        );
-        toast.success(`Tour "${tur.title}" status updated`);
-        return true;
-      } else {
-        toast.error(res.message || "Failed to update status");
-        return false;
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update status");
-      return false;
-    }
-  };
-
-  const handleInlineCategoryChange = async (tur: PackageItem, newCatId: string): Promise<boolean> => {
-    try {
-      const res = await TourService.update(tur.id, { categoryId: newCatId });
-      if (res.success) {
-        const matchedCat = categories.find((c) => c.id === newCatId);
-        setTours((prev) =>
-          prev.map((t) =>
-            t.id === tur.id
-              ? { ...t, categoryId: newCatId, category: matchedCat ? matchedCat.name : t.category }
-              : t
-          )
-        );
-        toast.success(`Tour "${tur.title}" category updated`);
-        return true;
-      } else {
-        toast.error(res.message || "Failed to update category");
-        return false;
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update category");
+      toast.error(err.message || "An unexpected error occurred");
       return false;
     }
   };
@@ -172,23 +160,64 @@ export default function AdminToursPage() {
   const handleDeleteTour = async (id: string) => {
     try {
       const res = await TourService.delete(id);
-      setTours((prev) => prev.filter((t) => t.id !== id));
-      setDeletingTour(null);
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Tour package deleted successfully");
+        setDeletingTour(null);
+        await loadTours();
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to delete tour");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete tour package");
+      toast.error(err.message || "Failed to delete tour");
+    }
+  };
+
+  const handleInlineStatusChange = async (tur: PackageItem, newStatus: string) => {
+    try {
+      const res = await TourService.update(tur.id, { status: newStatus as PackageStatus });
+      if (res.success) {
+        setTours((prev) =>
+          prev.map((t) => (t.id === tur.id ? { ...t, status: newStatus as PackageStatus } : t))
+        );
+        toast.success(`Updated "${tur.title}" status to ${newStatus}`);
+      } else {
+        toast.error(res.message || "Failed to update status");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update status");
+    }
+  };
+
+  const handleInlineCategoryChange = async (tur: PackageItem, newCategoryId: string) => {
+    const selectedCat = categories.find((c) => c.id === newCategoryId);
+    try {
+      const res = await TourService.update(tur.id, {
+        categoryId: newCategoryId,
+        category: selectedCat?.name || tur.category,
+      } as any);
+      if (res.success) {
+        setTours((prev) =>
+          prev.map((t) =>
+            t.id === tur.id
+              ? { ...t, categoryId: newCategoryId, category: selectedCat?.name || t.category }
+              : t
+          )
+        );
+        toast.success(`Updated "${tur.title}" category to ${selectedCat?.name || newCategoryId}`);
+      } else {
+        toast.error(res.message || "Failed to update category");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update category");
     }
   };
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
       <AdminPageHeader
-        title="Tours & Sightseeing Management"
-        description="Manage cultural tours, heritage itineraries, and luxury helicopter packages."
+        title="Cultural Tours & Sightseeing"
+        description="Manage private heritage circuits, day explorations, and wildlife adventures."
       >
         <Button
           size="sm"
@@ -200,10 +229,11 @@ export default function AdminToursPage() {
           className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer shadow-xs"
         >
           <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
-          Add New Tour Package
+          Add New Tour Itinerary
         </Button>
       </AdminPageHeader>
 
+      {/* Filter Bar */}
       <AdminFilterBar
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
@@ -229,6 +259,7 @@ export default function AdminToursPage() {
         <AdminTable>
           <AdminTableHeader>
             <tr>
+              <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead>Tour Package Title</AdminTableHead>
               <AdminTableHead>Category</AdminTableHead>
               <AdminTableHead>Destination &amp; Duration</AdminTableHead>
@@ -240,16 +271,20 @@ export default function AdminToursPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={7} rows={5} />
-            ) : filteredTours.length > 0 ? (
-              filteredTours.map((tur) => {
+              <AdminTableLoading colSpan={8} rows={limit > 10 ? 10 : limit} />
+            ) : tours.length > 0 ? (
+              tours.map((tur, idx) => {
                 const currentCatId =
                   tur.categoryId ||
                   categories.find((c) => c.name.toLowerCase() === (tur.category || "").toLowerCase())?.id ||
                   "";
+                const serialNumber = (page - 1) * limit + idx + 1;
 
                 return (
                   <AdminTableRow key={tur.id}>
+                    <AdminTableCell className="text-center font-semibold text-slate-500">
+                      {serialNumber}
+                    </AdminTableCell>
                     <AdminTableCell>
                       <div className="flex items-center gap-3">
                         {tur.image ? (
@@ -367,13 +402,24 @@ export default function AdminToursPage() {
               })
             ) : (
               <AdminTableEmpty
-                colSpan={7}
+                colSpan={8}
                 title="No tours found"
                 description="No tour packages match your search query or status filter."
               />
             )}
           </AdminTableBody>
         </AdminTable>
+        <AdminTablePagination
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={limit}
+          onPageChange={setPage}
+          onPageSizeChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
       </AdminTableContainer>
 
       {/* MODALS */}

@@ -5,11 +5,20 @@ const AUTH_KEY = 'alpineace_admin_session';
 
 // ─── Response Types ───────────────────────────────────────────────────────────
 
+export interface PaginationMeta {
+  count: number;
+  currentPage: number;
+  nextPage: number | null;
+  prevPage: number | null;
+  lastPage: number;
+}
+
 /** Mirrors the backend IApiResponse shape produced by ResponseHandler */
 export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   data: T;
+  pagination?: PaginationMeta;
   errors?: string[];
 }
 
@@ -81,6 +90,7 @@ export const responseFormatter = <T = any>(response: any): ApiResponse<T> => {
       success: Boolean(response.success),
       message: response.message || (response.success ? 'Operation completed successfully' : 'An error occurred'),
       data: response.data as T,
+      pagination: response.pagination,
       errors: response.errors,
     };
   }
@@ -94,6 +104,7 @@ export const responseFormatter = <T = any>(response: any): ApiResponse<T> => {
         success: Boolean(payload.success),
         message: payload.message || 'Operation completed successfully',
         data: payload.data as T,
+        pagination: payload.pagination,
         errors: payload.errors,
       };
     }

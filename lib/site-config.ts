@@ -1,16 +1,31 @@
+export const websiteDomain = "https://alpineacetreks.com" as const;
+export const SITE_URL = websiteDomain;
+export const SITE_DOMAIN = "alpineacetreks.com" as const;
+export const SITE_NAME = "AlpineAce Treks & Expeditions" as const;
+export const SITE_SHORT_NAME = "AlpineAce" as const;
+export const SITE_TAGLINE = "Venture Beyond the Ordinary" as const;
+export const SITE_EMAIL = "info@alpineacetreks.com" as const;
+export const SITE_SUPPORT_EMAIL = "support@alpineacetreks.com" as const;
+
 export const siteConfig = {
-  name: "AlpineAce",
-  title: "AlpineAce | Nepal Trekking, Historical Tours & Peak Expeditions",
-  tagline: "Venture Beyond the Ordinary",
+  name: SITE_SHORT_NAME,
+  fullName: SITE_NAME,
+  domain: SITE_DOMAIN,
+  url: SITE_URL,
+  email: SITE_EMAIL,
+  supportEmail: SITE_SUPPORT_EMAIL,
+  title: `${SITE_SHORT_NAME} | Nepal Trekking, Historical Tours & Peak Expeditions`,
+  tagline: SITE_TAGLINE,
   description:
     "Experience Nepal's spectacular trekking routes, historical tours, and elite peak expeditions under the safe guidance of multi-summit Sherpas, combined with luxury mountain lodges.",
-  url: "https://alpineacetreks.com",
   keywords: [
     "Nepal trekking",
     "peak expeditions",
     "Sherpa guides",
     "historical tours Nepal",
     "luxury mountain lodges",
+    "Everest Base Camp trek",
+    "Annapurna circuit",
   ],
 } as const;
 

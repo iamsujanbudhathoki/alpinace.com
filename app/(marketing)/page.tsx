@@ -32,7 +32,7 @@ export default function Home() {
     image: `${siteConfig.url}/logo.jpg`,
     description: siteConfig.description,
     telephone: "+977-1-4700000",
-    email: "info@alpineace.com",
+    email: siteConfig.email,
     address: {
       "@type": "PostalAddress",
       streetAddress: "Thamel Marg, Ward 29",

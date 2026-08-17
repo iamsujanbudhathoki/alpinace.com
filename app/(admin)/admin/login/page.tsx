@@ -70,7 +70,7 @@ export default function AdminLoginPage() {
                 disabled={isSubmitting}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@alpineace.com"
+                placeholder="name@alpineacetreks.com"
                 className="text-xs bg-slate-50/50 border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
               />
             </div>

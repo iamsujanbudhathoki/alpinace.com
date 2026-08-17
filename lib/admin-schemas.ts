@@ -246,6 +246,7 @@ export type CategoryFormValues = z.infer<typeof categorySchema>;
 export const blogSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   category: z.string().min(2, "Category is required"),
+  categoryId: z.string().optional(),
   readTime: z.string().default("5 min read"),
   status: z.nativeEnum(BlogStatus),
   publishedDate: z.string().optional(),

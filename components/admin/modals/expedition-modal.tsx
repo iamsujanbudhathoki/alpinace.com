@@ -755,7 +755,7 @@ export function ExpeditionFormModal({
                 {/* Clean SERP Preview Snippet */}
                 <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 shadow-2xs">
                   <div className="text-[11px] font-medium text-emerald-800 truncate">
-                    https://alpineace.com › expeditions › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "expedition-slug"}
+                    https://alpineacetreks.com › expeditions › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "expedition-slug"}
                   </div>
 
                   <div className="text-xs font-bold text-blue-700 truncate hover:underline cursor-pointer">
@@ -765,7 +765,7 @@ export function ExpeditionFormModal({
                         : "Expedition Package Title Preview | AlpineAce")}
                   </div>
 
-                  <div classhttps://alpineacetreks.comt-slate-600 font-medium line-clamp-2 leading-relaxed">
+                  <div className="text-[11px] text-slate-600 font-medium line-clamp-2 leading-relaxed">
                     {watchMetaDesc?.trim() ||
                       watchShortDesc?.trim() ||
                       "Summit high-altitude Himalayan peaks with 1:1 certified Sherpa guides, high-altitude medical support, and luxury logistics."}
@@ -1081,7 +1081,7 @@ export function ExpeditionFormModal({
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
               <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
                 <div className="text-[11px] font-bold text-emerald-800 truncate">
-                  https://alpineace.com/expeditions/{initialData?.slug || "expedition-slug"}
+                  https://alpineacetreks.com/expeditions/{initialData?.slug || "expedition-slug"}
                 </div>
                 <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
                   {initialData?.metaTitle || `${initialData?.title} | Alpine Ace Himalayan Expeditions`}
@@ -1105,7 +1105,7 @@ export function ExpeditionFormModal({
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
               <span className="font-bold text-slate-900 flex items-center gap-1">
                 <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
-                Exhttps://alpineacetreks.comalData?.faqs?.length || 0})
+                Expedition FAQs ({initialData?.faqs?.length || 0})
               </span>
               <p className="text-[11px] text-slate-600">
                 {initialData?.faqs && initialData.faqs.length > 0

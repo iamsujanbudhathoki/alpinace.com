@@ -260,7 +260,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
             <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200 shadow-xl rounded-xl p-1 z-50">
               <DropdownMenuLabel className="font-semibold text-xs px-3 py-2">
                 <div className="font-bold text-slate-900">{user?.name || "Sujan Budhathoki"}</div>
-                <div className="text-xs text-slate-700 font-semibold truncate">{user?.email || "admin@alpineace.com"}</div>
+                <div className="text-xs text-slate-700 font-semibold truncate">{user?.email || "admin@alpineacetreks.com"}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-100" />
 

@@ -676,12 +676,39 @@ export const BlogService = {
     }
   },
 
-  async create(data: BlogFormValues): Promise<ApiResponse<BlogArticle>> {
-    return apiClient.post<BlogArticle>("/blogs", data);
+  async create(data: Partial<BlogFormValues> | Record<string, any>): Promise<ApiResponse<BlogArticle>> {
+    const payload = {
+      title: String(data.title || "").trim(),
+      category: String(data.category || "").trim(),
+      ...(data.categoryId ? { categoryId: data.categoryId } : {}),
+      readTime: data.readTime || "5 min read",
+      status: data.status || BlogStatus.PUBLISHED,
+      publishedDate: data.publishedDate || new Date().toISOString().split("T")[0],
+      excerpt: data.excerpt || "",
+      content: data.content || "",
+      image: data.image || "",
+      ...(data.metaTitle ? { metaTitle: String(data.metaTitle).trim() } : {}),
+      ...(data.metaDescription ? { metaDescription: String(data.metaDescription).trim() } : {}),
+      ...(data.keywords ? { keywords: String(data.keywords).trim() } : {}),
+    };
+    return apiClient.post<BlogArticle>("/blogs", payload);
   },
 
-  async update(id: string, data: Partial<BlogFormValues>): Promise<ApiResponse<BlogArticle>> {
-    return apiClient.put<BlogArticle>(`/blogs/${id}`, data);
+  async update(id: string, data: Partial<BlogFormValues> | Record<string, any>): Promise<ApiResponse<BlogArticle>> {
+    const payload: Record<string, any> = {};
+    if (data.title !== undefined) payload.title = String(data.title).trim();
+    if (data.category !== undefined) payload.category = String(data.category).trim();
+    if (data.categoryId !== undefined) payload.categoryId = data.categoryId;
+    if (data.readTime !== undefined) payload.readTime = data.readTime;
+    if (data.status !== undefined) payload.status = data.status;
+    if (data.publishedDate !== undefined) payload.publishedDate = data.publishedDate;
+    if (data.excerpt !== undefined) payload.excerpt = data.excerpt;
+    if (data.content !== undefined) payload.content = data.content;
+    if (data.image !== undefined) payload.image = data.image;
+    if (data.metaTitle !== undefined) payload.metaTitle = String(data.metaTitle).trim();
+    if (data.metaDescription !== undefined) payload.metaDescription = String(data.metaDescription).trim();
+    if (data.keywords !== undefined) payload.keywords = String(data.keywords).trim();
+    return apiClient.put<BlogArticle>(`/blogs/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {

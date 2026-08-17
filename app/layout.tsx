@@ -70,7 +70,7 @@ const jsonLd = {
   logo: `${siteConfig.url}/logo.jpg`,
   image: `${siteConfig.url}/logo.jpg`,
   telephone: "+977 1 4700543",
-  email: "info@alpineace.com",
+  email: siteConfig.email,
   address: {
     "@type": "PostalAddress",
     streetAddress: "Tridevi Marg, Thamel",

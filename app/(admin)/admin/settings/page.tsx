@@ -183,7 +183,7 @@ export default function AdminSettingsPage() {
                 type="email"
                 value={formData.contactEmail}
                 onChange={(e) => handleChange("contactEmail", e.target.value)}
-                placeholder="info@alpineace.com"
+                placeholder="info@alpineacetreks.com"
                 className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
                 required
               />

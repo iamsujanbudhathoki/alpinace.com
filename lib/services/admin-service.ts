@@ -596,8 +596,20 @@ export const InquiryService = {
     }
   },
 
-  async create(data: InquiryFormValues): Promise<ApiResponse<Inquiry>> {
-    return apiClient.post<Inquiry>("/inquiries", data);
+  async create(data: Partial<InquiryFormValues> | Record<string, any>): Promise<ApiResponse<Inquiry>> {
+    const payload = {
+      guestName: String(data.guestName || "").trim(),
+      email: String(data.email || "").trim(),
+      phone: String(data.phone || "").trim(),
+      country: String(data.country || "").trim(),
+      interestedTrip: String(data.interestedTrip || "").trim(),
+      travelDates: String(data.travelDates || "").trim(),
+      groupSize: Number(data.groupSize) || 1,
+      message: String(data.message || "").trim(),
+      ...(data.status ? { status: data.status } : {}),
+      ...(data.notes ? { notes: data.notes } : {}),
+    };
+    return apiClient.post<Inquiry>("/inquiries", payload);
   },
 
   async update(id: string, data: { status?: Inquiry["status"]; notes?: string }): Promise<ApiResponse<Inquiry>> {

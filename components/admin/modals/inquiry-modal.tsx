@@ -3,23 +3,25 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Send, Mail, Phone, Globe } from "lucide-react";
+import { Send, Mail, Phone, Globe, Loader2 } from "lucide-react";
 import { Inquiry, InquiryStatus } from "@/lib/admin-data";
 import { inquirySchema, InquiryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
-import { DialogFooter } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
 
 interface InquiryFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (inquiry: Inquiry) => void;
+  onSave: (inquiry: InquiryFormValues) => Promise<boolean | void> | boolean | void;
 }
 
 export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -55,24 +57,30 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
     }
   }, [isOpen, reset]);
 
-  const onSubmit = (values: InquiryFormValues) => {
-    const newInquiry: Inquiry = {
-      id: `inq-${Date.now()}`,
-      guestName: values.guestName,
-      email: values.email,
-      phone: values.phone,
-      country: values.country,
-      interestedTrip: values.interestedTrip,
-      travelDates: values.travelDates,
-      groupSize: Number(values.groupSize),
-      message: values.message,
-      createdAt: "Just now",
-      status: InquiryStatus.NEW,
-      notes: "Logged via admin CRM desk.",
-    };
+  const onSubmit = async (values: InquiryFormValues) => {
+    setIsSubmitting(true);
+    try {
+      const payload: InquiryFormValues = {
+        guestName: values.guestName.trim(),
+        email: values.email.trim(),
+        phone: values.phone.trim(),
+        country: values.country.trim(),
+        interestedTrip: values.interestedTrip.trim(),
+        travelDates: values.travelDates.trim(),
+        groupSize: Number(values.groupSize) || 1,
+        message: values.message.trim(),
+      };
 
-    onSave(newInquiry);
-    onClose();
+      const success = await onSave(payload);
+      if (success !== false) {
+        onClose();
+      }
+    } catch (err: any) {
+      console.error("Inquiry form submission error:", err);
+      toast.error(err?.message || "Failed to log inquiry lead. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const modalFooter = (
@@ -81,6 +89,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         type="button"
         variant="outline"
         onClick={onClose}
+        disabled={isSubmitting}
         className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
       >
         Cancel
@@ -88,9 +97,17 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
       <Button
         type="submit"
         form="inquiry-form"
-        className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer"
+        disabled={isSubmitting}
+        className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer inline-flex items-center gap-1.5 transition-colors"
       >
-        Log Inquiry Lead
+        {isSubmitting ? (
+          <>
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <span>Logging Inquiry...</span>
+          </>
+        ) : (
+          <span>Log Inquiry Lead</span>
+        )}
       </Button>
     </div>
   );

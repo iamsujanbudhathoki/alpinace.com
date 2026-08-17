@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Plus, Trash2, Eye, Mail, MessageSquare } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Inquiry, InquiryStatus } from "@/lib/admin-data";
+import { InquiryFormValues } from "@/lib/admin-schemas";
 import { toast } from "sonner";
 import { InquiryService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
@@ -100,17 +101,20 @@ export default function AdminInquiriesPage() {
     }
   };
 
-  const handleSaveInquiry = async (savedInquiry: Inquiry) => {
+  const handleSaveInquiry = async (formData: InquiryFormValues): Promise<boolean> => {
     try {
-      const res = await InquiryService.create(savedInquiry as any);
-      if (res.success) {
+      const res = await InquiryService.create(formData);
+      if (res?.success && res.data) {
         setInquiries([res.data, ...inquiries]);
         toast.success(res.message || "Manual inquiry logged successfully");
+        return true;
       } else {
-        toast.error(res.message || "Failed to log inquiry");
+        toast.error(res?.message || "Failed to log inquiry");
+        return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to log inquiry");
+      toast.error(err?.message || "Failed to log inquiry");
+      return false;
     }
   };
 

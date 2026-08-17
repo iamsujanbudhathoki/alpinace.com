@@ -38,9 +38,13 @@ export function generatePackageMetadata({
     item.metaTitle?.trim() ||
     `${item.title} - ${item.durationDays ? `${item.durationDays} Days ` : ""}Himalayan ${categoryType === "trekking" ? "Trek" : categoryType === "tours" ? "Tour" : "Expedition"} | ${siteConfig.name}`;
 
+  const cleanShortDesc = item.shortDesc
+    ? item.shortDesc.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim()
+    : "";
+
   const description =
     item.metaDescription?.trim() ||
-    item.shortDesc?.trim() ||
+    cleanShortDesc ||
     `Experience the ${item.title} in Nepal (${item.durationDays || 0} Days). Guided by certified IFMGA/NNMGA Sherpa masters with luxury mountain lodge hospitality. Book with AlpineAce.`;
 
   const rawKeywords = item.keywords
@@ -144,12 +148,16 @@ export function generatePackageJsonLd({
     ],
   };
 
+  const cleanShortDesc = item.shortDesc
+    ? item.shortDesc.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim()
+    : "";
+
   // 2. TouristTrip & Product Schema
   const tripSchema: any = {
     "@context": "https://schema.org",
     "@type": ["TouristTrip", "Product"],
     name: item.title,
-    description: item.shortDesc || item.metaDescription || `${item.title} expedition in Nepal.`,
+    description: cleanShortDesc || item.metaDescription || `${item.title} expedition in Nepal.`,
     url: canonicalUrl,
     image: item.image ? [item.image] : [`${baseUrl}/logo.jpg`],
     touristType: ["Adventure Enthusiasts", "Trekkers", "Mountaineers"],
@@ -261,9 +269,13 @@ export function generateBlogMetadata(post: BlogPost | null, slug: string): Metad
     post.metaTitle?.trim() ||
     `${post.title} | ${siteConfig.name} Journal`;
 
+  const cleanExcerpt = post.excerpt
+    ? post.excerpt.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim()
+    : "";
+
   const description =
     post.metaDescription?.trim() ||
-    post.excerpt?.trim() ||
+    cleanExcerpt ||
     `Read "${post.title}" on the AlpineAce journal. Expert tips, packing advice, and high-altitude insights.`;
 
   const keywords = post.keywords

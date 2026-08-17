@@ -1,11 +1,21 @@
-export const websiteDomain = "https://alpineacetreks.com" as const;
+import {
+  ENV_SITE_URL,
+  ENV_SITE_DOMAIN,
+  ENV_SITE_NAME,
+  ENV_SITE_SHORT_NAME,
+  ENV_SITE_EMAIL,
+  ENV_SITE_TAGLINE,
+  websiteDomain,
+} from "@/lib/env.constants";
+
+export { websiteDomain };
 export const SITE_URL = websiteDomain;
-export const SITE_DOMAIN = "alpineacetreks.com" as const;
-export const SITE_NAME = "AlpineAce Treks & Expeditions" as const;
-export const SITE_SHORT_NAME = "AlpineAce" as const;
-export const SITE_TAGLINE = "Venture Beyond the Ordinary" as const;
-export const SITE_EMAIL = "info@alpineacetreks.com" as const;
-export const SITE_SUPPORT_EMAIL = "support@alpineacetreks.com" as const;
+export const SITE_DOMAIN = ENV_SITE_DOMAIN;
+export const SITE_NAME = ENV_SITE_NAME;
+export const SITE_SHORT_NAME = ENV_SITE_SHORT_NAME;
+export const SITE_TAGLINE = ENV_SITE_TAGLINE;
+export const SITE_EMAIL = ENV_SITE_EMAIL;
+export const SITE_SUPPORT_EMAIL = `support@${ENV_SITE_DOMAIN}` as const;
 
 export const siteConfig = {
   name: SITE_SHORT_NAME,

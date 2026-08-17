@@ -15,6 +15,7 @@ import {
 import { BlogArticle } from "@/lib/admin-data";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import { websiteDomain } from "@/lib/env.constants";
 import { Button } from "@/components/ui/button";
 
 interface BlogViewModalProps {
@@ -181,7 +182,7 @@ export function BlogViewModal({
           <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
             <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1 shadow-2xs">
               <div className="text-[11px] font-bold text-emerald-800 truncate">
-                https://alpineacetreks.com/blog/{article.slug || article.id}
+                {websiteDomain}/blog/{article.slug || article.id}
               </div>
               <div className="text-xs font-extrabold text-blue-700 truncate">
                 {article.metaTitle || `${article.title} | AlpineAce Journal`}

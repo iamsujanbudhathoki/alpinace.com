@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { SettingService } from "@/lib/services/admin-service";
+import { websiteDomain } from "@/lib/env.constants";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -353,7 +354,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={formData.canonicalUrl}
                   onChange={(e) => handleChange("canonicalUrl", e.target.value)}
-                  placeholder="https://alpineacetreks.com"
+                  placeholder={websiteDomain}
                   className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
                 />
               </div>

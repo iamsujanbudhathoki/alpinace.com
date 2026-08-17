@@ -25,6 +25,7 @@ import {
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
+import { websiteDomain } from "@/lib/env.constants";
 import { Button } from "@/components/ui/button";
 
 interface BlogArticleFormProps {
@@ -360,7 +361,7 @@ export function BlogArticleForm({
             {/* Clean SERP Preview Snippet */}
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1 shadow-2xs">
               <div className="text-[11px] font-medium text-emerald-800 truncate">
-                https://alpineacetreks.com › blog ›{" "}
+                {websiteDomain} › blog ›{" "}
                 {formData.title
                   ? formData.title
                       .toLowerCase()

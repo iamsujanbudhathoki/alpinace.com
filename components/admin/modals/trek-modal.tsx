@@ -22,6 +22,7 @@ import { TrekFormValues, trekSchema } from "@/lib/admin-schemas";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { TrekItem } from "@/lib/trek-data";
 import { openSingleImage } from "@/lib/utils/lightbox";
+import { websiteDomain } from "@/lib/env.constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   BedDouble,
@@ -679,7 +680,7 @@ export function TrekFormModal({
                 {/* Clean SERP Preview Snippet */}
                 <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 shadow-2xs">
                   <div className="text-[11px] font-medium text-emerald-800 truncate">
-                    https://alpineacetreks.com › trekking › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "trek-slug"}
+                    {websiteDomain} › trekking › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "trek-slug"}
                   </div>
 
                   <div className="text-xs font-bold text-blue-700 truncate hover:underline cursor-pointer">
@@ -990,7 +991,7 @@ export function TrekFormModal({
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
               <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
                 <div className="text-[11px] font-bold text-emerald-800 truncate">
-                  https://alpineacetreks.com/trekking/{initialData?.slug || "trek-slug"}
+                  {websiteDomain}/trekking/{initialData?.slug || "trek-slug"}
                 </div>
                 <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
                   {initialData?.metaTitle || `${initialData?.title} | Alpine Ace Himalayan Trekking`}

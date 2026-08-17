@@ -1,39 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Edit,
-  Image as ImageIcon,
-  Search,
-  Info,
-  Loader2,
-  CheckCircle2,
-  XCircle,
-  HelpCircle,
-  MessageSquareQuote,
-  Mountain,
-  MapPin,
-  Clock,
-  Users,
-  Utensils,
-  BedDouble,
-  Star,
-  ShieldAlert,
-  Flame,
-  Activity,
-  Calendar,
-  Globe,
-  ExternalLink,
-  Maximize2,
-} from "lucide-react";
-import Link from "next/link";
-import { PackageItem, CategoryType, ClimbingGrade, TripDifficulty, PackageStatus } from "@/lib/admin-data";
-import { CategoryService, MediaService } from "@/lib/services/admin-service";
-import { openSingleImage } from "@/lib/utils/lightbox";
-import { expeditionSchema, ExpeditionFormValues } from "@/lib/admin-schemas";
-import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import {
   AdminInputField,
   AdminSelectField,
@@ -41,15 +7,48 @@ import {
 } from "@/components/admin/forms/admin-form-fields";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import {
-  TripFaqsManager,
-  TripReviewsManager,
   TripFaqItem,
+  TripFaqsManager,
   TripReviewItem,
+  TripReviewsManager,
 } from "@/components/admin/forms/trip-faqs-reviews-fields";
 import { TripItineraryManager } from "@/components/admin/forms/trip-itinerary-manager";
+import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
+import { CategoryType, ClimbingGrade, PackageItem, PackageStatus, TripDifficulty } from "@/lib/admin-data";
+import { ExpeditionFormValues, expeditionSchema } from "@/lib/admin-schemas";
+import { CategoryService, MediaService } from "@/lib/services/admin-service";
+import { openSingleImage } from "@/lib/utils/lightbox";
+import { websiteDomain } from "@/lib/env.constants";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Activity,
+  BedDouble,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Edit,
+  ExternalLink,
+  Flame,
+  Globe,
+  HelpCircle,
+  Image as ImageIcon,
+  Info,
+  Loader2,
+  MapPin,
+  Maximize2,
+  MessageSquareQuote,
+  Mountain,
+  Search,
+  Star,
+  Utensils,
+  XCircle
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 interface ExpeditionFormModalProps {
   isOpen: boolean;
@@ -755,7 +754,7 @@ export function ExpeditionFormModal({
                 {/* Clean SERP Preview Snippet */}
                 <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 shadow-2xs">
                   <div className="text-[11px] font-medium text-emerald-800 truncate">
-                    https://alpineacetreks.com › expeditions › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "expedition-slug"}
+                    {websiteDomain} › expeditions › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "expedition-slug"}
                   </div>
 
                   <div className="text-xs font-bold text-blue-700 truncate hover:underline cursor-pointer">
@@ -1081,7 +1080,7 @@ export function ExpeditionFormModal({
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
               <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
                 <div className="text-[11px] font-bold text-emerald-800 truncate">
-                  https://alpineacetreks.com/expeditions/{initialData?.slug || "expedition-slug"}
+                  {websiteDomain}/expeditions/{initialData?.slug || "expedition-slug"}
                 </div>
                 <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
                   {initialData?.metaTitle || `${initialData?.title} | Alpine Ace Himalayan Expeditions`}

@@ -1,22 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { 
-  Building, 
-  Search, 
-  Share2, 
-  Save, 
-  Check, 
-  Loader2, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Globe, 
-  Clock, 
+import {
+  Building,
+  Search,
+  Share2,
+  Save,
+  Check,
+  Loader2,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  Clock,
   MessageCircle,
   BarChart3,
   ShieldCheck,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SettingService } from "@/lib/services/admin-service";
@@ -57,7 +57,6 @@ export default function AdminSettingsPage() {
     youtubeUrl: "",
     tripadvisorUrl: "",
     linkedinUrl: "",
-
   });
 
   useEffect(() => {
@@ -107,7 +106,9 @@ export default function AdminSettingsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
         <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
-        <p className="text-xs font-semibold text-slate-600">Loading agency settings...</p>
+        <p className="text-xs font-semibold text-slate-600">
+          Loading agency settings...
+        </p>
       </div>
     );
   }
@@ -123,12 +124,13 @@ export default function AdminSettingsPage() {
       {savedSuccess && (
         <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in slide-in-from-top-2">
           <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>All agency settings and SEO configuration saved successfully!</span>
+          <span>
+            All agency settings and SEO configuration saved successfully!
+          </span>
         </div>
       )}
 
       <form onSubmit={handleSaveSettings} className="space-y-8">
-
         {/* 1. Agency Business Profile & Contact */}
         <Card className="p-6 md:p-8 bg-white border-slate-200 shadow-xs space-y-6 rounded-2xl">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -138,7 +140,9 @@ export default function AdminSettingsPage() {
               </div>
               <span>Agency Profile &amp; Contact Details</span>
             </h2>
-            <span className="text-[11px] font-semibold text-slate-600">Public Contact Info</span>
+            <span className="text-[11px] font-semibold text-slate-600">
+              Public Contact Info
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
@@ -158,7 +162,9 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">Company Slogan / Tagline</label>
+              <label className="block text-slate-700 font-bold mb-1.5">
+                Company Slogan / Tagline
+              </label>
               <Input
                 type="text"
                 value={formData.tagline}
@@ -223,7 +229,9 @@ export default function AdminSettingsPage() {
                 placeholder="9779851000000 (no leading +)"
                 className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
               />
-              <span className="text-[11px] text-slate-600 mt-1 block">Used by the floating WhatsApp chat widget across the website.</span>
+              <span className="text-[11px] text-slate-600 mt-1 block">
+                Used by the floating WhatsApp chat widget across the website.
+              </span>
             </div>
 
             <div>
@@ -279,14 +287,20 @@ export default function AdminSettingsPage() {
               </div>
               <span>Global SEO &amp; Search Engine Settings</span>
             </h2>
-            <span className="text-[11px] font-semibold text-slate-600">Google Search &amp; Meta Tags</span>
+            <span className="text-[11px] font-semibold text-slate-600">
+              Google Search &amp; Meta Tags
+            </span>
           </div>
 
           <div className="space-y-4 text-xs">
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-slate-700 font-bold">Global Homepage Meta Title</label>
-                <span className="text-[11px] text-slate-600 font-medium">{formData.metaTitle.length}/65 chars recommended</span>
+                <label className="text-slate-700 font-bold">
+                  Global Homepage Meta Title
+                </label>
+                <span className="text-[11px] text-slate-600 font-medium">
+                  {formData.metaTitle.length}/65 chars recommended
+                </span>
               </div>
               <Input
                 type="text"
@@ -299,20 +313,28 @@ export default function AdminSettingsPage() {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-slate-700 font-bold">Global Search Meta Description</label>
-                <span className="text-[11px] text-slate-600 font-medium">{formData.metaDescription.length}/160 chars recommended</span>
+                <label className="text-slate-700 font-bold">
+                  Global Search Meta Description
+                </label>
+                <span className="text-[11px] text-slate-600 font-medium">
+                  {formData.metaDescription.length}/160 chars recommended
+                </span>
               </div>
               <textarea
                 rows={3}
                 value={formData.metaDescription}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleChange("metaDescription", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  handleChange("metaDescription", e.target.value)
+                }
                 placeholder="Provide a compelling 2-3 sentence overview of Alpine Ace for Google search snippets..."
                 className="w-full text-xs bg-slate-50 border border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
               />
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">Target SEO Keywords (Comma Separated)</label>
+              <label className="block text-slate-700 font-bold mb-1.5">
+                Target SEO Keywords (Comma Separated)
+              </label>
               <Input
                 type="text"
                 value={formData.metaKeywords}
@@ -324,12 +346,14 @@ export default function AdminSettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-slate-700 font-bold mb-1.5">Canonical Site URL</label>
+                <label className="block text-slate-700 font-bold mb-1.5">
+                  Canonical Site URL
+                </label>
                 <Input
                   type="text"
                   value={formData.canonicalUrl}
                   onChange={(e) => handleChange("canonicalUrl", e.target.value)}
-                  placeholder="https://alpineace.com"
+                  placeholder="https://alpineacetreks.com"
                   className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
                 />
               </div>
@@ -342,18 +366,24 @@ export default function AdminSettingsPage() {
                 <Input
                   type="text"
                   value={formData.googleAnalyticsId}
-                  onChange={(e) => handleChange("googleAnalyticsId", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("googleAnalyticsId", e.target.value)
+                  }
                   placeholder="G-XXXXXXXXXX"
                   className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1.5">Google Search Console Key</label>
+                <label className="block text-slate-700 font-bold mb-1.5">
+                  Google Search Console Key
+                </label>
                 <Input
                   type="text"
                   value={formData.googleSiteVerification}
-                  onChange={(e) => handleChange("googleSiteVerification", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("googleSiteVerification", e.target.value)
+                  }
                   placeholder="verification_token_here"
                   className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
                 />
@@ -371,12 +401,16 @@ export default function AdminSettingsPage() {
               </div>
               <span>Social Media &amp; Review Profiles</span>
             </h2>
-            <span className="text-[11px] font-semibold text-slate-600">Header &amp; Footer Links</span>
+            <span className="text-[11px] font-semibold text-slate-600">
+              Header &amp; Footer Links
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">Facebook Page URL</label>
+              <label className="block text-slate-700 font-bold mb-1.5">
+                Facebook Page URL
+              </label>
               <Input
                 type="text"
                 value={formData.facebookUrl}
@@ -387,7 +421,9 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">Instagram Profile URL</label>
+              <label className="block text-slate-700 font-bold mb-1.5">
+                Instagram Profile URL
+              </label>
               <Input
                 type="text"
                 value={formData.instagramUrl}
@@ -398,7 +434,9 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">YouTube Channel URL</label>
+              <label className="block text-slate-700 font-bold mb-1.5">
+                YouTube Channel URL
+              </label>
               <Input
                 type="text"
                 value={formData.youtubeUrl}
@@ -409,7 +447,9 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">TripAdvisor Profile URL</label>
+              <label className="block text-slate-700 font-bold mb-1.5">
+                TripAdvisor Profile URL
+              </label>
               <Input
                 type="text"
                 value={formData.tripadvisorUrl}
@@ -420,7 +460,9 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-slate-700 font-bold mb-1.5">LinkedIn Company Page</label>
+              <label className="block text-slate-700 font-bold mb-1.5">
+                LinkedIn Company Page
+              </label>
               <Input
                 type="text"
                 value={formData.linkedinUrl}
@@ -435,7 +477,8 @@ export default function AdminSettingsPage() {
         {/* Save Bar */}
         <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
           <p className="text-xs text-slate-600 font-medium">
-            Changes apply instantly to the website, search previews, and inquiry endpoints.
+            Changes apply instantly to the website, search previews, and inquiry
+            endpoints.
           </p>
 
           <Button
@@ -456,7 +499,6 @@ export default function AdminSettingsPage() {
             )}
           </Button>
         </div>
-
       </form>
     </div>
   );

@@ -675,58 +675,31 @@ export function TrekFormModal({
 
             {/* 6. SEO TAB */}
             {activeTab === "seo" && (
-              <div className="space-y-5 max-h-[460px] overflow-y-auto pr-1">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-extrabold text-slate-950 text-xs flex items-center gap-1.5">
-                      <Globe className="w-3.5 h-3.5 text-blue-600" />
-                      Live Google Search SERP Preview
-                    </span>
-                    <span className="text-[10px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
-                      Marketing Page Dynamic Synced
-                    </span>
+              <div className="space-y-4 max-h-[460px] overflow-y-auto pr-1">
+                {/* Clean SERP Preview Snippet */}
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 shadow-2xs">
+                  <div className="text-[11px] font-medium text-emerald-800 truncate">
+                    https://alpineacetreks.com › trekking › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "trek-slug"}
                   </div>
 
-                  <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1.5 shadow-2xs">
-                    <div className="text-xs font-bold text-emerald-800 truncate flex items-center gap-1">
-                      <span>https://alpineace.com/trekking/</span>
-                      <span className="font-semibold text-emerald-700">
-                        {watchTitle
-                          ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
-                          : "trek-slug"}
-                      </span>
-                    </div>
+                  <div className="text-xs font-bold text-blue-700 truncate hover:underline cursor-pointer">
+                    {watchMetaTitle?.trim() ||
+                      (watchTitle
+                        ? `${watchTitle} - ${watchDuration ? `${watchDuration} Days ` : ""}Himalayan Trek | AlpineAce`
+                        : "Trek Package Title Preview | AlpineAce")}
+                  </div>
 
-                    <div className="text-sm font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
-                      {watchMetaTitle?.trim() ||
-                        (watchTitle
-                          ? `${watchTitle} - ${watchDuration ? `${watchDuration} Days ` : ""}Himalayan Trek | AlpineAce`
-                          : "Trek Package Title Preview | AlpineAce")}
-                    </div>
-
-                    <div className="text-xs text-slate-800 font-semibold line-clamp-2 leading-relaxed">
-                      {watchMetaDesc?.trim() ||
-                        watchShortDesc?.trim() ||
-                        "Experience certified Sherpa-led Himalayan journeys with luxury lodge hospitality. Book with AlpineAce."}
-                    </div>
-
-                    {watchKeywords && (
-                      <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1 items-center">
-                        <span className="text-[10px] font-bold text-slate-500 mr-1">Target Keywords:</span>
-                        {watchKeywords.split(",").map((kw, i) => kw.trim() && (
-                          <span key={i} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
-                            {kw.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                  <div className="text-[11px] text-slate-600 font-medium line-clamp-2 leading-relaxed">
+                    {watchMetaDesc?.trim() ||
+                      watchShortDesc?.trim() ||
+                      "Experience certified Sherpa-led Himalayan journeys with luxury lodge hospitality. Book with AlpineAce."}
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-slate-800">
-                      Meta Search Title Tag
+                      Meta Title
                     </label>
                     <span className={`text-[10px] font-semibold ${
                       (watchMetaTitle?.length || 0) > 60
@@ -735,22 +708,19 @@ export function TrekFormModal({
                         ? "text-emerald-600"
                         : "text-slate-500"
                     }`}>
-                      {watchMetaTitle?.length || 0} / 60 characters
+                      {watchMetaTitle?.length || 0} / 60
                     </span>
                   </div>
                   <AdminInputField
                     placeholder="e.g. Everest Base Camp Luxury Helicopter Trek | Alpine Ace"
                     {...register("metaTitle")}
                   />
-                  <p className="text-[10px] text-slate-700 font-medium">
-                    Recommended: 40-60 characters. Overrides the automated page title tag.
-                  </p>
                 </div>
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-slate-800">
-                      Meta Search Description Snippet
+                      Meta Description
                     </label>
                     <span className={`text-[10px] font-semibold ${
                       (watchMetaDesc?.length || 0) > 160
@@ -759,27 +729,33 @@ export function TrekFormModal({
                         ? "text-emerald-600"
                         : "text-slate-500"
                     }`}>
-                      {watchMetaDesc?.length || 0} / 160 characters
+                      {watchMetaDesc?.length || 0} / 160
                     </span>
                   </div>
                   <AdminTextareaField
                     rows={3}
-                    placeholder="Compelling 150-character summary for Google search result snippets and social media previews..."
+                    placeholder="Brief summary for Google search result snippets and social media previews..."
                     {...register("metaDescription")}
                   />
-                  <p className="text-[10px] text-slate-700 font-medium">
-                    Recommended: 120-160 characters. If left empty, short description is used automatically.
-                  </p>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-800 block">
-                    Focus SEO Keywords (Comma Separated)
+                    Focus Keywords
                   </label>
                   <AdminInputField
                     placeholder="e.g. Everest Base Camp, Nepal Trekking, Sherpa Guides, Luxury Lodges"
                     {...register("keywords")}
                   />
+                  {watchKeywords && (
+                    <div className="pt-1.5 flex flex-wrap gap-1 items-center">
+                      {watchKeywords.split(",").map((kw, i) => kw.trim() && (
+                        <span key={i} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                          {kw.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1014,7 +990,7 @@ export function TrekFormModal({
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
               <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
                 <div className="text-[11px] font-bold text-emerald-800 truncate">
-                  https://alpineace.com/trekking/{initialData?.slug || "trek-slug"}
+                  https://alpineacetreks.com/trekking/{initialData?.slug || "trek-slug"}
                 </div>
                 <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
                   {initialData?.metaTitle || `${initialData?.title} | Alpine Ace Himalayan Trekking`}

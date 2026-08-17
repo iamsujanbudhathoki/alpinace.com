@@ -3,24 +3,24 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { 
-  ArrowLeft, 
-  Save, 
-  FileText, 
-  Sparkles, 
-  Calendar, 
-  Clock, 
-  Tag, 
+import {
+  ArrowLeft,
+  Save,
+  FileText,
+  Sparkles,
+  Calendar,
+  Clock,
+  Tag,
   Loader2,
   Globe,
 } from "lucide-react";
 import { toast } from "sonner";
 import { BlogArticle, BlogStatus, CategoryType } from "@/lib/admin-data";
 import { blogSchema, BlogFormValues } from "@/lib/admin-schemas";
-import { 
-  AdminInputField, 
-  AdminSelectField, 
-  AdminTextareaField 
+import {
+  AdminInputField,
+  AdminSelectField,
+  AdminTextareaField,
 } from "@/components/admin/forms/admin-form-fields";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
@@ -47,13 +47,16 @@ export function BlogArticleForm({
   isSubmitting = false,
 }: BlogArticleFormProps) {
   const router = useRouter();
-  const [categoryOptions, setCategoryOptions] = useState<{ label: string; value: string }[]>([]);
+  const [categoryOptions, setCategoryOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
   const [formData, setFormData] = useState<BlogFormValues>({
     title: initialData?.title || "",
     category: initialData?.category || "",
     readTime: initialData?.readTime || "",
     status: initialData?.status || BlogStatus.PUBLISHED,
-    publishedDate: initialData?.publishedDate || new Date().toISOString().split("T")[0],
+    publishedDate:
+      initialData?.publishedDate || new Date().toISOString().split("T")[0],
     excerpt: initialData?.excerpt || "",
     content: initialData?.content || "",
     image: initialData?.image || "",
@@ -99,7 +102,8 @@ export function BlogArticleForm({
         category: initialData.category || "",
         readTime: initialData.readTime || "",
         status: initialData.status || BlogStatus.PUBLISHED,
-        publishedDate: initialData.publishedDate || new Date().toISOString().split("T")[0],
+        publishedDate:
+          initialData.publishedDate || new Date().toISOString().split("T")[0],
         excerpt: initialData.excerpt || "",
         content: initialData.content || "",
         image: initialData.image || "",
@@ -178,10 +182,14 @@ export function BlogArticleForm({
           <div>
             <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <FileText className="w-5 h-5 text-amber-500" />
-              <span>{isEdit ? "Edit Blog Article" : "Create New Blog Article"}</span>
+              <span>
+                {isEdit ? "Edit Blog Article" : "Create New Blog Article"}
+              </span>
             </h1>
             <p className="text-xs text-slate-700 font-medium">
-              {isEdit ? "Modify article content, metadata, and publication status." : "Draft a new expedition guide or mountain journal."}
+              {isEdit
+                ? "Modify article content, metadata, and publication status."
+                : "Draft a new expedition guide or mountain journal."}
             </p>
           </div>
         </div>
@@ -220,10 +228,8 @@ export function BlogArticleForm({
 
       {/* Main Content Layout Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Left Column (2 cols): Article Details & Rich-Text Editor */}
         <div className="lg:col-span-2 space-y-6">
-          
           {/* Article Basic Information Card */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
             <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
@@ -277,7 +283,9 @@ export function BlogArticleForm({
                 <FileText className="w-4 h-4 text-amber-500" />
                 Rich Text Article Body
               </h2>
-              <span className="text-xs text-slate-600 font-medium">TipTap Editor with Full Formatting</span>
+              <span className="text-xs text-slate-600 font-medium">
+                TipTap Editor with Full Formatting
+              </span>
             </div>
 
             <AppRichTextEditor
@@ -289,23 +297,24 @@ export function BlogArticleForm({
               height="450px"
             />
             {errors.content && (
-              <p className="text-xs font-semibold text-rose-600 mt-1">{errors.content}</p>
+              <p className="text-xs font-semibold text-rose-600 mt-1">
+                {errors.content}
+              </p>
             )}
           </div>
         </div>
 
         {/* Right Column (1 col): Featured Image & Publishing Meta */}
         <div className="space-y-6">
-
           {/* Featured Image Card */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-              <Tag className="w-4 h-4 text-amber-500" />
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <h2 className="text-xs font-bold text-slate-900 border-b border-slate-100 pb-2.5 flex items-center gap-2">
+              <Tag className="w-3.5 h-3.5 text-amber-500" />
               Featured Cover Image
             </h2>
 
             <AdminImageUpload
-              label="Cover Image"
+              label="Article Cover"
               value={formData.image || ""}
               onChange={(url) => handleChange("image", url)}
               error={errors.image}
@@ -313,9 +322,9 @@ export function BlogArticleForm({
           </div>
 
           {/* Publication Metadata Card */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-amber-500" />
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3.5">
+            <h2 className="text-xs font-bold text-slate-900 border-b border-slate-100 pb-2.5 flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 text-amber-500" />
               Publication Settings
             </h2>
 
@@ -337,61 +346,56 @@ export function BlogArticleForm({
           </div>
 
           {/* SEO & Search Engine Optimization Card */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-              <Globe className="w-4 h-4 text-blue-600" />
-              SEO &amp; Search Engine Metadata
-            </h2>
-
-            {/* Live SERP Preview Snippet */}
-            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
-              <span className="font-bold text-slate-900 text-[11px] block">
-                Google SERP Snippet Preview
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <h2 className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                <Globe className="w-3.5 h-3.5 text-blue-600" />
+                SEO Metadata
+              </h2>
+              <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                SERP Snippet
               </span>
-              <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1 shadow-2xs">
-                <div className="text-[11px] font-bold text-emerald-800 truncate">
-                  https://alpineace.com/blog/
-                  {formData.title
-                    ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
-                    : "article-slug"}
-                </div>
-                <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
-                  {formData.metaTitle?.trim() ||
-                    (formData.title
-                      ? `${formData.title} | AlpineAce Journal`
-                      : "Article Title Preview | AlpineAce Journal")}
-                </div>
-                <div className="text-[11px] text-slate-700 font-medium line-clamp-2 leading-relaxed">
-                  {formData.metaDescription?.trim() ||
-                    formData.excerpt?.trim() ||
-                    "Read expert Himalayan trekking and mountaineering guides on the AlpineAce journal."}
-                </div>
-                {formData.keywords && (
-                  <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1 items-center">
-                    <span className="text-[10px] font-bold text-slate-500 mr-1">Target Keywords:</span>
-                    {formData.keywords.split(",").map((kw, i) => kw.trim() && (
-                      <span key={i} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
-                        {kw.trim()}
-                      </span>
-                    ))}
-                  </div>
-                )}
+            </div>
+
+            {/* Clean SERP Preview Snippet */}
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1 shadow-2xs">
+              <div className="text-[11px] font-medium text-emerald-800 truncate">
+                https://alpineacetreks.com › blog ›{" "}
+                {formData.title
+                  ? formData.title
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, "-")
+                      .replace(/^-|-$/g, "")
+                  : "article-slug"}
+              </div>
+              <div className="text-xs font-bold text-blue-700 truncate hover:underline cursor-pointer">
+                {formData.metaTitle?.trim() ||
+                  (formData.title
+                    ? `${formData.title} | AlpineAce`
+                    : "Article Title Preview | AlpineAce")}
+              </div>
+              <div className="text-[11px] text-slate-600 font-medium line-clamp-2 leading-relaxed">
+                {formData.metaDescription?.trim() ||
+                  formData.excerpt?.trim() ||
+                  "Read expert Himalayan trekking and mountaineering guides on the AlpineAce journal."}
               </div>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-800">
-                  Meta Search Title
+                  Meta Title
                 </label>
-                <span className={`text-[10px] font-semibold ${
-                  (formData.metaTitle?.length || 0) > 60
-                    ? "text-rose-600"
-                    : (formData.metaTitle?.length || 0) >= 30
-                    ? "text-emerald-600"
-                    : "text-slate-500"
-                }`}>
-                  {formData.metaTitle?.length || 0} / 60 chars
+                <span
+                  className={`text-[10px] font-semibold ${
+                    (formData.metaTitle?.length || 0) > 60
+                      ? "text-rose-600"
+                      : (formData.metaTitle?.length || 0) >= 30
+                        ? "text-emerald-600"
+                        : "text-slate-500"
+                  }`}
+                >
+                  {formData.metaTitle?.length || 0} / 60
                 </span>
               </div>
               <AdminInputField
@@ -400,51 +404,63 @@ export function BlogArticleForm({
                 onChange={(e) => handleChange("metaTitle", e.target.value)}
                 error={errors.metaTitle}
               />
-              <p className="text-[10px] text-slate-700 font-medium">
-                Recommended: 40-60 characters. Overrides the default HTML title tag.
-              </p>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-800">
-                  Meta Search Description
+                  Meta Description
                 </label>
-                <span className={`text-[10px] font-semibold ${
-                  (formData.metaDescription?.length || 0) > 160
-                    ? "text-rose-600"
-                    : (formData.metaDescription?.length || 0) >= 120
-                    ? "text-emerald-600"
-                    : "text-slate-500"
-                }`}>
-                  {formData.metaDescription?.length || 0} / 160 chars
+                <span
+                  className={`text-[10px] font-semibold ${
+                    (formData.metaDescription?.length || 0) > 160
+                      ? "text-rose-600"
+                      : (formData.metaDescription?.length || 0) >= 120
+                        ? "text-emerald-600"
+                        : "text-slate-500"
+                  }`}
+                >
+                  {formData.metaDescription?.length || 0} / 160
                 </span>
               </div>
               <AdminTextareaField
                 rows={3}
-                placeholder="Compelling 150-character summary for Google search result snippets and social media cards..."
+                placeholder="Brief summary for Google search result snippets and social media previews..."
                 value={formData.metaDescription || ""}
-                onChange={(e) => handleChange("metaDescription", e.target.value)}
+                onChange={(e) =>
+                  handleChange("metaDescription", e.target.value)
+                }
                 error={errors.metaDescription}
               />
-              <p className="text-[10px] text-slate-700 font-medium">
-                Recommended: 120-160 characters. If omitted, article excerpt is used.
-              </p>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-800 block">
-                Focus SEO Keywords (Comma Separated)
+                Focus Keywords
               </label>
               <AdminInputField
-                placeholder="e.g. Everest packing list, Nepal gear, trekking advice, Sherpa guides"
+                placeholder="e.g. Everest packing list, Nepal gear, trekking advice"
                 value={formData.keywords || ""}
                 onChange={(e) => handleChange("keywords", e.target.value)}
                 error={errors.keywords}
               />
+              {formData.keywords && (
+                <div className="pt-1.5 flex flex-wrap gap-1 items-center">
+                  {formData.keywords.split(",").map(
+                    (kw, i) =>
+                      kw.trim() && (
+                        <span
+                          key={i}
+                          className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded"
+                        >
+                          {kw.trim()}
+                        </span>
+                      ),
+                  )}
+                </div>
+              )}
             </div>
           </div>
-
         </div>
       </div>
     </form>

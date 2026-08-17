@@ -28,7 +28,13 @@ import {
   Maximize2,
 } from "lucide-react";
 import Link from "next/link";
-import { PackageItem, CategoryType, TourType, TripDifficulty, PackageStatus } from "@/lib/admin-data";
+import {
+  PackageItem,
+  CategoryType,
+  TourType,
+  TripDifficulty,
+  PackageStatus,
+} from "@/lib/admin-data";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 import { tourSchema, TourFormValues } from "@/lib/admin-schemas";
@@ -58,7 +64,14 @@ interface TourFormModalProps {
   isEditing?: boolean;
 }
 
-type TabType = "general" | "itinerary" | "inclusions" | "faqs" | "reviews" | "media" | "seo";
+type TabType =
+  | "general"
+  | "itinerary"
+  | "inclusions"
+  | "faqs"
+  | "reviews"
+  | "media"
+  | "seo";
 
 export function TourFormModal({
   isOpen,
@@ -122,7 +135,9 @@ export function TourFormModal({
   const watchFaqs = watch("faqs") || [];
   const watchReviews = watch("reviews") || [];
 
-  const [tourCategories, setTourCategories] = useState<{ label: string; value: string }[]>([]);
+  const [tourCategories, setTourCategories] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -158,10 +173,14 @@ export function TourFormModal({
         accommodation: initialData.accommodation || "",
         meals: initialData.meals || "",
         groupSizeRange: initialData.groupSizeRange || "",
-        permitsText: initialData.permitsRequired ? initialData.permitsRequired.join(", ") : "",
+        permitsText: initialData.permitsRequired
+          ? initialData.permitsRequired.join(", ")
+          : "",
         inclusionsText: initialData.inclusionsText || "",
         exclusionsText: initialData.exclusionsText || "",
-        itinerary: Array.isArray(initialData.itinerary) ? initialData.itinerary : [],
+        itinerary: Array.isArray(initialData.itinerary)
+          ? initialData.itinerary
+          : [],
         shortDesc: initialData.shortDesc || "",
         image: initialData.image || "",
         metaTitle: initialData.metaTitle || "",
@@ -217,8 +236,14 @@ export function TourFormModal({
         title: values.title,
         slug: initialData?.slug || "",
         category: initialData?.category || "Tour",
-        categoryId: values.categoryId && values.categoryId.trim() !== "" ? values.categoryId : undefined,
-        region: values.region || (initialData?.region as any) || "Kathmandu & Pokhara",
+        categoryId:
+          values.categoryId && values.categoryId.trim() !== ""
+            ? values.categoryId
+            : undefined,
+        region:
+          values.region ||
+          (initialData?.region as any) ||
+          "Kathmandu & Pokhara",
         tourType: values.tourType,
         transportation: values.transportation,
         difficulty: values.difficulty || TripDifficulty.EASY,
@@ -244,7 +269,7 @@ export function TourFormModal({
         reviews: values.reviews || [],
         totalBookings: initialData?.totalBookings || 0,
         rating: initialData?.rating || 5.0,
-        reviewsCount: initialData?.reviewsCount || (values.reviews?.length || 0),
+        reviewsCount: initialData?.reviewsCount || values.reviews?.length || 0,
       };
 
       const success = await onSave(tourToSave);
@@ -259,14 +284,14 @@ export function TourFormModal({
   const modalTitle = !initialData
     ? "Add New Tour Package"
     : editingMode
-    ? `Edit: ${initialData.title}`
-    : initialData.title;
+      ? `Edit: ${initialData.title}`
+      : initialData.title;
 
   const modalDescription = !initialData
     ? "Configure tour specifications, transportation, inclusions, FAQs, customer reviews, and SEO."
     : editingMode
-    ? "Modify tour attributes, transportation specs, FAQs, and metadata."
-    : "Tour package details and inclusions.";
+      ? "Modify tour attributes, transportation specs, FAQs, and metadata."
+      : "Tour package details and inclusions.";
 
   const hasGeneralErrors = !!(
     errors.title ||
@@ -285,19 +310,64 @@ export function TourFormModal({
     errors.itinerary &&
     (Array.isArray(errors.itinerary) ? errors.itinerary.some(Boolean) : true)
   );
-  const hasInclusionsErrors = !!(errors.inclusionsText || errors.exclusionsText);
-  const hasFaqErrors = !!(errors.faqs);
-  const hasReviewErrors = !!(errors.reviews);
-  const hasMediaErrors = !!(errors.image);
-  const hasSeoErrors = !!(errors.metaTitle || errors.metaDescription || errors.keywords);
+  const hasInclusionsErrors = !!(
+    errors.inclusionsText || errors.exclusionsText
+  );
+  const hasFaqErrors = !!errors.faqs;
+  const hasReviewErrors = !!errors.reviews;
+  const hasMediaErrors = !!errors.image;
+  const hasSeoErrors = !!(
+    errors.metaTitle ||
+    errors.metaDescription ||
+    errors.keywords
+  );
 
-  const tabs: { id: TabType; label: string; icon: any; count?: number; hasError?: boolean }[] = [
-    { id: "general", label: "General & Specs", icon: Info, hasError: hasGeneralErrors },
-    { id: "itinerary", label: "Detailed Itinerary", icon: Calendar, count: watchItinerary.length, hasError: hasItineraryErrors },
-    { id: "inclusions", label: "Inclusions & Exclusions", icon: CheckCircle2, hasError: hasInclusionsErrors },
-    { id: "faqs", label: "Tour FAQs", icon: HelpCircle, count: watchFaqs.length, hasError: hasFaqErrors },
-    { id: "reviews", label: "Client Reviews", icon: MessageSquareQuote, count: watchReviews.length, hasError: hasReviewErrors },
-    { id: "media", label: "Media & Cover", icon: ImageIcon, hasError: hasMediaErrors },
+  const tabs: {
+    id: TabType;
+    label: string;
+    icon: any;
+    count?: number;
+    hasError?: boolean;
+  }[] = [
+    {
+      id: "general",
+      label: "General & Specs",
+      icon: Info,
+      hasError: hasGeneralErrors,
+    },
+    {
+      id: "itinerary",
+      label: "Detailed Itinerary",
+      icon: Calendar,
+      count: watchItinerary.length,
+      hasError: hasItineraryErrors,
+    },
+    {
+      id: "inclusions",
+      label: "Inclusions & Exclusions",
+      icon: CheckCircle2,
+      hasError: hasInclusionsErrors,
+    },
+    {
+      id: "faqs",
+      label: "Tour FAQs",
+      icon: HelpCircle,
+      count: watchFaqs.length,
+      hasError: hasFaqErrors,
+    },
+    {
+      id: "reviews",
+      label: "Client Reviews",
+      icon: MessageSquareQuote,
+      count: watchReviews.length,
+      hasError: hasReviewErrors,
+    },
+    {
+      id: "media",
+      label: "Media & Cover",
+      icon: ImageIcon,
+      hasError: hasMediaErrors,
+    },
     { id: "seo", label: "SEO & Search", icon: Search, hasError: hasSeoErrors },
   ];
 
@@ -382,11 +452,13 @@ export function TourFormModal({
                     isActive
                       ? "bg-slate-900 text-white shadow-xs"
                       : isTabError
-                      ? "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        ? "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : isTabError ? "text-rose-500" : "text-slate-500"}`} />
+                  <Icon
+                    className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : isTabError ? "text-rose-500" : "text-slate-500"}`}
+                  />
                   <span>{tab.label}</span>
                   {isTabError && (
                     <span className="w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
@@ -407,7 +479,11 @@ export function TourFormModal({
             })}
           </div>
 
-          <form id="tour-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
+          <form
+            id="tour-form"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-4 pt-1"
+          >
             {/* 1. GENERAL & SPECS TAB */}
             {activeTab === "general" && (
               <div className="grid grid-cols-2 gap-3 max-h-[460px] overflow-y-auto pr-1">
@@ -437,11 +513,26 @@ export function TourFormModal({
                     required
                     error={errors.tourType?.message}
                     options={[
-                      { label: "Cultural Heritage Tour", value: TourType.CULTURAL_HERITAGE },
-                      { label: "Luxury & Wellness Tour", value: TourType.LUXURY_WELLNESS },
-                      { label: "Wildlife & Safari Tour", value: TourType.WILDLIFE_SAFARI },
-                      { label: "Helicopter Mountain Tour", value: TourType.HELICOPTER_TOUR },
-                      { label: "Day Sightseeing Tour", value: TourType.DAY_TOUR },
+                      {
+                        label: "Cultural Heritage Tour",
+                        value: TourType.CULTURAL_HERITAGE,
+                      },
+                      {
+                        label: "Luxury & Wellness Tour",
+                        value: TourType.LUXURY_WELLNESS,
+                      },
+                      {
+                        label: "Wildlife & Safari Tour",
+                        value: TourType.WILDLIFE_SAFARI,
+                      },
+                      {
+                        label: "Helicopter Mountain Tour",
+                        value: TourType.HELICOPTER_TOUR,
+                      },
+                      {
+                        label: "Day Sightseeing Tour",
+                        value: TourType.DAY_TOUR,
+                      },
                       { label: "Custom Private Tour", value: TourType.OTHER },
                     ]}
                     {...register("tourType")}
@@ -463,7 +554,10 @@ export function TourFormModal({
                     required
                     error={errors.region?.message}
                     options={[
-                      { label: "Kathmandu & Pokhara", value: "Kathmandu & Pokhara" },
+                      {
+                        label: "Kathmandu & Pokhara",
+                        value: "Kathmandu & Pokhara",
+                      },
                       { label: "Everest", value: "Everest" },
                       { label: "Annapurna", value: "Annapurna" },
                       { label: "Langtang", value: "Langtang" },
@@ -482,7 +576,10 @@ export function TourFormModal({
                     options={[
                       { label: "Easy", value: TripDifficulty.EASY },
                       { label: "Moderate", value: TripDifficulty.MODERATE },
-                      { label: "Challenging", value: TripDifficulty.CHALLENGING },
+                      {
+                        label: "Challenging",
+                        value: TripDifficulty.CHALLENGING,
+                      },
                       { label: "Strenuous", value: TripDifficulty.STRENUOUS },
                       { label: "Extreme", value: TripDifficulty.EXTREME },
                     ]}
@@ -589,7 +686,8 @@ export function TourFormModal({
 
                 <div className="col-span-2 space-y-1.5">
                   <label className="text-xs font-bold text-slate-800 block">
-                    Overview &amp; Experience Description <span className="text-rose-500">*</span>
+                    Overview &amp; Experience Description{" "}
+                    <span className="text-rose-500">*</span>
                   </label>
                   <Controller
                     name="shortDesc"
@@ -609,7 +707,9 @@ export function TourFormModal({
                     )}
                   />
                   {errors.shortDesc && (
-                    <p className="text-[11px] text-rose-500 font-semibold">{errors.shortDesc.message}</p>
+                    <p className="text-[11px] text-rose-500 font-semibold">
+                      {errors.shortDesc.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -640,7 +740,8 @@ export function TourFormModal({
                     <span>What&apos;s Included in Tour Package</span>
                   </div>
                   <p className="text-[11px] text-emerald-700">
-                    Enter included luxury transport, licensed local guide, museum entry tickets, and hotel stays.
+                    Enter included luxury transport, licensed local guide,
+                    museum entry tickets, and hotel stays.
                   </p>
                   <textarea
                     rows={4}
@@ -656,7 +757,8 @@ export function TourFormModal({
                     <span>What&apos;s Excluded from Tour Package</span>
                   </div>
                   <p className="text-[11px] text-rose-700">
-                    Enter personal expenses, tips, and optional activities not covered in standard booking.
+                    Enter personal expenses, tips, and optional activities not
+                    covered in standard booking.
                   </p>
                   <textarea
                     rows={4}
@@ -676,7 +778,9 @@ export function TourFormModal({
                 render={({ field }) => (
                   <TripFaqsManager
                     faqs={field.value || []}
-                    onChange={(newFaqs: TripFaqItem[]) => field.onChange(newFaqs)}
+                    onChange={(newFaqs: TripFaqItem[]) =>
+                      field.onChange(newFaqs)
+                    }
                   />
                 )}
               />
@@ -690,7 +794,9 @@ export function TourFormModal({
                 render={({ field }) => (
                   <TripReviewsManager
                     reviews={field.value || []}
-                    onChange={(newRevs: TripReviewItem[]) => field.onChange(newRevs)}
+                    onChange={(newRevs: TripReviewItem[]) =>
+                      field.onChange(newRevs)
+                    }
                   />
                 )}
               />
@@ -716,111 +822,103 @@ export function TourFormModal({
 
             {/* 6. SEO TAB */}
             {activeTab === "seo" && (
-              <div className="space-y-5 max-h-[460px] overflow-y-auto pr-1">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-extrabold text-slate-950 text-xs flex items-center gap-1.5">
-                      <Globe className="w-3.5 h-3.5 text-blue-600" />
-                      Live Google Search SERP Preview
-                    </span>
-                    <span className="text-[10px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
-                      Marketing Page Dynamic Synced
-                    </span>
+              <div className="space-y-4 max-h-[460px] overflow-y-auto pr-1">
+                {/* Clean SERP Preview Snippet */}
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 shadow-2xs">
+                  <div className="text-[11px] font-medium text-emerald-800 truncate">
+                    https://alpineacetreks.com › tours ›{" "}
+                    {watchTitle
+                      ? watchTitle
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, "-")
+                          .replace(/^-|-$/g, "")
+                      : "tour-slug"}
                   </div>
 
-                  <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1.5 shadow-2xs">
-                    <div className="text-xs font-bold text-emerald-800 truncate flex items-center gap-1">
-                      <span>https://alpineace.com/tours/</span>
-                      <span className="font-semibold text-emerald-700">
-                        {watchTitle
-                          ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
-                          : "tour-slug"}
-                      </span>
-                    </div>
+                  <div className="text-xs font-bold text-blue-700 truncate hover:underline cursor-pointer">
+                    {watchMetaTitle?.trim() ||
+                      (watchTitle
+                        ? `${watchTitle} - ${watchDuration ? `${watchDuration} Days ` : ""}Himalayan Tour | AlpineAce`
+                        : "Tour Package Title Preview | AlpineAce")}
+                  </div>
 
-                    <div className="text-sm font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
-                      {watchMetaTitle?.trim() ||
-                        (watchTitle
-                          ? `${watchTitle} - ${watchDuration ? `${watchDuration} Days ` : ""}Himalayan Tour | AlpineAce`
-                          : "Tour Package Title Preview | AlpineAce")}
-                    </div>
-
-                    <div className="text-xs text-slate-800 font-semibold line-clamp-2 leading-relaxed">
-                      {watchMetaDesc?.trim() ||
-                        watchShortDesc?.trim() ||
-                        "Experience luxury guided culture, wildlife safari, and scenic helicopter tours in Nepal with AlpineAce."}
-                    </div>
-
-                    {watchKeywords && (
-                      <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1 items-center">
-                        <span className="text-[10px] font-bold text-slate-500 mr-1">Target Keywords:</span>
-                        {watchKeywords.split(",").map((kw, i) => kw.trim() && (
-                          <span key={i} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
-                            {kw.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                  <div className="text-[11px] text-slate-600 font-medium line-clamp-2 leading-relaxed">
+                    {watchMetaDesc?.trim() ||
+                      watchShortDesc?.trim() ||
+                      "Experience luxury guided culture, wildlife safari, and scenic helicopter tours in Nepal with AlpineAce."}
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-slate-800">
-                      Meta Search Title Tag
+                      Meta Title
                     </label>
-                    <span className={`text-[10px] font-semibold ${
-                      (watchMetaTitle?.length || 0) > 60
-                        ? "text-rose-600"
-                        : (watchMetaTitle?.length || 0) >= 30
-                        ? "text-emerald-600"
-                        : "text-slate-500"
-                    }`}>
-                      {watchMetaTitle?.length || 0} / 60 characters
+                    <span
+                      className={`text-[10px] font-semibold ${
+                        (watchMetaTitle?.length || 0) > 60
+                          ? "text-rose-600"
+                          : (watchMetaTitle?.length || 0) >= 30
+                            ? "text-emerald-600"
+                            : "text-slate-500"
+                      }`}
+                    >
+                      {watchMetaTitle?.length || 0} / 60
                     </span>
                   </div>
                   <AdminInputField
                     placeholder="e.g. Kathmandu Heritage & Pokhara Luxury Heli Tour | Alpine Ace"
                     {...register("metaTitle")}
                   />
-                  <p className="text-[10px] text-slate-700 font-medium">
-                    Recommended: 40-60 characters. Overrides the automated page title tag.
-                  </p>
                 </div>
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-slate-800">
-                      Meta Search Description Snippet
+                      Meta Description
                     </label>
-                    <span className={`text-[10px] font-semibold ${
-                      (watchMetaDesc?.length || 0) > 160
-                        ? "text-rose-600"
-                        : (watchMetaDesc?.length || 0) >= 120
-                        ? "text-emerald-600"
-                        : "text-slate-500"
-                    }`}>
-                      {watchMetaDesc?.length || 0} / 160 characters
+                    <span
+                      className={`text-[10px] font-semibold ${
+                        (watchMetaDesc?.length || 0) > 160
+                          ? "text-rose-600"
+                          : (watchMetaDesc?.length || 0) >= 120
+                            ? "text-emerald-600"
+                            : "text-slate-500"
+                      }`}
+                    >
+                      {watchMetaDesc?.length || 0} / 160
                     </span>
                   </div>
                   <AdminTextareaField
                     rows={3}
-                    placeholder="Compelling 150-character summary for Google search result snippets and social media previews..."
+                    placeholder="Brief summary for Google search result snippets and social media previews..."
                     {...register("metaDescription")}
                   />
-                  <p className="text-[10px] text-slate-700 font-medium">
-                    Recommended: 120-160 characters. If left empty, short description is used automatically.
-                  </p>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-800 block">
-                    Focus SEO Keywords (Comma Separated)
+                    Focus Keywords
                   </label>
                   <AdminInputField
                     placeholder="e.g. Nepal Tours, Kathmandu Sightseeing, Luxury Heli Tour, Pokhara Resorts"
                     {...register("keywords")}
                   />
+                  {watchKeywords && (
+                    <div className="pt-1.5 flex flex-wrap gap-1 items-center">
+                      {watchKeywords.split(",").map(
+                        (kw, i) =>
+                          kw.trim() && (
+                            <span
+                              key={i}
+                              className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded"
+                            >
+                              {kw.trim()}
+                            </span>
+                          ),
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -838,12 +936,20 @@ export function TourFormModal({
                   tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
-                    openSingleImage(initialData.image!, initialData.title, e.currentTarget);
+                    openSingleImage(
+                      initialData.image!,
+                      initialData.title,
+                      e.currentTarget,
+                    );
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.stopPropagation();
-                      openSingleImage(initialData.image!, initialData.title, e.currentTarget);
+                      openSingleImage(
+                        initialData.image!,
+                        initialData.title,
+                        e.currentTarget,
+                      );
                     }
                   }}
                   className="w-full h-full cursor-zoom-in relative"
@@ -888,40 +994,54 @@ export function TourFormModal({
               </div>
 
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Region / Location:</span>
+                <span className="text-slate-600 font-semibold block text-[11px]">
+                  Region / Location:
+                </span>
                 <span className="text-slate-950 font-bold flex items-center gap-1 mt-0.5">
                   <MapPin className="w-3.5 h-3.5 text-amber-500" />
                   {initialData?.region || "—"}
                 </span>
               </div>
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Duration:</span>
+                <span className="text-slate-600 font-semibold block text-[11px]">
+                  Duration:
+                </span>
                 <span className="text-slate-950 font-bold flex items-center gap-1 mt-0.5">
                   <Clock className="w-3.5 h-3.5 text-blue-500" />
                   {initialData?.durationDays || 0} Days
                 </span>
               </div>
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Transportation:</span>
+                <span className="text-slate-600 font-semibold block text-[11px]">
+                  Transportation:
+                </span>
                 <span className="text-slate-950 font-bold flex items-center gap-1 mt-0.5 truncate">
                   <Car className="w-3.5 h-3.5 text-emerald-500" />
                   {initialData?.transportation || "Private AC Vehicle / Heli"}
                 </span>
               </div>
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Price:</span>
+                <span className="text-slate-600 font-semibold block text-[11px]">
+                  Price:
+                </span>
                 <span className="text-slate-950 font-black text-sm text-emerald-800">
                   ${(initialData?.priceUSD || 0).toLocaleString()} USD
                 </span>
               </div>
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Tour Style:</span>
+                <span className="text-slate-600 font-semibold block text-[11px]">
+                  Tour Style:
+                </span>
                 <span className="text-slate-950 font-bold capitalize">
-                  {initialData?.tourType ? initialData.tourType.replace(/_/g, " ") : "Cultural & Luxury"}
+                  {initialData?.tourType
+                    ? initialData.tourType.replace(/_/g, " ")
+                    : "Cultural & Luxury"}
                 </span>
               </div>
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Start &amp; End:</span>
+                <span className="text-slate-600 font-semibold block text-[11px]">
+                  Start &amp; End:
+                </span>
                 <span className="text-slate-950 font-bold truncate block">
                   {initialData?.startEndLocation || "Kathmandu to Kathmandu"}
                 </span>
@@ -932,27 +1052,45 @@ export function TourFormModal({
           {/* Quick Details Chips */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
             <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-              <span className="text-slate-500 font-medium block">Best Season</span>
-              <span className="text-slate-900 font-bold">{initialData?.bestSeason || "All Year Round"}</span>
+              <span className="text-slate-500 font-medium block">
+                Best Season
+              </span>
+              <span className="text-slate-900 font-bold">
+                {initialData?.bestSeason || "All Year Round"}
+              </span>
             </div>
             <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-              <span className="text-slate-500 font-medium block">Group Size</span>
-              <span className="text-slate-900 font-bold">{initialData?.groupSizeRange || "2 - 12 Guests"}</span>
+              <span className="text-slate-500 font-medium block">
+                Group Size
+              </span>
+              <span className="text-slate-900 font-bold">
+                {initialData?.groupSizeRange || "2 - 12 Guests"}
+              </span>
             </div>
             <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-              <span className="text-slate-500 font-medium block">Accommodation</span>
-              <span className="text-slate-900 font-bold truncate block">{initialData?.accommodation || "4-5 Star Luxury Hotels"}</span>
+              <span className="text-slate-500 font-medium block">
+                Accommodation
+              </span>
+              <span className="text-slate-900 font-bold truncate block">
+                {initialData?.accommodation || "4-5 Star Luxury Hotels"}
+              </span>
             </div>
             <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
-              <span className="text-slate-500 font-medium block">Meals Plan</span>
-              <span className="text-slate-900 font-bold truncate block">{initialData?.meals || "Breakfast & Welcome Dinner"}</span>
+              <span className="text-slate-500 font-medium block">
+                Meals Plan
+              </span>
+              <span className="text-slate-900 font-bold truncate block">
+                {initialData?.meals || "Breakfast & Welcome Dinner"}
+              </span>
             </div>
           </div>
 
           {/* Short Overview */}
           {initialData?.shortDesc && (
             <div className="space-y-1">
-              <span className="font-bold text-slate-900 block text-xs">Marketing Overview &amp; Highlights:</span>
+              <span className="font-bold text-slate-900 block text-xs">
+                Marketing Overview &amp; Highlights:
+              </span>
               <div
                 className="prose prose-sm max-w-none text-slate-800 leading-relaxed font-normal bg-slate-50 p-3.5 rounded-lg border border-slate-200"
                 dangerouslySetInnerHTML={{ __html: initialData.shortDesc }}
@@ -1008,13 +1146,17 @@ export function TourFormModal({
                         {dayItem.accommodation && (
                           <div className="flex items-center gap-1">
                             <BedDouble className="w-3 h-3 text-slate-400" />
-                            <span>Stay: <strong>{dayItem.accommodation}</strong></span>
+                            <span>
+                              Stay: <strong>{dayItem.accommodation}</strong>
+                            </span>
                           </div>
                         )}
                         {dayItem.meals && (
                           <div className="flex items-center gap-1">
                             <Utensils className="w-3 h-3 text-slate-400" />
-                            <span>Meals: <strong>{dayItem.meals}</strong></span>
+                            <span>
+                              Meals: <strong>{dayItem.meals}</strong>
+                            </span>
                           </div>
                         )}
                       </div>
@@ -1067,20 +1209,26 @@ export function TourFormModal({
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
               <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
                 <div className="text-[11px] font-bold text-emerald-800 truncate">
-                  https://alpineace.com/tours/{initialData?.slug || "tour-slug"}
+                  https://alpineacetreks.com/tours/
+                  {initialData?.slug || "tour-slug"}
                 </div>
                 <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
-                  {initialData?.metaTitle || `${initialData?.title} | Alpine Ace Tours`}
+                  {initialData?.metaTitle ||
+                    `${initialData?.title} | Alpine Ace Tours`}
                 </div>
                 <div className="text-[11px] text-slate-700 font-medium line-clamp-2 leading-relaxed">
-                  {initialData?.metaDescription || initialData?.shortDesc || "Experience luxury cultural and helicopter tours across Nepal."}
+                  {initialData?.metaDescription ||
+                    initialData?.shortDesc ||
+                    "Experience luxury cultural and helicopter tours across Nepal."}
                 </div>
               </div>
 
               {initialData?.keywords && (
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-600 pt-1">
                   <span className="font-bold text-slate-800">Keywords:</span>
-                  <span className="text-slate-600 font-medium">{initialData.keywords}</span>
+                  <span className="text-slate-600 font-medium">
+                    {initialData.keywords}
+                  </span>
                 </div>
               )}
             </div>

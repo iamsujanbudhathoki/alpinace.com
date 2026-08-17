@@ -2,15 +2,15 @@
 
 import React from "react";
 import Link from "next/link";
-import { 
-  Calendar, 
-  Clock, 
-  Eye, 
-  ExternalLink, 
-  Tag, 
-  BookOpen, 
+import {
+  Calendar,
+  Clock,
+  Eye,
+  ExternalLink,
+  Tag,
+  BookOpen,
   Image as ImageIcon,
-  Globe
+  Globe,
 } from "lucide-react";
 import { BlogArticle } from "@/lib/admin-data";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
@@ -23,7 +23,11 @@ interface BlogViewModalProps {
   article: BlogArticle | null;
 }
 
-export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) {
+export function BlogViewModal({
+  isOpen,
+  onClose,
+  article,
+}: BlogViewModalProps) {
   if (!article) return null;
 
   const publicUrl = `/blog/${article.slug || article.id}`;
@@ -61,7 +65,6 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
       footer={footer}
     >
       <div className="space-y-6 text-xs text-slate-800">
-        
         {/* Cover Image Banner */}
         {article.image ? (
           <div className="relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-xs">
@@ -72,7 +75,7 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
-            
+
             <div className="absolute bottom-4 left-4 right-4 text-white">
               <div className="flex items-center gap-2 mb-2">
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-slate-950 shadow-xs">
@@ -104,7 +107,9 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
         {/* Metadata Summary Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
-            <span className="text-[11px] font-semibold text-slate-500 block mb-1">Category</span>
+            <span className="text-[11px] font-semibold text-slate-500 block mb-1">
+              Category
+            </span>
             <span className="font-bold text-slate-900 flex items-center gap-1.5">
               <BookOpen className="w-3.5 h-3.5 text-amber-500" />
               <span className="truncate">{article.category}</span>
@@ -112,7 +117,9 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
           </div>
 
           <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
-            <span className="text-[11px] font-semibold text-slate-500 block mb-1">Published Date</span>
+            <span className="text-[11px] font-semibold text-slate-500 block mb-1">
+              Published Date
+            </span>
             <span className="font-bold text-slate-900 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-slate-500" />
               <span>{article.publishedDate || "Not Set"}</span>
@@ -120,15 +127,19 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
           </div>
 
           <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
-            <span className="text-[11px] font-semibold text-slate-500 block mb-1">Read Time</span>
+            <span className="text-[11px] font-semibold text-slate-500 block mb-1">
+              Read Time
+            </span>
             <span className="font-bold text-slate-900 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-slate-500" />
-              <span>{article.readTime }</span>
+              <span>{article.readTime}</span>
             </span>
           </div>
 
           <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
-            <span className="text-[11px] font-semibold text-slate-500 block mb-1">Total Views</span>
+            <span className="text-[11px] font-semibold text-slate-500 block mb-1">
+              Total Views
+            </span>
             <span className="font-bold text-slate-900 flex items-center gap-1.5">
               <Eye className="w-3.5 h-3.5 text-slate-500" />
               <span>{(article.views || 0).toLocaleString()}</span>
@@ -154,7 +165,7 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
             <span className="font-bold text-slate-900 block text-[11px] uppercase tracking-wider">
               Content Preview
             </span>
-            <div 
+            <div
               className="bg-slate-50 border border-slate-200 p-4 rounded-xl prose prose-sm max-w-none text-slate-800 max-h-72 overflow-y-auto leading-relaxed"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
@@ -170,24 +181,34 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
           <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
             <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1 shadow-2xs">
               <div className="text-[11px] font-bold text-emerald-800 truncate">
-                https://alpineace.com/blog/{article.slug || article.id}
+                https://alpineacetreks.com/blog/{article.slug || article.id}
               </div>
               <div className="text-xs font-extrabold text-blue-700 truncate">
                 {article.metaTitle || `${article.title} | AlpineAce Journal`}
               </div>
               <div className="text-[11px] text-slate-700 font-medium line-clamp-2 leading-relaxed">
-                {article.metaDescription || article.excerpt || "Read Himalayan preparation guides and stories on AlpineAce."}
+                {article.metaDescription ||
+                  article.excerpt ||
+                  "Read Himalayan preparation guides and stories on AlpineAce."}
               </div>
             </div>
 
             {article.keywords && (
               <div className="flex flex-wrap items-center gap-1 pt-1">
-                <span className="text-[10px] font-bold text-slate-500 mr-1">Keywords:</span>
-                {article.keywords.split(",").map((kw, i) => kw.trim() && (
-                  <span key={i} className="text-[10px] font-semibold bg-white border border-slate-200 text-slate-700 px-1.5 py-0.5 rounded">
-                    {kw.trim()}
-                  </span>
-                ))}
+                <span className="text-[10px] font-bold text-slate-500 mr-1">
+                  Keywords:
+                </span>
+                {article.keywords.split(",").map(
+                  (kw, i) =>
+                    kw.trim() && (
+                      <span
+                        key={i}
+                        className="text-[10px] font-semibold bg-white border border-slate-200 text-slate-700 px-1.5 py-0.5 rounded"
+                      >
+                        {kw.trim()}
+                      </span>
+                    ),
+                )}
               </div>
             )}
           </div>
@@ -196,14 +217,16 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
         {/* Public Slug URL Indicator */}
         <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl flex items-center justify-between gap-3">
           <div>
-            <span className="text-[11px] font-semibold text-slate-500 block">Website Destination Route</span>
+            <span className="text-[11px] font-semibold text-slate-500 block">
+              Website Destination Route
+            </span>
             <code className="text-slate-900 font-mono text-[11px] font-semibold">
               {publicUrl}
             </code>
           </div>
-          <Link 
-            href={publicUrl} 
-            target="_blank" 
+          <Link
+            href={publicUrl}
+            target="_blank"
             rel="noopener noreferrer"
             className="text-amber-600 hover:text-amber-700 font-bold text-xs inline-flex items-center gap-1 hover:underline cursor-pointer shrink-0"
           >
@@ -211,7 +234,6 @@ export function BlogViewModal({ isOpen, onClose, article }: BlogViewModalProps) 
             <ExternalLink className="w-3 h-3" />
           </Link>
         </div>
-
       </div>
     </AdminModal>
   );

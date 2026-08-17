@@ -4,7 +4,7 @@ export const siteConfig = {
   tagline: "Venture Beyond the Ordinary",
   description:
     "Experience Nepal's spectacular trekking routes, historical tours, and elite peak expeditions under the safe guidance of multi-summit Sherpas, combined with luxury mountain lodges.",
-  url: "https://alpineace.com",
+  url: "https://alpineacetreks.com",
   keywords: [
     "Nepal trekking",
     "peak expeditions",
@@ -33,7 +33,11 @@ export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "Trekking", href: "/trekking", categoryType: CategoryType.TREKKING },
   { label: "Tours", href: "/tours", categoryType: CategoryType.TOURS },
-  { label: "Expeditions", href: "/expeditions", categoryType: CategoryType.EXPEDITIONS },
+  {
+    label: "Expeditions",
+    href: "/expeditions",
+    categoryType: CategoryType.EXPEDITIONS,
+  },
   {
     label: "Resources",
     href: "/blog",
@@ -41,12 +45,14 @@ export const navLinks: NavLink[] = [
       {
         label: "Blogs & Articles",
         href: "/blog",
-        description: "Expedition preparation guides, packing lists & Sherpa stories.",
+        description:
+          "Expedition preparation guides, packing lists & Sherpa stories.",
       },
       {
         label: "Contact & Inquiries",
         href: "/contact",
-        description: "Speak with mountain specialists & get custom route quotes.",
+        description:
+          "Speak with mountain specialists & get custom route quotes.",
       },
     ],
   },
@@ -55,5 +61,3 @@ export const navLinks: NavLink[] = [
 // NOTE: All dynamic contact information (WhatsApp number, emails, office phone,
 // emergency phone, addresses, social media links) is fetched in real-time from the backend
 // `/settings` API and made accessible via `useSettings()` from `@/lib/settings-context`.
-
-

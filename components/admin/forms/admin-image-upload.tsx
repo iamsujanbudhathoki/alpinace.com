@@ -72,15 +72,31 @@ export function AdminImageUpload({
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
   const [showModalUploader, setShowModalUploader] = useState(false);
+  const [isDirectUrlOpen, setIsDirectUrlOpen] = useState(false);
+  const [directUrlInput, setDirectUrlInput] = useState("");
 
   const [assets, setAssets] = useState<MediaAsset[]>(INITIAL_MEDIA_LIBRARY);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [tempSelectedUrl, setTempSelectedUrl] = useState<string>(value);
 
+  // Load real media assets from backend when library opens
   useEffect(() => {
     if (isLibraryOpen) {
       setTempSelectedUrl(value);
+      MediaService.getAllMedia()
+        .then((mediaList) => {
+          if (Array.isArray(mediaList) && mediaList.length > 0) {
+            const mapped: MediaAsset[] = mediaList.map((m: any) => ({
+              id: m.id || `media-${Math.random()}`,
+              title: m.title || m.originalName || "Uploaded Media",
+              category: m.category || "Everest & Peaks",
+              url: m.url,
+            }));
+            setAssets(mapped);
+          }
+        })
+        .catch((e) => console.warn("Failed to load real media assets:", e));
     }
   }, [isLibraryOpen, value]);
 
@@ -91,7 +107,7 @@ export function AdminImageUpload({
     setIsUploading(true);
     try {
       const res = await MediaService.uploadFile(file);
-      const url = res?.data?.url  || URL.createObjectURL(file);
+      const url = res?.data?.url || URL.createObjectURL(file);
       if (fromModal) {
         const newAsset: MediaAsset = {
           id: `media-upload-${Date.now()}`,
@@ -103,14 +119,14 @@ export function AdminImageUpload({
         setTempSelectedUrl(url);
         setShowModalUploader(false);
         if (res.success) {
-          toast.success(res.message || `Photo "${file.name}" uploaded to server! Click "Select Image & Apply" below.`);
+          toast.success(res.message || `Photo "${file.name}" uploaded to server!`);
         } else {
           toast.error(res.message || "Failed to upload image to server.");
         }
       } else {
         onChange(url);
         if (res.success) {
-          toast.success(res.message || "Cover image file uploaded to server successfully!");
+          toast.success(res.message || "Cover image uploaded successfully!");
         } else {
           toast.error(res.message || "Failed to upload cover image.");
         }
@@ -123,6 +139,14 @@ export function AdminImageUpload({
     }
   };
 
+  const handleApplyDirectUrl = () => {
+    if (!directUrlInput.trim()) return;
+    onChange(directUrlInput.trim());
+    setDirectUrlInput("");
+    setIsDirectUrlOpen(false);
+    toast.success("Image URL applied successfully!");
+  };
+
   const filteredAssets = assets.filter((asset) => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCat = selectedCategory === "All" || asset.category === selectedCategory;
@@ -130,67 +154,124 @@ export function AdminImageUpload({
   });
 
   return (
-    <div className="space-y-2">
-      <label className="font-extrabold text-slate-950 block text-xs">{label}</label>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <label className="font-bold text-slate-900 text-xs tracking-tight">{label}</label>
+        {value && (
+          <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 inline-flex items-center gap-1">
+            <Check className="w-3 h-3" />
+            Image Active
+          </span>
+        )}
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Preview Thumbnail Box with Hover Actions */}
-        <div className="relative aspect-video rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center group shadow-xs">
-          {value ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
-          ) : (
-            <div className="text-center p-3">
-              <ImageIcon className="w-6 h-6 text-slate-900 mx-auto mb-1" />
-              <span className="text-xs text-slate-950 font-extrabold">No Cover Image Selected</span>
-            </div>
-          )}
+      {value ? (
+        /* ── Active Image Preview Card ── */
+        <div className="rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-xs">
+          <div className="relative aspect-video w-full bg-slate-950 flex items-center justify-center group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={value} alt="Cover Preview" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20 pointer-events-none" />
 
-          {/* Hover Quick Actions Overlay */}
-          {value && (
-            <div className="absolute inset-0 bg-slate-950/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+            {/* Quick Overlay Action on Hover */}
+            <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center gap-2">
               <button
                 type="button"
                 onClick={(e) => openSingleImage(value, label, e.currentTarget)}
-                title="View Fullscreen Image"
-                className="w-9 h-9 bg-white text-slate-800 hover:bg-slate-100 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                title="View Fullscreen"
+                className="h-8 px-3 rounded-lg bg-white/90 hover:bg-white text-slate-900 font-bold text-xs shadow-md flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-105"
               >
-                <Eye className="w-4 h-4 text-amber-600" />
+                <Eye className="w-3.5 h-3.5 text-amber-600" />
+                <span>Preview</span>
               </button>
-
               <button
                 type="button"
                 onClick={() => setIsConfirmRemoveOpen(true)}
-                title="Remove Cover Image"
-                className="w-9 h-9 bg-rose-600 text-white hover:bg-rose-500 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
+                title="Remove Image"
+                className="h-8 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-105"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Remove</span>
               </button>
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Upload Controls & Media Library Button */}
-        <div className="col-span-2 space-y-3">
-          <div className="border-2 border-dashed border-slate-200 hover:border-amber-400 rounded-xl p-3 text-center transition-colors bg-slate-50 relative cursor-pointer flex flex-col items-center justify-center min-h-[90px]">
+          {/* Action Bar Beneath Preview */}
+          <div className="p-3 bg-white border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div className="relative">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileChange(e, false)}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                disabled={isUploading}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isUploading}
+                className="text-xs font-semibold h-8 px-3 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer inline-flex items-center gap-1.5"
+              >
+                {isUploading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
+                ) : (
+                  <UploadCloud className="w-3.5 h-3.5 text-slate-500" />
+                )}
+                <span>Replace File</span>
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsLibraryOpen(true)}
+                className="text-xs font-semibold h-8 px-3 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
+                <span>Media Library</span>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsConfirmRemoveOpen(true)}
+                className="text-xs font-semibold h-8 px-2.5 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* ── Empty State Modern Upload Dropzone ── */
+        <div className="space-y-3">
+          <div className="relative rounded-2xl border-2 border-dashed border-slate-200 hover:border-amber-400/80 bg-slate-50/70 hover:bg-amber-500/5 transition-all p-6 text-center flex flex-col items-center justify-center group cursor-pointer">
             <input
               type="file"
               accept="image/*"
               onChange={(e) => handleFileChange(e, false)}
               className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+              disabled={isUploading}
             />
             {isUploading ? (
-              <div className="flex items-center gap-2 text-amber-600 font-bold text-xs">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Uploading local file to server...</span>
+              <div className="flex flex-col items-center gap-2 text-amber-600 font-bold text-xs py-3">
+                <Loader2 className="w-7 h-7 animate-spin" />
+                <span>Uploading image to Cloudflare R2...</span>
               </div>
             ) : (
               <>
-                <UploadCloud className="w-5 h-5 text-amber-600 mx-auto mb-1" />
-                <p className="text-xs font-extrabold text-slate-950">
-                  Click or Drag &amp; Drop Image File
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-2xs">
+                  <UploadCloud className="w-5 h-5" />
+                </div>
+                <p className="text-xs font-bold text-slate-900">
+                  Drag &amp; drop an image here, or <span className="text-amber-600 underline">browse files</span>
                 </p>
-                <p className="text-xs text-slate-800 font-bold mt-0.5">Supports PNG, JPG, WebP up to 10MB</p>
+                <p className="text-[11px] text-slate-500 font-medium mt-1">
+                  PNG, JPG, WebP up to 10MB (16:9 ratio recommended)
+                </p>
               </>
             )}
           </div>
@@ -201,16 +282,47 @@ export function AdminImageUpload({
               variant="outline"
               size="sm"
               onClick={() => setIsLibraryOpen(true)}
-              className="w-full bg-white hover:bg-slate-50 text-slate-900 border-slate-300 font-bold text-xs cursor-pointer shadow-xs py-2 flex items-center justify-center gap-2"
+              className="flex-1 bg-white hover:bg-slate-50 text-slate-700 border-slate-200 font-semibold text-xs h-8.5 rounded-xl cursor-pointer shadow-2xs inline-flex items-center justify-center gap-1.5"
             >
-              <FolderOpen className="w-4 h-4 text-amber-500" />
-              Browse Media Library &amp; Gallery
+              <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
+              <span>Choose from Media Library</span>
+            </Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsDirectUrlOpen(!isDirectUrlOpen)}
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 h-8.5 px-3 rounded-xl cursor-pointer"
+            >
+              Paste URL
             </Button>
           </div>
-        </div>
-      </div>
 
-      {error && <p className="text-xs font-bold text-rose-600 mt-0.5">{error}</p>}
+          {/* Optional Direct URL Input Accordion */}
+          {isDirectUrlOpen && (
+            <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+              <input
+                type="url"
+                value={directUrlInput}
+                onChange={(e) => setDirectUrlInput(e.target.value)}
+                placeholder="https://images.unsplash.com/... or https://..."
+                className="flex-1 text-xs px-3 py-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleApplyDirectUrl}
+                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-8 px-3 rounded-lg cursor-pointer"
+              >
+                Apply
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {error && <p className="text-xs font-bold text-rose-600 mt-1">{error}</p>}
 
 
 

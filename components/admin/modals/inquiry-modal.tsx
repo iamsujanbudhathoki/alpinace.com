@@ -75,6 +75,26 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
     onClose();
   };
 
+  const modalFooter = (
+    <div className="flex items-center justify-end gap-2 w-full">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onClose}
+        className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        form="inquiry-form"
+        className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer"
+      >
+        Log Inquiry Lead
+      </Button>
+    </div>
+  );
+
   return (
     <AdminModal
       isOpen={isOpen}
@@ -82,8 +102,9 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
       title="Log Manual Customer Inquiry"
       description="Record a phone, WhatsApp, or trade show lead into the CRM."
       maxWidth="lg"
+      footer={modalFooter}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2 text-xs">
+      <form id="inquiry-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2 text-xs">
         <div className="grid grid-cols-2 gap-3">
           <AdminInputField
             label="Guest Name"
@@ -170,15 +191,6 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
             />
           </div>
         </div>
-
-        <DialogFooter className="pt-2">
-          <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer">
-            Cancel
-          </Button>
-          <Button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer">
-            Log Inquiry Lead
-          </Button>
-        </DialogFooter>
       </form>
     </AdminModal>
   );
@@ -199,14 +211,15 @@ export function ReplyInquiryModal({
   onUpdateStatus,
   onSendQuote,
 }: ReplyInquiryModalProps) {
+  const [selectedStatus, setSelectedStatus] = useState<InquiryStatus>(inquiry?.status || InquiryStatus.NEW);
   const [replyText, setReplyText] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<InquiryStatus>(inquiry?.status || InquiryStatus.NEW);
 
-  // Sync selectedStatus when inquiry changes
   useEffect(() => {
-    if (inquiry) setSelectedStatus(inquiry.status);
-    if (!isOpen) setReplyText("");
+    if (inquiry) {
+      setSelectedStatus(inquiry.status);
+      setReplyText("");
+    }
   }, [inquiry, isOpen]);
 
   const handleStatusClick = async (st: InquiryStatus) => {
@@ -225,10 +238,8 @@ export function ReplyInquiryModal({
       const hasMessage = replyText.trim().length > 0;
 
       if (hasMessage && onSendQuote) {
-        // Send email + update status
         success = await onSendQuote(inquiry.id, replyText, selectedStatus);
       } else {
-        // No message — just update status
         const res = await onUpdateStatus(inquiry.id, selectedStatus);
         success = res !== false;
       }
@@ -244,6 +255,34 @@ export function ReplyInquiryModal({
     }
   };
 
+  const replyFooter = (
+    <div className="flex items-center justify-end gap-2 w-full">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onClose}
+        className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
+      >
+        Close
+      </Button>
+      <Button
+        type="submit"
+        form="reply-inquiry-form"
+        disabled={isSending}
+        className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-50"
+      >
+        <Send className="w-3.5 h-3.5" />
+        <span>
+          {isSending
+            ? "Saving..."
+            : replyText.trim()
+            ? "Dispatch Quote Email"
+            : "Save Status Update"}
+        </span>
+      </Button>
+    </div>
+  );
+
   return (
     <AdminModal
       isOpen={isOpen}
@@ -251,6 +290,7 @@ export function ReplyInquiryModal({
       title={`Inquiry from ${inquiry?.guestName}`}
       description={`${inquiry?.interestedTrip} • Received ${inquiry?.createdAt}`}
       maxWidth="2xl"
+      footer={replyFooter}
     >
       <div className="space-y-5 py-2 text-xs">
         <div className="flex items-center justify-between bg-slate-50/80 p-4 rounded-xl border border-slate-200">
@@ -311,7 +351,7 @@ export function ReplyInquiryModal({
           </div>
         </div>
 
-        <form onSubmit={handleSendReply} className="space-y-3 pt-2 border-t border-slate-100">
+        <form id="reply-inquiry-form" onSubmit={handleSendReply} className="space-y-3 pt-2 border-t border-slate-100">
           <div className="space-y-0.5">
             <label className="font-bold text-slate-900 block">Send Custom Quote &amp; Dispatch Email</label>
             <p className="text-slate-500 font-normal">
@@ -327,22 +367,6 @@ export function ReplyInquiryModal({
             placeholder={`Draft custom quote itinerary and pricing details to ${inquiry?.email}...`}
             className="w-full bg-slate-50/60 border border-slate-200 rounded-xl p-3 text-slate-900 font-medium text-xs leading-relaxed focus:outline-none focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all placeholder:text-slate-400"
           />
-
-          <DialogFooter className="pt-1">
-            <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer">
-              Close
-            </Button>
-            <Button type="submit" disabled={isSending} className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-50">
-              <Send className="w-3.5 h-3.5" />
-              <span>
-                {isSending
-                  ? "Saving..."
-                  : replyText.trim()
-                  ? "Dispatch Quote Email"
-                  : "Save Status Update"}
-              </span>
-            </Button>
-          </DialogFooter>
         </form>
       </div>
     </AdminModal>
@@ -357,6 +381,23 @@ interface DeleteInquiryModalProps {
 }
 
 export function DeleteInquiryModal({ isOpen, onClose, onConfirm, guestName }: DeleteInquiryModalProps) {
+  const deleteFooter = (
+    <div className="flex items-center justify-end gap-2 w-full">
+      <Button variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+        Cancel
+      </Button>
+      <Button
+        onClick={() => {
+          onConfirm();
+          onClose();
+        }}
+        className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
+      >
+        Delete Inquiry
+      </Button>
+    </div>
+  );
+
   return (
     <AdminModal
       isOpen={isOpen}
@@ -364,21 +405,11 @@ export function DeleteInquiryModal({ isOpen, onClose, onConfirm, guestName }: De
       title="Delete Inquiry"
       description={`Are you sure you want to remove the inquiry from "${guestName}"?`}
       maxWidth="md"
+      footer={deleteFooter}
     >
-      <DialogFooter className="pt-2">
-        <Button variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            onConfirm();
-            onClose();
-          }}
-          className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
-        >
-          Delete Inquiry
-        </Button>
-      </DialogFooter>
+      <div className="text-sm text-slate-700 py-2">
+        This will remove the inquiry record from your active CRM inbox.
+      </div>
     </AdminModal>
   );
 }

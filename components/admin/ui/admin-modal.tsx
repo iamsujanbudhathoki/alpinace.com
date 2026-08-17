@@ -121,12 +121,14 @@ export function AdminModal({
           <div className={isDark ? "p-3" : "px-6 py-4"}>{children}</div>
         </div>
 
-        {/* ── Sticky Footer ──────────────────────────────── */}
+        {/* ── Sticky Static Footer ──────────────────────────────── */}
         {footer && (
           <div
             className={`flex-none border-t ${
-              isDark ? "border-slate-800 px-3 py-3" : "border-slate-100 px-6 py-4"
-            } bg-white/80 backdrop-blur-sm`}
+              isDark
+                ? "border-slate-800 px-4 py-3 bg-slate-950/95"
+                : "border-slate-200/80 px-6 py-3.5 bg-white/95"
+            } backdrop-blur-md shadow-[0_-4px_16px_rgba(0,0,0,0.03)] z-10`}
           >
             {footer}
           </div>

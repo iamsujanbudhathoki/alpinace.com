@@ -99,10 +99,55 @@ export function CategoryFormModal({
     ? "Modify category attributes and module scope."
     : "Category details and assigned items.";
 
+  const editFooter = (
+    <div className="flex items-center justify-end gap-2 w-full">
+      <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
+        Cancel
+      </Button>
+      <Button 
+        type="submit" 
+        form="category-form"
+        disabled={isSubmitting}
+        className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
+      >
+        {isSubmitting ? (
+          <span className="flex items-center gap-1.5">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            Saving...
+          </span>
+        ) : (
+          "Save Category"
+        )}
+      </Button>
+    </div>
+  );
+
+  const viewFooter = (
+    <div className="flex items-center justify-between gap-2 w-full">
+      <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+        Close
+      </Button>
+      <Button
+        onClick={() => setEditingMode(true)}
+        className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
+      >
+        <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
+        Edit Category
+      </Button>
+    </div>
+  );
+
   return (
-    <AdminModal isOpen={isOpen} onClose={onClose} title={modalTitle} description={modalDescription} maxWidth="lg">
+    <AdminModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={modalTitle}
+      description={modalDescription}
+      maxWidth="lg"
+      footer={editingMode ? editFooter : viewFooter}
+    >
       {editingMode ? (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2 text-xs">
+        <form id="category-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2 text-xs">
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2 sm:col-span-1">
               <AdminInputField
@@ -154,26 +199,6 @@ export function CategoryFormModal({
               />
             </div>
           </div>
-
-          <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={isSubmitting}
-              className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
-            >
-              {isSubmitting ? (
-                <span className="flex items-center gap-1.5">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Saving...
-                </span>
-              ) : (
-                "Save Category"
-              )}
-            </Button>
-          </DialogFooter>
         </form>
       ) : (
         <div className="space-y-4 py-2 text-xs">
@@ -202,16 +227,6 @@ export function CategoryFormModal({
               {initialData?.description}
             </p>
           </div>
-
-          <DialogFooter>
-            <Button
-              onClick={() => setEditingMode(true)}
-              className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
-            >
-              <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
-              Edit Category
-            </Button>
-          </DialogFooter>
         </div>
       )}
     </AdminModal>
@@ -226,6 +241,23 @@ interface DeleteCategoryModalProps {
 }
 
 export function DeleteCategoryModal({ isOpen, onClose, onConfirm, categoryName }: DeleteCategoryModalProps) {
+  const deleteFooter = (
+    <div className="flex items-center justify-end gap-2 w-full">
+      <Button variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+        Cancel
+      </Button>
+      <Button
+        onClick={() => {
+          onConfirm();
+          onClose();
+        }}
+        className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
+      >
+        Delete Category
+      </Button>
+    </div>
+  );
+
   return (
     <AdminModal
       isOpen={isOpen}
@@ -233,21 +265,11 @@ export function DeleteCategoryModal({ isOpen, onClose, onConfirm, categoryName }
       title="Confirm Category Deletion"
       description={`Are you sure you want to delete category "${categoryName}"? Packages tagged with this category will become uncategorized.`}
       maxWidth="md"
+      footer={deleteFooter}
     >
-      <DialogFooter className="pt-2">
-        <Button variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            onConfirm();
-            onClose();
-          }}
-          className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
-        >
-          Delete Category
-        </Button>
-      </DialogFooter>
+      <div className="text-sm text-slate-700 py-2">
+        Packages tagged with this category will become uncategorized.
+      </div>
     </AdminModal>
   );
 }

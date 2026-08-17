@@ -376,9 +376,10 @@ export function ExpeditionDetailClient({
                       <h2 className="font-heading text-2xl font-bold text-[#1E2420]">
                         Expedition Profile
                       </h2>
-                      <p className="text-[#3A423C] text-base leading-relaxed font-normal">
-                        {expedition.shortDesc}
-                      </p>
+                      <div
+                        className="prose prose-stone max-w-none text-[#3A423C] text-base leading-relaxed font-normal [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 [&_h3]:font-bold [&_h3]:text-lg [&_h3]:text-[#1E2420] [&_h3]:mt-6 [&_h3]:mb-2 [&_h4]:font-bold [&_h4]:text-base [&_h4]:text-[#1E2420] [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:font-bold [&_strong]:text-[#1E2420] [&_a]:text-amber-700 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-amber-500 [&_blockquote]:pl-4 [&_blockquote]:italic"
+                        dangerouslySetInnerHTML={{ __html: expedition.shortDesc }}
+                      />
                     </div>
                   )}
 

@@ -1,38 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Edit,
-  Image as ImageIcon,
-  Search,
-  Info,
-  Loader2,
-  CheckCircle2,
-  XCircle,
-  HelpCircle,
-  MessageSquareQuote,
-  Mountain,
-  Calendar,
-  DollarSign,
-  Users,
-  Utensils,
-  BedDouble,
-  MapPin,
-  Clock,
-  ShieldCheck,
-  Star,
-  Globe,
-  ExternalLink,
-  Maximize2,
-} from "lucide-react";
-import Link from "next/link";
-import { TrekItem } from "@/lib/trek-data";
-import { CategoryType, TripDifficulty, PackageStatus } from "@/lib/admin-data";
-import { CategoryService } from "@/lib/services/admin-service";
-import { openSingleImage } from "@/lib/utils/lightbox";
-import { trekSchema, TrekFormValues } from "@/lib/admin-schemas";
 import {
   AdminInputField,
   AdminSelectField,
@@ -40,15 +7,46 @@ import {
 } from "@/components/admin/forms/admin-form-fields";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import {
-  TripFaqsManager,
-  TripReviewsManager,
   TripFaqItem,
+  TripFaqsManager,
   TripReviewItem,
+  TripReviewsManager,
 } from "@/components/admin/forms/trip-faqs-reviews-fields";
 import { TripItineraryManager } from "@/components/admin/forms/trip-itinerary-manager";
+import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
+import { CategoryType, PackageStatus, TripDifficulty } from "@/lib/admin-data";
+import { TrekFormValues, trekSchema } from "@/lib/admin-schemas";
+import { CategoryService, MediaService } from "@/lib/services/admin-service";
+import { TrekItem } from "@/lib/trek-data";
+import { openSingleImage } from "@/lib/utils/lightbox";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  BedDouble,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Edit,
+  ExternalLink,
+  Globe,
+  HelpCircle,
+  Image as ImageIcon,
+  Info,
+  Loader2,
+  MapPin,
+  Maximize2,
+  MessageSquareQuote,
+  Mountain,
+  Search,
+  Star,
+  Utensils,
+  XCircle
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 interface TrekFormModalProps {
   isOpen: boolean;
@@ -548,15 +546,30 @@ export function TrekFormModal({
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <AdminTextareaField
-                    label="Short Overview Description"
-                    required
-                    rows={3}
-                    placeholder="Summary of the trekking journey, highlights, and unique experiences..."
-                    error={errors.shortDesc?.message}
-                    {...register("shortDesc")}
+                <div className="col-span-2 space-y-1.5">
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Overview &amp; Experience Description <span className="text-rose-500">*</span>
+                  </label>
+                  <Controller
+                    name="shortDesc"
+                    control={control}
+                    render={({ field }) => (
+                      <AppRichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Detailed marketing overview, highlights, terrain insights, and trekking experiences..."
+                        height="260px"
+                        showMediaUpload={true}
+                        onMediaUpload={async (file) => {
+                          const res = await MediaService.uploadFile(file);
+                          return res?.data?.url || "";
+                        }}
+                      />
+                    )}
                   />
+                  {errors.shortDesc && (
+                    <p className="text-[11px] text-rose-500 font-semibold">{errors.shortDesc.message}</p>
+                  )}
                 </div>
               </div>
             )}
@@ -886,10 +899,11 @@ export function TrekFormModal({
           {/* Short Overview Description */}
           {initialData?.shortDesc && (
             <div className="space-y-1">
-              <span className="font-bold text-slate-900 block">Marketing Overview &amp; Experience:</span>
-              <p className="text-slate-800 leading-relaxed font-medium bg-slate-50 p-3 rounded-lg border border-slate-200">
-                {initialData.shortDesc}
-              </p>
+              <span className="font-bold text-slate-900 block text-xs">Marketing Overview &amp; Experience:</span>
+              <div
+                className="prose prose-sm max-w-none text-slate-800 leading-relaxed font-normal bg-slate-50 p-3.5 rounded-lg border border-slate-200"
+                dangerouslySetInnerHTML={{ __html: initialData.shortDesc }}
+              />
             </div>
           )}
 

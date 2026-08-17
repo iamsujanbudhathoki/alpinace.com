@@ -30,9 +30,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { PackageItem, CategoryType, ClimbingGrade, TripDifficulty, PackageStatus } from "@/lib/admin-data";
-import { CategoryService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 import { expeditionSchema, ExpeditionFormValues } from "@/lib/admin-schemas";
+import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import {
   AdminInputField,
   AdminSelectField,
@@ -223,7 +224,7 @@ export function ExpeditionFormModal({
         slug: initialData?.slug || "",
         category: initialData?.category || "Expedition",
         categoryId: values.categoryId && values.categoryId.trim() !== "" ? values.categoryId : undefined,
-        region: (values.region as any) || (initialData?.region as any) || "Everest",
+        region: values.region || "",
         peakHeightM: Number(values.peakHeightM) || 0,
         maxAltitudeMeters: Number(values.maxAltitudeMeters) || 0,
         climbingGrade: values.climbingGrade,
@@ -621,15 +622,30 @@ export function ExpeditionFormModal({
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <AdminTextareaField
-                    label="Short Overview Description"
-                    required
-                    rows={3}
-                    placeholder="Summary of the peak climbing strategy, acclimatization schedule, and summit push..."
-                    error={errors.shortDesc?.message}
-                    {...register("shortDesc")}
+                <div className="col-span-2 space-y-1.5">
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Overview &amp; Experience Description <span className="text-rose-500">*</span>
+                  </label>
+                  <Controller
+                    name="shortDesc"
+                    control={control}
+                    render={({ field }) => (
+                      <AppRichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Detailed mountaineering overview, peak climbing strategy, acclimatization, and summit push..."
+                        height="260px"
+                        showMediaUpload={true}
+                        onMediaUpload={async (file) => {
+                          const res = await MediaService.uploadFile(file);
+                          return res?.data?.url || "";
+                        }}
+                      />
+                    )}
                   />
+                  {errors.shortDesc && (
+                    <p className="text-[11px] text-rose-500 font-semibold">{errors.shortDesc.message}</p>
+                  )}
                 </div>
               </div>
             )}
@@ -971,13 +987,14 @@ export function ExpeditionFormModal({
             </div>
           </div>
 
-          {/* Short Description */}
+          {/* Short Overview */}
           {initialData?.shortDesc && (
             <div className="space-y-1">
-              <span className="font-bold text-slate-900 block">Climbing Overview &amp; Route Summary:</span>
-              <p className="text-slate-800 leading-relaxed font-medium bg-slate-50 p-3 rounded-lg border border-slate-200">
-                {initialData.shortDesc}
-              </p>
+              <span className="font-bold text-slate-900 block text-xs">Climbing Overview &amp; Route Summary:</span>
+              <div
+                className="prose prose-sm max-w-none text-slate-800 leading-relaxed font-normal bg-slate-50 p-3.5 rounded-lg border border-slate-200"
+                dangerouslySetInnerHTML={{ __html: initialData.shortDesc }}
+              />
             </div>
           )}
 

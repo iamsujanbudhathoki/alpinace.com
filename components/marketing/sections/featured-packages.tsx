@@ -249,7 +249,7 @@ export function FeaturedPackages() {
                       </h3>
                       {pkg.shortDesc && (
                         <p className="text-stone-500 text-xs leading-relaxed font-normal line-clamp-2">
-                          {pkg.shortDesc}
+                          {pkg.shortDesc.replace(/<[^>]*>?/gm, "")}
                         </p>
                       )}
                     </div>

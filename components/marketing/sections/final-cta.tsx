@@ -6,7 +6,12 @@ import { useSettings } from "@/lib/settings-context";
 
 export function FinalCta() {
   const { settings } = useSettings();
-  const phone = settings.whatsappNumber;
+  const phone = (settings.whatsappNumber || "").replace(/\D/g, "");
+  const whatsappUrl = phone
+    ? `https://wa.me/${phone}?text=${encodeURIComponent(
+        "Hello AlpineAce! I am interested in planning a trek or expedition."
+      )}`
+    : "#";
 
   return (
     <section className="relative py-20 bg-white text-slate-900 border-t border-slate-200 text-center overflow-hidden">
@@ -30,7 +35,7 @@ export function FinalCta() {
             <ArrowRight className="h-4 w-4 text-amber-400" />
           </Link>
           <a
-            href={`https://wa.me/${phone}`}
+            href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-heading text-sm font-medium px-8 py-3.5 rounded-full transition-colors flex items-center justify-center gap-2"

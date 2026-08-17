@@ -53,7 +53,7 @@ export function PackageRelatedTrips({
                   </h4>
                   {p.shortDesc && (
                     <p className="text-xs text-[#6B726C] line-clamp-2 leading-relaxed">
-                      {p.shortDesc}
+                      {p.shortDesc.replace(/<[^>]*>?/gm, "")}
                     </p>
                   )}
                   <span className="text-xs font-bold text-[#1E2420] block pt-1">

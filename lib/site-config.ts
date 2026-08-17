@@ -52,7 +52,8 @@ export const navLinks: NavLink[] = [
   },
 ];
 
-export const contact = {
-  // TODO: replace with the real WhatsApp business number (E.164 digits, no leading "+").
-  whatsappNumber: "9770000000000",
-} as const;
+// NOTE: All dynamic contact information (WhatsApp number, emails, office phone,
+// emergency phone, addresses, social media links) is fetched in real-time from the backend
+// `/settings` API and made accessible via `useSettings()` from `@/lib/settings-context`.
+
+

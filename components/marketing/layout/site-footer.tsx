@@ -186,6 +186,23 @@ export function SiteFooter() {
                   </div>
                 </li>
               )}
+              {settings.whatsappNumber && (
+                <li className="flex items-center gap-3">
+                  <span className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                    <span className="text-[10px] text-white font-bold">W</span>
+                  </span>
+                  <a
+                    href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
+                      "Hello AlpineAce team! I would like to inquire about your treks and expeditions."
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-slate-900 font-bold hover:text-emerald-700 transition-colors cursor-pointer"
+                  >
+                    WhatsApp: +{settings.whatsappNumber.replace(/\D/g, "")}
+                  </a>
+                </li>
+              )}
               {settings.contactEmail && (
                 <li className="flex items-center gap-3">
                   <Mail className="h-4 w-4 text-amber-600 shrink-0" />

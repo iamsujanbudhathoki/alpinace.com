@@ -396,7 +396,7 @@ function ToursPageContent() {
                         </h3>
 
                         <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
-                          {tour.shortDesc}
+                          {(tour.shortDesc || "").replace(/<[^>]*>?/gm, "")}
                         </p>
 
                         <div className="pt-2 text-[11px] text-slate-600 font-semibold border-t border-slate-100 flex items-center justify-between">

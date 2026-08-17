@@ -368,19 +368,14 @@ export function SiteHeader() {
 
           {/* Right Action Button & Mobile Menu Toggle */}
           <div className="flex items-center gap-3">
-            {/* WhatsApp Direct Action */}
-            <a
-              href={`https://wa.me/${(settings.whatsappNumber || "").replace(/\D/g, "")}?text=${encodeURIComponent(
-                "Hello! I am interested in planning a trek or expedition with Alpine Ace."
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-3.5 py-2 text-xs font-semibold text-white transition-all duration-200 shadow-xs cursor-pointer group"
-              aria-label="Chat on WhatsApp"
+            {/* Primary Plan Your Trip CTA */}
+            <Link
+              href="/contact"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all duration-200 cursor-pointer group"
             >
-              <MessageCircle className="w-3.5 h-3.5 fill-white text-emerald-600 transition-transform group-hover:scale-110" />
-              <span>WhatsApp</span>
-            </a>
+              <span>Plan Your Trip</span>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-400 transition-transform group-hover:translate-x-0.5" />
+            </Link>
 
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -565,20 +560,31 @@ export function SiteHeader() {
             </nav>
 
             {/* Bottom Primary Action & Contact */}
-            <div className="pt-6 border-t border-slate-100 space-y-4 shrink-0">
-              <a
-                href={`https://wa.me/${(settings.whatsappNumber || "").replace(/\D/g, "")}?text=${encodeURIComponent(
-                  "Hello! I am interested in planning a trek or expedition with Alpine Ace."
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
+            <div className="pt-6 border-t border-slate-100 space-y-3 shrink-0">
+              <Link
+                href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm py-3 px-4 transition-colors shadow-xs"
-                aria-label="Chat on WhatsApp"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm py-3 px-4 transition-colors shadow-xs"
               >
-                <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />
-                <span>Chat on WhatsApp</span>
-              </a>
+                <span>Plan Your Trip</span>
+                <ArrowRight className="w-4 h-4 text-amber-400" />
+              </Link>
+
+              {settings.whatsappNumber && (
+                <a
+                  href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
+                    "Hello! I am interested in planning a trek or expedition with Alpine Ace."
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold text-sm py-2.5 px-4 transition-colors"
+                  aria-label="Chat on WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-100" />
+                  <span>Chat on WhatsApp</span>
+                </a>
+              )}
 
               {(settings.contactPhone || settings.emergencyPhone) && (
                 <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-500 font-medium pt-1">

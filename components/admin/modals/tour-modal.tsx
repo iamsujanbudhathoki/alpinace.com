@@ -29,9 +29,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { PackageItem, CategoryType, TourType, TripDifficulty, PackageStatus } from "@/lib/admin-data";
-import { CategoryService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 import { tourSchema, TourFormValues } from "@/lib/admin-schemas";
+import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import {
   AdminInputField,
   AdminSelectField,
@@ -586,15 +587,30 @@ export function TourFormModal({
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <AdminTextareaField
-                    label="Short Overview Description"
-                    required
-                    rows={3}
-                    placeholder="Summary of the tour highlights, heritage stops, and bespoke comforts..."
-                    error={errors.shortDesc?.message}
-                    {...register("shortDesc")}
+                <div className="col-span-2 space-y-1.5">
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Overview &amp; Experience Description <span className="text-rose-500">*</span>
+                  </label>
+                  <Controller
+                    name="shortDesc"
+                    control={control}
+                    render={({ field }) => (
+                      <AppRichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Detailed marketing overview, heritage stops, and bespoke comforts..."
+                        height="260px"
+                        showMediaUpload={true}
+                        onMediaUpload={async (file) => {
+                          const res = await MediaService.uploadFile(file);
+                          return res?.data?.url || "";
+                        }}
+                      />
+                    )}
                   />
+                  {errors.shortDesc && (
+                    <p className="text-[11px] text-rose-500 font-semibold">{errors.shortDesc.message}</p>
+                  )}
                 </div>
               </div>
             )}
@@ -936,10 +952,11 @@ export function TourFormModal({
           {/* Short Overview */}
           {initialData?.shortDesc && (
             <div className="space-y-1">
-              <span className="font-bold text-slate-900 block">Marketing Overview &amp; Highlights:</span>
-              <p className="text-slate-800 leading-relaxed font-medium bg-slate-50 p-3 rounded-lg border border-slate-200">
-                {initialData.shortDesc}
-              </p>
+              <span className="font-bold text-slate-900 block text-xs">Marketing Overview &amp; Highlights:</span>
+              <div
+                className="prose prose-sm max-w-none text-slate-800 leading-relaxed font-normal bg-slate-50 p-3.5 rounded-lg border border-slate-200"
+                dangerouslySetInnerHTML={{ __html: initialData.shortDesc }}
+              />
             </div>
           )}
 

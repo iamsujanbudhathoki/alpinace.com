@@ -84,12 +84,20 @@ export function AdminImageUpload({
   const [mediaTotalPages, setMediaTotalPages] = useState(1);
   const [mediaTotalItems, setMediaTotalItems] = useState(0);
   const MEDIA_LIMIT = 12;
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const loadMedia = async (page: number, categoryId: string) => {
+  // 350ms debounce on search input
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 350);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  const loadMedia = async (page: number, categoryId: string, search?: string) => {
     setIsLibraryLoading(true);
     try {
       const res: any = await MediaService.getAllMedia({
         categoryId: categoryId !== "All" ? categoryId : undefined,
+        search: search?.trim() || undefined,
         limit: MEDIA_LIMIT,
         page,
       });
@@ -138,13 +146,19 @@ export function AdminImageUpload({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLibraryOpen]);
 
-  // Reload when page or category changes
+  // Reload when page, category, or debounced search changes
   useEffect(() => {
     if (isLibraryOpen) {
-      loadMedia(mediaPage, selectedCategory);
+      loadMedia(mediaPage, selectedCategory, debouncedSearch);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mediaPage, selectedCategory]);
+  }, [mediaPage, selectedCategory, debouncedSearch]);
+
+  // Reset page to 1 when search or category changes
+  useEffect(() => {
+    if (isLibraryOpen) setMediaPage(1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, selectedCategory]);
 
   // Compute unique categories list from available assets (fallback if backend categories not loaded)
   const availableCategories = useMemo(() => {
@@ -221,10 +235,8 @@ export function AdminImageUpload({
     }
   };
 
-  // Category filter is server-side; searchQuery filters client-side within current page
-  const filteredAssets = searchQuery.trim()
-    ? assets.filter((a) => a.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    : assets;
+  // All filtering (search + category) is server-side — use assets directly
+  const filteredAssets = assets;
 
   return (
     <div className="space-y-3">
@@ -394,46 +406,41 @@ export function AdminImageUpload({
           description="Select a cover photo or upload new media."
           maxWidth="2xl"
         >
-          <div className="space-y-4 py-2 text-xs flex-1 min-h-0 flex flex-col">
+          <div className="space-y-3 py-2 text-xs">
             {/* Header Action Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
-              <div className="relative w-full sm:w-72">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-900" />
+            <div className="flex flex-col gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              {/* Row 1: Search */}
+              <div className="relative w-full">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search photo asset title..."
+                  placeholder="Search media..."
                   className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-950 font-bold focus:outline-none focus:border-amber-500"
                 />
               </div>
-
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                <div className="flex items-center gap-2">
-                  <label className="text-xs font-black text-slate-950 uppercase tracking-wider whitespace-nowrap">
-                    Category:
-                  </label>
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="bg-white border border-slate-300 text-slate-950 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
-                  >
-                    {availableCategories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
+              {/* Row 2: Category + Upload button */}
+              <div className="flex items-center gap-2 w-full">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="flex-1 min-w-0 bg-white border border-slate-300 text-slate-950 font-bold text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer"
+                >
+                  {availableCategories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
                 <Button
                   type="button"
                   size="sm"
                   onClick={() => setShowModalUploader(!showModalUploader)}
-                  className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
+                  className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
                 >
-                  <Plus className="w-3.5 h-3.5 mr-1" />
-                  {showModalUploader ? "Hide Uploader" : "Upload New Media"}
+                  <Plus className="w-3.5 h-3.5 sm:mr-1" />
+                  <span className="hidden sm:inline">{showModalUploader ? "Hide" : "Upload"}</span>
                 </Button>
               </div>
             </div>
@@ -468,10 +475,10 @@ export function AdminImageUpload({
 
             {/* ── Media Grid ── */}
             {isLibraryLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 p-1">
                 {Array.from({ length: MEDIA_LIMIT }).map((_, i) => (
                   <div key={i} className="rounded-xl bg-slate-100 border border-slate-200 animate-pulse overflow-hidden">
-                    <div style={{ height: 100 }} className="bg-slate-200/80 w-full" />
+                    <div style={{ height: 90 }} className="bg-slate-200/80 w-full" />
                     <div className="p-2 space-y-1.5">
                       <div className="h-2.5 bg-slate-200 rounded w-3/4" />
                       <div className="h-2 bg-slate-100 rounded w-1/2" />
@@ -491,7 +498,7 @@ export function AdminImageUpload({
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 p-1">
                 {filteredAssets.map((asset) => {
                   const isSelected = tempSelectedUrl === asset.url;
                   return (
@@ -506,7 +513,7 @@ export function AdminImageUpload({
                       }`}
                     >
                       {/* Fixed height image container — inline style for guaranteed height */}
-                      <div className="relative overflow-hidden bg-slate-900" style={{ height: 100 }}>
+                      <div className="relative overflow-hidden bg-slate-900" style={{ height: 90 }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={asset.url}
@@ -563,86 +570,94 @@ export function AdminImageUpload({
 
             {/* ── Pagination Controls ── */}
             {!isLibraryLoading && mediaTotalPages > 1 && (
-              <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-                <p className="text-[11px] text-slate-600 font-semibold">
-                  Page {mediaPage} of {mediaTotalPages} &nbsp;·&nbsp; {mediaTotalItems} total
+              <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 gap-2">
+                <p className="text-[11px] text-slate-600 font-semibold shrink-0">
+                  <span className="hidden sm:inline">Page {mediaPage} of {mediaTotalPages} · </span>
+                  {mediaTotalItems} items
                 </p>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     disabled={mediaPage <= 1}
                     onClick={() => setMediaPage((p) => Math.max(1, p - 1))}
-                    className="h-7 px-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    className="h-7 px-2 sm:px-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
                   >
-                    ← Prev
+                    ← <span className="hidden sm:inline">Prev</span>
                   </button>
-                  {Array.from({ length: Math.min(mediaTotalPages, 5) }, (_, i) => {
-                    const p = mediaPage <= 3
-                      ? i + 1
-                      : mediaPage >= mediaTotalPages - 2
-                      ? mediaTotalPages - 4 + i
-                      : mediaPage - 2 + i;
-                    if (p < 1 || p > mediaTotalPages) return null;
-                    return (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => setMediaPage(p)}
-                        className={`h-7 w-7 rounded-lg border text-[11px] font-bold transition-colors cursor-pointer ${
-                          mediaPage === p
-                            ? "bg-slate-900 border-slate-900 text-white"
-                            : "border-slate-200 text-slate-700 bg-white hover:bg-slate-100"
-                        }`}
-                      >
-                        {p}
-                      </button>
-                    );
-                  })}
+                  {/* Page numbers — hidden on xs screens */}
+                  <div className="hidden sm:flex items-center gap-1">
+                    {Array.from({ length: Math.min(mediaTotalPages, 5) }, (_, i) => {
+                      const p = mediaPage <= 3
+                        ? i + 1
+                        : mediaPage >= mediaTotalPages - 2
+                        ? mediaTotalPages - 4 + i
+                        : mediaPage - 2 + i;
+                      if (p < 1 || p > mediaTotalPages) return null;
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => setMediaPage(p)}
+                          className={`h-7 w-7 rounded-lg border text-[11px] font-bold transition-colors cursor-pointer ${
+                            mediaPage === p
+                              ? "bg-slate-900 border-slate-900 text-white"
+                              : "border-slate-200 text-slate-700 bg-white hover:bg-slate-100"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {/* Mobile: just show current/total */}
+                  <span className="sm:hidden text-[11px] font-bold text-slate-700 px-1">{mediaPage}/{mediaTotalPages}</span>
                   <button
                     type="button"
                     disabled={mediaPage >= mediaTotalPages}
                     onClick={() => setMediaPage((p) => Math.min(mediaTotalPages, p + 1))}
-                    className="h-7 px-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    className="h-7 px-2 sm:px-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
                   >
-                    Next →
+                    <span className="hidden sm:inline">Next</span> →
                   </button>
                 </div>
               </div>
             )}
 
             {/* Footer: status + actions */}
-            <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-between">
-              <div className="text-xs text-slate-900 font-extrabold">
-                {tempSelectedUrl ? "1 Image Selected" : "No asset selected"}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setIsLibraryOpen(false);
-                    setShowModalUploader(false);
-                  }}
-                  className="text-xs font-bold h-8"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={!tempSelectedUrl}
-                  onClick={() => {
-                    const selectedObj = assets.find((a) => a.url === tempSelectedUrl);
-                    onChange(tempSelectedUrl, selectedObj?.id);
-                    setIsLibraryOpen(false);
-                    setShowModalUploader(false);
-                    toast.success("Cover image selected from media library!");
-                  }}
-                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs h-8"
-                >
-                  Use Selected Image
-                </Button>
+            <DialogFooter className="pt-3 border-t border-slate-100">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 w-full">
+                <div className="text-xs text-slate-700 font-bold text-center sm:text-left">
+                  {tempSelectedUrl ? "✓ 1 image selected" : "No image selected"}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsLibraryOpen(false);
+                      setShowModalUploader(false);
+                    }}
+                    className="flex-1 sm:flex-none text-xs font-bold h-8"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={!tempSelectedUrl}
+                    onClick={() => {
+                      const selectedObj = assets.find((a) => a.url === tempSelectedUrl);
+                      onChange(tempSelectedUrl, selectedObj?.id);
+                      setIsLibraryOpen(false);
+                      setShowModalUploader(false);
+                      toast.success("Cover image selected from media library!");
+                    }}
+                    className="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs h-8"
+                  >
+                    Use Selected Image
+                  </Button>
+                </div>
               </div>
             </DialogFooter>
           </div>

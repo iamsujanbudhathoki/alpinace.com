@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Search, Plus, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, FolderOpen, Tag, Check, Loader2 } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { Search, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, FolderOpen, Tag, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminTablePagination } from "@/components/admin/ui/admin-table";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { MediaService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { openLightbox } from "@/lib/utils/lightbox";
 
 interface MediaAsset {
@@ -27,9 +27,11 @@ interface MediaAsset {
 export default function AdminMediaPage() {
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [allAssetsForStats, setAllAssetsForStats] = useState<MediaAsset[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  // selectedCategory stores the categoryId (or "All")
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("All");
   const [showUploader, setShowUploader] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,36 +49,74 @@ export default function AdminMediaPage() {
 
   // Edit Form Fields State
   const [editTitle, setEditTitle] = useState("");
-  const [editCategory, setEditCategory] = useState<string>("");
+  const [editCategoryId, setEditCategoryId] = useState<string>("");
   const [editDescription, setEditDescription] = useState("");
   const [editAltText, setEditAltText] = useState("");
 
-  // Load all assets once for stat cards
-  const loadStats = async () => {
+  // Normalize a PaginatedList<T> (array with .pagination property) into list + pagination
+  const parseMediaResponse = (res: any): { list: any[]; pagination?: any } => {
+    if (Array.isArray(res)) {
+      // PaginatedList<T> is an array extended with .pagination
+      return { list: res, pagination: (res as any).pagination };
+    }
+    if (res && Array.isArray(res.data)) return { list: res.data, pagination: res.pagination ?? res.meta };
+    return { list: [] };
+  };
+
+  // Deduplicate by URL (normalized)
+  const deduplicateByUrl = (list: any[]): any[] => {
+    const seen = new Set<string>();
+    return list.filter((item) => {
+      if (!item?.url) return false;
+      const key = item.url.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
+  const mapAsset = (m: any): MediaAsset => ({
+    id: m.id,
+    title: m.title ?? m.name ?? "Media Asset",
+    categoryId: m.categoryId ?? "",
+    categoryName: m.categoryName ?? "",
+    category: m.categoryName ?? "",
+    url: m.url,
+    description: m.description ?? "",
+    altText: m.altText ?? m.title ?? m.name ?? "",
+    fileSize: m.fileSize ? `${(Number(m.fileSize) / 1024).toFixed(1)} KB` : "0 KB",
+    dimensions: "1920 x 1080",
+    createdAt: m.createdAt ? new Date(m.createdAt).toISOString().split("T")[0] : "",
+  });
+
+  // Load categories for filter dropdown
+  const loadCategories = useCallback(async () => {
     try {
-      const items = await MediaService.getAllMedia();
-      if (Array.isArray(items)) {
-        setAllAssetsForStats(
-          items.map((m) => ({
-            id: m.id,
-            title: m.title ?? m.name,
-            category: m.category ?? "",
-            url: m.url,
-            description: m.description ?? "",
-            altText: m.altText ?? m.title ?? m.name,
-            fileSize: m.fileSize ? `${(Number(m.fileSize) / 1024).toFixed(1)} KB` : "0 KB",
-            dimensions: "1920 x 1080",
-            createdAt: m.createdAt ? new Date(m.createdAt).toISOString().split("T")[0] : "",
-          }))
-        );
-      }
+      const res = await CategoryService.getAll({ limit: 100 });
+      const list = Array.isArray(res) ? res : [];
+      setCategories(list.map((c: any) => ({ id: c.id, name: c.name ?? c.title ?? "" })));
+    } catch (e) {
+      console.warn("Failed to load categories:", e);
+    }
+  }, []);
+
+  // Load all assets once for stat cards
+  const loadStats = useCallback(async () => {
+    try {
+      const res = await MediaService.getAllMedia({ limit: 1000 });
+      const { list } = parseMediaResponse(res);
+      const unique = deduplicateByUrl(list);
+      setAllAssetsForStats(unique.map(mapAsset));
     } catch (e) {
       console.warn("Failed to load media stats:", e);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     loadStats();
+    loadCategories();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Debounce search query
@@ -90,54 +130,43 @@ export default function AdminMediaPage() {
   // Reset page to 1 on filter or search changes
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, selectedCategory]);
+  }, [debouncedSearch, selectedCategoryId]);
 
-  const loadMedia = async () => {
+  const loadMedia = useCallback(async () => {
     setIsLoading(true);
     try {
-      const items = await MediaService.getAllMedia({
-        category: selectedCategory === "All" ? undefined : selectedCategory,
-        search: debouncedSearch,
+      const res = await MediaService.getAllMedia({
+        categoryId: selectedCategoryId !== "All" ? selectedCategoryId : undefined,
+        search: debouncedSearch || undefined,
         page,
         limit,
       });
-      if (Array.isArray(items)) {
-        setAssets(
-          items.map((m) => ({
-            id: m.id,
-            title: m.title ?? m.name,
-            category: m.category ?? "",
-            url: m.url,
-            description: m.description ?? "",
-            altText: m.altText ?? m.title ?? m.name,
-            fileSize: m.fileSize ? `${(Number(m.fileSize) / 1024).toFixed(1)} KB` : "0 KB",
-            dimensions: "1920 x 1080",
-            createdAt: m.createdAt ? new Date(m.createdAt).toISOString().split("T")[0] : "",
-          }))
-        );
-        if (items.pagination) {
-          setTotalItems(items.pagination.count);
-          setTotalPages(items.pagination.lastPage);
-        } else {
-          setTotalItems(items.length);
-          setTotalPages(Math.max(1, Math.ceil(items.length / limit)));
-        }
+      const { list, pagination } = parseMediaResponse(res);
+      const unique = deduplicateByUrl(list);
+      setAssets(unique.map(mapAsset));
+      if (pagination) {
+        setTotalItems(pagination.count ?? pagination.total ?? unique.length);
+        setTotalPages(pagination.lastPage ?? pagination.pageCount ?? Math.max(1, Math.ceil((pagination.count ?? unique.length) / limit)));
+      } else {
+        setTotalItems(unique.length);
+        setTotalPages(1);
       }
     } catch (err) {
       console.error("Failed to load media assets:", err);
     } finally {
       setIsLoading(false);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, selectedCategoryId, page, limit]);
 
   useEffect(() => {
     loadMedia();
-  }, [debouncedSearch, selectedCategory, page, limit]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, selectedCategoryId, page, limit]);
 
   const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setIsUploading(true);
     try {
       const res = await MediaService.uploadFile(file);
@@ -177,7 +206,7 @@ export default function AdminMediaPage() {
   const handleOpenEdit = (asset: MediaAsset) => {
     setActiveAsset(asset);
     setEditTitle(asset.title);
-    setEditCategory(asset.category || "");
+    setEditCategoryId(asset.categoryId || "");
     setEditDescription(asset.description || "");
     setEditAltText(asset.altText || "");
     setIsEditModalOpen(true);
@@ -186,15 +215,13 @@ export default function AdminMediaPage() {
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeAsset) return;
-
     try {
       const res = await MediaService.update(activeAsset.id, {
         title: editTitle.trim(),
-        categoryId: editCategory.trim() || undefined,
+        categoryId: editCategoryId.trim() || undefined,
         description: editDescription.trim(),
         altText: editAltText.trim(),
       });
-
       if (res.success) {
         toast.success(res.message || "Media asset metadata updated successfully.");
         setIsEditModalOpen(false);
@@ -331,7 +358,7 @@ export default function AdminMediaPage() {
         </div>
       </div>
 
-      {/* Control Bar: Search & Category Select Dropdown */}
+      {/* Control Bar: Search & Category Filter */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="relative flex-1 max-w-md">
@@ -350,15 +377,14 @@ export default function AdminMediaPage() {
               Category Filter:
             </label>
             <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              value={selectedCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
               className="bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
             >
               <option value="All">All Categories</option>
-              <option value="Everest & Peaks">Everest &amp; Peaks</option>
-              <option value="Annapurna & Lakes">Annapurna &amp; Lakes</option>
-              <option value="Cultural Heritage">Cultural Heritage &amp; Resorts</option>
-              <option value="Helicopter Charters">Helicopter Charters</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -514,15 +540,14 @@ export default function AdminMediaPage() {
           <div className="space-y-1">
             <label className="font-bold text-slate-800 block text-xs">Category Taxonomy</label>
             <select
-              value={editCategory}
-              onChange={(e) => setEditCategory(e.target.value)}
+              value={editCategoryId}
+              onChange={(e) => setEditCategoryId(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 text-slate-900 font-bold text-xs rounded-xl px-3.5 py-2 focus:outline-none focus:border-amber-500 cursor-pointer"
             >
               <option value="">Unassigned Category</option>
-              <option value="Everest & Peaks">Everest &amp; Peaks</option>
-              <option value="Annapurna & Lakes">Annapurna &amp; Lakes</option>
-              <option value="Cultural Heritage">Cultural Heritage &amp; Resorts</option>
-              <option value="Helicopter Charters">Helicopter Charters</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
             </select>
           </div>
 

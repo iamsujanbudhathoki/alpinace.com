@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import {
   Image as ImageIcon,
-  Plus,
   Trash2,
   Eye,
   UploadCloud,
@@ -44,8 +43,6 @@ export function TripGalleryManager({
 }: TripGalleryManagerProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
-  const [isDirectUrlOpen, setIsDirectUrlOpen] = useState(false);
-  const [directUrlInput, setDirectUrlInput] = useState("");
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
@@ -110,17 +107,7 @@ export function TripGalleryManager({
     }
   };
 
-  const handleAddDirectUrl = () => {
-    if (!directUrlInput.trim()) return;
-    const url = directUrlInput.trim();
-    if (!images.includes(url)) {
-      const nextImages = [...images, url];
-      onChange(nextImages, galleryMediaIds);
-      toast.success("Image URL added to gallery");
-    }
-    setDirectUrlInput("");
-    setIsDirectUrlOpen(false);
-  };
+
 
   const handleRemoveImage = (index: number) => {
     const nextImages = images.filter((_, i) => i !== index);
@@ -228,17 +215,6 @@ export function TripGalleryManager({
               <FolderOpen className="w-3.5 h-3.5 text-slate-500" />
               <span>Media Library</span>
             </Button>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsDirectUrlOpen(true)}
-              className="text-xs h-9 px-2.5 text-slate-600 hover:bg-slate-200"
-              title="Add Image URL"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </Button>
           </div>
         )}
       </div>
@@ -317,49 +293,6 @@ export function TripGalleryManager({
             </div>
           ))}
         </div>
-      )}
-
-      {/* Direct URL Modal */}
-      {isDirectUrlOpen && (
-        <AdminModal
-          isOpen={isDirectUrlOpen}
-          onClose={() => setIsDirectUrlOpen(false)}
-          title="Add Image via URL"
-          maxWidth="md"
-        >
-          <div className="space-y-4">
-            <p className="text-xs text-slate-500">
-              Paste a public image URL to add it directly to this package&apos;s gallery.
-            </p>
-            <input
-              type="url"
-              placeholder="https://images.unsplash.com/photo-..."
-              value={directUrlInput}
-              onChange={(e) => setDirectUrlInput(e.target.value)}
-              className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
-            />
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setIsDirectUrlOpen(false)}
-                className="text-xs h-8"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                onClick={handleAddDirectUrl}
-                disabled={!directUrlInput.trim()}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs h-8"
-              >
-                Add Image
-              </Button>
-            </DialogFooter>
-          </div>
-        </AdminModal>
       )}
 
       {/* Media Library Selector Modal */}

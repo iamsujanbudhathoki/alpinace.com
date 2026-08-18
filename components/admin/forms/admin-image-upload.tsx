@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { DialogFooter } from "@/components/ui/dialog";
-import { MediaService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface AdminImageUploadProps {
@@ -68,14 +68,25 @@ const INITIAL_MEDIA_LIBRARY: MediaAsset[] = [
   },
 ];
 
-// Helper to deduplicate assets by URL
+// Helper to normalize URL for strict deduplication
+const normalizeUrl = (url: string): string => {
+  if (!url) return "";
+  try {
+    const u = new URL(url);
+    return `${u.origin}${u.pathname}`.toLowerCase();
+  } catch {
+    return url.trim().toLowerCase();
+  }
+};
+
+// Deduplicate assets strictly by normalized URL
 const deduplicateAssets = (list: MediaAsset[]): MediaAsset[] => {
   const seen = new Set<string>();
   return list.filter((item) => {
     if (!item || !item.url) return false;
-    const cleanUrl = item.url.trim();
-    if (seen.has(cleanUrl)) return false;
-    seen.add(cleanUrl);
+    const key = normalizeUrl(item.url);
+    if (seen.has(key)) return false;
+    seen.add(key);
     return true;
   });
 };
@@ -91,11 +102,11 @@ export function AdminImageUpload({
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
   const [showModalUploader, setShowModalUploader] = useState(false);
-  const [isDirectUrlOpen, setIsDirectUrlOpen] = useState(false);
-  const [directUrlInput, setDirectUrlInput] = useState("");
 
   const [assets, setAssets] = useState<MediaAsset[]>(deduplicateAssets(INITIAL_MEDIA_LIBRARY));
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  // selectedCategory stores categoryId or "All"
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [tempSelectedUrl, setTempSelectedUrl] = useState<string>(value);
 
@@ -104,16 +115,26 @@ export function AdminImageUpload({
     if (isLibraryOpen) {
       setTempSelectedUrl(value);
       setIsLibraryLoading(true);
-      MediaService.getAllMedia()
+
+      // Load categories
+      CategoryService.getAll({ limit: 100 })
         .then((res: any) => {
-          const mediaList = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+          const list = Array.isArray(res) ? res : [];
+          setCategories(list.map((c: any) => ({ id: c.id, name: c.name ?? c.title ?? "" })));
+        })
+        .catch(() => {});
+
+      // Load media
+      MediaService.getAllMedia({ limit: 500 })
+        .then((res: any) => {
+          const mediaList = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
           if (mediaList.length > 0) {
             const mapped: MediaAsset[] = mediaList.map((m: any) => ({
               id: m.id || `media-${Math.random()}`,
               title: m.title || m.name || m.originalName || "Uploaded Media",
-              categoryId: m.categoryId,
-              categoryName: m.categoryName || m.category?.name || "General",
-              category: m.categoryName || m.category?.name || "General",
+              categoryId: m.categoryId ?? undefined,
+              categoryName: m.categoryName ?? "",
+              category: m.categoryName ?? "",
               url: m.url,
             }));
             setAssets(deduplicateAssets(mapped));
@@ -131,14 +152,19 @@ export function AdminImageUpload({
     }
   }, [isLibraryOpen, value]);
 
-  // Compute unique categories list from available assets
+  // Compute unique categories list from available assets (fallback if backend categories not loaded)
   const availableCategories = useMemo(() => {
-    const set = new Set<string>();
+    if (categories.length > 0) {
+      return [{ id: "All", name: "All Categories" }, ...categories];
+    }
+    // Derive from assets
+    const seen = new Map<string, string>();
     assets.forEach((a) => {
-      if (a.category && a.category !== "All") set.add(a.category);
+      if (a.categoryId && a.categoryName) seen.set(a.categoryId, a.categoryName);
     });
-    return ["All", ...Array.from(set)];
-  }, [assets]);
+    const derived = Array.from(seen.entries()).map(([id, name]) => ({ id, name }));
+    return [{ id: "All", name: "All Categories" }, ...derived];
+  }, [assets, categories]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fromModal = false) => {
     const file = e.target.files?.[0];
@@ -181,17 +207,11 @@ export function AdminImageUpload({
     }
   };
 
-  const handleApplyDirectUrl = () => {
-    if (!directUrlInput.trim()) return;
-    onChange(directUrlInput.trim());
-    setDirectUrlInput("");
-    setIsDirectUrlOpen(false);
-    toast.success("Image URL applied successfully!");
-  };
-
   const filteredAssets = assets.filter((asset) => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCat = selectedCategory === "All" || asset.category === selectedCategory;
+    const matchesCat =
+      selectedCategory === "All" ||
+      asset.categoryId === selectedCategory;
     return matchesSearch && matchesCat;
   });
 
@@ -288,7 +308,7 @@ export function AdminImageUpload({
                   Click or drag image file here to upload
                 </p>
                 <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                  High-res WebP, JPG, or PNG (Max 5MB)
+                  High-res WebP, JPG, or PNG (Max 15MB)
                 </p>
               </div>
               <div className="pt-2 flex items-center justify-center gap-2 z-20 relative">
@@ -300,22 +320,10 @@ export function AdminImageUpload({
                     e.stopPropagation();
                     setIsLibraryOpen(true);
                   }}
-                  className="text-xs font-bold h-7 px-2.5 bg-white border-slate-300 hover:bg-slate-100 shadow-2xs cursor-pointer"
+                  className="text-xs font-bold h-7 px-3 bg-white border-slate-300 hover:bg-slate-100 shadow-2xs cursor-pointer"
                 >
                   <FolderOpen className="w-3.5 h-3.5 mr-1 text-slate-500" />
                   Media Library
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsDirectUrlOpen(true);
-                  }}
-                  className="text-xs font-bold h-7 px-2 text-slate-600 hover:bg-slate-200 cursor-pointer"
-                >
-                  Image URL
                 </Button>
               </div>
             </div>
@@ -324,47 +332,6 @@ export function AdminImageUpload({
       )}
 
       {error && <p className="text-xs font-bold text-rose-600">{error}</p>}
-
-      {/* DIRECT URL MODAL */}
-      {isDirectUrlOpen && (
-        <AdminModal
-          isOpen={isDirectUrlOpen}
-          onClose={() => setIsDirectUrlOpen(false)}
-          title="Direct Cover Image URL"
-          description="Paste an external image link (e.g. Unsplash or Cloudflare R2)."
-          maxWidth="md"
-        >
-          <div className="space-y-3 py-2">
-            <input
-              type="url"
-              placeholder="https://images.unsplash.com/photo-..."
-              value={directUrlInput}
-              onChange={(e) => setDirectUrlInput(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500"
-            />
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setIsDirectUrlOpen(false)}
-                className="text-xs font-bold h-8"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                onClick={handleApplyDirectUrl}
-                disabled={!directUrlInput.trim()}
-                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs h-8"
-              >
-                Apply URL
-              </Button>
-            </DialogFooter>
-          </div>
-        </AdminModal>
-      )}
 
       {/* CONFIRM REMOVE MODAL */}
       {isConfirmRemoveOpen && (
@@ -441,8 +408,8 @@ export function AdminImageUpload({
                     className="bg-white border border-slate-300 text-slate-950 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
                   >
                     {availableCategories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat === "All" ? "All Categories" : cat}
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
                       </option>
                     ))}
                   </select>
@@ -488,13 +455,13 @@ export function AdminImageUpload({
               </div>
             )}
 
-            {/* ── Media Grid with Loading Skeleton & Empty State ── */}
+            {/* ── Media Grid with Strict Locked Aspect Ratio Cards & Skeleton ── */}
             {isLibraryLoading ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 flex-1 min-h-[280px] overflow-y-auto p-1">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={i}
-                    className="aspect-[16/10] rounded-xl bg-slate-100 border border-slate-200 animate-pulse flex flex-col justify-end p-2.5"
+                    className="relative w-full aspect-[16/10] rounded-xl bg-slate-100 border border-slate-200 animate-pulse flex flex-col justify-end p-2.5 overflow-hidden"
                   >
                     <div className="h-3 bg-slate-200 rounded w-3/4 mb-1"></div>
                     <div className="h-2 bg-slate-200 rounded w-1/2"></div>
@@ -517,17 +484,17 @@ export function AdminImageUpload({
                     <div
                       key={asset.id}
                       onClick={() => setTempSelectedUrl(asset.url)}
-                      className={`group relative aspect-[16/10] rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
+                      className={`group relative w-full aspect-[16/10] rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
                         isSelected
-                          ? "border-amber-500 ring-2 ring-amber-500/30 scale-[1.02]"
-                          : "border-slate-200 hover:border-slate-400 bg-slate-900"
+                          ? "border-amber-500 ring-2 ring-amber-500/30 scale-[1.02] shadow-md"
+                          : "border-slate-200 hover:border-slate-400 bg-slate-900 shadow-2xs"
                       }`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={asset.url}
                         alt={asset.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
                             "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80";

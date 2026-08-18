@@ -331,7 +331,7 @@ export function TripGalleryManager({
                       type="button"
                       disabled={isAlreadyInGallery}
                       onClick={() => toggleLibrarySelection(asset)}
-                      className={`group relative aspect-4/3 rounded-lg overflow-hidden border text-left transition-all ${
+                      className={`group relative rounded-lg overflow-hidden border text-left transition-all block w-full ${
                         isAlreadyInGallery
                           ? "opacity-40 cursor-not-allowed border-slate-200"
                           : isSelected
@@ -339,23 +339,25 @@ export function TripGalleryManager({
                           : "border-slate-200 hover:border-emerald-400"
                       }`}
                     >
-                      <img
-                        src={asset.url}
-                        alt={asset.title}
-                        className="w-full h-full object-cover"
-                      />
-                      {isSelected && (
-                        <div className="absolute inset-0 bg-emerald-900/40 flex items-center justify-center">
-                          <Check className="w-6 h-6 text-white bg-emerald-600 rounded-full p-1 shadow-md" />
-                        </div>
-                      )}
-                      {isAlreadyInGallery && (
-                        <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
-                          <span className="text-[10px] font-bold text-white bg-slate-800 px-2 py-0.5 rounded-full">
-                            Added
-                          </span>
-                        </div>
-                      )}
+                      <div className="relative h-24 bg-slate-800 overflow-hidden">
+                        <img
+                          src={asset.url}
+                          alt={asset.title}
+                          className="w-full h-full object-cover"
+                        />
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-emerald-900/40 flex items-center justify-center">
+                            <Check className="w-6 h-6 text-white bg-emerald-600 rounded-full p-1 shadow-md" />
+                          </div>
+                        )}
+                        {isAlreadyInGallery && (
+                          <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
+                            <span className="text-[10px] font-bold text-white bg-slate-800 px-2 py-0.5 rounded-full">
+                              Added
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </button>
                   );
                 })

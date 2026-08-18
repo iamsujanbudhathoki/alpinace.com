@@ -35,39 +35,6 @@ interface MediaAsset {
   url: string;
 }
 
-const INITIAL_MEDIA_LIBRARY: MediaAsset[] = [
-  {
-    id: "media-1",
-    title: "Everest Base Camp & Khumbu Glacier",
-    category: "Everest & Peaks",
-    url: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    id: "media-2",
-    title: "Annapurna Range Sunrise over Machhapuchhre",
-    category: "Annapurna & Lakes",
-    url: "https://images.unsplash.com/photo-1585409677983-0f6c41ca913b?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    id: "media-3",
-    title: "Langtang Rhododendron Alpine Valley",
-    category: "Annapurna & Lakes",
-    url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    id: "media-4",
-    title: "Manaslu Larkya La Pass Wilderness",
-    category: "Everest & Peaks",
-    url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    id: "media-5",
-    title: "Everest Luxury Helicopter Sightseeing Charter",
-    category: "Helicopter Charters",
-    url: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80",
-  },
-];
-
 // Helper to normalize URL for strict deduplication
 const normalizeUrl = (url: string): string => {
   if (!url) return "";
@@ -102,20 +69,63 @@ export function AdminImageUpload({
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
   const [showModalUploader, setShowModalUploader] = useState(false);
+  const [deleteConfirmAsset, setDeleteConfirmAsset] = useState<MediaAsset | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const [assets, setAssets] = useState<MediaAsset[]>(deduplicateAssets(INITIAL_MEDIA_LIBRARY));
+  const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   // selectedCategory stores categoryId or "All"
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [tempSelectedUrl, setTempSelectedUrl] = useState<string>(value);
 
-  // Load real media assets from backend when library opens
+  // Pagination state for modal media grid
+  const [mediaPage, setMediaPage] = useState(1);
+  const [mediaTotalPages, setMediaTotalPages] = useState(1);
+  const [mediaTotalItems, setMediaTotalItems] = useState(0);
+  const MEDIA_LIMIT = 12;
+
+  const loadMedia = async (page: number, categoryId: string) => {
+    setIsLibraryLoading(true);
+    try {
+      const res: any = await MediaService.getAllMedia({
+        categoryId: categoryId !== "All" ? categoryId : undefined,
+        limit: MEDIA_LIMIT,
+        page,
+      });
+      const mediaList = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+      const pagination = (res as any).pagination ?? res?.pagination;
+      const mapped: MediaAsset[] = mediaList.map((m: any) => ({
+        id: m.id || `media-${Math.random()}`,
+        title: m.title || m.name || "Uploaded Media",
+        categoryId: m.categoryId ?? undefined,
+        categoryName: m.categoryName ?? "",
+        category: m.categoryName ?? "",
+        url: m.url,
+      }));
+      setAssets(deduplicateAssets(mapped));
+      if (pagination) {
+        setMediaTotalPages(pagination.lastPage ?? pagination.pageCount ?? 1);
+        setMediaTotalItems(pagination.count ?? pagination.total ?? mapped.length);
+      } else {
+        setMediaTotalPages(1);
+        setMediaTotalItems(mapped.length);
+      }
+    } catch (e) {
+      console.warn("Failed to load media:", e);
+      setAssets([]);
+    } finally {
+      setIsLibraryLoading(false);
+    }
+  };
+
+  // Open modal: reset state and load data
   useEffect(() => {
     if (isLibraryOpen) {
       setTempSelectedUrl(value);
-      setIsLibraryLoading(true);
-
+      setMediaPage(1);
+      setSelectedCategory("All");
+      setSearchQuery("");
       // Load categories
       CategoryService.getAll({ limit: 100 })
         .then((res: any) => {
@@ -123,34 +133,18 @@ export function AdminImageUpload({
           setCategories(list.map((c: any) => ({ id: c.id, name: c.name ?? c.title ?? "" })));
         })
         .catch(() => {});
-
-      // Load media
-      MediaService.getAllMedia({ limit: 500 })
-        .then((res: any) => {
-          const mediaList = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
-          if (mediaList.length > 0) {
-            const mapped: MediaAsset[] = mediaList.map((m: any) => ({
-              id: m.id || `media-${Math.random()}`,
-              title: m.title || m.name || m.originalName || "Uploaded Media",
-              categoryId: m.categoryId ?? undefined,
-              categoryName: m.categoryName ?? "",
-              category: m.categoryName ?? "",
-              url: m.url,
-            }));
-            setAssets(deduplicateAssets(mapped));
-          } else {
-            setAssets(deduplicateAssets(INITIAL_MEDIA_LIBRARY));
-          }
-        })
-        .catch((e) => {
-          console.warn("Failed to load real media assets:", e);
-          setAssets(deduplicateAssets(INITIAL_MEDIA_LIBRARY));
-        })
-        .finally(() => {
-          setIsLibraryLoading(false);
-        });
+      loadMedia(1, "All");
     }
-  }, [isLibraryOpen, value]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLibraryOpen]);
+
+  // Reload when page or category changes
+  useEffect(() => {
+    if (isLibraryOpen) {
+      loadMedia(mediaPage, selectedCategory);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mediaPage, selectedCategory]);
 
   // Compute unique categories list from available assets (fallback if backend categories not loaded)
   const availableCategories = useMemo(() => {
@@ -207,13 +201,30 @@ export function AdminImageUpload({
     }
   };
 
-  const filteredAssets = assets.filter((asset) => {
-    const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCat =
-      selectedCategory === "All" ||
-      asset.categoryId === selectedCategory;
-    return matchesSearch && matchesCat;
-  });
+  const handleDeleteAsset = async () => {
+    if (!deleteConfirmAsset) return;
+    setIsDeleting(true);
+    try {
+      const res = await MediaService.delete(deleteConfirmAsset.id);
+      if (res.success) {
+        toast.success("Media asset deleted.");
+        setAssets((prev) => prev.filter((a) => a.id !== deleteConfirmAsset.id));
+        if (tempSelectedUrl === deleteConfirmAsset.url) setTempSelectedUrl("");
+      } else {
+        toast.error(res.message || "Failed to delete asset.");
+      }
+    } catch {
+      toast.error("Failed to delete asset.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmAsset(null);
+    }
+  };
+
+  // Category filter is server-side; searchQuery filters client-side within current page
+  const filteredAssets = searchQuery.trim()
+    ? assets.filter((a) => a.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : assets;
 
   return (
     <div className="space-y-3">
@@ -455,80 +466,155 @@ export function AdminImageUpload({
               </div>
             )}
 
-            {/* ── Media Grid with Strict Locked Aspect Ratio Cards & Skeleton ── */}
+            {/* ── Media Grid ── */}
             {isLibraryLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 flex-1 min-h-[280px] overflow-y-auto p-1">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="relative w-full aspect-[16/10] rounded-xl bg-slate-100 border border-slate-200 animate-pulse flex flex-col justify-end p-2.5 overflow-hidden"
-                  >
-                    <div className="h-3 bg-slate-200 rounded w-3/4 mb-1"></div>
-                    <div className="h-2 bg-slate-200 rounded w-1/2"></div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-1">
+                {Array.from({ length: MEDIA_LIMIT }).map((_, i) => (
+                  <div key={i} className="rounded-xl bg-slate-100 border border-slate-200 animate-pulse overflow-hidden">
+                    <div style={{ height: 100 }} className="bg-slate-200/80 w-full" />
+                    <div className="p-2 space-y-1.5">
+                      <div className="h-2.5 bg-slate-200 rounded w-3/4" />
+                      <div className="h-2 bg-slate-100 rounded w-1/2" />
+                    </div>
                   </div>
                 ))}
               </div>
             ) : filteredAssets.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 my-2">
+              <div
+                className="flex flex-col items-center justify-center text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 my-2"
+                style={{ minHeight: 180 }}
+              >
                 <ImageIcon className="w-8 h-8 text-slate-400 mb-2" />
                 <p className="text-xs font-bold text-slate-800">No media assets found</p>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Try searching another title or upload a new photo.
+                  Try a different category or upload new media.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 flex-1 min-h-0 overflow-y-auto p-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-1">
                 {filteredAssets.map((asset) => {
                   const isSelected = tempSelectedUrl === asset.url;
                   return (
                     <div
                       key={asset.id}
                       onClick={() => setTempSelectedUrl(asset.url)}
-                      className={`group relative w-full aspect-[16/10] rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
+                      style={{ cursor: "pointer" }}
+                      className={`group rounded-xl overflow-hidden border-2 transition-all ${
                         isSelected
-                          ? "border-amber-500 ring-2 ring-amber-500/30 scale-[1.02] shadow-md"
-                          : "border-slate-200 hover:border-slate-400 bg-slate-900 shadow-2xs"
+                          ? "border-amber-500 ring-2 ring-amber-500/30 shadow-md"
+                          : "border-slate-200 hover:border-slate-400"
                       }`}
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={asset.url}
-                        alt={asset.title}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80";
-                        }}
-                      />
-
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-transparent p-2.5 pt-6 flex flex-col justify-end">
-                        <span className="text-[11px] font-bold text-white leading-tight drop-shadow-sm line-clamp-1">
-                          {asset.title}
-                        </span>
-                        {asset.category && (
-                          <span className="text-[9px] font-semibold text-slate-300 tracking-wide uppercase line-clamp-1 mt-0.5">
-                            {asset.category}
-                          </span>
+                      {/* Fixed height image container — inline style for guaranteed height */}
+                      <div className="relative overflow-hidden bg-slate-900" style={{ height: 100 }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={asset.url}
+                          alt={asset.title}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          className="group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                        {/* Hover action overlay */}
+                        <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-10">
+                          <button
+                            type="button"
+                            title="View fullscreen"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openSingleImage(asset.url, asset.title, e.currentTarget);
+                            }}
+                            className="w-8 h-8 rounded-full bg-white text-slate-900 hover:bg-amber-50 flex items-center justify-center shadow-md transition-transform hover:scale-110 cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-amber-600" />
+                          </button>
+                          <button
+                            type="button"
+                            title="Delete asset"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteConfirmAsset(asset);
+                            }}
+                            className="w-8 h-8 rounded-full bg-rose-600 text-white hover:bg-rose-500 flex items-center justify-center shadow-md transition-transform hover:scale-110 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        {isSelected && (
+                          <div className="absolute top-1.5 right-1.5 bg-amber-500 text-slate-950 p-0.5 rounded-full shadow z-20">
+                            <Check className="w-3 h-3 stroke-[3]" />
+                          </div>
                         )}
                       </div>
-
-                      {isSelected && (
-                        <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded-full shadow-md z-10">
-                          <Check className="w-3.5 h-3.5 stroke-[3]" />
-                        </div>
-                      )}
+                      {/* Title + category label */}
+                      <div className="px-2 py-1.5 bg-white">
+                        <p className="text-[11px] font-bold text-slate-900 truncate leading-tight">{asset.title}</p>
+                        {asset.category && (
+                          <p className="text-[10px] text-slate-500 font-semibold truncate mt-0.5">{asset.category}</p>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
               </div>
             )}
 
-            {/* Explicit Bottom Right Footer Action Bar */}
+            {/* ── Pagination Controls ── */}
+            {!isLibraryLoading && mediaTotalPages > 1 && (
+              <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                <p className="text-[11px] text-slate-600 font-semibold">
+                  Page {mediaPage} of {mediaTotalPages} &nbsp;·&nbsp; {mediaTotalItems} total
+                </p>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    disabled={mediaPage <= 1}
+                    onClick={() => setMediaPage((p) => Math.max(1, p - 1))}
+                    className="h-7 px-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  >
+                    ← Prev
+                  </button>
+                  {Array.from({ length: Math.min(mediaTotalPages, 5) }, (_, i) => {
+                    const p = mediaPage <= 3
+                      ? i + 1
+                      : mediaPage >= mediaTotalPages - 2
+                      ? mediaTotalPages - 4 + i
+                      : mediaPage - 2 + i;
+                    if (p < 1 || p > mediaTotalPages) return null;
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setMediaPage(p)}
+                        className={`h-7 w-7 rounded-lg border text-[11px] font-bold transition-colors cursor-pointer ${
+                          mediaPage === p
+                            ? "bg-slate-900 border-slate-900 text-white"
+                            : "border-slate-200 text-slate-700 bg-white hover:bg-slate-100"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    disabled={mediaPage >= mediaTotalPages}
+                    onClick={() => setMediaPage((p) => Math.min(mediaTotalPages, p + 1))}
+                    className="h-7 px-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  >
+                    Next →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Footer: status + actions */}
             <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-between">
               <div className="text-xs text-slate-900 font-extrabold">
-                {tempSelectedUrl ? "1 Image Asset Highlighted" : "No asset selected"}
+                {tempSelectedUrl ? "1 Image Selected" : "No asset selected"}
               </div>
-
               <div className="flex items-center gap-2">
                 <Button
                   type="button"
@@ -560,6 +646,64 @@ export function AdminImageUpload({
               </div>
             </DialogFooter>
           </div>
+        </AdminModal>
+      )}
+
+      {/* ── Delete Confirmation Modal ── */}
+      {deleteConfirmAsset && (
+        <AdminModal
+          isOpen={!!deleteConfirmAsset}
+          onClose={() => !isDeleting && setDeleteConfirmAsset(null)}
+          title="Delete Media Asset"
+          description="This action is permanent and cannot be undone."
+          maxWidth="sm"
+        >
+          <div className="space-y-4 py-2">
+            {/* Preview thumbnail */}
+            <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-900" style={{ height: 140 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={deleteConfirmAsset.url}
+                alt={deleteConfirmAsset.title}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </div>
+            <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs font-semibold text-rose-800">
+              <p className="font-bold truncate mb-0.5">"{deleteConfirmAsset.title}"</p>
+              <p>will be permanently deleted from the media library and cannot be recovered.</p>
+            </div>
+          </div>
+          <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isDeleting}
+              onClick={() => setDeleteConfirmAsset(null)}
+              className="text-xs font-bold h-8"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              disabled={isDeleting}
+              onClick={handleDeleteAsset}
+              className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs h-8"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                  Delete Permanently
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </AdminModal>
       )}
     </div>

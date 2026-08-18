@@ -55,16 +55,24 @@ export function TripGalleryManager({
   useEffect(() => {
     if (isLibraryOpen) {
       MediaService.getAllMedia()
-        .then((res) => {
-          if (Array.isArray(res) && res.length > 0) {
-            setMediaAssets(
-              res.map((m: any) => ({
-                id: m.id || Math.random().toString(),
-                title: m.title || m.originalName || "Media Asset",
-                url: m.url,
-                category: m.category,
-              }))
-            );
+        .then((res: any) => {
+          const items = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+          if (items.length > 0) {
+            const mapped: MediaAsset[] = items.map((m: any) => ({
+              id: m.id || Math.random().toString(),
+              title: m.title || m.name || m.originalName || "Media Asset",
+              url: m.url,
+              category: m.categoryName || m.category?.name || m.category,
+            }));
+            const seen = new Set<string>();
+            const unique = mapped.filter((item) => {
+              if (!item.url) return false;
+              const clean = item.url.trim().toLowerCase();
+              if (seen.has(clean)) return false;
+              seen.add(clean);
+              return true;
+            });
+            setMediaAssets(unique);
           }
         })
         .catch((e) => console.warn("Failed to load media assets:", e));

@@ -1,10 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { UploadCloud, Image as ImageIcon, Check, FolderOpen, Search, Eye, Trash2, Plus, Loader2 } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import {
+  UploadCloud,
+  FolderOpen,
+  Image as ImageIcon,
+  Loader2,
+  Trash2,
+  Eye,
+  Check,
+  Search,
+  Plus,
+} from "lucide-react";
 import { toast } from "sonner";
-import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { Button } from "@/components/ui/button";
+import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { DialogFooter } from "@/components/ui/dialog";
 import { MediaService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
@@ -58,6 +68,18 @@ const INITIAL_MEDIA_LIBRARY: MediaAsset[] = [
   },
 ];
 
+// Helper to deduplicate assets by URL
+const deduplicateAssets = (list: MediaAsset[]): MediaAsset[] => {
+  const seen = new Set<string>();
+  return list.filter((item) => {
+    if (!item || !item.url) return false;
+    const cleanUrl = item.url.trim();
+    if (seen.has(cleanUrl)) return false;
+    seen.add(cleanUrl);
+    return true;
+  });
+};
+
 export function AdminImageUpload({
   label = "Cover Image",
   value,
@@ -66,12 +88,13 @@ export function AdminImageUpload({
 }: AdminImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
   const [showModalUploader, setShowModalUploader] = useState(false);
   const [isDirectUrlOpen, setIsDirectUrlOpen] = useState(false);
   const [directUrlInput, setDirectUrlInput] = useState("");
 
-  const [assets, setAssets] = useState<MediaAsset[]>(INITIAL_MEDIA_LIBRARY);
+  const [assets, setAssets] = useState<MediaAsset[]>(deduplicateAssets(INITIAL_MEDIA_LIBRARY));
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [tempSelectedUrl, setTempSelectedUrl] = useState<string>(value);
@@ -80,24 +103,42 @@ export function AdminImageUpload({
   useEffect(() => {
     if (isLibraryOpen) {
       setTempSelectedUrl(value);
+      setIsLibraryLoading(true);
       MediaService.getAllMedia()
         .then((res: any) => {
           const mediaList = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
           if (mediaList.length > 0) {
             const mapped: MediaAsset[] = mediaList.map((m: any) => ({
               id: m.id || `media-${Math.random()}`,
-              title: m.title || m.originalName || "Uploaded Media",
+              title: m.title || m.name || m.originalName || "Uploaded Media",
               categoryId: m.categoryId,
               categoryName: m.categoryName || m.category?.name || "General",
               category: m.categoryName || m.category?.name || "General",
               url: m.url,
             }));
-            setAssets(mapped);
+            setAssets(deduplicateAssets(mapped));
+          } else {
+            setAssets(deduplicateAssets(INITIAL_MEDIA_LIBRARY));
           }
         })
-        .catch((e) => console.warn("Failed to load real media assets:", e));
+        .catch((e) => {
+          console.warn("Failed to load real media assets:", e);
+          setAssets(deduplicateAssets(INITIAL_MEDIA_LIBRARY));
+        })
+        .finally(() => {
+          setIsLibraryLoading(false);
+        });
     }
   }, [isLibraryOpen, value]);
+
+  // Compute unique categories list from available assets
+  const availableCategories = useMemo(() => {
+    const set = new Set<string>();
+    assets.forEach((a) => {
+      if (a.category && a.category !== "All") set.add(a.category);
+    });
+    return ["All", ...Array.from(set)];
+  }, [assets]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fromModal = false) => {
     const file = e.target.files?.[0];
@@ -113,10 +154,10 @@ export function AdminImageUpload({
         const newAsset: MediaAsset = {
           id: mediaId || `media-upload-${Date.now()}`,
           title: file.name.replace(/\.[^/.]+$/, ""),
-          category: "Everest & Peaks",
+          category: "General",
           url: url,
         };
-        setAssets([newAsset, ...assets]);
+        setAssets((prev) => deduplicateAssets([newAsset, ...prev]));
         setTempSelectedUrl(url);
         setShowModalUploader(false);
         if (res.success) {
@@ -179,335 +220,381 @@ export function AdminImageUpload({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={value} alt="Cover Preview" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
               <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Eye className="w-4 h-4 text-white drop-shadow-xs" />
+                <Eye className="w-5 h-5 text-white" />
               </div>
             </div>
 
-            <div className="space-y-1 min-w-0">
-              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 inline-flex items-center gap-1">
-                <Check className="w-3 h-3" />
-                Active Cover
-              </span>
-              <p className="text-xs font-bold text-slate-900 truncate max-w-[180px] sm:max-w-[240px]">
-                {value.split("/").pop() || "cover-image.jpg"}
+            <div className="min-w-0 space-y-1">
+              <p className="text-xs font-bold text-slate-900 truncate max-w-[220px]">
+                {value.split("/").pop() || "Cover Image"}
               </p>
-              <button
-                type="button"
-                onClick={(e) => openSingleImage(value, label, e.currentTarget)}
-                className="text-[11px] font-semibold text-amber-600 hover:text-amber-700 underline flex items-center gap-1 cursor-pointer"
-              >
-                <Eye className="w-3 h-3" />
-                View Fullscreen Lightbox
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={(e) => openSingleImage(value, label, e.currentTarget)}
+                  className="text-[11px] font-bold text-amber-600 hover:text-amber-700 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <Eye className="w-3 h-3" />
+                  <span>View Lightbox</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Action Buttons Side-by-Side */}
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
-            <div className="relative">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileChange(e, false)}
-                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-                disabled={isUploading}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={isUploading}
-                className="text-xs font-semibold h-8 px-2.5 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer inline-flex items-center gap-1"
-              >
-                {isUploading ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
-                ) : (
-                  <UploadCloud className="w-3.5 h-3.5 text-slate-500" />
-                )}
-                <span>Upload</span>
-              </Button>
-            </div>
-
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => setIsLibraryOpen(true)}
-              className="text-xs font-semibold h-8 px-2.5 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer inline-flex items-center gap-1"
+              className="text-xs font-bold h-8 px-3 border-slate-300 hover:bg-slate-50 cursor-pointer"
             >
-              <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
-              <span>Library</span>
+              <FolderOpen className="w-3.5 h-3.5 mr-1 text-slate-600" />
+              Change Photo
             </Button>
-
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={() => setIsConfirmRemoveOpen(true)}
-              className="text-xs font-semibold h-8 px-2 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer"
+              className="text-xs font-bold h-8 px-2.5 text-rose-600 hover:bg-rose-50 hover:text-rose-700 cursor-pointer"
+              title="Remove Cover Image"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </Button>
           </div>
         </div>
       ) : (
-        /* ── Empty State Modern Upload Dropzone ── */
-        <div className="space-y-3">
-          <div className="relative rounded-2xl border-2 border-dashed border-slate-200 hover:border-amber-400/80 bg-slate-50/70 hover:bg-amber-500/5 transition-all p-6 text-center flex flex-col items-center justify-center group cursor-pointer">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, false)}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-              disabled={isUploading}
-            />
-            {isUploading ? (
-              <div className="flex flex-col items-center gap-2 text-amber-600 font-bold text-xs py-3">
-                <Loader2 className="w-7 h-7 animate-spin" />
-                <span>Uploading image to Cloudflare R2...</span>
+        /* ── Clean Compact Dropzone Box ── */
+        <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-100/50 transition-colors relative flex flex-col items-center justify-center text-center group cursor-pointer">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e, false)}
+            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+          />
+          {isUploading ? (
+            <div className="flex items-center gap-2 text-amber-600 font-bold text-xs py-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Uploading cover image...</span>
+            </div>
+          ) : (
+            <div className="space-y-1.5 py-1">
+              <div className="w-10 h-10 rounded-full bg-amber-100/80 border border-amber-200/80 flex items-center justify-center mx-auto group-hover:scale-105 transition-transform">
+                <UploadCloud className="w-5 h-5 text-amber-600" />
               </div>
-            ) : (
-              <>
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-2xs">
-                  <UploadCloud className="w-5 h-5" />
-                </div>
-                <p className="text-xs font-bold text-slate-900">
-                  Drag &amp; drop an image here, or <span className="text-amber-600 underline">browse files</span>
+              <div>
+                <p className="text-xs font-bold text-slate-800">
+                  Click or drag image file here to upload
                 </p>
-                <p className="text-[11px] text-slate-500 font-medium mt-1">
-                  PNG, JPG, WebP up to 10MB (16:9 ratio recommended)
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                  High-res WebP, JPG, or PNG (Max 5MB)
                 </p>
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsLibraryOpen(true)}
-              className="flex-1 bg-white hover:bg-slate-50 text-slate-700 border-slate-200 font-semibold text-xs h-8.5 rounded-xl cursor-pointer shadow-2xs inline-flex items-center justify-center gap-1.5"
-            >
-              <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
-              <span>Choose from Media Library</span>
-            </Button>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsDirectUrlOpen(!isDirectUrlOpen)}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 h-8.5 px-3 rounded-xl cursor-pointer"
-            >
-              Paste URL
-            </Button>
-          </div>
-
-          {/* Optional Direct URL Input Accordion */}
-          {isDirectUrlOpen && (
-            <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
-              <input
-                type="url"
-                value={directUrlInput}
-                onChange={(e) => setDirectUrlInput(e.target.value)}
-                placeholder="https://images.unsplash.com/... or https://..."
-                className="flex-1 text-xs px-3 py-1.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
-              />
-              <Button
-                type="button"
-                size="sm"
-                onClick={handleApplyDirectUrl}
-                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-8 px-3 rounded-lg cursor-pointer"
-              >
-                Apply
-              </Button>
+              </div>
+              <div className="pt-2 flex items-center justify-center gap-2 z-20 relative">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsLibraryOpen(true);
+                  }}
+                  className="text-xs font-bold h-7 px-2.5 bg-white border-slate-300 hover:bg-slate-100 shadow-2xs cursor-pointer"
+                >
+                  <FolderOpen className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                  Media Library
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDirectUrlOpen(true);
+                  }}
+                  className="text-xs font-bold h-7 px-2 text-slate-600 hover:bg-slate-200 cursor-pointer"
+                >
+                  Image URL
+                </Button>
+              </div>
             </div>
           )}
         </div>
       )}
 
-      {error && <p className="text-xs font-bold text-rose-600 mt-1">{error}</p>}
+      {error && <p className="text-xs font-bold text-rose-600">{error}</p>}
 
-
-
-      {/* CONFIRM IMAGE REMOVAL MODAL */}
-      <AdminModal
-        isOpen={isConfirmRemoveOpen}
-        onClose={() => setIsConfirmRemoveOpen(false)}
-        title="Remove Cover Image"
-        description="Are you sure you want to remove this cover image? You can upload a new photo or select from the Media Library at any time."
-        maxWidth="md"
-      >
-        <DialogFooter className="pt-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setIsConfirmRemoveOpen(false)}
-            className="text-xs font-semibold cursor-pointer"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={() => {
-              onChange("");
-              setIsConfirmRemoveOpen(false);
-              toast.info("Cover image removed.");
-            }}
-            className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
-          >
-            Remove Image
-          </Button>
-        </DialogFooter>
-      </AdminModal>
-
-      {/* MEDIA LIBRARY MODAL */}
-      <AdminModal
-        isOpen={isLibraryOpen}
-        onClose={() => {
-          setIsLibraryOpen(false);
-          setShowModalUploader(false);
-        }}
-        title="Media Library"
-        description="Select a cover photo or upload new media."
-        maxWidth="2xl"
-      >
-        <div className="space-y-4 py-2 text-xs flex-1 min-h-0 flex flex-col">
-          {/* Header Action Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
-            <div className="relative w-full sm:w-72">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-900" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search photo asset title..."
-                className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-950 font-bold focus:outline-none focus:border-amber-500"
-              />
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-black text-slate-950 uppercase tracking-wider whitespace-nowrap">
-                  Category:
-                </label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-white border border-slate-300 text-slate-950 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
-                >
-                  <option value="All">All Categories</option>
-                  <option value="Everest & Peaks">Everest &amp; Peaks</option>
-                  <option value="Annapurna & Lakes">Annapurna &amp; Lakes</option>
-                  <option value="Cultural Heritage">Cultural Heritage &amp; Resorts</option>
-                  <option value="Helicopter Charters">Helicopter Charters</option>
-                </select>
-              </div>
-
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => setShowModalUploader(!showModalUploader)}
-                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5 mr-1" />
-                {showModalUploader ? "Hide Uploader" : "Upload New Media"}
-              </Button>
-            </div>
-          </div>
-
-          {/* Inline Modal Uploader Box */}
-          {showModalUploader && (
-            <div className="border-2 border-dashed border-amber-400 rounded-xl p-4 text-center bg-amber-50/50 relative cursor-pointer animate-in fade-in-0 duration-200">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileChange(e, true)}
-                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-              />
-              {isUploading ? (
-                <div className="flex items-center justify-center gap-2 text-amber-600 font-bold text-xs py-2">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Uploading media file to server...</span>
-                </div>
-              ) : (
-                <>
-                  <UploadCloud className="w-6 h-6 text-amber-600 mx-auto mb-1" />
-                  <p className="text-xs font-bold text-slate-900">
-                    Drop new image file here or click to upload
-                  </p>
-                  <p className="text-xs text-slate-700 font-semibold mt-0.5">Uploaded file will be instantly added to gallery and highlighted below.</p>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Spacious Taller 4-column Media Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 flex-1 min-h-0 overflow-y-auto p-1">
-            {filteredAssets.map((asset) => {
-              const isSelected = tempSelectedUrl === asset.url;
-              return (
-                <div
-                  key={asset.id}
-                  onClick={() => setTempSelectedUrl(asset.url)}
-                  className={`group relative aspect-video rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
-                    isSelected ? "border-amber-500 ring-2 ring-amber-500/30 scale-[1.02]" : "border-slate-200 hover:border-slate-400"
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={asset.url} alt={asset.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent p-2 flex flex-col justify-end">
-                    <span className="text-xs font-bold text-white leading-tight drop-shadow-xs line-clamp-1">
-                      {asset.title}
-                    </span>
-                  </div>
-
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded-full shadow-md">
-                      <Check className="w-3.5 h-3.5 stroke-[3]" />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Explicit Bottom Right Footer Action Bar */}
-          <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-between">
-            <div className="text-xs text-slate-900 font-extrabold">
-              {tempSelectedUrl ? "1 Image Asset Highlighted" : "No asset selected"}
-            </div>
-
-            <div className="flex items-center gap-2">
+      {/* DIRECT URL MODAL */}
+      {isDirectUrlOpen && (
+        <AdminModal
+          isOpen={isDirectUrlOpen}
+          onClose={() => setIsDirectUrlOpen(false)}
+          title="Direct Cover Image URL"
+          description="Paste an external image link (e.g. Unsplash or Cloudflare R2)."
+          maxWidth="md"
+        >
+          <div className="space-y-3 py-2">
+            <input
+              type="url"
+              placeholder="https://images.unsplash.com/photo-..."
+              value={directUrlInput}
+              onChange={(e) => setDirectUrlInput(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500"
+            />
+            <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsLibraryOpen(false)}
-                className="text-xs font-semibold cursor-pointer"
+                size="sm"
+                onClick={() => setIsDirectUrlOpen(false)}
+                className="text-xs font-bold h-8"
               >
                 Cancel
               </Button>
-
               <Button
                 type="button"
-                onClick={() => {
-                  if (tempSelectedUrl) {
-                    const selectedAsset = assets.find((a) => a.url === tempSelectedUrl);
-                    onChange(tempSelectedUrl, selectedAsset?.id);
-                    toast.success("Cover image applied successfully!");
-                  }
-                  setIsLibraryOpen(false);
-                }}
-                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
+                size="sm"
+                onClick={handleApplyDirectUrl}
+                disabled={!directUrlInput.trim()}
+                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs h-8"
               >
-                Select Image &amp; Apply
+                Apply URL
               </Button>
+            </DialogFooter>
+          </div>
+        </AdminModal>
+      )}
+
+      {/* CONFIRM REMOVE MODAL */}
+      {isConfirmRemoveOpen && (
+        <AdminModal
+          isOpen={isConfirmRemoveOpen}
+          onClose={() => setIsConfirmRemoveOpen(false)}
+          title="Remove Cover Image?"
+          description="Are you sure you want to remove the cover image selection?"
+          maxWidth="sm"
+        >
+          <div className="pt-2">
+            <DialogFooter className="gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsConfirmRemoveOpen(false)}
+                className="text-xs font-bold h-8"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  onChange("");
+                  setIsConfirmRemoveOpen(false);
+                  toast.info("Cover image removed.");
+                }}
+                className="text-xs font-bold h-8"
+              >
+                Remove
+              </Button>
+            </DialogFooter>
+          </div>
+        </AdminModal>
+      )}
+
+      {/* MEDIA LIBRARY MODAL */}
+      {isLibraryOpen && (
+        <AdminModal
+          isOpen={isLibraryOpen}
+          onClose={() => {
+            setIsLibraryOpen(false);
+            setShowModalUploader(false);
+          }}
+          title="Media Library"
+          description="Select a cover photo or upload new media."
+          maxWidth="2xl"
+        >
+          <div className="space-y-4 py-2 text-xs flex-1 min-h-0 flex flex-col">
+            {/* Header Action Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <div className="relative w-full sm:w-72">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-900" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search photo asset title..."
+                  className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-950 font-bold focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-black text-slate-950 uppercase tracking-wider whitespace-nowrap">
+                    Category:
+                  </label>
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="bg-white border border-slate-300 text-slate-950 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
+                  >
+                    {availableCategories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat === "All" ? "All Categories" : cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setShowModalUploader(!showModalUploader)}
+                  className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" />
+                  {showModalUploader ? "Hide Uploader" : "Upload New Media"}
+                </Button>
+              </div>
             </div>
-          </DialogFooter>
-        </div>
-      </AdminModal>
+
+            {/* Inline Modal Uploader Box */}
+            {showModalUploader && (
+              <div className="border-2 border-dashed border-amber-400 rounded-xl p-4 text-center bg-amber-50/50 relative cursor-pointer animate-in fade-in-0 duration-200">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, true)}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                />
+                {isUploading ? (
+                  <div className="flex items-center justify-center gap-2 text-amber-600 font-bold text-xs py-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Uploading media file to server...</span>
+                  </div>
+                ) : (
+                  <>
+                    <UploadCloud className="w-6 h-6 text-amber-600 mx-auto mb-1" />
+                    <p className="text-xs font-bold text-slate-900">
+                      Drop new image file here or click to upload
+                    </p>
+                    <p className="text-xs text-slate-700 font-semibold mt-0.5">
+                      Uploaded file will be instantly added to gallery and highlighted below.
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* ── Media Grid with Loading Skeleton & Empty State ── */}
+            {isLibraryLoading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 flex-1 min-h-[280px] overflow-y-auto p-1">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="aspect-[16/10] rounded-xl bg-slate-100 border border-slate-200 animate-pulse flex flex-col justify-end p-2.5"
+                  >
+                    <div className="h-3 bg-slate-200 rounded w-3/4 mb-1"></div>
+                    <div className="h-2 bg-slate-200 rounded w-1/2"></div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredAssets.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 my-2">
+                <ImageIcon className="w-8 h-8 text-slate-400 mb-2" />
+                <p className="text-xs font-bold text-slate-800">No media assets found</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Try searching another title or upload a new photo.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 flex-1 min-h-0 overflow-y-auto p-1">
+                {filteredAssets.map((asset) => {
+                  const isSelected = tempSelectedUrl === asset.url;
+                  return (
+                    <div
+                      key={asset.id}
+                      onClick={() => setTempSelectedUrl(asset.url)}
+                      className={`group relative aspect-[16/10] rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
+                        isSelected
+                          ? "border-amber-500 ring-2 ring-amber-500/30 scale-[1.02]"
+                          : "border-slate-200 hover:border-slate-400 bg-slate-900"
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={asset.url}
+                        alt={asset.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80";
+                        }}
+                      />
+
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-transparent p-2.5 pt-6 flex flex-col justify-end">
+                        <span className="text-[11px] font-bold text-white leading-tight drop-shadow-sm line-clamp-1">
+                          {asset.title}
+                        </span>
+                        {asset.category && (
+                          <span className="text-[9px] font-semibold text-slate-300 tracking-wide uppercase line-clamp-1 mt-0.5">
+                            {asset.category}
+                          </span>
+                        )}
+                      </div>
+
+                      {isSelected && (
+                        <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1 rounded-full shadow-md z-10">
+                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Explicit Bottom Right Footer Action Bar */}
+            <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-between">
+              <div className="text-xs text-slate-900 font-extrabold">
+                {tempSelectedUrl ? "1 Image Asset Highlighted" : "No asset selected"}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsLibraryOpen(false);
+                    setShowModalUploader(false);
+                  }}
+                  className="text-xs font-bold h-8"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={!tempSelectedUrl}
+                  onClick={() => {
+                    const selectedObj = assets.find((a) => a.url === tempSelectedUrl);
+                    onChange(tempSelectedUrl, selectedObj?.id);
+                    setIsLibraryOpen(false);
+                    setShowModalUploader(false);
+                    toast.success("Cover image selected from media library!");
+                  }}
+                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs h-8"
+                >
+                  Use Selected Image
+                </Button>
+              </div>
+            </DialogFooter>
+          </div>
+        </AdminModal>
+      )}
     </div>
   );
 }

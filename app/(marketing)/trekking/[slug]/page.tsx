@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { TrekService } from "@/lib/services/admin-service";
 import { initialTreksData } from "@/lib/trek-data";
 import { generatePackageMetadata, generatePackageJsonLd } from "@/lib/seo";
@@ -36,6 +37,10 @@ export async function generateMetadata({
 export default async function TrekDetailPage({ params }: TrekDetailPageProps) {
   const resolvedParams = await params;
   const trek = await getTrek(resolvedParams.slug);
+
+  if (!trek) {
+    notFound();
+  }
   const jsonLd = generatePackageJsonLd({
     item: trek,
     categoryType: "trekking",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ExpeditionService } from "@/lib/services/admin-service";
 import { initialExpeditionsData } from "@/lib/expedition-data";
 import { generatePackageMetadata, generatePackageJsonLd } from "@/lib/seo";
@@ -38,6 +39,10 @@ export default async function ExpeditionDetailPage({
 }: ExpeditionDetailPageProps) {
   const resolvedParams = await params;
   const expedition = await getExpedition(resolvedParams.slug);
+
+  if (!expedition) {
+    notFound();
+  }
   const jsonLd = generatePackageJsonLd({
     item: expedition,
     categoryType: "expeditions",

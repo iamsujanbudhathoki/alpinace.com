@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { TourService } from "@/lib/services/admin-service";
 import { initialToursData } from "@/lib/tour-data";
 import { generatePackageMetadata, generatePackageJsonLd } from "@/lib/seo";
@@ -36,6 +37,10 @@ export async function generateMetadata({
 export default async function TourDetailPage({ params }: TourDetailPageProps) {
   const resolvedParams = await params;
   const tour = await getTour(resolvedParams.slug);
+
+  if (!tour) {
+    notFound();
+  }
   const jsonLd = generatePackageJsonLd({
     item: tour,
     categoryType: "tours",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { BlogService } from "@/lib/services/admin-service";
 import { generateBlogMetadata, generateBlogJsonLd } from "@/lib/seo";
 import { BlogDetailClient } from "./blog-detail-client";
@@ -46,6 +47,10 @@ export async function generateMetadata({
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const resolvedParams = await params;
   const post = await getBlogPost(resolvedParams.slug);
+
+  if (!post) {
+    notFound();
+  }
   const jsonLd = generateBlogJsonLd(post, resolvedParams.slug);
 
   return (

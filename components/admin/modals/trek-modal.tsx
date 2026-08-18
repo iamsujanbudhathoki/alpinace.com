@@ -13,6 +13,10 @@ import {
   TripReviewsManager,
 } from "@/components/admin/forms/trip-faqs-reviews-fields";
 import { TripItineraryManager } from "@/components/admin/forms/trip-itinerary-manager";
+import { TripDepartureDatesManager } from "@/components/admin/forms/trip-departure-dates-manager";
+import { TripGalleryManager } from "@/components/admin/forms/trip-gallery-manager";
+import { TripMapManager } from "@/components/admin/forms/trip-map-manager";
+import { TripFilesManager } from "@/components/admin/forms/trip-files-manager";
 import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -31,6 +35,7 @@ import {
   Clock,
   Edit,
   ExternalLink,
+  FileText,
   Globe,
   HelpCircle,
   Image as ImageIcon,
@@ -57,7 +62,15 @@ interface TrekFormModalProps {
   isEditing?: boolean;
 }
 
-type TabType = "general" | "itinerary" | "inclusions" | "faqs" | "reviews" | "media" | "seo";
+type TabType =
+  | "general"
+  | "itinerary"
+  | "inclusions"
+  | "departures"
+  | "media"
+  | "files"
+  | "faqs"
+  | "seo";
 
 export function TrekFormModal({
   isOpen,
@@ -99,6 +112,12 @@ export function TrekFormModal({
       inclusionsText: "",
       exclusionsText: "",
       shortDesc: "",
+      addonsText: "",
+      usefulInfoText: "",
+      departureDates: [],
+      galleryImages: [],
+      mapImage: "",
+      packageFiles: [],
       image: "",
       metaTitle: "",
       metaDescription: "",
@@ -116,6 +135,9 @@ export function TrekFormModal({
   const watchDuration = watch("durationDays");
   const watchShortDesc = watch("shortDesc");
   const watchItinerary = watch("itinerary") || [];
+  const watchDepartureDates = watch("departureDates") || [];
+  const watchGalleryImages = watch("galleryImages") || [];
+  const watchPackageFiles = watch("packageFiles") || [];
   const watchFaqs = watch("faqs") || [];
   const watchReviews = watch("reviews") || [];
 
@@ -156,12 +178,21 @@ export function TrekFormModal({
         permitsText: initialData.permitsRequired ? initialData.permitsRequired.join(", ") : "",
         inclusionsText: initialData.inclusionsText || "",
         exclusionsText: initialData.exclusionsText || "",
-        itinerary: Array.isArray(initialData.itinerary) ? initialData.itinerary : [],
         shortDesc: initialData.shortDesc || "",
+        addonsText: initialData.addonsText || "",
+        usefulInfoText: initialData.usefulInfoText || "",
+        departureDates: Array.isArray(initialData.departureDates) ? initialData.departureDates : [],
+        galleryImages: Array.isArray(initialData.galleryImages) ? initialData.galleryImages : [],
+        galleryMediaIds: Array.isArray(initialData.galleryMediaIds) ? initialData.galleryMediaIds : [],
+        mapImage: initialData.mapImage || "",
+        mapMediaId: initialData.mapMediaId || "",
+        packageFiles: Array.isArray(initialData.packageFiles) ? initialData.packageFiles : [],
         image: initialData.image || "",
+        coverMediaId: initialData.coverMediaId || "",
         metaTitle: initialData.metaTitle || "",
         metaDescription: initialData.metaDescription || "",
         keywords: initialData.keywords || "",
+        itinerary: Array.isArray(initialData.itinerary) ? initialData.itinerary : [],
         faqs: Array.isArray(initialData.faqs) ? initialData.faqs : [],
         reviews: Array.isArray(initialData.reviews) ? initialData.reviews : [],
       });
@@ -183,12 +214,21 @@ export function TrekFormModal({
         permitsText: "",
         inclusionsText: "",
         exclusionsText: "",
-        itinerary: [],
         shortDesc: "",
+        addonsText: "",
+        usefulInfoText: "",
+        departureDates: [],
+        galleryImages: [],
+        galleryMediaIds: [],
+        mapImage: "",
+        mapMediaId: "",
+        packageFiles: [],
         image: "",
+        coverMediaId: "",
         metaTitle: "",
         metaDescription: "",
         keywords: "",
+        itinerary: [],
         faqs: [],
         reviews: [],
       });
@@ -225,10 +265,20 @@ export function TrekFormModal({
         inclusionsText: values.inclusionsText,
         exclusionsText: values.exclusionsText,
         shortDesc: values.shortDesc || "",
+        addonsText: values.addonsText,
+        usefulInfoText: values.usefulInfoText,
+        departureDates: values.departureDates || [],
+        galleryImages: values.galleryImages || [],
+        galleryMediaIds: values.galleryMediaIds || initialData?.galleryMediaIds || [],
+        mapImage: values.mapImage,
+        mapMediaId: values.mapMediaId || initialData?.mapMediaId,
+        packageFiles: values.packageFiles || [],
         image: values.image || "",
+        coverMediaId: values.coverMediaId || initialData?.coverMediaId,
         metaTitle: values.metaTitle,
         metaDescription: values.metaDescription,
         keywords: values.keywords,
+        itinerary: values.itinerary || [],
         faqs: values.faqs || [],
         reviews: values.reviews || [],
         rating: initialData?.rating || 5.0,
@@ -245,26 +295,22 @@ export function TrekFormModal({
   };
 
   const modalTitle = !initialData
-    ? "Add New Trek Itinerary"
+    ? "Add New Trek Package"
     : editingMode
     ? `Edit: ${initialData.title}`
-    : initialData.title;
+    : `Trek Details: ${initialData.title}`;
 
-  const modalDescription = !initialData
-    ? "Configure trek specifications, inclusions, FAQs, customer reviews, media, and SEO."
-    : editingMode
-    ? "Update trek itinerary details, inclusions, reviews, and metadata."
-    : "Comprehensive trek specifications and itinerary details.";
+  const modalDescription = editingMode
+    ? "Fill out all required details, itinerary, media gallery, departure dates, and downloadable files."
+    : "Review package specifications, gallery, departure dates, and downloadable documents.";
 
+  // Validation error flags for tab badges
   const hasGeneralErrors = isSubmitted && !!(
     errors.title ||
     errors.categoryId ||
     errors.region ||
     errors.durationDays ||
-    errors.maxAltitudeMeters ||
-    errors.difficulty ||
     errors.priceUSD ||
-    errors.status ||
     errors.shortDesc
   );
   const hasItineraryErrors = isSubmitted && !!(
@@ -278,13 +324,14 @@ export function TrekFormModal({
   const hasSeoErrors = isSubmitted && !!(errors.metaTitle || errors.metaDescription || errors.keywords);
 
   const tabs: { id: TabType; label: string; icon: any; count?: number; hasError?: boolean }[] = [
-    { id: "general", label: "General & Specs", icon: Info, hasError: hasGeneralErrors },
-    { id: "itinerary", label: "Detailed Itinerary", icon: Calendar, count: watchItinerary.length, hasError: hasItineraryErrors },
-    { id: "inclusions", label: "Inclusions & Exclusions", icon: CheckCircle2, hasError: hasInclusionsErrors },
-    { id: "faqs", label: "Trip FAQs", icon: HelpCircle, count: watchFaqs.length, hasError: hasFaqErrors },
-    { id: "reviews", label: "Client Reviews", icon: MessageSquareQuote, count: watchReviews.length, hasError: hasReviewErrors },
-    { id: "media", label: "Media & Cover", icon: ImageIcon, hasError: hasMediaErrors },
-    { id: "seo", label: "SEO & Search", icon: Search, hasError: hasSeoErrors },
+    { id: "general", label: "Overview & Specs", icon: Info, hasError: hasGeneralErrors },
+    { id: "itinerary", label: "Itinerary", icon: Calendar, count: watchItinerary.length, hasError: hasItineraryErrors },
+    { id: "inclusions", label: "Includes / Excludes", icon: CheckCircle2, hasError: hasInclusionsErrors },
+    { id: "departures", label: "Departure Dates", icon: Clock, count: watchDepartureDates.length },
+    { id: "media", label: "Media & Map", icon: ImageIcon, count: watchGalleryImages.length, hasError: hasMediaErrors },
+    { id: "files", label: "Files & Downloads", icon: FileText, count: watchPackageFiles.length },
+    { id: "faqs", label: "FAQs & Reviews", icon: MessageSquareQuote, count: watchFaqs.length + watchReviews.length, hasError: hasFaqErrors || hasReviewErrors },
+    { id: "seo", label: "SEO", icon: Search, hasError: hasSeoErrors },
   ];
 
   const editFooter = (
@@ -316,7 +363,7 @@ export function TrekFormModal({
               Saving...
             </span>
           ) : (
-            "Save Trek Itinerary"
+            "Save Trek Package"
           )}
         </Button>
       </div>
@@ -337,7 +384,7 @@ export function TrekFormModal({
         className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
       >
         <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
-        Edit Trek Itinerary
+        Edit Trek Package
       </Button>
     </div>
   );
@@ -348,13 +395,13 @@ export function TrekFormModal({
       onClose={onClose}
       title={modalTitle}
       description={modalDescription}
-      maxWidth="3xl"
+      maxWidth="4xl"
       footer={editingMode ? editFooter : viewFooter}
     >
       {editingMode ? (
-        <div className="space-y-4 py-1 text-xs">
+        <div className="space-y-4 py-2">
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-1.5 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 border-b border-slate-200 pb-2 overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -394,9 +441,9 @@ export function TrekFormModal({
           </div>
 
           <form id="trek-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
-            {/* 1. GENERAL & SPECS TAB */}
+            {/* 1. OVERVIEW & SPECS TAB */}
             {activeTab === "general" && (
-              <div className="grid grid-cols-2 gap-3 max-h-[460px] overflow-y-auto pr-1">
+              <div className="grid grid-cols-2 gap-3 pr-1">
                 <div className="col-span-2 sm:col-span-1">
                   <AdminInputField
                     label="Trek Title"
@@ -559,7 +606,7 @@ export function TrekFormModal({
                         value={field.value || ""}
                         onChange={field.onChange}
                         placeholder="Detailed marketing overview, highlights, terrain insights, and trekking experiences..."
-                        height="260px"
+                        height="220px"
                         showMediaUpload={true}
                         onMediaUpload={async (file) => {
                           const res = await MediaService.uploadFile(file);
@@ -572,10 +619,46 @@ export function TrekFormModal({
                     <p className="text-[11px] text-rose-500 font-semibold">{errors.shortDesc.message}</p>
                   )}
                 </div>
+
+                <div className="col-span-2 space-y-1.5 pt-2 border-t border-slate-100">
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Add-ons &amp; Optional Upgrades (Rich Text)
+                  </label>
+                  <Controller
+                    name="addonsText"
+                    control={control}
+                    render={({ field }) => (
+                      <AppRichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Detail helicopter return options, single supplement upgrades, gear rental, extensions..."
+                        height="180px"
+                      />
+                    )}
+                  />
+                </div>
+
+                <div className="col-span-2 space-y-1.5 pt-2 border-t border-slate-100">
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Useful Info &amp; Preparation Guidelines (Rich Text)
+                  </label>
+                  <Controller
+                    name="usefulInfoText"
+                    control={control}
+                    render={({ field }) => (
+                      <AppRichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Packing list recommendations, physical fitness prep, visa details, altitude sickness notes..."
+                        height="200px"
+                      />
+                    )}
+                  />
+                </div>
               </div>
             )}
 
-            {/* 2. DETAILED ITINERARY TAB */}
+            {/* 2. ITINERARY TAB */}
             {activeTab === "itinerary" && (
               <Controller
                 name="itinerary"
@@ -593,7 +676,7 @@ export function TrekFormModal({
 
             {/* 3. INCLUSIONS & EXCLUSIONS TAB */}
             {activeTab === "inclusions" && (
-              <div className="space-y-4 max-h-[460px] overflow-y-auto pr-1">
+              <div className="space-y-4 pr-1">
                 <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200/80 space-y-2">
                   <div className="flex items-center gap-2 text-emerald-900 font-bold">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -628,56 +711,125 @@ export function TrekFormModal({
               </div>
             )}
 
-            {/* 3. TRIP FAQS TAB */}
-            {activeTab === "faqs" && (
-              <Controller
-                name="faqs"
-                control={control}
-                render={({ field }) => (
-                  <TripFaqsManager
-                    faqs={field.value || []}
-                    onChange={(newFaqs: TripFaqItem[]) => field.onChange(newFaqs)}
-                  />
-                )}
-              />
-            )}
-
-            {/* 4. CLIENT REVIEWS TAB */}
-            {activeTab === "reviews" && (
-              <Controller
-                name="reviews"
-                control={control}
-                render={({ field }) => (
-                  <TripReviewsManager
-                    reviews={field.value || []}
-                    onChange={(newRevs: TripReviewItem[]) => field.onChange(newRevs)}
-                  />
-                )}
-              />
-            )}
-
-            {/* 5. MEDIA TAB */}
-            {activeTab === "media" && (
-              <div className="space-y-4">
+            {/* 4. DEPARTURE DATES TAB */}
+            {activeTab === "departures" && (
+              <div className="pr-1">
                 <Controller
-                  name="image"
+                  name="departureDates"
                   control={control}
                   render={({ field }) => (
-                    <AdminImageUpload
-                      label="Trek Cover Image"
-                      value={field.value || ""}
+                    <TripDepartureDatesManager
+                      dates={field.value || []}
                       onChange={field.onChange}
-                      error={errors.image?.message}
+                      defaultPrice={Number(watch("priceUSD") || 0)}
                     />
                   )}
                 />
               </div>
             )}
 
-            {/* 6. SEO TAB */}
+            {/* 5. MEDIA & MAP TAB */}
+            {activeTab === "media" && (
+              <div className="space-y-6 pr-1">
+                <Controller
+                  name="image"
+                  control={control}
+                  render={({ field }) => (
+                    <AdminImageUpload
+                      label="Primary Cover Image"
+                      value={field.value || ""}
+                      onChange={(url, mediaId) => {
+                        field.onChange(url);
+                        setValue("coverMediaId", mediaId || "");
+                      }}
+                      error={errors.image?.message}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="galleryImages"
+                  control={control}
+                  render={({ field }) => (
+                    <TripGalleryManager
+                      images={field.value || []}
+                      galleryMediaIds={watch("galleryMediaIds") || []}
+                      onChange={(newImages, newMediaIds) => {
+                        field.onChange(newImages);
+                        if (newMediaIds) {
+                          setValue("galleryMediaIds", newMediaIds);
+                        }
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="mapImage"
+                  control={control}
+                  render={({ field }) => (
+                    <TripMapManager
+                      mapImage={field.value || ""}
+                      mapMediaId={watch("mapMediaId") || ""}
+                      onChange={(url, mediaId) => {
+                        field.onChange(url);
+                        setValue("mapMediaId", mediaId || "");
+                      }}
+                      packageTitle={watch("title")}
+                    />
+                  )}
+                />
+              </div>
+            )}
+
+            {/* 6. FILES & DOWNLOADS TAB */}
+            {activeTab === "files" && (
+              <div className="pr-1">
+                <Controller
+                  name="packageFiles"
+                  control={control}
+                  render={({ field }) => (
+                    <TripFilesManager
+                      files={field.value || []}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+            )}
+
+            {/* 7. FAQS & REVIEWS TAB */}
+            {activeTab === "faqs" && (
+              <div className="space-y-6 pr-1">
+                <Controller
+                  name="faqs"
+                  control={control}
+                  render={({ field }) => (
+                    <TripFaqsManager
+                      faqs={field.value || []}
+                      onChange={(newFaqs: TripFaqItem[]) => field.onChange(newFaqs)}
+                    />
+                  )}
+                />
+
+                <div className="pt-4 border-t border-slate-200">
+                  <Controller
+                    name="reviews"
+                    control={control}
+                    render={({ field }) => (
+                      <TripReviewsManager
+                        reviews={field.value || []}
+                        onChange={(newReviews: TripReviewItem[]) => field.onChange(newReviews)}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 8. SEO TAB */}
             {activeTab === "seo" && (
-              <div className="space-y-4 max-h-[460px] overflow-y-auto pr-1">
-                {/* Clean SERP Preview Snippet */}
+              <div className="space-y-4 pr-1">
                 <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 shadow-2xs">
                   <div className="text-[11px] font-medium text-emerald-800 truncate">
                     {websiteDomain} › trekking › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "trek-slug"}
@@ -748,15 +900,6 @@ export function TrekFormModal({
                     placeholder="e.g. Everest Base Camp, Nepal Trekking, Sherpa Guides, Luxury Lodges"
                     {...register("keywords")}
                   />
-                  {watchKeywords && (
-                    <div className="pt-1.5 flex flex-wrap gap-1 items-center">
-                      {watchKeywords.split(",").map((kw, i) => kw.trim() && (
-                        <span key={i} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
-                          {kw.trim()}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -764,7 +907,7 @@ export function TrekFormModal({
         </div>
       ) : (
         /* READ-ONLY VIEW MODE */
-        <div className="space-y-4 py-2 text-xs max-h-[520px] overflow-y-auto pr-1">
+        <div className="space-y-4 py-2 text-xs pr-1">
           {/* Header Card */}
           <div className="grid grid-cols-3 gap-4">
             <div className="aspect-video rounded-xl bg-slate-100 border border-slate-200 overflow-hidden col-span-1 relative flex items-center justify-center group/cover">
@@ -776,16 +919,9 @@ export function TrekFormModal({
                     e.stopPropagation();
                     openSingleImage(initialData.image!, initialData.title, e.currentTarget);
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.stopPropagation();
-                      openSingleImage(initialData.image!, initialData.title, e.currentTarget);
-                    }
-                  }}
                   className="w-full h-full cursor-zoom-in relative"
                   title="Click to view cover image in lightbox"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={initialData?.image}
                     alt={initialData?.title}
@@ -884,158 +1020,61 @@ export function TrekFormModal({
             </div>
           )}
 
-          {/* Detailed Day-by-Day Itinerary Section */}
-          <div className="space-y-2 pt-1">
-            <div className="flex items-center justify-between pb-1 border-b border-slate-200">
-              <span className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
-                <Calendar className="w-4 h-4 text-amber-600" />
-                Detailed Itinerary ({initialData?.itinerary?.length || 0} Days)
-              </span>
-              <span className="text-[11px] text-slate-500 font-medium">
-                Complete route itinerary
-              </span>
+          {/* Add-ons & Useful Info */}
+          {initialData?.addonsText && (
+            <div className="space-y-1">
+              <span className="font-bold text-slate-900 block text-xs">Add-ons &amp; Options:</span>
+              <div
+                className="prose prose-sm max-w-none text-slate-800 bg-slate-50 p-3.5 rounded-lg border border-slate-200"
+                dangerouslySetInnerHTML={{ __html: initialData.addonsText }}
+              />
             </div>
+          )}
 
-            {initialData?.itinerary && initialData.itinerary.length > 0 ? (
-              <div className="space-y-2">
-                {initialData.itinerary.map((dayItem, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 hover:border-amber-300 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black text-[11px] shrink-0">
-                          Day {dayItem.day || idx + 1}
-                        </span>
-                        <h4 className="font-bold text-slate-900 text-xs">
-                          {dayItem.title || `Route Day ${dayItem.day || idx + 1}`}
-                        </h4>
-                      </div>
+          {initialData?.usefulInfoText && (
+            <div className="space-y-1">
+              <span className="font-bold text-slate-900 block text-xs">Useful Info:</span>
+              <div
+                className="prose prose-sm max-w-none text-slate-800 bg-slate-50 p-3.5 rounded-lg border border-slate-200"
+                dangerouslySetInnerHTML={{ __html: initialData.usefulInfoText }}
+              />
+            </div>
+          )}
 
-                      {dayItem.maxAltitude && (
-                        <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-bold text-[10px] border border-emerald-200 flex items-center gap-1 shrink-0">
-                          <Mountain className="w-3 h-3 text-emerald-600" />
-                          {dayItem.maxAltitude}
-                        </span>
-                      )}
-                    </div>
+          {/* Departure Dates Summary */}
+          {initialData?.departureDates && initialData.departureDates.length > 0 && (
+            <div className="space-y-1.5">
+              <span className="font-bold text-slate-900 block text-xs">Scheduled Departure Dates ({initialData.departureDates.length}):</span>
+              <TripDepartureDatesManager dates={initialData.departureDates} onChange={() => {}} readOnly />
+            </div>
+          )}
 
-                    {dayItem.description && (
-                      <p className="text-slate-700 text-[11px] leading-relaxed pl-1 border-l-2 border-amber-300">
-                        {dayItem.description}
-                      </p>
-                    )}
-
-                    {(dayItem.accommodation || dayItem.meals) && (
-                      <div className="flex flex-wrap items-center gap-3 text-[10px] text-slate-600 pt-1 border-t border-slate-200/60">
-                        {dayItem.accommodation && (
-                          <div className="flex items-center gap-1">
-                            <BedDouble className="w-3 h-3 text-slate-400" />
-                            <span>Stay: <strong>{dayItem.accommodation}</strong></span>
-                          </div>
-                        )}
-                        {dayItem.meals && (
-                          <div className="flex items-center gap-1">
-                            <Utensils className="w-3 h-3 text-slate-400" />
-                            <span>Meals: <strong>{dayItem.meals}</strong></span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-4 text-center text-slate-500 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-                No day-by-day itinerary entries configured yet.
-              </div>
-            )}
-          </div>
-
-          {/* Inclusions & Exclusions */}
-          {(initialData?.inclusionsText || initialData?.exclusionsText) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-              {initialData.inclusionsText && (
-                <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200/80 space-y-1">
-                  <span className="font-bold text-emerald-900 text-[11px] flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    Inclusions
-                  </span>
-                  <p className="text-emerald-800 text-[11px] whitespace-pre-line leading-relaxed">
-                    {initialData.inclusionsText}
-                  </p>
+          {/* Media & Map Summary */}
+          {((initialData?.galleryImages && initialData.galleryImages.length > 0) || initialData?.mapImage) && (
+            <div className="space-y-3 pt-1">
+              {initialData.mapImage && (
+                <div>
+                  <span className="font-bold text-slate-900 block text-xs mb-1">Trek Route Map:</span>
+                  <TripMapManager mapImage={initialData.mapImage} onChange={() => {}} readOnly packageTitle={initialData.title} />
                 </div>
               )}
-              {initialData.exclusionsText && (
-                <div className="p-3 bg-rose-50/60 rounded-xl border border-rose-200/80 space-y-1">
-                  <span className="font-bold text-rose-900 text-[11px] flex items-center gap-1">
-                    <XCircle className="w-3.5 h-3.5 text-rose-600" />
-                    Exclusions
-                  </span>
-                  <p className="text-rose-800 text-[11px] whitespace-pre-line leading-relaxed">
-                    {initialData.exclusionsText}
-                  </p>
+
+              {initialData.galleryImages && initialData.galleryImages.length > 0 && (
+                <div>
+                  <span className="font-bold text-slate-900 block text-xs mb-1">Photo Gallery ({initialData.galleryImages.length}):</span>
+                  <TripGalleryManager images={initialData.galleryImages} onChange={() => {}} readOnly />
                 </div>
               )}
             </div>
           )}
 
-          {/* SEO & Search Engine Preview */}
-          <div className="space-y-2 pt-1">
-            <span className="font-bold text-slate-900 flex items-center gap-1.5 text-xs pb-1 border-b border-slate-200">
-              <Globe className="w-4 h-4 text-blue-600" />
-              SEO &amp; Search Engine Meta Information
-            </span>
-
-            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
-              <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
-                <div className="text-[11px] font-bold text-emerald-800 truncate">
-                  {websiteDomain}/trekking/{initialData?.slug || "trek-slug"}
-                </div>
-                <div className="text-xs font-extrabold text-blue-700 truncate hover:underline cursor-pointer">
-                  {initialData?.metaTitle || `${initialData?.title} | Alpine Ace Himalayan Trekking`}
-                </div>
-                <div className="text-[11px] text-slate-700 font-medium line-clamp-2 leading-relaxed">
-                  {initialData?.metaDescription || initialData?.shortDesc || "Explore top Himalayan trekking routes with Alpine Ace."}
-                </div>
-              </div>
-
-              {initialData?.keywords && (
-                <div className="flex items-center gap-1.5 text-[10px] text-slate-600 pt-1">
-                  <span className="font-bold text-slate-800">Keywords:</span>
-                  <span className="text-slate-600 font-medium">{initialData.keywords}</span>
-                </div>
-              )}
+          {/* Downloadable Files Summary */}
+          {initialData?.packageFiles && initialData.packageFiles.length > 0 && (
+            <div className="space-y-1.5">
+              <span className="font-bold text-slate-900 block text-xs">Downloadable Files &amp; Brochures ({initialData.packageFiles.length}):</span>
+              <TripFilesManager files={initialData.packageFiles} onChange={() => {}} readOnly />
             </div>
-          </div>
-
-          {/* FAQs & Reviews Summary */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-              <span className="font-bold text-slate-900 flex items-center gap-1">
-                <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
-                Custom Trip FAQs ({initialData?.faqs?.length || 0})
-              </span>
-              <p className="text-[11px] text-slate-600">
-                {initialData?.faqs && initialData.faqs.length > 0
-                  ? `${initialData.faqs.length} tailored questions configured.`
-                  : "No trip FAQs attached."}
-              </p>
-            </div>
-
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-              <span className="font-bold text-slate-900 flex items-center gap-1">
-                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                Customer Reviews ({initialData?.reviews?.length || 0})
-              </span>
-              <p className="text-[11px] text-slate-600">
-                {initialData?.reviews && initialData.reviews.length > 0
-                  ? `${initialData.reviews.length} authentic client testimonials.`
-                  : "No reviews attached."}
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       )}
     </AdminModal>
@@ -1084,7 +1123,7 @@ export function DeleteTrekModal({
       }
     >
       <div className="text-sm text-slate-700 py-2">
-        This will permanently remove the trek itinerary from the active catalogue.
+        This will permanently remove the trek package from the active catalogue.
       </div>
     </AdminModal>
   );

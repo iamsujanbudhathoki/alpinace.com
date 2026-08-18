@@ -154,6 +154,27 @@ export interface Booking {
   specialRequests?: string;
 }
 
+export interface TripDepartureDate {
+  id?: string;
+  startDate: string;
+  endDate: string;
+  priceUSD?: number;
+  status?: string;
+  seatsAvailable?: number;
+  notes?: string;
+}
+
+export interface TripPackageFile {
+  id?: string;
+  mediaId?: string;
+  title: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: string;
+  fileType?: string;
+  uploadedAt?: string;
+}
+
 export interface PackageItem {
   id: string;
   title: string;
@@ -170,6 +191,7 @@ export interface PackageItem {
   rating: number;
   reviewsCount?: number;
   image?: string;
+  coverMediaId?: string;
   shortDesc?: string;
   bestSeason?: string;
   startEndLocation?: string;
@@ -179,6 +201,14 @@ export interface PackageItem {
   permitsRequired: string[];
   inclusionsText?: string;
   exclusionsText?: string;
+  addonsText?: string;
+  usefulInfoText?: string;
+  departureDates?: TripDepartureDate[];
+  galleryImages?: string[];
+  galleryMediaIds?: string[];
+  mapImage?: string;
+  mapMediaId?: string;
+  packageFiles?: TripPackageFile[];
   itinerary?: Array<{
     day: number;
     title: string;
@@ -250,6 +280,7 @@ export interface BlogArticle {
   excerpt?: string;
   content?: string;
   image?: string;
+  coverMediaId?: string;
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string;

@@ -35,6 +35,27 @@ export const itineraryDaySchema = z.object({
     .optional(),
 });
 
+export const departureDateSchema = z.object({
+  id: z.string().optional(),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
+  priceUSD: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : undefined), z.number().optional()),
+  status: z.string().optional(),
+  seatsAvailable: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : undefined), z.number().optional()),
+  notes: z.string().optional(),
+});
+
+export const packageFileSchema = z.object({
+  id: z.string().optional(),
+  mediaId: z.string().optional(),
+  title: z.string().min(1, "File title is required"),
+  fileUrl: z.string().optional(),
+  fileName: z.string().optional(),
+  fileSize: z.string().optional(),
+  fileType: z.string().optional(),
+  uploadedAt: z.string().optional(),
+});
+
 export const trekSchema = z.object({
   title: z.string().min(1, "Trek title is required"),
   categoryId: z.string().optional(),
@@ -54,6 +75,7 @@ export const trekSchema = z.object({
   exclusionsText: z.string().optional(),
   shortDesc: z.string().optional(),
   image: z.string().optional(),
+  coverMediaId: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
@@ -79,6 +101,14 @@ export const trekSchema = z.object({
       })
     )
     .optional(),
+  addonsText: z.string().optional(),
+  usefulInfoText: z.string().optional(),
+  departureDates: z.array(departureDateSchema).optional(),
+  galleryImages: z.array(z.string()).optional(),
+  galleryMediaIds: z.array(z.string()).optional(),
+  mapImage: z.string().optional(),
+  mapMediaId: z.string().optional(),
+  packageFiles: z.array(packageFileSchema).optional(),
 });
 
 export type TrekFormValues = z.infer<typeof trekSchema>;
@@ -104,6 +134,7 @@ export const tourSchema = z.object({
   exclusionsText: z.string().optional(),
   shortDesc: z.string().optional(),
   image: z.string().optional(),
+  coverMediaId: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
@@ -129,6 +160,14 @@ export const tourSchema = z.object({
       })
     )
     .optional(),
+  addonsText: z.string().optional(),
+  usefulInfoText: z.string().optional(),
+  departureDates: z.array(departureDateSchema).optional(),
+  galleryImages: z.array(z.string()).optional(),
+  galleryMediaIds: z.array(z.string()).optional(),
+  mapImage: z.string().optional(),
+  mapMediaId: z.string().optional(),
+  packageFiles: z.array(packageFileSchema).optional(),
 });
 
 export type TourFormValues = z.infer<typeof tourSchema>;
@@ -156,6 +195,7 @@ export const expeditionSchema = z.object({
   exclusionsText: z.string().optional(),
   shortDesc: z.string().optional(),
   image: z.string().optional(),
+  coverMediaId: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),
@@ -181,6 +221,14 @@ export const expeditionSchema = z.object({
       })
     )
     .optional(),
+  addonsText: z.string().optional(),
+  usefulInfoText: z.string().optional(),
+  departureDates: z.array(departureDateSchema).optional(),
+  galleryImages: z.array(z.string()).optional(),
+  galleryMediaIds: z.array(z.string()).optional(),
+  mapImage: z.string().optional(),
+  mapMediaId: z.string().optional(),
+  packageFiles: z.array(packageFileSchema).optional(),
 });
 
 export type ExpeditionFormValues = z.infer<typeof expeditionSchema>;
@@ -253,6 +301,7 @@ export const blogSchema = z.object({
   excerpt: z.string().optional(),
   content: z.string().optional(),
   image: z.string().min(5, "Featured image URL is required"),
+  coverMediaId: z.string().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.string().optional(),

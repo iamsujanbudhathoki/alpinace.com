@@ -36,6 +36,7 @@ interface PublicBookingModalProps {
     categoryType?: BookingPackageType;
   };
   initialTravelers?: number;
+  initialDate?: string;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

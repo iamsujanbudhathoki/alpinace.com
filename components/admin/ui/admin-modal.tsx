@@ -17,9 +17,11 @@ interface AdminModalProps {
   children: React.ReactNode;
   /** Sticky footer rendered outside the scrollable area (e.g. action buttons). */
   footer?: React.ReactNode;
-  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "full";
-  /** Max height of the scrollable body. Defaults to 75vh. Pass "none" to disable. */
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "full";
+  /** Max height of the scrollable body. Defaults to 85vh. Pass "none" to disable. */
   maxHeight?: string;
+  /** Enforces a fixed modal height (e.g. 85vh) to prevent height jumping when tabs/sections change. Defaults to true for lg/xl/2xl/3xl/4xl/full modals. */
+  fixedHeight?: boolean;
   preventOutsideClose?: boolean;
   hideHeader?: boolean;
   variant?: "default" | "dark";
@@ -34,7 +36,8 @@ export function AdminModal({
   children,
   footer,
   maxWidth = "xl",
-  maxHeight = "75vh",
+  maxHeight = "85vh",
+  fixedHeight,
   preventOutsideClose = true,
   hideHeader = false,
   variant = "default",
@@ -47,8 +50,12 @@ export function AdminModal({
     xl: "sm:max-w-3xl",
     "2xl": "sm:max-w-5xl",
     "3xl": "sm:max-w-6xl",
+    "4xl": "sm:max-w-7xl",
     full: "sm:max-w-[92vw]",
   }[maxWidth];
+
+  const isSmallModal = maxWidth === "sm" || maxWidth === "md";
+  const isFixedHeight = fixedHeight !== undefined ? fixedHeight : !isSmallModal;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleOpenChange = (open: boolean, eventDetails?: any) => {
@@ -86,6 +93,8 @@ export function AdminModal({
         showCloseButton={true}
         onCloseClick={onClose}
         className={`${maxWidthClass} w-full flex flex-col overflow-hidden ${
+          isFixedHeight ? "h-[85vh] max-h-[85vh] sm:h-[85vh] sm:max-h-[85vh] min-h-[460px]" : ""
+        } ${
           isDark
             ? "bg-slate-950 text-white border-slate-800 shadow-2xl rounded-2xl p-0"
             : "bg-white text-slate-900 border-slate-200 shadow-xl rounded-2xl p-0"
@@ -115,10 +124,12 @@ export function AdminModal({
 
         {/* ── Scrollable Body ────────────────────────────── */}
         <div
-          className="modal-scroll flex-1 min-h-0 overflow-y-auto overscroll-contain"
-          style={{ maxHeight: maxHeight !== "none" ? maxHeight : undefined }}
+          className="modal-scroll flex-1 min-h-0 overflow-y-auto overscroll-contain flex flex-col"
+          style={{ maxHeight: !isFixedHeight && maxHeight !== "none" ? maxHeight : undefined }}
         >
-          <div className={isDark ? "p-3" : "px-6 py-4"}>{children}</div>
+          <div className={`flex-1 min-h-0 flex flex-col ${isDark ? "p-3" : "px-6 py-4"}`}>
+            {children}
+          </div>
         </div>
 
         {/* ── Sticky Static Footer ──────────────────────────────── */}

@@ -1,6 +1,7 @@
-import { PackageStatus, PackageRegion, TripDifficulty } from "./admin-data";
+import { PackageStatus, PackageRegion, TripDifficulty, TripDepartureDate, TripPackageFile } from "./admin-data";
 
 export type TrekDifficulty = TripDifficulty;
+export type { TripDepartureDate, TripPackageFile };
 
 export interface TripItineraryDetail {
   label: string;
@@ -42,6 +43,7 @@ export interface TrekItem {
   rating: number;
   reviewsCount: number;
   image: string;
+  coverMediaId?: string;
   shortDesc: string;
   durationDays: number;
   maxAltitudeMeters?: number;
@@ -55,6 +57,14 @@ export interface TrekItem {
   permitsRequired: string[];
   inclusionsText?: string;
   exclusionsText?: string;
+  addonsText?: string;
+  usefulInfoText?: string;
+  departureDates?: TripDepartureDate[];
+  galleryImages?: string[];
+  galleryMediaIds?: string[];
+  mapImage?: string;
+  mapMediaId?: string;
+  packageFiles?: TripPackageFile[];
   itinerary?: TripItineraryDay[];
   faqs?: TripFaqItem[];
   reviews?: TripReviewItem[];

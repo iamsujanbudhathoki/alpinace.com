@@ -38,9 +38,10 @@ export function makePaginatedList<T>(data: T[], pagination?: PaginationMeta): Pa
 }
 
 export const MediaService = {
-  async getAllMedia(params?: { category?: string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<any>> {
+  async getAllMedia(params?: { categoryId?: string; category?: string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<any>> {
     try {
       const query = new URLSearchParams();
+      if (params?.categoryId && params.categoryId !== "All") query.set("categoryId", params.categoryId);
       if (params?.category && params.category !== "All") query.set("category", params.category);
       if (params?.search && params.search.trim()) query.set("search", params.search.trim());
       if (params?.limit) query.set("limit", String(params.limit));
@@ -56,12 +57,13 @@ export const MediaService = {
     }
   },
 
-  async uploadFile(file: File): Promise<ApiResponse<any>> {
+  async uploadFile(file: File, categoryId?: string): Promise<ApiResponse<any>> {
     const formData = new FormData();
     formData.append("file", file);
 
+    const q = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : "";
     const response = await axiosInstance.post<ApiResponse<any>>(
-      "/media/upload",
+      `/media/upload${q}`,
       formData,
       {
         headers: {
@@ -73,7 +75,7 @@ export const MediaService = {
     return response.data;
   },
 
-  async update(id: string, data: { title?: string; category?: string; description?: string; altText?: string }): Promise<ApiResponse<any>> {
+  async update(id: string, data: { title?: string; categoryId?: string; description?: string; altText?: string }): Promise<ApiResponse<any>> {
     return apiClient.put<any>(`/media/${id}`, data);
   },
 
@@ -315,6 +317,19 @@ function cleanPackagePayload(data: any) {
       }));
   }
 
+  if (rest.addonsText !== undefined) payload.addonsText = rest.addonsText;
+  if (rest.usefulInfoText !== undefined) payload.usefulInfoText = rest.usefulInfoText;
+  if (Array.isArray(rest.departureDates)) payload.departureDates = rest.departureDates;
+  if (Array.isArray(rest.galleryImages)) payload.galleryImages = rest.galleryImages;
+  if (Array.isArray(rest.galleryMediaIds)) payload.galleryMediaIds = rest.galleryMediaIds.filter(Boolean);
+
+  if (rest.mapImage !== undefined) payload.mapImage = rest.mapImage;
+  if (rest.mapMediaId !== undefined) payload.mapMediaId = rest.mapMediaId;
+
+  if (rest.coverMediaId !== undefined) payload.coverMediaId = rest.coverMediaId;
+
+  if (Array.isArray(rest.packageFiles)) payload.packageFiles = rest.packageFiles;
+
   delete payload.totalBookings;
   delete payload.rating;
   delete payload.reviewsCount;
@@ -336,6 +351,7 @@ export function formatBackendTrek(p: any): TrekItem {
     rating: Number(p.rating),
     reviewsCount: Number(p.reviewsCount),
     image: p.image,
+    coverMediaId: p.coverMediaId,
     shortDesc: p.shortDesc,
     durationDays: Number(p.durationDays),
     maxAltitudeMeters: p.maxAltitudeMeters !== undefined && p.maxAltitudeMeters !== null ? Number(p.maxAltitudeMeters) : undefined,
@@ -349,6 +365,14 @@ export function formatBackendTrek(p: any): TrekItem {
     permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
     inclusionsText: p.inclusionsText,
     exclusionsText: p.exclusionsText,
+    addonsText: p.addonsText,
+    usefulInfoText: p.usefulInfoText,
+    departureDates: Array.isArray(p.departureDates) ? p.departureDates : [],
+    galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
+    galleryMediaIds: Array.isArray(p.galleryMediaIds) ? p.galleryMediaIds : [],
+    mapImage: p.mapImage,
+    mapMediaId: p.mapMediaId,
+    packageFiles: Array.isArray(p.packageFiles) ? p.packageFiles : [],
     itinerary: Array.isArray(p.itinerary) ? p.itinerary : [],
     faqs: Array.isArray(p.faqs) ? p.faqs : [],
     reviews: Array.isArray(p.reviews) ? p.reviews : [],
@@ -371,6 +395,7 @@ export function formatBackendPackage(p: any): PackageItem {
     rating: Number(p.rating),
     reviewsCount: Number(p.reviewsCount),
     image: p.image,
+    coverMediaId: p.coverMediaId,
     shortDesc: p.shortDesc,
     durationDays: Number(p.durationDays),
     maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
@@ -386,6 +411,14 @@ export function formatBackendPackage(p: any): PackageItem {
     permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
     inclusionsText: p.inclusionsText,
     exclusionsText: p.exclusionsText,
+    addonsText: p.addonsText,
+    usefulInfoText: p.usefulInfoText,
+    departureDates: Array.isArray(p.departureDates) ? p.departureDates : [],
+    galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
+    galleryMediaIds: Array.isArray(p.galleryMediaIds) ? p.galleryMediaIds : [],
+    mapImage: p.mapImage,
+    mapMediaId: p.mapMediaId,
+    packageFiles: Array.isArray(p.packageFiles) ? p.packageFiles : [],
     itinerary: Array.isArray(p.itinerary) ? p.itinerary : [],
     tourType: p.tourType,
     transportation: p.transportation,
@@ -764,6 +797,7 @@ export const BlogService = {
       excerpt: data.excerpt || "",
       content: data.content || "",
       image: data.image || "",
+      ...(data.coverMediaId ? { coverMediaId: data.coverMediaId } : {}),
       ...(data.metaTitle ? { metaTitle: String(data.metaTitle).trim() } : {}),
       ...(data.metaDescription ? { metaDescription: String(data.metaDescription).trim() } : {}),
       ...(data.keywords ? { keywords: String(data.keywords).trim() } : {}),
@@ -782,6 +816,7 @@ export const BlogService = {
     if (data.excerpt !== undefined) payload.excerpt = data.excerpt;
     if (data.content !== undefined) payload.content = data.content;
     if (data.image !== undefined) payload.image = data.image;
+    if (data.coverMediaId !== undefined) payload.coverMediaId = data.coverMediaId;
     if (data.metaTitle !== undefined) payload.metaTitle = String(data.metaTitle).trim();
     if (data.metaDescription !== undefined) payload.metaDescription = String(data.metaDescription).trim();
     if (data.keywords !== undefined) payload.keywords = String(data.keywords).trim();

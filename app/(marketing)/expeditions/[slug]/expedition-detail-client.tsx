@@ -22,8 +22,9 @@ import {
   ClimbingGrade,
   FaqItem,
   FaqStatus,
+  TripDepartureDate,
 } from "@/lib/admin-data";
-import { Testimonial } from "@/lib/home-data";
+import { Testimonial, TESTIMONIALS } from "@/lib/home-data";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import {
@@ -37,6 +38,11 @@ import {
   PackageReviews,
   PackageBookingSidebar,
   PackageRelatedTrips,
+  PackageDepartures,
+  PackageTrekMap,
+  PackageDownloads,
+  PackageAddons,
+  PackageUsefulInfo,
 } from "@/components/marketing/package-details";
 
 interface ExpeditionDetailClientProps {
@@ -53,6 +59,7 @@ export function ExpeditionDetailClient({
   );
   const [loading, setLoading] = useState(!initialExpedition);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
   const [relatedExpeditions, setRelatedExpeditions] = useState<ExpeditionItem[]>(
     [],
   );
@@ -62,7 +69,7 @@ export function ExpeditionDetailClient({
   // Dynamic Reviews from backend
   const [globalReviews, setGlobalReviews] = useState<Testimonial[]>([]);
 
-  const [calculatorClimbers, setCalculatorClimbers] = useState<number>(2);
+  const [calculatorClimbers, setCalculatorClimbers] = useState<number>(1);
 
   useEffect(() => {
     async function loadData() {
@@ -70,81 +77,30 @@ export function ExpeditionDetailClient({
         if (!initialExpedition) {
           const raw = await ExpeditionService.getBySlug(slug);
           if (raw) {
-            setExpedition({
-              id: raw.id,
-              title: raw.title,
-              slug: raw.slug,
-              category: raw.category,
-              rating: Number(raw.rating),
-              reviewsCount: Number(raw.reviewsCount),
-              image: raw.image || "",
-              shortDesc: raw.shortDesc || "",
-              durationDays: Number(raw.durationDays),
-              peakHeightM: Number(raw.peakHeightM || raw.maxAltitudeMeters || 0),
-              maxAltitudeMeters:
-                raw.maxAltitudeMeters !== undefined
-                  ? Number(raw.maxAltitudeMeters)
-                  : undefined,
-              climbingGrade:
-                raw.climbingGrade ||
-                (raw.difficulty as unknown as ClimbingGrade),
-              difficulty: raw.difficulty,
-              sherpaGuideRatio: raw.sherpaGuideRatio,
-              oxygenRequired: raw.oxygenRequired,
-              bestSeason: raw.bestSeason || "",
-              priceUSD: Number(raw.priceUSD),
-              startEndLocation: raw.startEndLocation,
-              accommodation: raw.accommodation,
-              meals: raw.meals,
-              groupSizeRange: raw.groupSizeRange,
-              permitsRequired: raw.permitsRequired || [],
-              inclusionsText: raw.inclusionsText,
-              exclusionsText: raw.exclusionsText,
-              itinerary: raw.itinerary || [],
-              faqs: raw.faqs,
-              reviews: raw.reviews,
-              categoryId: raw.categoryId,
-              metaTitle: raw.metaTitle,
-              metaDescription: raw.metaDescription,
-              keywords: raw.keywords,
-              status: raw.status,
-              region: raw.region,
-            });
-          } else {
-            const staticMatch = initialExpeditionsData.find(
-              (e) => e.slug === slug,
-            );
-            setExpedition(staticMatch || null);
+            setExpedition(raw);
           }
         }
 
-        // Live FAQs
-        const liveFaqs = await FaqService.getAll(FaqStatus.ACTIVE);
-        if (liveFaqs && Array.isArray(liveFaqs)) {
-          setGlobalFaqs(liveFaqs);
-        }
+        const [faqsData, settingsData, allExps] = await Promise.all([
+          FaqService.getAll(FaqStatus.ACTIVE).catch(() => []),
+          SettingService.getAll().catch(() => ({})),
+          ExpeditionService.getAll().catch(() => []),
+        ]);
 
-        // Live Testimonials
-        const settings = await SettingService.getAll();
-        if (settings?.testimonials) {
+        if (faqsData) setGlobalFaqs(faqsData);
+        if (settingsData && (settingsData as any).testimonials) {
           try {
-            const parsed = JSON.parse(settings.testimonials);
-            if (Array.isArray(parsed)) {
-              setGlobalReviews(parsed);
-            }
-          } catch (e) {
-            console.warn("Failed to parse dynamic testimonials:", e);
-          }
+            const parsed = JSON.parse((settingsData as any).testimonials);
+            if (Array.isArray(parsed)) setGlobalReviews(parsed);
+          } catch {}
         }
 
-        // Related Expeditions
-        const all = await ExpeditionService.getAll();
-        if (all && Array.isArray(all)) {
-          setRelatedExpeditions(
-            (all as unknown as ExpeditionItem[])
-              .filter((e) => e.slug !== slug)
-              .slice(0, 3)
-          );
+        if (allExps && allExps.length > 0) {
+          const filtered = allExps.filter((e) => e.slug !== slug);
+          setRelatedExpeditions(filtered.slice(0, 3) as unknown as ExpeditionItem[]);
+        } else {
+          const fallback = initialExpeditionsData.filter((e) => e.slug !== slug);
+          setRelatedExpeditions(fallback.slice(0, 3));
         }
       } catch (e) {
         console.warn("Failed to fetch expedition by slug", e);
@@ -157,7 +113,11 @@ export function ExpeditionDetailClient({
 
   // Gallery state from backend data
   const gallery = useMemo(() => {
-    if (!expedition || !expedition.image) return [];
+    if (!expedition) return [];
+    if (expedition.galleryImages && Array.isArray(expedition.galleryImages) && expedition.galleryImages.length > 0) {
+      return expedition.galleryImages;
+    }
+    if (!expedition.image) return [];
     if (expedition.image.includes(",")) {
       return expedition.image
         .split(",")
@@ -251,10 +211,19 @@ export function ExpeditionDetailClient({
       { key: "overview", label: "Overview" },
     ];
     if (expedition?.itinerary && expedition.itinerary.length > 0) {
-      list.push({ key: "itinerary", label: "Detailed Itinerary" });
+      list.push({ key: "itinerary", label: "Climbing Itinerary" });
     }
     if (costIncludes.length > 0 || costExclusions.length > 0) {
       list.push({ key: "cost", label: "Inclusions & Exclusions" });
+    }
+    if (expedition?.departureDates && expedition.departureDates.length > 0) {
+      list.push({ key: "departures", label: "Departure Dates" });
+    }
+    if (expedition?.mapImage) {
+      list.push({ key: "map", label: "Route Map" });
+    }
+    if (expedition?.packageFiles && expedition.packageFiles.length > 0) {
+      list.push({ key: "files", label: "Downloads" });
     }
     if (displayFaqs.length > 0) {
       list.push({ key: "faqs", label: "FAQs" });
@@ -264,7 +233,6 @@ export function ExpeditionDetailClient({
 
   const [activeTab, setActiveTab] = useState<string>("overview");
 
-  // Derive active tab safely during render without cascading useEffect renders
   const currentActiveTab = availableTabs.some((t) => t.key === activeTab)
     ? activeTab
     : availableTabs[0]?.key || "overview";
@@ -277,80 +245,63 @@ export function ExpeditionDetailClient({
     return notFound();
   }
 
-  // Quick facts based on backend data
-  const quickFacts = [
-    ...(expedition.peakHeightM
-      ? [
-          {
-            icon: <Mountain className="w-5 h-5" />,
-            label: "Summit Elevation",
-            value: `${expedition.peakHeightM.toLocaleString()} m`,
-          },
-        ]
-      : []),
-    ...(expedition.climbingGrade
-      ? [
-          {
-            icon: <Compass className="w-5 h-5" />,
-            label: "Climbing Grade",
-            value: <span className="capitalize">{expedition.climbingGrade}</span>,
-          },
-        ]
-      : []),
-    ...(expedition.sherpaGuideRatio
-      ? [
-          {
-            icon: <ShieldCheck className="w-5 h-5" />,
-            label: "Sherpa Ratio",
-            value: expedition.sherpaGuideRatio,
-          },
-        ]
-      : []),
-    ...(expedition.durationDays
-      ? [
-          {
-            icon: <Calendar className="w-5 h-5" />,
-            label: "Expedition Length",
-            value: `${expedition.durationDays} Days`,
-          },
-        ]
-      : []),
-  ];
+  const handleBookDeparture = (dateSlot: TripDepartureDate) => {
+    setSelectedDeparture(dateSlot);
+    setIsBookingModalOpen(true);
+  };
+
+  const peakMeters = expedition.peakHeightM || expedition.maxAltitudeMeters || 8000;
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] text-[#1E2420] antialiased">
+    <div className="min-h-screen bg-[#FAF8F5] pb-20">
       {/* 1. HERO HEADER */}
       <PackageDetailHero
         title={expedition.title}
         image={expedition.image}
         backHref="/expeditions"
-        backLabel="All Peak Expeditions"
+        backLabel="Back to Expeditions"
         priceUSD={expedition.priceUSD}
+        bookButtonLabel="Book Expedition"
         onBookClick={() => setIsBookingModalOpen(true)}
-        bookButtonLabel="Apply for Expedition"
         badges={[
-          ...(expedition.region
-            ? [{ label: `${expedition.region} Peak`, highlight: true }]
-            : []),
-          ...(expedition.durationDays
-            ? [{ label: `${expedition.durationDays} Days` }]
-            : []),
-          ...(expedition.climbingGrade
-            ? [{ label: `Grade ${expedition.climbingGrade}` }]
-            : []),
-          ...(expedition.peakHeightM
-            ? [{ label: `Summit ${expedition.peakHeightM.toLocaleString()}m` }]
-            : []),
+          { label: `${peakMeters.toLocaleString()}m Peak` },
+          { label: expedition.climbingGrade || "Technical Grade", highlight: true },
+          { label: expedition.sherpaGuideRatio || "1:1 Sherpa" },
         ]}
       />
 
       {/* 2. QUICK FACTS BAR */}
-      {quickFacts.length > 0 && <PackageQuickFacts facts={quickFacts} />}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
+        <PackageQuickFacts
+          facts={[
+            {
+              icon: <Mountain className="w-5 h-5" />,
+              label: "Summit Altitude",
+              value: `${peakMeters.toLocaleString()}m`,
+            },
+            {
+              icon: <Compass className="w-5 h-5" />,
+              label: "Climbing Grade",
+              value: expedition.climbingGrade || ClimbingGrade.EXTREME_TECHNICAL_GRADE,
+            },
+            {
+              icon: <ShieldCheck className="w-5 h-5" />,
+              label: "Sherpa Ratio",
+              value: expedition.sherpaGuideRatio || "1:1 Personal Sherpa",
+            },
+            {
+              icon: <Calendar className="w-5 h-5" />,
+              label: "Climbing Window",
+              value: expedition.bestSeason || "Spring & Autumn",
+            },
+          ]}
+        />
+      </div>
 
-      {/* 3. MAIN CONTENT & SIDEBAR */}
-      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-          {/* Main Column */}
+      {/* 3. MAIN CONTENT GRID */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          {/* Details Column */}
           <div className="lg:col-span-8 space-y-10">
             {/* Gallery Showcase */}
             {gallery.length > 0 && (
@@ -372,12 +323,12 @@ export function ExpeditionDetailClient({
               {currentActiveTab === "overview" && (
                 <div className="space-y-8">
                   {expedition.shortDesc && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 bg-white p-6 sm:p-8 rounded-2xl border border-[#EAE5DC] shadow-2xs">
                       <h2 className="font-heading text-2xl font-bold text-[#1E2420]">
-                        Expedition Profile
+                        Expedition Overview &amp; Summit Logistics
                       </h2>
                       <div
-                        className="prose prose-stone max-w-none text-[#3A423C] text-base leading-relaxed font-normal [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 [&_h3]:font-bold [&_h3]:text-lg [&_h3]:text-[#1E2420] [&_h3]:mt-6 [&_h3]:mb-2 [&_h4]:font-bold [&_h4]:text-base [&_h4]:text-[#1E2420] [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:font-bold [&_strong]:text-[#1E2420] [&_a]:text-amber-700 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-amber-500 [&_blockquote]:pl-4 [&_blockquote]:italic"
+                        className="prose prose-stone max-w-none text-[#3A423C] text-base leading-relaxed font-normal [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 [&_h3]:font-bold [&_h3]:text-lg [&_h3]:text-[#1E2420] [&_h3]:mt-6 [&_h3]:mb-2 [&_h4]:font-bold [&_h4]:text-base [&_h4]:text-[#1E2420] [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:font-bold [&_strong]:text-[#1E2420] [&_a]:text-amber-700 [&_a]:underline"
                         dangerouslySetInnerHTML={{ __html: expedition.shortDesc }}
                       />
                     </div>
@@ -387,16 +338,28 @@ export function ExpeditionDetailClient({
                   {(expedition.startEndLocation ||
                     expedition.meals ||
                     expedition.groupSizeRange ||
-                    expedition.oxygenRequired !== undefined) && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#E6E0D5]">
+                    expedition.accommodation) && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {expedition.startEndLocation && (
                         <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
                           <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
                             <MapPin className="w-3.5 h-3.5 text-[#2D4536]" />
-                            <span>Basecamp &amp; Staging</span>
+                            <span>Basecamp Location</span>
                           </span>
                           <p className="text-sm font-semibold text-[#1E2420]">
                             {expedition.startEndLocation}
+                          </p>
+                        </div>
+                      )}
+
+                      {expedition.accommodation && (
+                        <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
+                          <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
+                            <Compass className="w-3.5 h-3.5 text-[#2D4536]" />
+                            <span>High Altitude Camps</span>
+                          </span>
+                          <p className="text-sm font-semibold text-[#1E2420]">
+                            {expedition.accommodation}
                           </p>
                         </div>
                       )}
@@ -405,7 +368,7 @@ export function ExpeditionDetailClient({
                         <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
                           <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
                             <Utensils className="w-3.5 h-3.5 text-[#2D4536]" />
-                            <span>High Altitude Catering</span>
+                            <span>Expedition Kitchen</span>
                           </span>
                           <p className="text-sm font-semibold text-[#1E2420]">
                             {expedition.meals}
@@ -417,49 +380,21 @@ export function ExpeditionDetailClient({
                         <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
                           <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
                             <Users className="w-3.5 h-3.5 text-[#2D4536]" />
-                            <span>Climbing Roster</span>
+                            <span>Team Size</span>
                           </span>
                           <p className="text-sm font-semibold text-[#1E2420]">
                             {expedition.groupSizeRange}
                           </p>
                         </div>
                       )}
-
-                      {expedition.oxygenRequired !== undefined && (
-                        <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
-                          <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
-                            <ShieldCheck className="w-3.5 h-3.5 text-[#2D4536]" />
-                            <span>Supplemental Oxygen</span>
-                          </span>
-                          <p className="text-sm font-semibold text-[#1E2420]">
-                            {expedition.oxygenRequired
-                              ? "Required & Provided (Poisk/Summit)"
-                              : "Optional / Not Mandatory"}
-                          </p>
-                        </div>
-                      )}
                     </div>
                   )}
 
-                  {/* Permits List */}
-                  {expedition.permitsRequired &&
-                    expedition.permitsRequired.length > 0 && (
-                      <div className="space-y-3 pt-4 border-t border-[#E6E0D5]">
-                        <h3 className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider">
-                          Climbing Royalty &amp; Permits
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {expedition.permitsRequired.map((permit: string, idx: number) => (
-                            <span
-                              key={idx}
-                              className="bg-[#EAE5DC] text-[#242E27] text-xs font-medium px-3 py-1 rounded-md"
-                            >
-                              {permit}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                  {/* Add-ons & Summit Upgrades */}
+                  <PackageAddons addonsText={expedition.addonsText} />
+
+                  {/* Useful Info & Requirements */}
+                  <PackageUsefulInfo usefulInfoText={expedition.usefulInfoText} />
                 </div>
               )}
 
@@ -467,8 +402,8 @@ export function ExpeditionDetailClient({
               {currentActiveTab === "itinerary" && expedition.itinerary && (
                 <PackageItinerary
                   days={expedition.itinerary}
-                  title="Summit & Rotation Schedule"
-                  subtitle={`${expedition.itinerary.length} Days expedition program for ${expedition.title}`}
+                  title="Climbing &amp; Acclimatization Itinerary"
+                  subtitle={`${expedition.itinerary.length} Days expedition schedule for ${expedition.title}`}
                 />
               )}
 
@@ -480,11 +415,30 @@ export function ExpeditionDetailClient({
                 />
               )}
 
-              {/* TAB 4: FAQS */}
+              {/* TAB 4: DEPARTURE DATES */}
+              {currentActiveTab === "departures" && expedition.departureDates && (
+                <PackageDepartures
+                  dates={expedition.departureDates}
+                  defaultPrice={expedition.priceUSD}
+                  onBookDate={handleBookDeparture}
+                />
+              )}
+
+              {/* TAB 5: MAP */}
+              {currentActiveTab === "map" && expedition.mapImage && (
+                <PackageTrekMap mapImage={expedition.mapImage} title={expedition.title} />
+              )}
+
+              {/* TAB 6: DOWNLOADS */}
+              {currentActiveTab === "files" && expedition.packageFiles && (
+                <PackageDownloads files={expedition.packageFiles} title={expedition.title} />
+              )}
+
+              {/* TAB 7: FAQS */}
               {currentActiveTab === "faqs" && <PackageFaqs faqs={displayFaqs} />}
             </div>
 
-            {/* TESTIMONIALS / REVIEWS */}
+            {/* REVIEWS */}
             <PackageReviews reviews={displayReviews} />
           </div>
 
@@ -503,12 +457,24 @@ export function ExpeditionDetailClient({
         </div>
       </main>
 
-      {/* 4. RELATED EXPEDITIONS SECTION */}
+      {/* 4. RELATED EXPEDITIONS */}
       {relatedExpeditions.length > 0 && (
         <PackageRelatedTrips
-          trips={relatedExpeditions}
+          trips={relatedExpeditions.map((e: any) => ({
+            id: e.id,
+            title: e.title,
+            slug: e.slug,
+            region: e.region || "Himalayas",
+            durationDays: e.durationDays,
+            maxAltitudeMeters: e.peakHeightM || e.maxAltitudeMeters || 8000,
+            difficulty: e.difficulty || "Extreme",
+            priceUSD: e.priceUSD,
+            image: e.image,
+            rating: e.rating || 5.0,
+            reviewsCount: e.reviewsCount || 14,
+          }))}
           categoryPath="/expeditions"
-          title="Other Himalayan Peaks & Climbs"
+          title="Other Himalayan Summit Expeditions"
         />
       )}
 
@@ -521,13 +487,14 @@ export function ExpeditionDetailClient({
           slug: expedition.slug,
           region: expedition.region,
           durationDays: expedition.durationDays,
-          maxAltitudeMeters:
-            expedition.peakHeightM || expedition.maxAltitudeMeters,
+          maxAltitudeMeters: expedition.peakHeightM || expedition.maxAltitudeMeters || 8000,
+          difficulty: expedition.difficulty || "Extreme",
           priceUSD: expedition.priceUSD,
           image: expedition.image,
           categoryType: BookingPackageType.EXPEDITION,
         }}
         initialTravelers={calculatorClimbers}
+        initialDate={selectedDeparture?.startDate}
       />
     </div>
   );

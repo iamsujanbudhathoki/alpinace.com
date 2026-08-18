@@ -9,3 +9,8 @@ export * from "./package-faqs";
 export * from "./package-reviews";
 export * from "./package-booking-sidebar";
 export * from "./package-related-trips";
+export * from "./package-departures";
+export * from "./package-trek-map";
+export * from "./package-downloads";
+export * from "./package-addons";
+export * from "./package-useful-info";

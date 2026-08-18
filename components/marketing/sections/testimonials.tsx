@@ -1,8 +1,37 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Star } from "lucide-react";
-import { TESTIMONIALS } from "@/lib/home-data";
+import { SettingService } from "@/lib/services/admin-service";
+import { Testimonial } from "@/lib/home-data";
 
 export function TestimonialsSection() {
-  const marqueeItems = [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS];
+  const [items, setItems] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadTestimonials() {
+      try {
+        const settings = await SettingService.getAll();
+        if (settings && settings.testimonials) {
+          const parsed = JSON.parse(settings.testimonials);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            if (isMounted) setItems(parsed);
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to load testimonials from backend settings:", e);
+      }
+    }
+    loadTestimonials();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (items.length === 0) return null;
+
+  const marqueeItems = [...items, ...items, ...items];
 
   return (
     <section className="py-24 bg-stone-50/80 border-y border-stone-200 overflow-hidden">

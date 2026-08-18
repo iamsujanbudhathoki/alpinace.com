@@ -13,6 +13,8 @@ import { openLightbox } from "@/lib/utils/lightbox";
 interface MediaAsset {
   id: string;
   title: string;
+  categoryId?: string;
+  categoryName?: string;
   category: string;
   url: string;
   description?: string;
@@ -188,7 +190,7 @@ export default function AdminMediaPage() {
     try {
       const res = await MediaService.update(activeAsset.id, {
         title: editTitle.trim(),
-        category: editCategory.trim(),
+        categoryId: editCategory.trim() || undefined,
         description: editDescription.trim(),
         altText: editAltText.trim(),
       });

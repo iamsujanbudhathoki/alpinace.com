@@ -1,4 +1,4 @@
-import { ClimbingGrade, PackageRegion, PackageStatus, TripDifficulty } from "./admin-data";
+import { ClimbingGrade, PackageRegion, PackageStatus, TripDifficulty, TripDepartureDate, TripPackageFile } from "./admin-data";
 import { TripFaqItem, TripItineraryDay, TripReviewItem } from "./trek-data";
 
 export { ClimbingGrade };
@@ -9,7 +9,7 @@ export interface ExpeditionItem {
   slug: string;
   category: string;
   rating: number;
-  reviewsCount: number;
+  reviewsCount?: number;
   image: string;
   shortDesc: string;
   durationDays: number;
@@ -28,6 +28,12 @@ export interface ExpeditionItem {
   permitsRequired?: string[];
   inclusionsText?: string;
   exclusionsText?: string;
+  addonsText?: string;
+  usefulInfoText?: string;
+  departureDates?: TripDepartureDate[];
+  galleryImages?: string[];
+  mapImage?: string;
+  packageFiles?: TripPackageFile[];
   itinerary?: TripItineraryDay[];
   faqs?: TripFaqItem[];
   reviews?: TripReviewItem[];

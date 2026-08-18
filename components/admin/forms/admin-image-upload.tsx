@@ -12,14 +12,16 @@ import { openSingleImage } from "@/lib/utils/lightbox";
 interface AdminImageUploadProps {
   label?: string;
   value: string;
-  onChange: (url: string) => void;
+  onChange: (url: string, mediaId?: string) => void;
   error?: string;
 }
 
 interface MediaAsset {
   id: string;
   title: string;
-  category: "Everest & Peaks" | "Annapurna & Lakes" | "Cultural Heritage" | "Helicopter Charters";
+  categoryId?: string;
+  categoryName?: string;
+  category?: string;
   url: string;
 }
 
@@ -54,12 +56,6 @@ const INITIAL_MEDIA_LIBRARY: MediaAsset[] = [
     category: "Helicopter Charters",
     url: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80",
   },
-  {
-    id: "media-6",
-    title: "Kathmandu Durbar Square & Swayambhunath Temple",
-    category: "Cultural Heritage",
-    url: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80",
-  },
 ];
 
 export function AdminImageUpload({
@@ -85,12 +81,15 @@ export function AdminImageUpload({
     if (isLibraryOpen) {
       setTempSelectedUrl(value);
       MediaService.getAllMedia()
-        .then((mediaList) => {
-          if (Array.isArray(mediaList) && mediaList.length > 0) {
+        .then((res: any) => {
+          const mediaList = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+          if (mediaList.length > 0) {
             const mapped: MediaAsset[] = mediaList.map((m: any) => ({
               id: m.id || `media-${Math.random()}`,
               title: m.title || m.originalName || "Uploaded Media",
-              category: m.category || "Everest & Peaks",
+              categoryId: m.categoryId,
+              categoryName: m.categoryName || m.category?.name || "General",
+              category: m.categoryName || m.category?.name || "General",
               url: m.url,
             }));
             setAssets(mapped);
@@ -108,9 +107,11 @@ export function AdminImageUpload({
     try {
       const res = await MediaService.uploadFile(file);
       const url = res?.data?.url || URL.createObjectURL(file);
+      const mediaId = res?.data?.id;
+
       if (fromModal) {
         const newAsset: MediaAsset = {
-          id: `media-upload-${Date.now()}`,
+          id: mediaId || `media-upload-${Date.now()}`,
           title: file.name.replace(/\.[^/.]+$/, ""),
           category: "Everest & Peaks",
           url: url,
@@ -124,7 +125,7 @@ export function AdminImageUpload({
           toast.error(res.message || "Failed to upload image to server.");
         }
       } else {
-        onChange(url);
+        onChange(url, mediaId);
         if (res.success) {
           toast.success(res.message || "Cover image uploaded successfully!");
         } else {
@@ -166,38 +167,43 @@ export function AdminImageUpload({
       </div>
 
       {value ? (
-        /* ── Active Image Preview Card ── */
-        <div className="rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-xs">
-          <div className="relative aspect-video w-full bg-slate-950 flex items-center justify-center group">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={value} alt="Cover Preview" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20 pointer-events-none" />
+        /* ── Compact Active Image Preview Card ── */
+        <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Small Compact Thumbnail with Lightbox click */}
+            <div
+              onClick={(e) => openSingleImage(value, label, e.currentTarget)}
+              className="relative w-36 h-20 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-900 group cursor-pointer shadow-xs"
+              title="Click for Lightbox Full View"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={value} alt="Cover Preview" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Eye className="w-4 h-4 text-white drop-shadow-xs" />
+              </div>
+            </div>
 
-            {/* Quick Overlay Action on Hover */}
-            <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center gap-2">
+            <div className="space-y-1 min-w-0">
+              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 inline-flex items-center gap-1">
+                <Check className="w-3 h-3" />
+                Active Cover
+              </span>
+              <p className="text-xs font-bold text-slate-900 truncate max-w-[180px] sm:max-w-[240px]">
+                {value.split("/").pop() || "cover-image.jpg"}
+              </p>
               <button
                 type="button"
                 onClick={(e) => openSingleImage(value, label, e.currentTarget)}
-                title="View Fullscreen"
-                className="h-8 px-3 rounded-lg bg-white/90 hover:bg-white text-slate-900 font-bold text-xs shadow-md flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-105"
+                className="text-[11px] font-semibold text-amber-600 hover:text-amber-700 underline flex items-center gap-1 cursor-pointer"
               >
-                <Eye className="w-3.5 h-3.5 text-amber-600" />
-                <span>Preview</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsConfirmRemoveOpen(true)}
-                title="Remove Image"
-                className="h-8 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-105"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Remove</span>
+                <Eye className="w-3 h-3" />
+                View Fullscreen Lightbox
               </button>
             </div>
           </div>
 
-          {/* Action Bar Beneath Preview */}
-          <div className="p-3 bg-white border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+          {/* Action Buttons Side-by-Side */}
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
             <div className="relative">
               <input
                 type="file"
@@ -211,38 +217,37 @@ export function AdminImageUpload({
                 variant="outline"
                 size="sm"
                 disabled={isUploading}
-                className="text-xs font-semibold h-8 px-3 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer inline-flex items-center gap-1.5"
+                className="text-xs font-semibold h-8 px-2.5 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer inline-flex items-center gap-1"
               >
                 {isUploading ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
                 ) : (
                   <UploadCloud className="w-3.5 h-3.5 text-slate-500" />
                 )}
-                <span>Replace File</span>
+                <span>Upload</span>
               </Button>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setIsLibraryOpen(true)}
-                className="text-xs font-semibold h-8 px-3 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer inline-flex items-center gap-1.5"
-              >
-                <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
-                <span>Media Library</span>
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsConfirmRemoveOpen(true)}
-                className="text-xs font-semibold h-8 px-2.5 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsLibraryOpen(true)}
+              className="text-xs font-semibold h-8 px-2.5 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer inline-flex items-center gap-1"
+            >
+              <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
+              <span>Library</span>
+            </Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsConfirmRemoveOpen(true)}
+              className="text-xs font-semibold h-8 px-2 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </Button>
           </div>
         </div>
       ) : (
@@ -368,7 +373,7 @@ export function AdminImageUpload({
         description="Select a cover photo or upload new media."
         maxWidth="2xl"
       >
-        <div className="space-y-4 py-2 text-xs">
+        <div className="space-y-4 py-2 text-xs flex-1 min-h-0 flex flex-col">
           {/* Header Action Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
             <div className="relative w-full sm:w-72">
@@ -439,7 +444,7 @@ export function AdminImageUpload({
           )}
 
           {/* Spacious Taller 4-column Media Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[520px] min-h-[320px] overflow-y-auto p-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 flex-1 min-h-0 overflow-y-auto p-1">
             {filteredAssets.map((asset) => {
               const isSelected = tempSelectedUrl === asset.url;
               return (
@@ -489,7 +494,8 @@ export function AdminImageUpload({
                 type="button"
                 onClick={() => {
                   if (tempSelectedUrl) {
-                    onChange(tempSelectedUrl);
+                    const selectedAsset = assets.find((a) => a.url === tempSelectedUrl);
+                    onChange(tempSelectedUrl, selectedAsset?.id);
                     toast.success("Cover image applied successfully!");
                   }
                   setIsLibraryOpen(false);

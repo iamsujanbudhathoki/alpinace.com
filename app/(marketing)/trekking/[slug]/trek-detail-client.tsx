@@ -17,8 +17,8 @@ import {
   FaqService,
   SettingService,
 } from "@/lib/services/admin-service";
-import { FaqItem, FaqStatus, BookingPackageType } from "@/lib/admin-data";
-import { Testimonial } from "@/lib/home-data";
+import { FaqItem, FaqStatus, BookingPackageType, TripDepartureDate } from "@/lib/admin-data";
+import { Testimonial, TESTIMONIALS } from "@/lib/home-data";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import {
@@ -32,6 +32,11 @@ import {
   PackageReviews,
   PackageBookingSidebar,
   PackageRelatedTrips,
+  PackageDepartures,
+  PackageTrekMap,
+  PackageDownloads,
+  PackageAddons,
+  PackageUsefulInfo,
 } from "@/components/marketing/package-details";
 
 interface TrekDetailClientProps {
@@ -42,74 +47,74 @@ interface TrekDetailClientProps {
 export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
   const [trek, setTrek] = useState<TrekItem | null>(initialTrek);
   const [loading, setLoading] = useState(!initialTrek);
-
-  // Dynamic FAQs from backend
   const [globalFaqs, setGlobalFaqs] = useState<FaqItem[]>([]);
-
-  // Dynamic Reviews from backend settings
   const [globalReviews, setGlobalReviews] = useState<Testimonial[]>([]);
-
-  // Dynamic Related Treks from backend
   const [relatedTreks, setRelatedTreks] = useState<TrekItem[]>([]);
 
-  // Booking Modal State
+  // Booking modal state
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-
-  // Calculator State
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
+  const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
 
-  // Load dynamic data from backend APIs if needed
+  // Fetch backend data dynamically
   useEffect(() => {
+    let isMounted = true;
+
     async function loadData() {
       try {
         if (!initialTrek) {
-          const item = await TrekService.getBySlug(slug);
-          if (item) {
-            setTrek(item);
+          const fetchedTrek = await TrekService.getBySlug(slug);
+          if (isMounted && fetchedTrek) {
+            setTrek(fetchedTrek);
+          }
+        }
+
+        const [faqsData, settingsData, allTreks] = await Promise.all([
+          FaqService.getAll(FaqStatus.ACTIVE).catch(() => []),
+          SettingService.getAll().catch(() => ({})),
+          TrekService.getAll().catch(() => []),
+        ]);
+
+        if (isMounted) {
+          if (faqsData) setGlobalFaqs(faqsData);
+          if (settingsData && (settingsData as any).testimonials) {
+            try {
+              const parsed = JSON.parse((settingsData as any).testimonials);
+              if (Array.isArray(parsed)) setGlobalReviews(parsed);
+            } catch {}
+          }
+
+          if (allTreks && allTreks.length > 0) {
+            const filtered = allTreks.filter(
+              (t) => t.slug !== slug && t.status === "active"
+            );
+            setRelatedTreks(filtered.slice(0, 3) as unknown as TrekItem[]);
           } else {
-            const staticMatch = initialTreksData.find((t) => t.slug === slug);
-            setTrek(staticMatch || null);
+            const fallback = initialTreksData.filter((t) => t.slug !== slug);
+            setRelatedTreks(fallback.slice(0, 3));
           }
         }
-
-        // Fetch Live Global FAQs from API
-        const liveFaqs = await FaqService.getAll(FaqStatus.ACTIVE);
-        if (liveFaqs && Array.isArray(liveFaqs)) {
-          setGlobalFaqs(liveFaqs);
-        }
-
-        // Fetch Live Testimonials from Global Settings API
-        const settings = await SettingService.getAll();
-        if (settings?.testimonials) {
-          try {
-            const parsed = JSON.parse(settings.testimonials);
-            if (Array.isArray(parsed)) {
-              setGlobalReviews(parsed);
-            }
-          } catch (e) {
-            console.warn("Failed to parse dynamic testimonials:", e);
-          }
-        }
-
-        // Fetch Active Treks for Related Section
-        const allTreks = await TrekService.getAll();
-        if (allTreks && Array.isArray(allTreks)) {
-          setRelatedTreks(
-            allTreks.filter((t) => t.slug !== slug).slice(0, 3),
-          );
-        }
-      } catch (e) {
-        console.warn("Failed to fetch dynamic trek details data:", e);
+      } catch (err) {
+        console.error("Failed to load trek detail data:", err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
+
     loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [slug, initialTrek]);
 
   // Gallery images from backend data
   const gallery = useMemo(() => {
-    if (!trek || !trek.image) return [];
+    if (!trek) return [];
+    if (trek.galleryImages && Array.isArray(trek.galleryImages) && trek.galleryImages.length > 0) {
+      return trek.galleryImages;
+    }
+    if (!trek.image) return [];
     if (trek.image.includes(",")) {
       return trek.image
         .split(",")
@@ -192,6 +197,15 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     if (costIncludes.length > 0 || costExclusions.length > 0) {
       list.push({ key: "cost", label: "Inclusions & Exclusions" });
     }
+    if (trek?.departureDates && trek.departureDates.length > 0) {
+      list.push({ key: "departures", label: "Departure Dates" });
+    }
+    if (trek?.mapImage) {
+      list.push({ key: "map", label: "Trek Map" });
+    }
+    if (trek?.packageFiles && trek.packageFiles.length > 0) {
+      list.push({ key: "files", label: "Downloads" });
+    }
     if (displayFaqs.length > 0) {
       list.push({ key: "faqs", label: "FAQs" });
     }
@@ -219,79 +233,64 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
   }
 
   if (!trek) {
-    return notFound();
+    notFound();
   }
 
-  // Quick facts based on backend data
-  const quickFacts = [
-    ...(trek.maxAltitudeMeters
-      ? [
-          {
-            icon: <Mountain className="w-5 h-5" />,
-            label: "Max Elevation",
-            value: `${trek.maxAltitudeMeters.toLocaleString()} m`,
-          },
-        ]
-      : []),
-    ...(trek.difficulty
-      ? [
-          {
-            icon: <Compass className="w-5 h-5" />,
-            label: "Trek Grade",
-            value: <span className="capitalize">{trek.difficulty}</span>,
-          },
-        ]
-      : []),
-    ...(trek.bestSeason
-      ? [
-          {
-            icon: <Calendar className="w-5 h-5" />,
-            label: "Best Season",
-            value: trek.bestSeason,
-          },
-        ]
-      : []),
-    ...(trek.accommodation
-      ? [
-          {
-            icon: <BedDouble className="w-5 h-5" />,
-            label: "Accommodation",
-            value: trek.accommodation,
-          },
-        ]
-      : []),
-  ];
+  const handleBookDeparture = (dateSlot: TripDepartureDate) => {
+    setSelectedDeparture(dateSlot);
+    setIsBookingModalOpen(true);
+  };
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] text-[#1E2420] antialiased">
+    <div className="min-h-screen bg-[#FAF8F5] pb-20">
       {/* 1. HERO HEADER */}
       <PackageDetailHero
         title={trek.title}
         image={trek.image}
         backHref="/trekking"
-        backLabel="All Treks & Itineraries"
+        backLabel="Back to Treks"
         priceUSD={trek.priceUSD}
+        bookButtonLabel="Book Trek"
         onBookClick={() => setIsBookingModalOpen(true)}
-        bookButtonLabel="Book Expedition"
         badges={[
-          ...(trek.region
-            ? [{ label: `${trek.region} Region`, highlight: true }]
-            : []),
-          ...(trek.durationDays ? [{ label: `${trek.durationDays} Days` }] : []),
-          ...(trek.difficulty ? [{ label: `${trek.difficulty} Grade` }] : []),
-          ...(trek.maxAltitudeMeters
-            ? [{ label: `Max ${trek.maxAltitudeMeters.toLocaleString()}m` }]
-            : []),
+          { label: trek.region || "Trekking" },
+          { label: trek.difficulty || "Moderate", highlight: true },
+          { label: `${trek.durationDays} Days` },
         ]}
       />
 
       {/* 2. QUICK FACTS BAR */}
-      {quickFacts.length > 0 && <PackageQuickFacts facts={quickFacts} />}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
+        <PackageQuickFacts
+          facts={[
+            {
+              icon: <Mountain className="w-5 h-5" />,
+              label: "Max Elevation",
+              value: `${(trek.maxAltitudeMeters || 1400).toLocaleString()}m`,
+            },
+            {
+              icon: <Compass className="w-5 h-5" />,
+              label: "Difficulty Grade",
+              value: trek.difficulty,
+            },
+            {
+              icon: <Calendar className="w-5 h-5" />,
+              label: "Best Season",
+              value: trek.bestSeason,
+            },
+            {
+              icon: <BedDouble className="w-5 h-5" />,
+              label: "Accommodation",
+              value: trek.accommodation || "Lodge / Teahouse",
+            },
+          ]}
+        />
+      </div>
 
-      {/* 3. MAIN CONTENT & SIDEBAR */}
-      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-          {/* Main Column */}
+      {/* 3. MAIN CONTENT GRID (LEFT DETAILS + RIGHT SIDEBAR) */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          {/* Main Details Column */}
           <div className="lg:col-span-8 space-y-10">
             {/* Gallery Showcase */}
             {gallery.length > 0 && (
@@ -313,7 +312,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               {currentActiveTab === "overview" && (
                 <div className="space-y-8">
                   {trek.shortDesc && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 bg-white p-6 sm:p-8 rounded-2xl border border-[#EAE5DC] shadow-2xs">
                       <h2 className="font-heading text-2xl font-bold text-[#1E2420]">
                         Trip Overview
                       </h2>
@@ -328,7 +327,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
                   {(trek.startEndLocation ||
                     trek.meals ||
                     trek.groupSizeRange) && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#E6E0D5]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {trek.startEndLocation && (
                         <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
                           <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
@@ -369,7 +368,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
 
                   {/* Permits Section */}
                   {trek.permitsRequired && trek.permitsRequired.length > 0 && (
-                    <div className="space-y-3 pt-4 border-t border-[#E6E0D5]">
+                    <div className="space-y-3 p-6 bg-white border border-[#EAE5DC] rounded-2xl">
                       <h3 className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider">
                         Required Permits
                       </h3>
@@ -385,6 +384,12 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
                       </div>
                     </div>
                   )}
+
+                  {/* Add-ons & Options */}
+                  <PackageAddons addonsText={trek.addonsText} />
+
+                  {/* Useful Info */}
+                  <PackageUsefulInfo usefulInfoText={trek.usefulInfoText} />
                 </div>
               )}
 
@@ -405,7 +410,26 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
                 />
               )}
 
-              {/* TAB 4: FAQS */}
+              {/* TAB 4: DEPARTURE DATES */}
+              {currentActiveTab === "departures" && trek.departureDates && (
+                <PackageDepartures
+                  dates={trek.departureDates}
+                  defaultPrice={trek.priceUSD}
+                  onBookDate={handleBookDeparture}
+                />
+              )}
+
+              {/* TAB 5: TREK MAP */}
+              {currentActiveTab === "map" && trek.mapImage && (
+                <PackageTrekMap mapImage={trek.mapImage} title={trek.title} />
+              )}
+
+              {/* TAB 6: DOWNLOADS */}
+              {currentActiveTab === "files" && trek.packageFiles && (
+                <PackageDownloads files={trek.packageFiles} title={trek.title} />
+              )}
+
+              {/* TAB 7: FAQS */}
               {currentActiveTab === "faqs" && <PackageFaqs faqs={displayFaqs} />}
             </div>
 
@@ -453,6 +477,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
           categoryType: BookingPackageType.TREKKING,
         }}
         initialTravelers={calculatorTravelers}
+        initialDate={selectedDeparture?.startDate}
       />
     </div>
   );

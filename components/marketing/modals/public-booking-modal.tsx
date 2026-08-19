@@ -1,25 +1,25 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import {
-  X,
-  Loader2,
-  CheckCircle2,
-  Mountain,
-  Compass,
-  FileCheck,
-  Plane,
-  CreditCard,
-} from "lucide-react";
-import { BookingService } from "@/lib/services/admin-service";
 import {
   Booking,
   BookingPackageType,
   BookingPaymentStatus,
-  BookingStatus,
   BookingPermitStatus,
+  BookingStatus,
 } from "@/lib/admin-data";
 import { BookingFormValues } from "@/lib/admin-schemas";
+import { BookingService } from "@/lib/services/admin-service";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Compass,
+  CreditCard,
+  FileCheck,
+  Loader2,
+  Mountain,
+  X
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface PublicBookingModalProps {
   isOpen: boolean;
@@ -51,6 +51,7 @@ export function PublicBookingModal({
   onClose,
   trip,
   initialTravelers = 2,
+  initialDate,
 }: PublicBookingModalProps) {
   const [travelers, setTravelers] = useState<number>(initialTravelers);
 
@@ -60,18 +61,7 @@ export function PublicBookingModal({
     return d.toISOString().split("T")[0];
   }, []);
 
-  const [startDate, setStartDate] = useState<string>(defaultStartDate);
-
-  // Return date is inclusive of the departure day, so a 12-day trek
-  // departing the 1st returns on the 12th, not the 13th.
-  const endDate = useMemo(() => {
-    if (!startDate) return "";
-    const nights = Math.max(1, trip.durationDays) - 1;
-    const d = new Date(startDate);
-    d.setDate(d.getDate() + nights);
-    return d.toISOString().split("T")[0];
-  }, [startDate, trip.durationDays]);
-
+  const [startDate, setStartDate] = useState<string>(initialDate || defaultStartDate);
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
@@ -82,17 +72,88 @@ export function PublicBookingModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  // 1. Prevent background page scrolling when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
+  // 2. Reset and synchronize state whenever the modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      if (initialTravelers && initialTravelers >= 1) {
+        setTravelers(initialTravelers);
+      }
+      if (initialDate && initialDate.trim()) {
+        setStartDate(initialDate);
+      } else {
+        setStartDate(defaultStartDate);
+      }
+      setGuestName("");
+      setGuestEmail("");
+      setGuestPhone("");
+      setCountry("");
+      setSpecialRequests("");
+      setTouched({});
+      setConfirmedBooking(null);
+      setErrorMessage(null);
+      setIsSubmitting(false);
+      setShowExitConfirm(false);
+    }
+  }, [isOpen, initialTravelers, initialDate, defaultStartDate]);
+
+  // 3. Accurately detect if the user has changed anything from original state
+  const isDirty = useMemo(() => {
+    if (confirmedBooking) return false;
+    const initialDateValue = initialDate && initialDate.trim() ? initialDate : defaultStartDate;
+    const initialTravValue = initialTravelers && initialTravelers >= 1 ? initialTravelers : 2;
+
+    if (travelers !== initialTravValue) return true;
+    if (startDate !== initialDateValue) return true;
+    if (guestName.trim() !== "") return true;
+    if (guestEmail.trim() !== "") return true;
+    if (guestPhone.trim() !== "") return true;
+    if (country.trim() !== "") return true;
+    if (specialRequests.trim() !== "") return true;
+    return false;
+  }, [
+    confirmedBooking,
+    travelers,
+    initialTravelers,
+    startDate,
+    initialDate,
+    defaultStartDate,
+    guestName,
+    guestEmail,
+    guestPhone,
+    country,
+    specialRequests,
+  ]);
+
+  // Return date is inclusive of the departure day
+  const endDate = useMemo(() => {
+    if (!startDate) return "";
+    const nights = Math.max(1, trip.durationDays) - 1;
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + nights);
+    return d.toISOString().split("T")[0];
+  }, [startDate, trip.durationDays]);
 
   const baseCostPerPerson = trip.priceUSD || 0;
-  const groupDiscount = travelers >= 8 ? 0.1 : travelers >= 4 ? 0.05 : 0;
 
   const totalPriceUSD = useMemo(() => {
     const perPerson = baseCostPerPerson;
-    return Math.round(perPerson * travelers * (1 - groupDiscount));
-  }, [travelers, baseCostPerPerson, groupDiscount]);
+    return Math.round(perPerson * travelers);
+  }, [travelers, baseCostPerPerson]);
 
   const depositUSD = Math.round(totalPriceUSD * 0.2);
-
   const todayStr = new Date().toISOString().split("T")[0];
 
   const fieldErrors: FieldErrors = useMemo(() => {
@@ -114,6 +175,49 @@ export function PublicBookingModal({
     touched[field] ? fieldErrors[field] : undefined;
 
   const markTouched = (field: string) => setTouched((prev) => ({ ...prev, [field]: true }));
+
+  // Force-close and clear all state
+  const forceClose = useCallback(() => {
+    setShowExitConfirm(false);
+    setGuestName("");
+    setGuestEmail("");
+    setGuestPhone("");
+    setCountry("");
+    setSpecialRequests("");
+    setConfirmedBooking(null);
+    setErrorMessage(null);
+    setTouched({});
+    setIsSubmitting(false);
+    onClose();
+  }, [onClose]);
+
+  // Request close: checks if dirty, otherwise prompts confirmation
+  const requestClose = useCallback(() => {
+    if (confirmedBooking || !isDirty) {
+      forceClose();
+    } else {
+      setShowExitConfirm(true);
+    }
+  }, [confirmedBooking, isDirty, forceClose]);
+
+  // Handle keyboard Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (showExitConfirm) {
+          setShowExitConfirm(false);
+        } else {
+          requestClose();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, showExitConfirm, requestClose]);
 
   if (!isOpen) return null;
 
@@ -147,8 +251,7 @@ export function PublicBookingModal({
         paymentStatus: BookingPaymentStatus.PENDING,
         bookingStatus: BookingStatus.IN_REVIEW,
         permitStatus: BookingPermitStatus.PROCESSING,
-        specialRequests:
-          specialRequests.trim(),
+        specialRequests: specialRequests.trim(),
       };
 
       const res = await BookingService.create(payload);
@@ -165,13 +268,6 @@ export function PublicBookingModal({
     }
   };
 
-  const handleClose = () => {
-    setConfirmedBooking(null);
-    setErrorMessage(null);
-    setTouched({});
-    onClose();
-  };
-
   const inputBase =
     "w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-1 transition-colors";
   const inputOk = "border-slate-200 focus:border-amber-500 focus:ring-amber-500";
@@ -179,17 +275,57 @@ export function PublicBookingModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="booking-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) handleClose();
+        if (e.target === e.currentTarget) requestClose();
       }}
     >
-      <div className="relative flex w-full max-w-lg sm:max-w-2xl max-h-[92vh] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative flex w-full max-w-lg sm:max-w-2xl max-h-[90vh] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+        
+        {/* Unsaved Changes Confirmation Overlay */}
+        {showExitConfirm && (
+          <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="max-w-sm w-full text-center space-y-4">
+              <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center justify-center mx-auto">
+                <AlertTriangle className="w-5 h-5" strokeWidth={2} />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-slate-900">
+                  Leave booking?
+                </h3>
+                <p className="text-sm text-slate-600">
+                  You have unsaved changes. If you leave now, your entered booking details will be lost.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowExitConfirm(false)}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-amber-700 text-white font-semibold text-sm hover:bg-amber-800"
+                  autoFocus
+                >
+                  Continue Editing
+                </button>
+                <button
+                  type="button"
+                  onClick={forceClose}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-semibold text-sm hover:text-red-700 hover:border-red-300"
+                >
+                  Discard &amp; Leave
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="relative shrink-0 border-b border-slate-200 bg-white">
           <div className="flex items-start justify-between gap-3 px-5 py-4 sm:px-7 sm:py-5">
             <div className="min-w-0 space-y-1.5">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-slate-500">
                 <span className="inline-flex items-center gap-1">
                   <Compass className="h-3 w-3" strokeWidth={2.25} />
                   {trip.region}
@@ -212,15 +348,15 @@ export function PublicBookingModal({
                   </>
                 ) : null}
               </div>
-              <h2 className="font-heading text-lg font-bold leading-snug text-slate-900 sm:text-xl">
+              <h2 id="booking-modal-title" className="font-heading text-base sm:text-lg font-bold leading-snug text-slate-900">
                 {trip.title}
               </h2>
             </div>
 
             <button
               type="button"
-              onClick={handleClose}
-              className="shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+              onClick={requestClose}
+              className="shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 cursor-pointer"
               aria-label="Close booking form"
             >
               <X className="h-5 w-5" />
@@ -247,7 +383,7 @@ export function PublicBookingModal({
 
               <div className="mx-auto mt-6 max-w-sm rounded-xl border border-slate-200 bg-slate-50">
                 <div className="flex items-center justify-between border-b border-dashed border-slate-300 px-5 py-3">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Booking reference
                   </span>
                   <span className="rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1 font-mono text-sm font-bold text-amber-800">
@@ -283,8 +419,8 @@ export function PublicBookingModal({
 
               <button
                 type="button"
-                onClick={handleClose}
-                className="mx-auto mt-7 block w-full max-w-sm rounded-xl bg-slate-900 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                onClick={forceClose}
+                className="mx-auto mt-7 block w-full max-w-sm rounded-xl bg-amber-700 hover:bg-amber-800 active:bg-amber-900 py-3.5 text-sm font-semibold text-white transition-colors cursor-pointer"
               >
                 Back to trip details
               </button>
@@ -357,11 +493,6 @@ export function PublicBookingModal({
                       +
                     </button>
                   </div>
-                  {groupDiscount > 0 && (
-                    <p className="text-xs font-medium text-emerald-700">
-                      Group discount applied — {groupDiscount * 100}% off
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -503,7 +634,7 @@ export function PublicBookingModal({
                       ${depositUSD.toLocaleString()} deposit to confirm
                     </span>
                   </div>
-                  <span className="font-heading text-2xl font-bold text-slate-900">
+                  <span className="font-heading text-xl sm:text-2xl font-bold text-slate-900">
                     ${totalPriceUSD.toLocaleString()}
                   </span>
                 </div>

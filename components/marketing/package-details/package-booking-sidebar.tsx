@@ -5,8 +5,12 @@ import {
   ShieldCheck,
   Award,
   Clock,
-  PhoneCall,
+  MessageSquare,
   Send,
+  Check,
+  Minus,
+  Plus,
+  ArrowRight,
 } from "lucide-react";
 import { InquiryService } from "@/lib/services/admin-service";
 
@@ -85,138 +89,163 @@ export function PackageBookingSidebar({
 
   const defaultTrustBadges = [
     {
-      icon: <ShieldCheck className="w-4 h-4 text-[#2D4536] shrink-0" />,
+      icon: <ShieldCheck className="w-4 h-4 text-emerald-800 shrink-0" strokeWidth={1.75} />,
       text: "100% Guaranteed Departures",
     },
     {
-      icon: <Award className="w-4 h-4 text-[#2D4536] shrink-0" />,
-      text: "IFMGA / Expert Certified Mountain Leaders",
+      icon: <Award className="w-4 h-4 text-emerald-800 shrink-0" strokeWidth={1.75} />,
+      text: "Licensed High-Altitude Guides",
     },
     {
-      icon: <Clock className="w-4 h-4 text-[#2D4536] shrink-0" />,
-      text: "Flexible Rescheduling & Free Date Changes",
+      icon: <Clock className="w-4 h-4 text-emerald-800 shrink-0" strokeWidth={1.75} />,
+      text: "Flexible Date Rescheduling",
     },
   ];
 
   const activeTrustBadges = trustBadges || defaultTrustBadges;
 
   return (
-    <aside className="space-y-6">
-      <div className="bg-white border border-[#E0DBD0] rounded-xl shadow-xs overflow-hidden">
-        {/* Header */}
-        <div className="bg-[#18261F] text-white p-5">
-          <span className="text-[11px] uppercase font-bold tracking-widest text-[#C28835] block">
-            Trip Booking &amp; Estimate
-          </span>
-          <div className="flex items-baseline justify-between mt-1">
-            <span className="text-2xl font-bold font-heading">
-              ${perPersonCalculated.toLocaleString()}{" "}
-              <span className="text-xs font-normal text-white/70">
-                / person
-              </span>
+    <aside className="w-full">
+      <div className="bg-white border border-stone-200 rounded-2xl shadow-xs overflow-hidden">
+        {/* Pricing Header */}
+        <div className="bg-stone-900 text-white p-4.5 sm:p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <span className="type-caption text-amber-400">
+              Trip Rate
             </span>
-            <span className="text-xs text-white/70">
-              {durationDays} Days Duration
+            <span className="type-caption text-stone-300">
+              {durationDays} Days Total
             </span>
           </div>
+
+          <div className="flex items-baseline gap-1.5 mt-1.5">
+            <span className="text-xl sm:text-2xl font-bold font-heading tracking-tight text-white">
+              ${perPersonCalculated.toLocaleString()}
+            </span>
+            <span className="type-caption text-stone-300">
+              USD / person
+            </span>
+          </div>
+          <p className="type-body-sm text-stone-400 mt-0.5">
+            Includes all guided logistics, permits, and accommodations
+          </p>
         </div>
 
-        {/* Form Container */}
-        <div className="p-5 space-y-5">
-          {/* Travelers Counter */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#1E2420] uppercase tracking-wider block">
-              Number of Travelers
-            </label>
-            <div className="flex items-center gap-3">
+        {/* Booking Console Body */}
+        <div className="p-4.5 sm:p-5 space-y-4">
+          {/* Travelers Stepper */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="type-caption text-stone-900 font-bold">
+                Travelers
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 p-1.5 rounded-xl">
               <button
                 type="button"
                 disabled={travelers <= 1}
                 onClick={() => onTravelersChange(Math.max(1, travelers - 1))}
-                className="w-10 h-10 rounded-lg bg-[#FAF8F5] border border-[#E0DBD0] text-[#1E2420] font-bold hover:bg-[#EFEBE3] disabled:opacity-30 cursor-pointer flex items-center justify-center text-base"
+                aria-label="Decrease traveler count"
+                className="w-8 h-8 rounded-lg bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-2xs"
               >
-                -
+                <Minus className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
-              <div className="flex-1 text-center font-bold text-[#1E2420] bg-[#FAF8F5] border border-[#E0DBD0] py-2 rounded-lg text-sm">
+              
+              <div className="flex-1 text-center type-heading-md text-stone-900">
                 {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
               </div>
+
               <button
                 type="button"
                 disabled={travelers >= 16}
                 onClick={() => onTravelersChange(Math.min(16, travelers + 1))}
-                className="w-10 h-10 rounded-lg bg-[#FAF8F5] border border-[#E0DBD0] text-[#1E2420] font-bold hover:bg-[#EFEBE3] disabled:opacity-30 cursor-pointer flex items-center justify-center text-base"
+                aria-label="Increase traveler count"
+                className="w-8 h-8 rounded-lg bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-2xs"
               >
-                +
+                <Plus className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </div>
-            {travelers >= 4 && (
-              <p className="text-[11px] text-[#2D4536] font-medium">
-                ✓ Group discount applied ({travelers >= 8 ? "10%" : "5%"} off)
-              </p>
-            )}
           </div>
 
           {/* Add-ons */}
           {addons.length > 0 && (
-            <div className="space-y-2.5">
-              {addons.map((addon) => (
-                <div
-                  key={addon.id}
-                  className="p-3.5 bg-[#FAF8F5] border border-[#EAE5DC] rounded-lg flex items-center justify-between gap-3"
-                >
-                  <div>
-                    <span className="text-xs font-bold text-[#1E2420] block">
-                      {addon.label}
-                    </span>
-                    <span className="text-[11px] text-[#6B726C] block">
-                      {addon.description} (+${addon.pricePerPerson}/person)
-                    </span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={addon.checked}
-                    onChange={(e) => addon.onChange(e.target.checked)}
-                    className="w-4 h-4 accent-[#2D4536] rounded cursor-pointer"
-                  />
-                </div>
-              ))}
+            <div className="space-y-1.5">
+              <span className="type-caption text-stone-900 font-bold block">
+                Upgrades
+              </span>
+              <div className="space-y-1.5">
+                {addons.map((addon) => (
+                  <label
+                    key={addon.id}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${
+                      addon.checked
+                        ? "bg-stone-50 border-stone-400"
+                        : "bg-white border-stone-200 hover:border-stone-300"
+                    }`}
+                  >
+                    <div className="min-w-0 pr-2">
+                      <span className="type-heading-md text-stone-900 block">
+                        {addon.label}
+                      </span>
+                      <span className="type-body-sm text-stone-500 block truncate">
+                        {addon.description} (+${addon.pricePerPerson}/person)
+                      </span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={addon.checked}
+                      onChange={(e) => addon.onChange(e.target.checked)}
+                      className="w-3.5 h-3.5 accent-stone-900 rounded cursor-pointer shrink-0"
+                    />
+                  </label>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Total Calculation */}
-          <div className="pt-3 border-t border-[#EAE5DC] flex items-baseline justify-between">
-            <div>
-              <span className="text-xs font-bold text-[#6B726C] uppercase tracking-wider block">
-                Total Estimate
-              </span>
-              <span className="text-[11px] text-[#6B726C]">
-                All permits, guides &amp; accommodations
-              </span>
+          {/* Calculation Breakdown */}
+          <div className="pt-3 border-t border-stone-200 space-y-1.5">
+            <div className="flex items-center justify-between type-body-sm text-stone-500">
+              <span>Base Rate ({travelers} × ${perPersonCalculated.toLocaleString()})</span>
+              <span className="font-semibold text-stone-900">${totalPrice.toLocaleString()} USD</span>
             </div>
-            <div className="text-right">
-              <span className="text-2xl font-bold font-heading text-[#1E2420]">
-                ${totalPrice.toLocaleString()}{" "}
-                <span className="text-xs font-normal text-[#6B726C]">USD</span>
-              </span>
+            
+            <div className="flex items-baseline justify-between pt-2 border-t border-stone-200">
+              <div>
+                <span className="type-caption text-stone-900 font-bold block">
+                  Total Investment
+                </span>
+                <span className="type-body-sm text-stone-400">
+                  Guaranteed rate
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="type-heading-xl text-stone-900">
+                  ${totalPrice.toLocaleString()}{" "}
+                  <span className="text-xs font-normal text-stone-500">USD</span>
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Primary Action Buttons */}
-          <div className="space-y-2 pt-2">
+          {/* Action CTAs */}
+          <div className="space-y-2 pt-0.5">
             <button
               type="button"
               onClick={onBookClick}
-              className="w-full bg-[#C28835] hover:bg-[#AD772B] text-white font-semibold text-sm py-3.5 rounded-lg shadow-sm transition-colors cursor-pointer"
+              className="w-full bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
             >
-              {bookButtonLabel}
+              <span>{bookButtonLabel}</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
             </button>
 
             <button
               type="button"
               onClick={() => setShowInquiryForm(!showInquiryForm)}
-              className="w-full bg-white hover:bg-[#FAF8F5] text-[#1E2420] border border-[#D9D3C7] font-semibold text-xs py-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
-              <PhoneCall className="w-3.5 h-3.5 text-[#2D4536]" />
+              <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
               <span>
                 {showInquiryForm
                   ? "Hide Custom Inquiry Form"
@@ -229,11 +258,19 @@ export function PackageBookingSidebar({
           {showInquiryForm && (
             <form
               onSubmit={handleInquirySubmit}
-              className="pt-3 border-t border-[#EAE5DC] space-y-3"
+              className="pt-4 border-t border-stone-200 space-y-3"
             >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-900">
+                  Direct Specialist Inquiry
+                </span>
+                <span className="text-xs text-stone-500">Replies in &lt; 12 hrs</span>
+              </div>
+
               {inquirySubmitted ? (
-                <div className="p-3 bg-[#E5EFE8] text-[#2D4536] rounded-lg text-xs font-medium text-center">
-                  Thank you! Your inquiry has been sent to our expedition team.
+                <div className="p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-medium text-center flex items-center justify-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-700" />
+                  <span>Inquiry received! Our team will contact you shortly.</span>
                 </div>
               ) : (
                 <>
@@ -243,7 +280,7 @@ export function PackageBookingSidebar({
                     placeholder="Your Full Name"
                     value={inquiryName}
                     onChange={(e) => setInquiryName(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-md border border-[#D9D3C7] focus:outline-none focus:border-[#2D4536] bg-white"
+                    className="w-full text-xs px-3 py-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all"
                   />
                   <input
                     type="email"
@@ -251,34 +288,34 @@ export function PackageBookingSidebar({
                     placeholder="Your Email Address"
                     value={inquiryEmail}
                     onChange={(e) => setInquiryEmail(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-md border border-[#D9D3C7] focus:outline-none focus:border-[#2D4536] bg-white"
+                    className="w-full text-xs px-3 py-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all"
                   />
                   <textarea
-                    placeholder="Any questions, preferred travel dates, or special requests..."
-                    rows={2}
+                    placeholder="Preferred travel dates, questions, or custom requests..."
+                    rows={3}
                     value={inquiryMessage}
                     onChange={(e) => setInquiryMessage(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-md border border-[#D9D3C7] focus:outline-none focus:border-[#2D4536] bg-white"
+                    className="w-full text-xs px-3 py-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white resize-none transition-all"
                   />
                   <button
                     type="submit"
                     disabled={inquiryLoading}
-                    className="w-full bg-[#18261F] hover:bg-[#2D4536] text-white text-xs font-semibold py-2.5 rounded-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full btn-primary py-2.5"
                   >
-                    <Send className="w-3 h-3" />
-                    <span>{inquiryLoading ? "Sending..." : "Submit Inquiry"}</span>
+                    <Send className="w-3.5 h-3.5" strokeWidth={2} />
+                    <span>{inquiryLoading ? "Sending..." : "Send Inquiry"}</span>
                   </button>
                 </>
               )}
             </form>
           )}
 
-          {/* Trust points */}
-          <div className="pt-4 border-t border-[#EAE5DC] space-y-2 text-xs text-[#6B726C]">
+          {/* Trust Guarantees */}
+          <div className="pt-4 border-t border-stone-200 space-y-2.5 text-xs text-stone-600">
             {activeTrustBadges.map((badge, i) => (
-              <div key={i} className="flex items-center gap-2">
+              <div key={i} className="flex items-center gap-2.5">
                 {badge.icon}
-                <span>{badge.text}</span>
+                <span className="leading-snug">{badge.text}</span>
               </div>
             ))}
           </div>

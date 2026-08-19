@@ -24,7 +24,7 @@ export function SiteFooter() {
                 <span className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
                   {settings.siteName || "Alpine Ace"}
                 </span>
-                <span className="text-[10px] font-medium text-zinc-500 mt-0.5">
+                <span className="text-xs font-medium text-zinc-500 mt-0.5">
                   {settings.tagline || "Nepal Trekking & Expeditions"}
                 </span>
               </span>
@@ -189,7 +189,7 @@ export function SiteFooter() {
               {settings.whatsappNumber && (
                 <li className="flex items-center gap-3">
                   <span className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                    <span className="text-[10px] text-white font-bold">W</span>
+                    <span className="text-xs text-white font-bold leading-none">W</span>
                   </span>
                   <a
                     href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(

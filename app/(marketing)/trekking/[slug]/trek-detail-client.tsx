@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { notFound } from "next/navigation";
 import {
   Mountain,
   Compass,
   Calendar,
   BedDouble,
-  MapPin,
-  Utensils,
-  Users,
+  ShieldAlert,
 } from "lucide-react";
 import { TrekItem, initialTreksData } from "@/lib/trek-data";
 import {
@@ -18,7 +16,8 @@ import {
   SettingService,
 } from "@/lib/services/admin-service";
 import { FaqItem, FaqStatus, BookingPackageType, TripDepartureDate } from "@/lib/admin-data";
-import { Testimonial, TESTIMONIALS } from "@/lib/home-data";
+import { Testimonial } from "@/lib/home-data";
+import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import {
@@ -51,10 +50,16 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
   const [globalReviews, setGlobalReviews] = useState<Testimonial[]>([]);
   const [relatedTreks, setRelatedTreks] = useState<TrekItem[]>([]);
 
+  const { setDetailNav } = useDetailNav();
+
   // Booking modal state
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
+
+  const [activeTab, setActiveTab] = useState<string>("overview");
+  const isClickScrollingRef = useRef(false);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch backend data dynamically
   useEffect(() => {
@@ -195,10 +200,10 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
       list.push({ key: "itinerary", label: "Detailed Itinerary" });
     }
     if (costIncludes.length > 0 || costExclusions.length > 0) {
-      list.push({ key: "cost", label: "Inclusions & Exclusions" });
+      list.push({ key: "cost", label: "Inclusions" });
     }
     if (trek?.departureDates && trek.departureDates.length > 0) {
-      list.push({ key: "departures", label: "Departure Dates" });
+      list.push({ key: "departures", label: "Dates & Rates" });
     }
     if (trek?.mapImage) {
       list.push({ key: "map", label: "Trek Map" });
@@ -209,23 +214,90 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     if (displayFaqs.length > 0) {
       list.push({ key: "faqs", label: "FAQs" });
     }
+    if (displayReviews.length > 0) {
+      list.push({ key: "reviews", label: "Reviews" });
+    }
     return list;
-  }, [trek, costIncludes, costExclusions, displayFaqs]);
+  }, [trek, costIncludes, costExclusions, displayFaqs, displayReviews]);
 
-  const [activeTab, setActiveTab] = useState<string>("overview");
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    isClickScrollingRef.current = true;
 
-  // Derive active tab safely during render without cascading useEffect renders
-  const currentActiveTab = availableTabs.some((t) => t.key === activeTab)
-    ? activeTab
-    : availableTabs[0]?.key || "overview";
+    if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
+    clickTimeoutRef.current = setTimeout(() => {
+      isClickScrollingRef.current = false;
+    }, 700);
+  };
+
+  // Register contextual navigation in global SiteHeader
+  useEffect(() => {
+    if (!trek) return;
+
+    setDetailNav({
+      title: trek.title,
+      categoryLabel: trek.region ? `${trek.region} Treks` : "Himalayan Treks",
+      categoryHref: "/trekking",
+      tabs: availableTabs,
+      activeTab,
+      onTabChange: handleTabChange,
+      priceUSD: trek.priceUSD,
+      onBookClick: () => setIsBookingModalOpen(true),
+      bookButtonLabel: "Book Trek",
+    });
+
+    return () => {
+      setDetailNav(null);
+    };
+  }, [trek, availableTabs, activeTab, setDetailNav]);
+
+  // Scroll-spy to keep active tab synchronized with manual page scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isClickScrollingRef.current) return;
+
+      const tabKeys = availableTabs.map((t) => t.key);
+      if (tabKeys.length === 0) return;
+
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+
+      // Bottom of page -> activate last tab
+      if (scrollY + windowHeight >= documentHeight - 80) {
+        setActiveTab(tabKeys[tabKeys.length - 1]);
+        return;
+      }
+
+      const offset = 100; // single top header offset
+      let current = tabKeys[0];
+
+      for (const key of tabKeys) {
+        const el = document.getElementById(key);
+        if (el) {
+          const top = el.getBoundingClientRect().top;
+          if (top <= offset) {
+            current = key;
+          }
+        }
+      }
+
+      setActiveTab(current);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
+    };
+  }, [availableTabs]);
 
   // Price calculations
   const baseCostPerPerson = trek?.priceUSD || 0;
   const totalPrice = useMemo(() => {
-    let discount = 1;
-    if (calculatorTravelers >= 4) discount = 0.95;
-    if (calculatorTravelers >= 8) discount = 0.9;
-    return Math.round(baseCostPerPerson * calculatorTravelers * discount);
+    return Math.round(baseCostPerPerson * calculatorTravelers);
   }, [calculatorTravelers, baseCostPerPerson]);
 
   if (loading) {
@@ -241,8 +313,10 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     setIsBookingModalOpen(true);
   };
 
+  const perPersonCalculated = Math.round(totalPrice / Math.max(1, calculatorTravelers));
+
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pb-20">
+    <div className="min-h-screen bg-white pb-24 lg:pb-20">
       {/* 1. HERO HEADER */}
       <PackageDetailHero
         title={trek.title}
@@ -260,26 +334,26 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
       />
 
       {/* 2. QUICK FACTS BAR */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
         <PackageQuickFacts
           facts={[
             {
-              icon: <Mountain className="w-5 h-5" />,
+              icon: <Mountain className="w-5 h-5" strokeWidth={1.75} />,
               label: "Max Elevation",
               value: `${(trek.maxAltitudeMeters || 1400).toLocaleString()}m`,
             },
             {
-              icon: <Compass className="w-5 h-5" />,
+              icon: <Compass className="w-5 h-5" strokeWidth={1.75} />,
               label: "Difficulty Grade",
               value: trek.difficulty,
             },
             {
-              icon: <Calendar className="w-5 h-5" />,
+              icon: <Calendar className="w-5 h-5" strokeWidth={1.75} />,
               label: "Best Season",
               value: trek.bestSeason,
             },
             {
-              icon: <BedDouble className="w-5 h-5" />,
+              icon: <BedDouble className="w-5 h-5" strokeWidth={1.75} />,
               label: "Accommodation",
               value: trek.accommodation || "Lodge / Teahouse",
             },
@@ -287,158 +361,172 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         />
       </div>
 
-      {/* 3. MAIN CONTENT GRID (LEFT DETAILS + RIGHT SIDEBAR) */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Main Details Column */}
-          <div className="lg:col-span-8 space-y-10">
+      {/* 3. MAIN CONTENT GRID */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
+          {/* Main Editorial Column */}
+          <div className="lg:col-span-8 space-y-10 sm:space-y-12">
             {/* Gallery Showcase */}
             {gallery.length > 0 && (
               <PackageGallery title={trek.title} images={gallery} />
             )}
 
-            {/* Navigation Tabs */}
+            {/* Inline Navigation Tabs (Visible before reaching sticky top) */}
             {availableTabs.length > 1 && (
-              <PackageTabsNav
-                tabs={availableTabs}
-                activeTab={currentActiveTab}
-                onTabChange={setActiveTab}
-              />
+              <div id="detail-page-tabs-bar">
+                <PackageTabsNav
+                  tabs={availableTabs}
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                />
+              </div>
             )}
 
-            {/* TAB CONTENT AREA */}
-            <div className="space-y-8">
-              {/* TAB 1: OVERVIEW */}
-              {currentActiveTab === "overview" && (
-                <div className="space-y-8">
-                  {trek.shortDesc && (
-                    <div className="space-y-4 bg-white p-6 sm:p-8 rounded-2xl border border-[#EAE5DC] shadow-2xs">
-                      <h2 className="font-heading text-2xl font-bold text-[#1E2420]">
-                        Trip Overview
-                      </h2>
-                      <div
-                        className="prose prose-stone max-w-none text-[#3A423C] text-base leading-relaxed font-normal [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 [&_h3]:font-bold [&_h3]:text-lg [&_h3]:text-[#1E2420] [&_h3]:mt-6 [&_h3]:mb-2 [&_h4]:font-bold [&_h4]:text-base [&_h4]:text-[#1E2420] [&_h4]:mt-4 [&_h4]:mb-2 [&_strong]:font-bold [&_strong]:text-[#1E2420] [&_a]:text-amber-700 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-amber-500 [&_blockquote]:pl-4 [&_blockquote]:italic"
-                        dangerouslySetInnerHTML={{ __html: trek.shortDesc }}
-                      />
+            {/* SECTION: OVERVIEW */}
+            <section id="overview" className="scroll-mt-24 space-y-5">
+              <div className="pb-3 border-b border-stone-200">
+                <h2 className="type-heading-xl">
+                  Trip Overview
+                </h2>
+              </div>
+
+              {trek.shortDesc && (
+                <div
+                  className="prose-editorial max-w-none"
+                  dangerouslySetInnerHTML={{ __html: trek.shortDesc }}
+                />
+              )}
+
+              {/* Key Specs Typographic Grid */}
+              {(trek.startEndLocation ||
+                trek.meals ||
+                trek.groupSizeRange) && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 py-3.5 border-y border-stone-200">
+                  {trek.startEndLocation && (
+                    <div className="space-y-0.5">
+                      <span className="type-caption block">
+                        Start &amp; Finish
+                      </span>
+                      <p className="type-heading-md text-stone-900">
+                        {trek.startEndLocation}
+                      </p>
                     </div>
                   )}
 
-                  {/* Highlights Grid */}
-                  {(trek.startEndLocation ||
-                    trek.meals ||
-                    trek.groupSizeRange) && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {trek.startEndLocation && (
-                        <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
-                          <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
-                            <MapPin className="w-3.5 h-3.5 text-[#2D4536]" />
-                            <span>Start &amp; Finish</span>
-                          </span>
-                          <p className="text-sm font-semibold text-[#1E2420]">
-                            {trek.startEndLocation}
-                          </p>
-                        </div>
-                      )}
-
-                      {trek.meals && (
-                        <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
-                          <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
-                            <Utensils className="w-3.5 h-3.5 text-[#2D4536]" />
-                            <span>Meals Provided</span>
-                          </span>
-                          <p className="text-sm font-semibold text-[#1E2420]">
-                            {trek.meals}
-                          </p>
-                        </div>
-                      )}
-
-                      {trek.groupSizeRange && (
-                        <div className="p-4 bg-white border border-[#EAE5DC] rounded-xl space-y-1">
-                          <span className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider flex items-center gap-1.5">
-                            <Users className="w-3.5 h-3.5 text-[#2D4536]" />
-                            <span>Group Size</span>
-                          </span>
-                          <p className="text-sm font-semibold text-[#1E2420]">
-                            {trek.groupSizeRange}
-                          </p>
-                        </div>
-                      )}
+                  {trek.meals && (
+                    <div className="space-y-0.5">
+                      <span className="type-caption block">
+                        Meals Provided
+                      </span>
+                      <p className="type-heading-md text-stone-900">
+                        {trek.meals}
+                      </p>
                     </div>
                   )}
 
-                  {/* Permits Section */}
-                  {trek.permitsRequired && trek.permitsRequired.length > 0 && (
-                    <div className="space-y-3 p-6 bg-white border border-[#EAE5DC] rounded-2xl">
-                      <h3 className="text-xs font-semibold text-[#6B726C] uppercase tracking-wider">
-                        Required Permits
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {trek.permitsRequired.map((permit, idx) => (
-                          <span
-                            key={idx}
-                            className="bg-[#EAE5DC] text-[#242E27] text-xs font-medium px-3 py-1 rounded-md"
-                          >
-                            {permit}
-                          </span>
-                        ))}
-                      </div>
+                  {trek.groupSizeRange && (
+                    <div className="space-y-0.5">
+                      <span className="type-caption block">
+                        Group Size
+                      </span>
+                      <p className="type-heading-md text-stone-900">
+                        {trek.groupSizeRange}
+                      </p>
                     </div>
                   )}
-
-                  {/* Add-ons & Options */}
-                  <PackageAddons addonsText={trek.addonsText} />
-
-                  {/* Useful Info */}
-                  <PackageUsefulInfo usefulInfoText={trek.usefulInfoText} />
                 </div>
               )}
 
-              {/* TAB 2: DETAILED ITINERARY */}
-              {currentActiveTab === "itinerary" && trek.itinerary && (
+              {/* Permits Section */}
+              {trek.permitsRequired && trek.permitsRequired.length > 0 && (
+                <div className="space-y-2 pt-1">
+                  <h3 className="type-caption text-stone-900 font-bold flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5 text-emerald-800" strokeWidth={1.75} />
+                    <span>Required Official Permits</span>
+                  </h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {trek.permitsRequired.map((permit, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-amber-50/60 border border-amber-200/80 text-amber-900 text-xs font-medium px-2.5 py-0.5 rounded-md"
+                      >
+                        {permit}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Add-ons & Options */}
+              <PackageAddons addonsText={trek.addonsText} />
+
+              {/* Useful Info */}
+              <PackageUsefulInfo usefulInfoText={trek.usefulInfoText} />
+            </section>
+
+            {/* SECTION: ITINERARY */}
+            {trek.itinerary && trek.itinerary.length > 0 && (
+              <section id="itinerary" className="scroll-mt-24">
                 <PackageItinerary
                   days={trek.itinerary}
                   title="Detailed Itinerary"
                   subtitle={`${trek.itinerary.length} Days journey across ${trek.region}`}
                 />
-              )}
+              </section>
+            )}
 
-              {/* TAB 3: INCLUSIONS & EXCLUSIONS */}
-              {currentActiveTab === "cost" && (
+            {/* SECTION: INCLUSIONS & EXCLUSIONS */}
+            {(costIncludes.length > 0 || costExclusions.length > 0) && (
+              <section id="cost" className="scroll-mt-24">
                 <PackageInclusions
                   inclusions={costIncludes}
                   exclusions={costExclusions}
                 />
-              )}
+              </section>
+            )}
 
-              {/* TAB 4: DEPARTURE DATES */}
-              {currentActiveTab === "departures" && trek.departureDates && (
+            {/* SECTION: DEPARTURE DATES */}
+            {trek.departureDates && trek.departureDates.length > 0 && (
+              <section id="departures" className="scroll-mt-24">
                 <PackageDepartures
                   dates={trek.departureDates}
                   defaultPrice={trek.priceUSD}
                   onBookDate={handleBookDeparture}
                 />
-              )}
+              </section>
+            )}
 
-              {/* TAB 5: TREK MAP */}
-              {currentActiveTab === "map" && trek.mapImage && (
+            {/* SECTION: TREK MAP */}
+            {trek.mapImage && (
+              <section id="map" className="scroll-mt-24">
                 <PackageTrekMap mapImage={trek.mapImage} title={trek.title} />
-              )}
+              </section>
+            )}
 
-              {/* TAB 6: DOWNLOADS */}
-              {currentActiveTab === "files" && trek.packageFiles && (
+            {/* SECTION: DOWNLOADS */}
+            {trek.packageFiles && trek.packageFiles.length > 0 && (
+              <section id="files" className="scroll-mt-24">
                 <PackageDownloads files={trek.packageFiles} title={trek.title} />
-              )}
+              </section>
+            )}
 
-              {/* TAB 7: FAQS */}
-              {currentActiveTab === "faqs" && <PackageFaqs faqs={displayFaqs} />}
-            </div>
+            {/* SECTION: FAQS */}
+            {displayFaqs.length > 0 && (
+              <section id="faqs" className="scroll-mt-24">
+                <PackageFaqs faqs={displayFaqs} />
+              </section>
+            )}
 
-            {/* TESTIMONIALS / REVIEWS */}
-            <PackageReviews reviews={displayReviews} />
+            {/* SECTION: REVIEWS */}
+            {displayReviews.length > 0 && (
+              <section id="reviews" className="scroll-mt-24">
+                <PackageReviews reviews={displayReviews} />
+              </section>
+            )}
           </div>
 
-          {/* Sidebar Booking / Rate Estimator Widget */}
-          <div className="lg:col-span-4 lg:sticky lg:top-36">
+          {/* Sticky Booking Sidebar */}
+          <div className="lg:col-span-4 lg:sticky lg:top-20 lg:self-start">
             <PackageBookingSidebar
               tripTitle={trek.title}
               durationDays={trek.durationDays}
@@ -446,7 +534,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               onTravelersChange={setCalculatorTravelers}
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
-              bookButtonLabel="Book Expedition"
+              bookButtonLabel="Book Trek"
             />
           </div>
         </div>
@@ -461,7 +549,29 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         />
       )}
 
-      {/* 5. BOOKING MODAL */}
+      {/* 5. MOBILE STICKY BOOKING ACTION BAR (< 1024px) */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-stone-200 py-2 px-4 z-30 shadow-lg flex items-center justify-between gap-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+        <div className="min-w-0">
+          <span className="type-caption text-stone-500 block truncate">
+            Estimated Rate ({trek.durationDays} Days)
+          </span>
+          <div className="flex items-baseline gap-1">
+            <span className="type-heading-xl text-stone-900">
+              ${perPersonCalculated.toLocaleString()}
+            </span>
+            <span className="type-caption text-stone-400">USD / person</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsBookingModalOpen(true)}
+          className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+        >
+          Book Trek
+        </button>
+      </div>
+
+      {/* 6. BOOKING MODAL */}
       <PublicBookingModal
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}

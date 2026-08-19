@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ChevronDown,
-  Mountain,
-  BedDouble,
-  Utensils,
-  MapPin,
-  Clock,
-  Sparkles,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { TripItineraryDay, TripItineraryDetail } from "@/lib/trek-data";
 
 export type { TripItineraryDay, TripItineraryDetail };
@@ -26,8 +18,8 @@ export function PackageItinerary({
   title = "Detailed Itinerary",
   subtitle,
 }: PackageItineraryProps) {
-  // -1 indicates all open, 0 indicates all closed, or specific day number open (defaulting to Day 1 open)
-  const [openDay, setOpenDay] = useState<number>(1);
+  // -1 indicates all open, 0 indicates all closed, or specific day number open (defaulting to all open for easy reading flow)
+  const [openDay, setOpenDay] = useState<number>(-1);
 
   if (!days || days.length === 0) return null;
 
@@ -39,144 +31,103 @@ export function PackageItinerary({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center pb-3 border-b border-[#E6E0D5]">
+      {/* Section Header */}
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-3 border-b border-stone-200">
         <div>
-          <h2 className="font-heading text-2xl font-bold text-[#1E2420]">
+          <h2 className="type-heading-xl">
             {title}
           </h2>
-          <p className="text-xs text-[#6B726C] mt-0.5">
-            {subtitle || `${days.length} Days total journey breakdown`}
-          </p>
+          {subtitle && (
+            <p className="type-body-sm mt-0.5">{subtitle}</p>
+          )}
         </div>
 
         <button
           type="button"
           onClick={toggleExpandAll}
-          className="text-xs font-bold text-[#2D4536] hover:text-[#1E2420] hover:underline cursor-pointer transition-colors bg-[#F3EFEA] hover:bg-[#EAE4DC] px-3 py-1.5 rounded-lg"
+          className="btn-secondary py-1 px-2.5 self-start sm:self-auto shrink-0"
         >
-          {isAllExpanded ? "Collapse All" : "Expand All"}
+          <span>{isAllExpanded ? "Collapse All" : "Expand All"}</span>
         </button>
       </div>
 
-      {/* Timeline List */}
-      <div className="relative pl-6 sm:pl-8 space-y-4 before:absolute before:left-3 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-[#E2DDD3]">
+      {/* Clean Editorial Timeline Flow */}
+      <div className="relative pl-5 sm:pl-7 border-l border-stone-200 ml-2 sm:ml-2.5 space-y-6 sm:space-y-7 pt-1 pb-2">
         {days.map((day, idx) => {
           const dayNum = Number(day.day || idx + 1);
           const formattedDayLabel = `Day ${String(dayNum).padStart(2, "0")}`;
           const isOpen = isAllExpanded || openDay === dayNum;
 
-          // Collect all extra details / highlights
-          const detailList: Array<{ label: string; value: string; icon?: any }> = [];
-
-          if (day.maxAltitude) {
-            detailList.push({
-              label: "Max. Altitude",
-              value: day.maxAltitude,
-              icon: Mountain,
-            });
-          }
-
-          if (day.accommodation || day.overnight) {
-            detailList.push({
-              label: "Overnight",
-              value: day.accommodation || day.overnight || "",
-              icon: BedDouble,
-            });
-          }
-
-          if (day.meals) {
-            detailList.push({
-              label: "Meals",
-              value: day.meals,
-              icon: Utensils,
-            });
-          }
-
-          if (Array.isArray(day.details)) {
-            day.details.forEach((d) => {
-              if (d && d.label && d.value) {
-                detailList.push({
-                  label: d.label,
-                  value: d.value,
-                  icon: Sparkles,
-                });
-              }
-            });
-          }
+          // Collect specs
+          const specs: { label: string; value: string }[] = [];
+          if (day.maxAltitude) specs.push({ label: "Altitude", value: day.maxAltitude });
+          if (day.accommodation || day.overnight)
+            specs.push({ label: "Stay", value: day.accommodation || day.overnight || "" });
+          if (day.meals) specs.push({ label: "Meals", value: day.meals });
 
           return (
-            <div
-              key={idx}
-              className={`relative bg-white border rounded-xl overflow-hidden shadow-2xs transition-all duration-200 ${
-                isOpen ? "border-[#D6CEC2] ring-1 ring-[#D6CEC2]/50" : "border-[#EAE5DC] hover:border-[#D6CEC2]"
-              }`}
-            >
-              {/* Day badge marker on vertical line */}
-              <div
-                className={`absolute -left-6 sm:-left-8 top-4 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold z-10 transition-colors ${
-                  isOpen ? "bg-[#2D4536] text-white shadow-xs" : "bg-[#EAE5DC] text-[#2D4536]"
-                }`}
-              >
-                {dayNum}
-              </div>
+            <article key={idx} className="relative group">
+              {/* Timeline Marker Dot */}
+              <div className="absolute -left-[25px] sm:-left-[33px] top-1.5 w-2 h-2 rounded-full bg-amber-700 ring-4 ring-white" />
 
-              {/* Accordion Header Button */}
+              {/* Day Header */}
               <button
                 type="button"
                 onClick={() => setOpenDay(openDay === dayNum ? 0 : dayNum)}
-                className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[#FAF8F5] transition-colors"
+                className="w-full text-left cursor-pointer group flex items-baseline justify-between gap-3"
               >
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className="font-heading text-sm sm:text-base font-bold text-[#1E2420]">
-                    {formattedDayLabel}:
+                <div className="space-y-0.5 min-w-0">
+                  <span className="type-caption text-amber-800 font-bold block">
+                    {formattedDayLabel}
                   </span>
-                  <span className="text-sm sm:text-base font-semibold text-[#2D4536]">
-                    {day.title || `Day ${dayNum} Route`}
-                  </span>
+                  <h3 className="type-heading-md text-stone-900 group-hover:text-amber-800 transition-colors">
+                    {day.title || `Day ${dayNum} Schedule`}
+                  </h3>
                 </div>
 
-                <ChevronDown
-                  className={`h-4 w-4 text-[#6B726C] transition-transform duration-200 shrink-0 ${
-                    isOpen ? "rotate-180 text-[#2D4536]" : ""
-                  }`}
-                />
+                <div className="flex items-center gap-1.5 shrink-0 self-center">
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 text-stone-400 group-hover:text-stone-700 transition-transform duration-200 ${
+                      isOpen ? "rotate-180 text-stone-700" : ""
+                    }`}
+                    strokeWidth={2}
+                  />
+                </div>
               </button>
 
-              {/* Accordion Body */}
-              {isOpen && (
-                <div className="px-5 pb-5 pt-2 text-sm text-[#3A423C] space-y-4 border-t border-[#F0EBE1] bg-[#FCFAF7]">
-                  {day.description ? (
-                    <p className="leading-relaxed font-normal text-sm sm:text-[14.5px] text-[#2C342E]">
-                      {day.description}
-                    </p>
-                  ) : (
-                    <p className="text-xs text-[#8A918B] italic">
-                      Detailed route and trekking specifications for {formattedDayLabel}.
-                    </p>
-                  )}
+              {/* Day Content Body with Smooth Height Animation */}
+              <div
+                className={`grid transition-[grid-template-rows,opacity] duration-250 ease-out ${
+                  isOpen ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0 mt-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="space-y-2.5 pt-0.5 pb-1">
+                    {day.description ? (
+                      <p className="type-body whitespace-pre-line">
+                        {day.description}
+                      </p>
+                    ) : (
+                      <p className="type-body-sm text-stone-400 italic">
+                        Detailed route and trekking specifications for {formattedDayLabel}.
+                      </p>
+                    )}
 
-                  {/* Highlights / Specs Badges */}
-                  {detailList.length > 0 && (
-                    <div className="pt-3 border-t border-[#EAE4DC] flex flex-wrap gap-2 sm:gap-3">
-                      {detailList.map((item, dIdx) => (
-                        <div
-                          key={dIdx}
-                          className="inline-flex items-center gap-1.5 bg-white border border-[#E4DED3] px-3 py-1.5 rounded-lg text-xs shadow-2xs"
-                        >
-                          <span className="text-[#6B726C] font-medium">
-                            {item.label}:
-                          </span>
-                          <strong className="text-[#1E2420] font-bold">
-                            {item.value}
-                          </strong>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                    {/* Day Metadata Footer */}
+                    {specs.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-2 border-t border-stone-100/80">
+                        {specs.map((spec, sIdx) => (
+                          <div key={sIdx} className="flex items-center gap-1 text-xs text-stone-500">
+                            <span className="font-medium text-stone-400">{spec.label}:</span>
+                            <span className="font-semibold text-stone-700">{spec.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
+              </div>
+            </article>
           );
         })}
       </div>

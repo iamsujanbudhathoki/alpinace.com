@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export interface RelatedTripItem {
   id: string;
@@ -27,38 +28,56 @@ export function PackageRelatedTrips({
   if (!trips || trips.length === 0) return null;
 
   return (
-    <section className="py-14 bg-white border-t border-[#E6E0D5]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <h3 className="font-heading text-xl font-bold text-[#1E2420] mb-6">
-          {title}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <section className="py-10 bg-white border-t border-stone-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-baseline justify-between gap-4 mb-6 pb-3 border-b border-stone-200">
+          <div>
+            <span className="type-caption text-amber-800 font-bold block mb-0.5">
+              Explore More
+            </span>
+            <h2 className="type-heading-xl">
+              {title}
+            </h2>
+          </div>
+          <Link
+            href={categoryPath}
+            className="inline-flex items-center gap-1.5 type-caption text-stone-600 hover:text-stone-900 hover:underline"
+          >
+            <span>View All</span>
+            <ArrowRight className="w-3 h-3" strokeWidth={2} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {trips.map((p) => (
-            <Link key={p.id} href={`${categoryPath}/${p.slug}`}>
-              <div className="bg-[#FAF8F5] border border-[#EAE5DC] rounded-xl overflow-hidden group hover:border-[#D9D3C7] transition-all">
-                <div className="aspect-16/10 w-full overflow-hidden bg-[#16221B]">
+            <Link key={p.id} href={`${categoryPath}/${p.slug}`} className="group block">
+              <div className="bg-white border border-stone-200 rounded-xl overflow-hidden group-hover:border-stone-400 group-hover:shadow-md transition-all">
+                <div className="aspect-16/10 w-full overflow-hidden bg-stone-100 relative">
                   <img
                     src={p.image}
                     alt={p.title}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out"
                   />
+                  <div className="absolute top-2.5 left-2.5 bg-stone-950/80 backdrop-blur-xs text-white type-caption px-2 py-0.5 rounded-full border border-white/10">
+                    {p.region ? `${p.region} • ` : ""}{p.durationDays} Days
+                  </div>
                 </div>
                 <div className="p-4 space-y-1.5">
-                  <span className="text-[11px] font-bold text-[#2D4536] uppercase tracking-wider block">
-                    {p.region ? `${p.region} • ` : ""}
-                    {p.durationDays} Days
-                  </span>
-                  <h4 className="font-heading text-sm font-bold text-[#1E2420] line-clamp-1 group-hover:text-[#2D4536] transition-colors">
+                  <h3 className="type-heading-md text-stone-900 line-clamp-1 group-hover:text-amber-800 transition-colors">
                     {p.title}
-                  </h4>
+                  </h3>
                   {p.shortDesc && (
-                    <p className="text-xs text-[#6B726C] line-clamp-2 leading-relaxed">
+                    <p className="type-body-sm text-stone-600 line-clamp-2 leading-relaxed">
                       {p.shortDesc.replace(/<[^>]*>?/gm, "")}
                     </p>
                   )}
-                  <span className="text-xs font-bold text-[#1E2420] block pt-1">
-                    From ${Number(p.priceUSD).toLocaleString()} USD
-                  </span>
+                  <div className="pt-2 border-t border-stone-200 flex items-center justify-between">
+                    <span className="type-caption text-stone-500">Starting from</span>
+                    <span className="type-heading-md text-stone-900">
+                      ${Number(p.priceUSD).toLocaleString()}{" "}
+                      <span className="text-xs font-normal text-stone-500">USD</span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </Link>

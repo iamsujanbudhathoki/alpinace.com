@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Users, DollarSign, CheckCircle2, ArrowRight, Clock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TripDepartureDate } from "@/lib/admin-data";
 
@@ -11,10 +11,10 @@ interface PackageDeparturesProps {
 }
 
 const STATUS_BADGES: Record<string, { label: string; bg: string }> = {
-  guaranteed: { label: "Guaranteed", bg: "bg-emerald-100 text-emerald-800 border-emerald-300" },
-  available: { label: "Available", bg: "bg-blue-100 text-blue-800 border-blue-300" },
-  limited: { label: "Limited Seats", bg: "bg-amber-100 text-amber-800 border-amber-300" },
-  full: { label: "Full", bg: "bg-rose-100 text-rose-800 border-rose-300" },
+  guaranteed: { label: "Guaranteed", bg: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  available: { label: "Available", bg: "bg-blue-50 text-blue-800 border-blue-200" },
+  limited: { label: "Limited Seats", bg: "bg-amber-50 text-amber-800 border-amber-200" },
+  full: { label: "Full", bg: "bg-rose-50 text-rose-800 border-rose-200" },
 };
 
 export function PackageDepartures({
@@ -24,33 +24,31 @@ export function PackageDepartures({
 }: PackageDeparturesProps) {
   if (!dates || dates.length === 0) {
     return (
-      <div className="bg-white border border-[#EAE5DC] rounded-2xl p-6 sm:p-8 space-y-3 shadow-2xs">
-        <h2 className="font-heading text-xl sm:text-2xl font-bold text-[#1E2420] flex items-center gap-2.5">
-          <Calendar className="w-5 h-5 text-amber-700" />
-          <span>Upcoming Departure Dates</span>
-        </h2>
-        <p className="text-sm text-[#4E5650]">
-          Custom departure dates are available upon request. Contact our expedition specialists to arrange private departures for your dates.
+      <div className="space-y-3">
+        <div className="pb-4 border-b border-stone-200">
+          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-stone-900 tracking-tight">
+            Upcoming Departures
+          </h2>
+        </div>
+        <p className="text-base text-stone-600 leading-relaxed">
+          Custom departure dates are available upon request. Contact our travel specialists to arrange private departures tailored to your schedule.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-[#EAE5DC] rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xs">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E6E0D5]">
-        <div>
-          <h2 className="font-heading text-xl sm:text-2xl font-bold text-[#1E2420] flex items-center gap-2.5">
-            <Calendar className="w-5 h-5 text-amber-700" />
-            <span>Scheduled Departure Dates ({dates.length})</span>
-          </h2>
-          <p className="text-xs sm:text-sm text-[#6B726C] mt-1">
-            Choose a guaranteed departure date slot or request custom group dates.
-          </p>
-        </div>
+    <div className="space-y-6">
+      <div className="pb-3 border-b border-stone-200">
+        <h2 className="type-heading-xl">
+          Scheduled Departure Dates
+        </h2>
+        <p className="type-body-sm mt-0.5">
+          Choose a guaranteed departure slot or request custom group dates.
+        </p>
       </div>
 
-      <div className="divide-y divide-[#EAE5DC]">
+      <div className="divide-y divide-stone-200">
         {dates.map((item, idx) => {
           const statusConfig = STATUS_BADGES[item.status || "guaranteed"] || STATUS_BADGES.guaranteed;
           const displayPrice = item.priceUSD || defaultPrice;
@@ -58,54 +56,51 @@ export function PackageDepartures({
           return (
             <div
               key={item.id || idx}
-              className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className="py-3.5 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
             >
-              <div className="space-y-1.5 min-w-0">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <span className="text-base font-bold text-[#1E2420]">
+              <div className="space-y-0.5 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="type-heading-md text-stone-900">
                     {item.startDate} &rarr; {item.endDate}
                   </span>
-                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${statusConfig.bg}`}>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${statusConfig.bg}`}>
                     {statusConfig.label}
                   </span>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#525B54]">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-stone-500 font-medium">
                   {item.seatsAvailable !== undefined && (
-                    <span className="flex items-center gap-1 font-medium">
-                      <Users className="w-3.5 h-3.5 text-amber-700" />
-                      <span>{item.seatsAvailable} seats available</span>
-                    </span>
+                    <span>{item.seatsAvailable} seats remaining</span>
                   )}
                   {item.notes && (
-                    <span className="italic text-[#2D4536] font-medium">
+                    <span className="text-amber-800">
                       Note: {item.notes}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 border-t sm:border-t-0 pt-3 sm:pt-0 border-[#F0EBE1]">
+              <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 border-t sm:border-t-0 pt-2.5 sm:pt-0 border-stone-100">
                 {displayPrice !== undefined && (
                   <div className="text-right">
-                    <span className="text-[10px] uppercase tracking-wider text-[#6B726C] font-semibold block">
-                      Price per Person
+                    <span className="type-caption block text-stone-400">
+                      Per Person
                     </span>
-                    <span className="text-lg font-black text-[#2D4536]">
+                    <span className="type-heading-md text-stone-900 block">
                       ${displayPrice.toLocaleString()} USD
                     </span>
                   </div>
                 )}
 
                 {onBookDate && item.status !== "full" && (
-                  <Button
+                  <button
                     type="button"
                     onClick={() => onBookDate(item)}
-                    className="bg-[#2D4536] hover:bg-[#1E2E24] text-white text-xs font-bold px-4 h-9 rounded-xl gap-1.5 shadow-2xs cursor-pointer"
+                    className="btn-primary py-1.5 px-3"
                   >
-                    <span>Reserve Date</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Button>
+                    <span>Reserve</span>
+                    <ArrowRight className="w-3 h-3" strokeWidth={2} />
+                  </button>
                 )}
               </div>
             </div>

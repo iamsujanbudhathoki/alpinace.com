@@ -243,14 +243,14 @@ function BlogPageContent() {
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <span className="absolute top-3.5 left-3.5 bg-slate-950/85 backdrop-blur-xs text-amber-400 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs">
+                      <span className="absolute top-3.5 left-3.5 bg-slate-950/85 backdrop-blur-xs text-amber-400 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs">
                         {post.category}
                       </span>
                     </div>
                   ) : (
                     <div className="relative aspect-16/10 bg-slate-100 flex items-center justify-center text-slate-400">
                       <Mountain className="w-10 h-10 text-slate-300" />
-                      <span className="absolute top-3.5 left-3.5 bg-slate-950/85 text-amber-400 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md">
+                      <span className="absolute top-3.5 left-3.5 bg-slate-950/85 text-amber-400 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md">
                         {post.category}
                       </span>
                     </div>
@@ -258,7 +258,7 @@ function BlogPageContent() {
                   
                   <div className="p-6 flex flex-col flex-grow justify-between space-y-3">
                     <div>
-                      <div className="text-slate-500 text-[11px] font-semibold flex items-center gap-2 mb-2">
+                      <div className="text-slate-500 text-xs font-semibold flex items-center gap-2 mb-2">
                         <span>{post.date || "Blog"}</span>
                         {post.readTime && (
                           <>

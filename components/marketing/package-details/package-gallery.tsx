@@ -37,17 +37,17 @@ export function PackageGallery({
             el: e.currentTarget,
           });
         }}
-        className={`relative ${aspectRatioClass} w-full rounded-xl overflow-hidden bg-[#16221B] cursor-pointer group`}
+        className={`relative ${aspectRatioClass} w-full rounded-2xl overflow-hidden bg-stone-950 border border-stone-200 cursor-pointer group shadow-2xs`}
         title="Click to view full screen gallery"
       >
         <img
           src={activePhoto}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-102"
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-103"
         />
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <span className="inline-flex items-center gap-2 bg-white text-[#1E2420] px-4 py-2 rounded-md text-xs font-semibold shadow-md">
-            <Maximize2 className="w-3.5 h-3.5 text-[#2D4536]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
+          <span className="inline-flex items-center gap-2 bg-white/95 text-stone-900 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-md backdrop-blur-xs">
+            <Maximize2 className="w-3.5 h-3.5 text-emerald-800" strokeWidth={2} />
             <span>View Fullscreen ({images.length} photos)</span>
           </span>
         </div>
@@ -55,15 +55,16 @@ export function PackageGallery({
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="grid grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
           {images.map((photo, i) => (
             <button
               key={i}
+              type="button"
               onClick={() => setActivePhotoIndex(i)}
-              className={`relative aspect-4/3 rounded-lg overflow-hidden cursor-pointer transition-all ${
+              className={`relative aspect-4/3 rounded-xl overflow-hidden cursor-pointer transition-all ${
                 activePhoto === photo
-                  ? "ring-2 ring-[#2D4536] ring-offset-2 ring-offset-[#FBF9F5]"
-                  : "opacity-75 hover:opacity-100"
+                  ? "ring-2 ring-emerald-800 ring-offset-2 ring-offset-white"
+                  : "opacity-70 hover:opacity-100 hover:scale-102"
               }`}
             >
               <img

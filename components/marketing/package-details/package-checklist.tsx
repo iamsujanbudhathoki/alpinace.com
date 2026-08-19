@@ -1,5 +1,7 @@
 "use client";
 
+import { Check, ClipboardList } from "lucide-react";
+
 export interface ChecklistSection {
   title: string;
   items: string[];
@@ -21,17 +23,18 @@ export function PackageChecklist({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="font-heading text-2xl font-bold text-[#1E2420]">
-          {title}
+      <div className="pb-3 border-b border-stone-200">
+        <h2 className="type-heading-xl flex items-center gap-2">
+          <ClipboardList className="w-4 h-4 text-emerald-800" strokeWidth={1.75} />
+          <span>{title}</span>
         </h2>
         {subtitle && (
-          <p className="text-xs text-[#6B726C] mt-0.5">{subtitle}</p>
+          <p className="type-body-sm mt-0.5">{subtitle}</p>
         )}
       </div>
 
       <div
-        className={`grid gap-6 text-sm ${
+        className={`grid gap-4 text-sm ${
           sections.length === 1
             ? "grid-cols-1"
             : sections.length === 2
@@ -42,18 +45,29 @@ export function PackageChecklist({
         {sections.map((sec, idx) => (
           <div
             key={idx}
-            className="p-5 bg-white border border-[#EAE5DC] rounded-xl space-y-3 shadow-2xs"
+            className="p-4 bg-white border border-stone-200 rounded-xl space-y-3 shadow-2xs"
           >
-            <h4 className="font-bold text-[#1E2420]">{sec.title}</h4>
-            <ul className="space-y-2 text-[#3A423C]">
+            <div className="flex items-center justify-between pb-1.5 border-b border-stone-100">
+              <h4 className="type-heading-md text-stone-900">{sec.title}</h4>
+              {sec.provided && (
+                <span className="type-caption text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                  Provided by us
+                </span>
+              )}
+            </div>
+            <ul className="space-y-2 text-stone-700">
               {sec.items.map((item, i) => (
-                <li key={i} className="flex items-center gap-2.5">
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                      sec.provided ? "bg-[#2D4536]" : "bg-[#6B726C]"
+                <li key={i} className="flex items-center gap-2 type-body text-stone-700">
+                  <div
+                    className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 ${
+                      sec.provided
+                        ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                        : "bg-amber-50/50 border border-amber-200/60 text-amber-800"
                     }`}
-                  />
-                  <span>{item}</span>
+                  >
+                    <Check className="w-2.5 h-2.5" strokeWidth={3} />
+                  </div>
+                  <span className="leading-snug">{item}</span>
                 </li>
               ))}
             </ul>

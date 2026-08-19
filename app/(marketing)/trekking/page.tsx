@@ -210,7 +210,7 @@ function TrekkingPageContent() {
   );
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] text-slate-900 pt-16 sm:pt-20 pb-20 font-sans">
+    <div className="min-h-screen bg-stone-50 text-slate-900 pt-16 sm:pt-20 pb-20 font-sans">
       {/* Hero Header */}
       <section className="bg-white border-b border-slate-200 py-8 sm:py-12 px-4 sm:px-6 md:px-12">
         <div className="max-w-7xl mx-auto space-y-2">
@@ -369,7 +369,7 @@ function TrekkingPageContent() {
                       </div>
 
                       <div className="p-4 space-y-2">
-                        <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                           {trk.region} • {trk.durationDays} DAYS
                         </div>
 
@@ -381,7 +381,7 @@ function TrekkingPageContent() {
                           {(trk.shortDesc || "").replace(/<[^>]*>?/gm, "")}
                         </p>
 
-                        <div className="pt-2 text-[11px] text-slate-600 font-semibold border-t border-slate-100 flex items-center justify-between">
+                        <div className="pt-2 text-xs text-slate-600 font-semibold border-t border-slate-100 flex items-center justify-between">
                           <span>Difficulty: {trk.difficulty.replace(" Trek", "")}</span>
                           <span className="text-slate-800 font-bold">★ {trk.rating}</span>
                         </div>
@@ -392,7 +392,7 @@ function TrekkingPageContent() {
                     <div className="p-4 pt-0 border-t border-slate-100 mt-2">
                       <div className="flex items-center justify-between pt-3">
                         <div>
-                          <span className="text-[10px] text-slate-500 uppercase font-bold block">Starting from</span>
+                          <span className="text-xs text-slate-800 uppercase font-bold block">Starting from</span>
                           <div className="text-base font-extrabold text-slate-900">
                             ${trk.priceUSD.toLocaleString()} <span className="text-xs font-normal text-slate-500">USD</span>
                           </div>

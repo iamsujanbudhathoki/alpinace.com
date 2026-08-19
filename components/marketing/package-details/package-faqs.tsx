@@ -18,7 +18,7 @@ export interface PackageFaqsProps {
 export function PackageFaqs({
   faqs,
   title = "Frequently Asked Questions",
-  subtitle = "Key details regarding preparation, permits, safety, and bookings",
+  subtitle = "Key details regarding preparation, logistics, safety, and bookings",
 }: PackageFaqsProps) {
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
 
@@ -26,42 +26,49 @@ export function PackageFaqs({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="font-heading text-2xl font-bold text-[#1E2420]">
+      {/* Header */}
+      <div className="pb-3 border-b border-stone-200">
+        <h2 className="type-heading-xl">
           {title}
         </h2>
         {subtitle && (
-          <p className="text-xs text-[#6B726C] mt-0.5">{subtitle}</p>
+          <p className="type-body-sm mt-0.5">{subtitle}</p>
         )}
       </div>
 
-      <div className="space-y-3">
+      {/* Editorial Accordion List */}
+      <div className="divide-y divide-stone-200">
         {faqs.map((f, idx) => {
           const isOpen = activeFaq === idx;
           return (
-            <div
-              key={f.id || idx}
-              className="border border-[#EAE5DC] rounded-xl overflow-hidden bg-white shadow-2xs"
-            >
+            <div key={f.id || idx} className="py-3.5 first:pt-0 last:pb-0">
               <button
+                type="button"
                 onClick={() => setActiveFaq(isOpen ? null : idx)}
-                className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[#FAF8F5] transition-colors"
+                className="w-full text-left flex items-center justify-between gap-3 py-0.5 cursor-pointer transition-colors group"
               >
-                <span className="font-heading text-sm sm:text-base font-semibold text-[#1E2420]">
+                <span className="type-heading-md text-stone-900 group-hover:text-amber-800 transition-colors pr-2">
                   {f.question}
                 </span>
                 <ChevronDown
-                  className={`h-4 w-4 text-[#6B726C] transition-transform duration-200 shrink-0 ${
-                    isOpen ? "rotate-180 text-[#2D4536]" : ""
+                  className={`h-3.5 w-3.5 text-stone-400 group-hover:text-stone-700 transition-transform duration-200 shrink-0 ${
+                    isOpen ? "rotate-180 text-stone-700" : ""
                   }`}
+                  strokeWidth={2}
                 />
               </button>
 
-              {isOpen && (
-                <div className="px-5 pb-5 pt-1 text-sm text-[#3A423C] border-t border-[#F0EBE1] bg-[#FCFAF7] leading-relaxed">
-                  <p>{f.answer}</p>
+              <div
+                className={`grid transition-[grid-template-rows,opacity] duration-250 ease-out ${
+                  isOpen ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0 mt-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="pt-1.5 pb-1 type-body text-stone-700 leading-relaxed font-normal">
+                    <p>{f.answer}</p>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           );
         })}

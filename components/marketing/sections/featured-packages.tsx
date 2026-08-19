@@ -67,7 +67,7 @@ export function FeaturedPackages() {
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: p.categoryType || p.category || "Expedition",
+          category: p.category,
           region: p.region,
           durationDays: Number(p.durationDays || 0),
           maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
@@ -161,7 +161,7 @@ export function FeaturedPackages() {
                   <span>{tab.label}</span>
                   {!loading && tab.count > 0 && (
                     <span
-                      className={`text-[10px] font-bold px-1.5 py-0.2 rounded-md ${
+                      className={`text-xs font-bold px-2 py-0.5 rounded-md ${
                         isActive
                           ? "bg-amber-100 text-amber-900"
                           : "bg-stone-200/70 text-stone-600"
@@ -225,12 +225,12 @@ export function FeaturedPackages() {
 
                     {/* Minimal Top Badges */}
                     {pkg.region && (
-                      <div className="absolute top-3.5 left-3.5 bg-white/90 backdrop-blur-sm text-stone-900 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-stone-200/60 shadow-xs">
+                      <div className="absolute top-3.5 left-3.5 bg-white/90 backdrop-blur-sm text-stone-900 text-xs font-bold px-2.5 py-1 rounded-lg border border-stone-200/60 shadow-xs">
                         {pkg.region}
                       </div>
                     )}
 
-                    <div className="absolute top-3.5 right-3.5 bg-stone-900/85 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-xs">
+                    <div className="absolute top-3.5 right-3.5 bg-stone-900/85 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-xs">
                       <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
                       <span>{pkg.rating.toFixed(1)}</span>
                     </div>
@@ -240,7 +240,7 @@ export function FeaturedPackages() {
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-2">
                       {pkg.difficulty && (
-                        <div className="text-[11px] font-bold uppercase tracking-wider text-amber-800">
+                        <div className="text-xs font-bold uppercase tracking-wider text-amber-800">
                           {pkg.difficulty}
                         </div>
                       )}
@@ -271,7 +271,7 @@ export function FeaturedPackages() {
 
                       <div className="flex items-center justify-between pt-1">
                         <div>
-                          <span className="text-[10px] uppercase font-semibold text-stone-600 tracking-wider block">
+                          <span className="text-xs uppercase font-semibold text-stone-600 tracking-wider block">
                             From
                           </span>
                           <span className="text-base font-extrabold text-stone-900">

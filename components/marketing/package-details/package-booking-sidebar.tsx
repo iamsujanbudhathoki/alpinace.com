@@ -3,16 +3,12 @@
 import React, { useState } from "react";
 import {
   ShieldCheck,
-  Award,
-  Clock,
   MessageSquare,
-  Send,
-  Check,
   Minus,
   Plus,
   ArrowRight,
 } from "lucide-react";
-import { InquiryService } from "@/lib/services/admin-service";
+import { PackageInquiryModal } from "./package-inquiry-modal";
 
 export interface BookingAddonItem {
   id: string;
@@ -49,89 +45,9 @@ export function PackageBookingSidebar({
   trustBadges,
   packageType,
 }: PackageBookingSidebarProps) {
-  const [showInquiryForm, setShowInquiryForm] = useState(false);
-  const [inquiryName, setInquiryName] = useState("");
-  const [inquiryEmail, setInquiryEmail] = useState("");
-  const [inquiryPhone, setInquiryPhone] = useState("");
-  const [inquiryMessage, setInquiryMessage] = useState("");
-  const [inquirySubmitted, setInquirySubmitted] = useState(false);
-  const [inquiryLoading, setInquiryLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; phone?: string; message?: string }>({});
+  const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
 
   const perPersonCalculated = Math.round(totalPrice / Math.max(1, travelers));
-
-  const validateForm = () => {
-    const errors: { name?: string; email?: string; phone?: string; message?: string } = {};
-    if (!inquiryName.trim()) {
-      errors.name = "Full name is required";
-    }
-    if (!inquiryEmail.trim()) {
-      errors.email = "Email address is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inquiryEmail.trim())) {
-      errors.email = "Please enter a valid email address";
-    }
-    if (!inquiryPhone.trim()) {
-      errors.phone = "Phone or WhatsApp number is required";
-    }
-    if (!inquiryMessage.trim()) {
-      errors.message = "Question or query message is required";
-    }
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleInquirySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
-
-    setInquiryLoading(true);
-    try {
-      const activeAddons = addons.filter((a) => a.checked).map((a) => a.label);
-      const addonsSummary = activeAddons.length > 0 ? activeAddons.join(", ") : "None";
-
-      const formattedMessage = [
-        inquiryMessage.trim(),
-        "",
-        "--- Trip Inquiry Context ---",
-        `Trip Title: ${tripTitle}`,
-        `Package Domain: ${packageType || "Adventure Package"}`,
-        `Duration: ${durationDays} Days`,
-        `Travelers Count: ${travelers}`,
-        `Selected Upgrades: ${addonsSummary}`,
-        `Estimated Rate: $${totalPrice.toLocaleString()} USD`,
-      ]
-        .filter((line) => line !== undefined)
-        .join("\n")
-        .trim();
-
-      const notesSummary = `[Type: ${packageType || "Adventure"}] | [Duration: ${durationDays}D] | [Upgrades: ${addonsSummary}] | [Est Total: $${totalPrice.toLocaleString()} USD]`;
-
-      await InquiryService.create({
-        guestName: inquiryName.trim(),
-        email: inquiryEmail.trim(),
-        phone: inquiryPhone.trim(),
-        country: "N/A",
-        interestedTrip: tripTitle,
-        travelDates: "Flexible",
-        groupSize: travelers,
-        message: formattedMessage,
-        notes: notesSummary,
-      });
-
-      setInquirySubmitted(true);
-      setFormErrors({});
-      setInquiryName("");
-      setInquiryEmail("");
-      setInquiryPhone("");
-      setInquiryMessage("");
-    } catch (err) {
-      console.error("Inquiry submission error:", err);
-    } finally {
-      setInquiryLoading(false);
-    }
-  };
 
 
 
@@ -273,169 +189,13 @@ export function PackageBookingSidebar({
 
             <button
               type="button"
-              onClick={() => setShowInquiryForm(!showInquiryForm)}
-              className={`w-full font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                inquirySubmitted
-                  ? "bg-emerald-50 text-emerald-900 border border-emerald-300 hover:bg-emerald-100/80"
-                  : "bg-white hover:bg-stone-50 text-stone-900 border border-stone-300"
-              }`}
+              onClick={() => setIsInquiryModalOpen(true)}
+              className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
-              {inquirySubmitted ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-700 shrink-0" strokeWidth={2.5} />
-                  <span>Inquiry Submitted</span>
-                </>
-              ) : (
-                <>
-                  <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
-                  <span>
-                    {showInquiryForm
-                      ? "Hide Custom Inquiry Form"
-                      : "Ask a Question / Custom Dates"}
-                  </span>
-                </>
-              )}
+              <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
+              <span>Ask a Question / Custom Dates</span>
             </button>
           </div>
-
-          {/* Inquiry Form */}
-          {(showInquiryForm || inquirySubmitted) && (
-            <form
-              onSubmit={handleInquirySubmit}
-              noValidate
-              className="pt-4 border-t border-stone-200 space-y-3"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-900">
-                  Direct Specialist Inquiry
-                </span>
-                <span className="text-xs text-stone-500">Replies in &lt; 12 hrs</span>
-              </div>
-
-              {inquirySubmitted ? (
-                <div className="p-4 bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-xl text-xs font-medium text-center flex flex-col items-center justify-center gap-1.5 animate-in fade-in-0 duration-200">
-                  <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
-                    <Check className="w-4 h-4" strokeWidth={2.5} />
-                  </div>
-                  <span className="font-bold text-emerald-950 text-xs">Inquiry Successfully Received!</span>
-                  <span className="text-[11px] text-emerald-800 leading-snug">
-                    Thank you! Our mountain specialist team will contact you shortly via email or WhatsApp.
-                  </span>
-                </div>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-[11px] font-bold text-stone-800 mb-1">
-                      Full Name <span className="text-rose-500 font-bold">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Alexander Wright"
-                      value={inquiryName}
-                      onChange={(e) => {
-                        setInquiryName(e.target.value);
-                        if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: undefined }));
-                      }}
-                      className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none transition-all font-medium ${
-                        formErrors.name
-                          ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                          : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
-                      }`}
-                    />
-                    {formErrors.name && (
-                      <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                        {formErrors.name}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-stone-800 mb-1">
-                      Email Address <span className="text-rose-500 font-bold">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="e.g. alexander@example.com"
-                      value={inquiryEmail}
-                      onChange={(e) => {
-                        setInquiryEmail(e.target.value);
-                        if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: undefined }));
-                      }}
-                      className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none transition-all font-medium ${
-                        formErrors.email
-                          ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                          : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
-                      }`}
-                    />
-                    {formErrors.email && (
-                      <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                        {formErrors.email}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-stone-800 mb-1">
-                      Phone / WhatsApp Number <span className="text-rose-500 font-bold">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      placeholder="e.g. +1 555-019-2834"
-                      value={inquiryPhone}
-                      onChange={(e) => {
-                        setInquiryPhone(e.target.value);
-                        if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
-                      }}
-                      className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none transition-all font-medium ${
-                        formErrors.phone
-                          ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                          : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
-                      }`}
-                    />
-                    {formErrors.phone && (
-                      <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                        {formErrors.phone}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-stone-800 mb-1">
-                      Question or Inquiry Message <span className="text-rose-500 font-bold">*</span>
-                    </label>
-                    <textarea
-                      placeholder="Any custom dates, fitness questions, or special requests..."
-                      rows={3}
-                      value={inquiryMessage}
-                      onChange={(e) => {
-                        setInquiryMessage(e.target.value);
-                        if (formErrors.message) setFormErrors((prev) => ({ ...prev, message: undefined }));
-                      }}
-                      className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none resize-none transition-all font-medium ${
-                        formErrors.message
-                          ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                          : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
-                      }`}
-                    />
-                    {formErrors.message && (
-                      <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                        {formErrors.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={inquiryLoading}
-                    className="w-full btn-primary py-2.5 cursor-pointer font-bold text-xs"
-                  >
-                    <Send className="w-3.5 h-3.5" strokeWidth={2} />
-                    <span>{inquiryLoading ? "Sending..." : "Send Inquiry"}</span>
-                  </button>
-                </>
-              )}
-            </form>
-          )}
 
           {/* Sleek Trust Guarantee Card */}
           <div className="pt-3 border-t border-stone-200">
@@ -466,6 +226,18 @@ export function PackageBookingSidebar({
           </div>
         </div>
       </div>
+
+      {/* Direct Specialist Inquiry Modal Dialog */}
+      <PackageInquiryModal
+        isOpen={isInquiryModalOpen}
+        onClose={() => setIsInquiryModalOpen(false)}
+        tripTitle={tripTitle}
+        durationDays={durationDays}
+        travelers={travelers}
+        totalPrice={totalPrice}
+        packageType={packageType}
+        addons={addons}
+      />
     </aside>
   );
 }

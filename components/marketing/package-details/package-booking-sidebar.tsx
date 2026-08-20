@@ -56,12 +56,12 @@ export function PackageBookingSidebar({
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
   const [inquiryLoading, setInquiryLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
+  const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; phone?: string; message?: string }>({});
 
   const perPersonCalculated = Math.round(totalPrice / Math.max(1, travelers));
 
   const validateForm = () => {
-    const errors: { name?: string; email?: string; phone?: string } = {};
+    const errors: { name?: string; email?: string; phone?: string; message?: string } = {};
     if (!inquiryName.trim()) {
       errors.name = "Full name is required";
     }
@@ -72,6 +72,9 @@ export function PackageBookingSidebar({
     }
     if (!inquiryPhone.trim()) {
       errors.phone = "Phone or WhatsApp number is required";
+    }
+    if (!inquiryMessage.trim()) {
+      errors.message = "Question or query message is required";
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -399,15 +402,27 @@ export function PackageBookingSidebar({
 
                   <div>
                     <label className="block text-[11px] font-bold text-stone-800 mb-1">
-                      Custom Requests / Questions <span className="text-stone-400 font-normal">(Optional)</span>
+                      Question or Inquiry Message <span className="text-rose-500 font-bold">*</span>
                     </label>
                     <textarea
                       placeholder="Any custom dates, fitness questions, or special requests..."
                       rows={3}
                       value={inquiryMessage}
-                      onChange={(e) => setInquiryMessage(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white resize-none transition-all font-medium"
+                      onChange={(e) => {
+                        setInquiryMessage(e.target.value);
+                        if (formErrors.message) setFormErrors((prev) => ({ ...prev, message: undefined }));
+                      }}
+                      className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none resize-none transition-all font-medium ${
+                        formErrors.message
+                          ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                          : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
+                      }`}
                     />
+                    {formErrors.message && (
+                      <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                        {formErrors.message}
+                      </p>
+                    )}
                   </div>
 
                   <button

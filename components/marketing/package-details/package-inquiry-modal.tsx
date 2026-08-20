@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MessageSquare, Send, Check, Loader2, Calendar, Users, DollarSign } from "lucide-react";
+import { MessageSquare, Send, Check, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { InquiryService } from "@/lib/services/admin-service";
@@ -73,12 +73,12 @@ export function PackageInquiryModal({
       const formattedMessage = [
         inquiryMessage.trim(),
         "",
-        "--- Trip Inquiry Details ---",
+        "--- Trip Details ---",
         `Trip Title: ${tripTitle}`,
-        `Package Category: ${packageType}`,
+        `Package Domain: ${packageType}`,
         `Duration: ${durationDays} Days`,
         `Selected Upgrades: ${addonsSummary}`,
-        `Estimated Total: $${totalPrice.toLocaleString()} USD`,
+        `Estimated Rate: $${totalPrice.toLocaleString()} USD`,
         inquiryCountry.trim() ? `Country: ${inquiryCountry.trim()}` : undefined,
         inquiryTravelSeason ? `Preferred Season: ${inquiryTravelSeason}` : undefined,
         `Group Size: ${finalGroupSize} Traveler(s)`,
@@ -98,7 +98,7 @@ export function PackageInquiryModal({
         travelDates: inquiryTravelSeason || "Flexible",
         groupSize: finalGroupSize,
         message: formattedMessage,
-        type: packageType,
+        type: packageType, // Auto-passed based on detail page domain (Trekking, Tour, Expedition)
         notes: notesSummary,
       });
 
@@ -121,8 +121,6 @@ export function PackageInquiryModal({
     onClose();
   };
 
-  const activeAddonsList = addons.filter((a) => a.checked);
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent showCloseButton onCloseClick={handleClose} className="sm:max-w-lg w-full p-0 overflow-hidden bg-white rounded-2xl shadow-2xl border border-stone-200">
@@ -130,49 +128,19 @@ export function PackageInquiryModal({
         <div className="bg-stone-50 border-b border-stone-200 p-5 pr-10">
           <div className="flex items-center gap-2 text-amber-800 text-xs font-bold uppercase tracking-wider mb-1">
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>Direct Specialist Inquiry</span>
+            <span>Inquire About Trip</span>
           </div>
           <DialogTitle className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug">
             {tripTitle}
           </DialogTitle>
           <DialogDescription className="text-xs text-stone-600 mt-1 font-medium leading-normal">
-            Ask a mountain specialist about custom dates, private departures, or trip details. Replies within 12 hours.
+            Ask a mountain specialist about custom dates, group pricing, or trip details. Replies within 12 hours.
           </DialogDescription>
         </div>
 
-        <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
-          {/* Trip Summary Pill Box */}
-          <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 text-xs space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-bold text-stone-900 truncate">{tripTitle}</span>
-              <span className="bg-amber-100 text-amber-900 border border-amber-300 font-bold px-2 py-0.5 rounded-md text-[10px] uppercase shrink-0">
-                {packageType}
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-stone-600 font-medium text-[11px]">
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-stone-500" />
-                {durationDays} Days
-              </span>
-              <span className="flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 text-stone-500" />
-                {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
-              </span>
-              <span className="flex items-center gap-1 font-bold text-stone-900">
-                <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
-                ${totalPrice.toLocaleString()} USD Est. Total
-              </span>
-            </div>
-            {activeAddonsList.length > 0 && (
-              <div className="pt-1.5 border-t border-stone-200 text-[11px] text-stone-600">
-                <span className="font-bold text-stone-800">Upgrades: </span>
-                {activeAddonsList.map((a) => a.label).join(", ")}
-              </div>
-            )}
-          </div>
-
+        <div className="p-5 overflow-y-auto max-h-[80vh]">
           {isSubmitted ? (
-            <div className="py-6 px-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-3 animate-in fade-in-0 duration-200">
+            <div className="py-8 px-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-3 animate-in fade-in-0 duration-200">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center shadow-xs">
                 <Check className="w-6 h-6" strokeWidth={2.5} />
               </div>

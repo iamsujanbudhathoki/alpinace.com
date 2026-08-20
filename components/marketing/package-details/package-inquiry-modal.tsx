@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MessageSquare, Send, Check, Loader2 } from "lucide-react";
+import { Send, Check, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { InquiryService } from "@/lib/services/admin-service";
@@ -33,8 +33,6 @@ export function PackageInquiryModal({
   const [inquiryEmail, setInquiryEmail] = useState("");
   const [inquiryPhone, setInquiryPhone] = useState("");
   const [inquiryCountry, setInquiryCountry] = useState("");
-  const [inquiryTravelSeason, setInquiryTravelSeason] = useState("");
-  const [inquiryTravelers, setInquiryTravelers] = useState(String(travelers || 2));
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -42,20 +40,14 @@ export function PackageInquiryModal({
 
   const validateForm = () => {
     const errors: { name?: string; email?: string; phone?: string; message?: string } = {};
-    if (!inquiryName.trim()) {
-      errors.name = "Full name is required";
-    }
+    if (!inquiryName.trim()) errors.name = "Full name is required";
     if (!inquiryEmail.trim()) {
-      errors.email = "Email address is required";
+      errors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inquiryEmail.trim())) {
-      errors.email = "Please enter a valid email address";
+      errors.email = "Invalid email address";
     }
-    if (!inquiryPhone.trim()) {
-      errors.phone = "Phone or WhatsApp number is required";
-    }
-    if (!inquiryMessage.trim()) {
-      errors.message = "Question or query message is required";
-    }
+    if (!inquiryPhone.trim()) errors.phone = "Phone or WhatsApp is required";
+    if (!inquiryMessage.trim()) errors.message = "Message is required";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -68,26 +60,19 @@ export function PackageInquiryModal({
     try {
       const activeAddons = addons.filter((a) => a.checked).map((a) => a.label);
       const addonsSummary = activeAddons.length > 0 ? activeAddons.join(", ") : "None";
-      const finalGroupSize = Number(inquiryTravelers) || travelers || 1;
 
       const formattedMessage = [
         inquiryMessage.trim(),
         "",
         "--- Trip Details ---",
-        `Trip Title: ${tripTitle}`,
-        `Package Domain: ${packageType}`,
+        `Trip: ${tripTitle}`,
+        `Type: ${packageType}`,
         `Duration: ${durationDays} Days`,
         `Selected Upgrades: ${addonsSummary}`,
-        `Estimated Rate: $${totalPrice.toLocaleString()} USD`,
         inquiryCountry.trim() ? `Country: ${inquiryCountry.trim()}` : undefined,
-        inquiryTravelSeason ? `Preferred Season: ${inquiryTravelSeason}` : undefined,
-        `Group Size: ${finalGroupSize} Traveler(s)`,
       ]
-        .filter((line) => line !== undefined)
-        .join("\n")
-        .trim();
-
-      const notesSummary = `[Type: ${packageType}] | [Duration: ${durationDays}D] | [Upgrades: ${addonsSummary}] | [Est Total: $${totalPrice.toLocaleString()} USD]`;
+        .filter(Boolean)
+        .join("\n");
 
       await InquiryService.create({
         guestName: inquiryName.trim(),
@@ -95,11 +80,10 @@ export function PackageInquiryModal({
         phone: inquiryPhone.trim(),
         country: inquiryCountry.trim() || "N/A",
         interestedTrip: tripTitle,
-        travelDates: inquiryTravelSeason || "Flexible",
-        groupSize: finalGroupSize,
+        travelDates: "Flexible",
+        groupSize: travelers || 1,
         message: formattedMessage,
-        type: packageType, // Auto-passed based on detail page domain (Trekking, Tour, Expedition)
-        notes: notesSummary,
+        type: packageType,
       });
 
       setIsSubmitted(true);
@@ -108,136 +92,119 @@ export function PackageInquiryModal({
       setInquiryEmail("");
       setInquiryPhone("");
       setInquiryCountry("");
-      setInquiryTravelSeason("");
       setInquiryMessage("");
     } catch (err) {
-      console.error("Inquiry submission error:", err);
+      console.error("Inquiry error:", err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleClose = () => {
-    onClose();
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent showCloseButton onCloseClick={handleClose} className="sm:max-w-lg w-full p-0 overflow-hidden bg-white rounded-2xl shadow-2xl border border-stone-200">
-        {/* Clean Light Header */}
-        <div className="bg-stone-50 border-b border-stone-200 p-5 pr-10">
-          <div className="flex items-center gap-2 text-amber-800 text-xs font-bold uppercase tracking-wider mb-1">
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Inquire About Trip</span>
-          </div>
-          <DialogTitle className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug">
-            {tripTitle}
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent showCloseButton onCloseClick={onClose} className="sm:max-w-md w-full p-0 overflow-hidden bg-white rounded-2xl shadow-xl border border-stone-200">
+        {/* Header */}
+        <div className="bg-stone-50 border-b border-stone-200 px-6 py-4 pr-12">
+          <DialogTitle className="font-heading text-base font-bold text-stone-900">
+            Quick Inquiry
           </DialogTitle>
-          <DialogDescription className="text-xs text-stone-600 mt-1 font-medium leading-normal">
-            Ask a mountain specialist about custom dates, group pricing, or trip details. Replies within 12 hours.
+          <DialogDescription className="text-xs text-stone-500 mt-0.5 font-medium truncate">
+            {tripTitle}
           </DialogDescription>
         </div>
 
-        <div className="p-5 overflow-y-auto max-h-[80vh]">
+        <div className="p-6">
           {isSubmitted ? (
-            <div className="py-8 px-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-3 animate-in fade-in-0 duration-200">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center shadow-xs">
-                <Check className="w-6 h-6" strokeWidth={2.5} />
+            <div className="py-6 text-center space-y-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
+                <Check className="w-5 h-5" strokeWidth={2.5} />
               </div>
-              <div>
-                <h4 className="font-heading font-bold text-base text-emerald-950">Inquiry Successfully Received!</h4>
-                <p className="text-xs text-emerald-800 font-medium max-w-sm mx-auto mt-1 leading-relaxed">
-                  Thank you! Our mountain specialist team has received your request for <strong className="text-emerald-950">{tripTitle}</strong> and will get back to you shortly via email or WhatsApp.
-                </p>
-              </div>
-              <Button onClick={handleClose} className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs px-6 py-2 rounded-xl cursor-pointer shadow-xs mt-2">
-                Close Dialog
+              <h4 className="font-heading font-bold text-sm text-stone-900">Message Sent Successfully!</h4>
+              <p className="text-xs text-stone-600 max-w-xs mx-auto leading-relaxed">
+                Thank you! Our mountain team will respond to your request regarding <strong className="text-stone-900">{tripTitle}</strong> within 12 hours.
+              </p>
+              <Button onClick={onClose} variant="outline" className="text-xs font-semibold px-5 py-1.5 rounded-lg cursor-pointer mt-2">
+                Close Window
               </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
-              {/* Row 1: Full Name & Email Address */}
+              {/* Row 1: Full Name & Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-900 mb-1">
-                    Full Name <span className="text-rose-500 font-bold">*</span>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1">
+                    Full Name <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Alexander Wright"
+                    placeholder="e.g. Alex Wright"
                     value={inquiryName}
                     onChange={(e) => {
                       setInquiryName(e.target.value);
                       if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: undefined }));
                     }}
-                    className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none transition-all font-medium ${
+                    className={`w-full text-xs px-3 py-2 rounded-lg border font-medium focus:outline-none transition-all ${
                       formErrors.name
-                        ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                     }`}
                   />
-                  {formErrors.name && (
-                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.name}</p>
-                  )}
+                  {formErrors.name && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{formErrors.name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-stone-900 mb-1">
-                    Email Address <span className="text-rose-500 font-bold">*</span>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1">
+                    Email <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
-                    placeholder="e.g. alexander@example.com"
+                    placeholder="alex@example.com"
                     value={inquiryEmail}
                     onChange={(e) => {
                       setInquiryEmail(e.target.value);
                       if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: undefined }));
                     }}
-                    className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none transition-all font-medium ${
+                    className={`w-full text-xs px-3 py-2 rounded-lg border font-medium focus:outline-none transition-all ${
                       formErrors.email
-                        ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                     }`}
                   />
-                  {formErrors.email && (
-                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.email}</p>
-                  )}
+                  {formErrors.email && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{formErrors.email}</p>}
                 </div>
               </div>
 
-              {/* Row 2: Phone Number & Country Dropdown */}
+              {/* Row 2: Phone & Country */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-900 mb-1">
-                    Phone / WhatsApp Number <span className="text-rose-500 font-bold">*</span>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1">
+                    Phone / WhatsApp <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="tel"
-                    placeholder="e.g. +1 (555) 019-2834"
+                    placeholder="+1 555-019-2834"
                     value={inquiryPhone}
                     onChange={(e) => {
                       setInquiryPhone(e.target.value);
                       if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
                     }}
-                    className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none transition-all font-medium ${
+                    className={`w-full text-xs px-3 py-2 rounded-lg border font-medium focus:outline-none transition-all ${
                       formErrors.phone
-                        ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                     }`}
                   />
-                  {formErrors.phone && (
-                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.phone}</p>
-                  )}
+                  {formErrors.phone && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{formErrors.phone}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-stone-900 mb-1">
-                    Country of Residence <span className="text-stone-400 font-normal">(Optional)</span>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1">
+                    Country <span className="text-stone-400 font-normal">(Optional)</span>
                   </label>
                   <select
                     value={inquiryCountry}
                     onChange={(e) => setInquiryCountry(e.target.value)}
-                    className="w-full text-xs px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
                   >
                     <option value="">Select Country...</option>
                     {COUNTRY_OPTIONS.map((c) => (
@@ -249,75 +216,37 @@ export function PackageInquiryModal({
                 </div>
               </div>
 
-              {/* Row 3: Preferred Season & Number of Travelers */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-stone-900 mb-1">
-                    Preferred Season <span className="text-stone-400 font-normal">(Optional)</span>
-                  </label>
-                  <select
-                    value={inquiryTravelSeason}
-                    onChange={(e) => setInquiryTravelSeason(e.target.value)}
-                    className="w-full text-xs px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
-                  >
-                    <option value="">Flexible / Any Season</option>
-                    <option value="Spring (March - May)">Spring (March - May)</option>
-                    <option value="Autumn / Fall (September - November)">Autumn / Fall (September - November)</option>
-                    <option value="Monsoon / Summer (June - August)">Monsoon / Summer (June - August)</option>
-                    <option value="Winter (December - February)">Winter (December - February)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-stone-900 mb-1">
-                    Number of Travelers <span className="text-stone-400 font-normal">(Optional)</span>
-                  </label>
-                  <select
-                    value={inquiryTravelers}
-                    onChange={(e) => setInquiryTravelers(e.target.value)}
-                    className="w-full text-xs px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
-                  >
-                    <option value="1">1 Traveler (Solo)</option>
-                    <option value="2">2 Travelers (Couple/Friends)</option>
-                    <option value="3">3 to 5 Travelers (Private Group)</option>
-                    <option value="6">6+ Travelers (Expedition Team)</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Row 4: Question or Inquiry Message */}
+              {/* Row 3: Your Message */}
               <div>
-                <label className="block text-xs font-bold text-stone-900 mb-1">
-                  Question or Inquiry Message <span className="text-rose-500 font-bold">*</span>
+                <label className="block text-xs font-semibold text-stone-800 mb-1">
+                  Your Message <span className="text-rose-500">*</span>
                 </label>
                 <textarea
-                  placeholder="Describe your desired altitude goals, physical preparation level, or questions..."
+                  placeholder="Ask about custom dates, group pricing, or trip details..."
                   rows={3}
                   value={inquiryMessage}
                   onChange={(e) => {
                     setInquiryMessage(e.target.value);
                     if (formErrors.message) setFormErrors((prev) => ({ ...prev, message: undefined }));
                   }}
-                  className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none resize-none transition-all font-medium ${
+                  className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none resize-none transition-all font-medium ${
                     formErrors.message
-                      ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                      ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                       : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                   }`}
                 />
-                {formErrors.message && (
-                  <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.message}</p>
-                )}
+                {formErrors.message && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{formErrors.message}</p>}
               </div>
 
-              {/* Actions */}
-              <div className="pt-2 flex items-center justify-end gap-2.5">
-                <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
+              {/* Submit Action */}
+              <div className="pt-1 flex items-center justify-end gap-2">
+                <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2 px-4 rounded-lg">
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors"
+                  className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-5 py-2 rounded-lg cursor-pointer shadow-xs transition-colors"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-1.5">

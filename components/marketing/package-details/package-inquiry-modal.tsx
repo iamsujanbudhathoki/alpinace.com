@@ -34,7 +34,7 @@ export function PackageInquiryModal({
   const [inquiryPhone, setInquiryPhone] = useState("");
   const [inquiryCountry, setInquiryCountry] = useState("");
   const [inquiryTravelSeason, setInquiryTravelSeason] = useState("");
-  const [inquiryGroupSize, setInquiryGroupSize] = useState(String(travelers));
+  const [inquiryTravelers, setInquiryTravelers] = useState(String(travelers || 2));
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -68,17 +68,17 @@ export function PackageInquiryModal({
     try {
       const activeAddons = addons.filter((a) => a.checked).map((a) => a.label);
       const addonsSummary = activeAddons.length > 0 ? activeAddons.join(", ") : "None";
-      const finalGroupSize = Number(inquiryGroupSize) || travelers || 1;
+      const finalGroupSize = Number(inquiryTravelers) || travelers || 1;
 
       const formattedMessage = [
         inquiryMessage.trim(),
         "",
-        "--- Trip Inquiry Context ---",
+        "--- Trip Inquiry Details ---",
         `Trip Title: ${tripTitle}`,
-        `Package Domain: ${packageType}`,
+        `Package Category: ${packageType}`,
         `Duration: ${durationDays} Days`,
         `Selected Upgrades: ${addonsSummary}`,
-        `Estimated Rate: $${totalPrice.toLocaleString()} USD`,
+        `Estimated Total: $${totalPrice.toLocaleString()} USD`,
         inquiryCountry.trim() ? `Country: ${inquiryCountry.trim()}` : undefined,
         inquiryTravelSeason ? `Preferred Season: ${inquiryTravelSeason}` : undefined,
         `Group Size: ${finalGroupSize} Traveler(s)`,
@@ -125,7 +125,7 @@ export function PackageInquiryModal({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent showCloseButton onCloseClick={handleClose} className="sm:max-w-lg w-full p-0 overflow-hidden bg-white rounded-2xl shadow-2xl border border-stone-200">
-        {/* Header */}
+        {/* Clean Light Header */}
         <div className="bg-stone-50 border-b border-stone-200 p-5 pr-10">
           <div className="flex items-center gap-2 text-amber-800 text-xs font-bold uppercase tracking-wider mb-1">
             <MessageSquare className="w-3.5 h-3.5" />
@@ -187,7 +187,7 @@ export function PackageInquiryModal({
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
-              {/* 2-Column Name & Email */}
+              {/* Row 1: Full Name & Email Address */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-stone-900 mb-1">
@@ -236,36 +236,34 @@ export function PackageInquiryModal({
                 </div>
               </div>
 
-              {/* Phone / WhatsApp */}
-              <div>
-                <label className="block text-xs font-bold text-stone-900 mb-1">
-                  Phone / WhatsApp Number <span className="text-rose-500 font-bold">*</span>
-                </label>
-                <input
-                  type="tel"
-                  placeholder="e.g. +1 555-019-2834"
-                  value={inquiryPhone}
-                  onChange={(e) => {
-                    setInquiryPhone(e.target.value);
-                    if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
-                  }}
-                  className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none transition-all font-medium ${
-                    formErrors.phone
-                      ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                      : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
-                  }`}
-                />
-                {formErrors.phone && (
-                  <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.phone}</p>
-                )}
-              </div>
-
-              {/* Optional Dropdowns: Country & Season & Group Size */}
+              {/* Row 2: Phone Number & Country Dropdown */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Country Dropdown */}
                 <div>
                   <label className="block text-xs font-bold text-stone-900 mb-1">
-                    Country <span className="text-stone-400 font-normal">(Optional)</span>
+                    Phone / WhatsApp Number <span className="text-rose-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="e.g. +1 (555) 019-2834"
+                    value={inquiryPhone}
+                    onChange={(e) => {
+                      setInquiryPhone(e.target.value);
+                      if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
+                    }}
+                    className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none transition-all font-medium ${
+                      formErrors.phone
+                        ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
+                    }`}
+                  />
+                  {formErrors.phone && (
+                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.phone}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-900 mb-1">
+                    Country of Residence <span className="text-stone-400 font-normal">(Optional)</span>
                   </label>
                   <select
                     value={inquiryCountry}
@@ -280,8 +278,10 @@ export function PackageInquiryModal({
                     ))}
                   </select>
                 </div>
+              </div>
 
-                {/* Preferred Travel Season Dropdown */}
+              {/* Row 3: Preferred Season & Number of Travelers */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-stone-900 mb-1">
                     Preferred Season <span className="text-stone-400 font-normal">(Optional)</span>
@@ -298,15 +298,31 @@ export function PackageInquiryModal({
                     <option value="Winter (December - February)">Winter (December - February)</option>
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-900 mb-1">
+                    Number of Travelers <span className="text-stone-400 font-normal">(Optional)</span>
+                  </label>
+                  <select
+                    value={inquiryTravelers}
+                    onChange={(e) => setInquiryTravelers(e.target.value)}
+                    className="w-full text-xs px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
+                  >
+                    <option value="1">1 Traveler (Solo)</option>
+                    <option value="2">2 Travelers (Couple/Friends)</option>
+                    <option value="3">3 to 5 Travelers (Private Group)</option>
+                    <option value="6">6+ Travelers (Expedition Team)</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Question or Inquiry Message */}
+              {/* Row 4: Question or Inquiry Message */}
               <div>
                 <label className="block text-xs font-bold text-stone-900 mb-1">
                   Question or Inquiry Message <span className="text-rose-500 font-bold">*</span>
                 </label>
                 <textarea
-                  placeholder="Any custom dates, fitness questions, or special requests..."
+                  placeholder="Describe your desired altitude goals, physical preparation level, or questions..."
                   rows={3}
                   value={inquiryMessage}
                   onChange={(e) => {
@@ -324,7 +340,7 @@ export function PackageInquiryModal({
                 )}
               </div>
 
-              {/* Submit Buttons */}
+              {/* Actions */}
               <div className="pt-2 flex items-center justify-end gap-2.5">
                 <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
                   Cancel
@@ -332,7 +348,7 @@ export function PackageInquiryModal({
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors"
+                  className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-1.5">

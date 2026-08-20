@@ -20,6 +20,7 @@ import {
   X
 } from "lucide-react";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
+import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface PublicBookingModalProps {
@@ -257,7 +258,8 @@ export function PublicBookingModal({
 
       const res = await BookingService.create(payload);
       if (res.success && res.data) {
-        setConfirmedBooking(res.data);
+        toast.success(`Booking request submitted successfully! (Reference: ${res.data.reference})`);
+        forceClose();
       } else {
         setErrorMessage(res.message || "We couldn't save this booking. Please try again.");
       }

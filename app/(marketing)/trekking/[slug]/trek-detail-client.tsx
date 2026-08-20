@@ -8,6 +8,7 @@ import {
   Calendar,
   BedDouble,
   ShieldAlert,
+  Check,
 } from "lucide-react";
 import { TrekItem, initialTreksData } from "@/lib/trek-data";
 import {
@@ -54,6 +55,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
 
   // Booking modal state
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isBooked, setIsBooked] = useState(false);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
 
@@ -536,6 +538,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Book Trek"
               packageType="Trekking"
+              isBooked={isBooked}
             />
           </div>
         </div>
@@ -563,19 +566,27 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             <span className="type-caption text-stone-400">USD / person</span>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setIsBookingModalOpen(true)}
-          className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
-        >
-          Book Trek
-        </button>
+        {isBooked ? (
+          <div className="bg-emerald-700 text-white font-semibold text-xs px-3 py-2 rounded-lg shadow-xs flex items-center gap-1 shrink-0">
+            <Check className="w-3.5 h-3.5" />
+            <span>Request Submitted</span>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsBookingModalOpen(true)}
+            className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+          >
+            Book Trek
+          </button>
+        )}
       </div>
 
       {/* 6. BOOKING MODAL */}
       <PublicBookingModal
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
+        onSuccess={() => setIsBooked(true)}
         trip={{
           title: trek.title,
           slug: trek.slug,

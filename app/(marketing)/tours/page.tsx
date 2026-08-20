@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw } from "lucide-react";
+import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw, Check } from "lucide-react";
 import { TourItem, TourType } from "@/lib/tour-data";
 import { TourService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
@@ -20,6 +20,7 @@ function ToursPageContent() {
   const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(null);
   const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
   const [selectedBookingTrip, setSelectedBookingTrip] = useState<TourItem | null>(null);
+  const [submittedSlugs, setSubmittedSlugs] = useState<string[]>([]);
 
   // Filter States
   const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
@@ -426,13 +427,20 @@ function ToursPageContent() {
                             </button>
                           </Link>
 
-                          <button
-                            onClick={() => setSelectedBookingTrip(tour)}
-                            className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1.5"
-                          >
-                            <span>Book</span>
-                            <ArrowRight className="w-3 h-3 text-amber-400" />
-                          </button>
+                          {submittedSlugs.includes(tour.slug) ? (
+                            <div className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-700 text-white flex items-center gap-1 shadow-2xs">
+                              <span>Requested</span>
+                              <Check className="w-3 h-3" />
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setSelectedBookingTrip(tour)}
+                              className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1.5"
+                            >
+                              <span>Book</span>
+                              <ArrowRight className="w-3 h-3 text-amber-400" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -468,6 +476,11 @@ function ToursPageContent() {
         <PublicBookingModal
           isOpen={!!selectedBookingTrip}
           onClose={() => setSelectedBookingTrip(null)}
+          onSuccess={() => {
+            if (selectedBookingTrip) {
+              setSubmittedSlugs((prev) => [...prev, selectedBookingTrip.slug]);
+            }
+          }}
           trip={{
             title: selectedBookingTrip.title,
             slug: selectedBookingTrip.slug,

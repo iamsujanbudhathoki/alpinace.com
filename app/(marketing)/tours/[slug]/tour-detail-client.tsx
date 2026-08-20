@@ -7,6 +7,7 @@ import {
   Calendar,
   Compass,
   Utensils,
+  Check,
 } from "lucide-react";
 import { TourItem, initialToursData } from "@/lib/tour-data";
 import { FaqService, SettingService, TourService } from "@/lib/services/admin-service";
@@ -43,6 +44,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
   const [loading, setLoading] = useState(!initialTour);
   const [relatedTours, setRelatedTours] = useState<TourItem[]>([]);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isBooked, setIsBooked] = useState(false);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
 
   const { setDetailNav } = useDetailNav();
@@ -496,6 +498,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Reserve Private Tour"
               packageType="Tour"
+              isBooked={isBooked}
             />
           </div>
         </div>
@@ -535,19 +538,27 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             <span className="type-caption text-stone-400">USD / person</span>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setIsBookingModalOpen(true)}
-          className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
-        >
-          Book Tour
-        </button>
+        {isBooked ? (
+          <div className="bg-emerald-700 text-white font-semibold text-xs px-3 py-2 rounded-lg shadow-xs flex items-center gap-1 shrink-0">
+            <Check className="w-3.5 h-3.5" />
+            <span>Request Submitted</span>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsBookingModalOpen(true)}
+            className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+          >
+            Book Tour
+          </button>
+        )}
       </div>
 
       {/* 6. BOOKING MODAL */}
       <PublicBookingModal
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
+        onSuccess={() => setIsBooked(true)}
         trip={{
           title: tour.title,
           slug: tour.slug,

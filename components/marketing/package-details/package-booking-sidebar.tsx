@@ -7,6 +7,7 @@ import {
   Minus,
   Plus,
   ArrowRight,
+  Check,
 } from "lucide-react";
 import { PackageInquiryModal } from "./package-inquiry-modal";
 
@@ -31,6 +32,7 @@ export interface PackageBookingSidebarProps {
   bookButtonLabel?: string;
   trustBadges?: { icon?: React.ReactNode; text: string }[];
   packageType?: "Trekking" | "Tour" | "Expedition";
+  isBooked?: boolean;
 }
 
 export function PackageBookingSidebar({
@@ -44,6 +46,7 @@ export function PackageBookingSidebar({
   bookButtonLabel = "Book This Expedition",
   trustBadges,
   packageType,
+  isBooked = false,
 }: PackageBookingSidebarProps) {
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
 
@@ -178,14 +181,21 @@ export function PackageBookingSidebar({
 
           {/* Action CTAs */}
           <div className="space-y-2 pt-0.5">
-            <button
-              type="button"
-              onClick={onBookClick}
-              className="w-full bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
-            >
-              <span>{bookButtonLabel}</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
-            </button>
+            {isBooked ? (
+              <div className="w-full bg-emerald-700 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs flex items-center justify-center gap-2">
+                <Check className="w-4 h-4" strokeWidth={3} />
+                <span>Request Submitted</span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={onBookClick}
+                className="w-full bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
+              >
+                <span>{bookButtonLabel}</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
+              </button>
+            )}
 
             <button
               type="button"

@@ -26,6 +26,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 interface PublicBookingModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   trip: {
     title: string;
     slug: string;
@@ -51,6 +52,7 @@ type FieldErrors = Partial<
 export function PublicBookingModal({
   isOpen,
   onClose,
+  onSuccess,
   trip,
   initialTravelers = 2,
   initialDate,
@@ -259,6 +261,7 @@ export function PublicBookingModal({
       const res = await BookingService.create(payload);
       if (res.success && res.data) {
         toast.success(`Booking request submitted successfully! (Reference: ${res.data.reference})`);
+        onSuccess?.();
         forceClose();
       } else {
         setErrorMessage(res.message || "We couldn't save this booking. Please try again.");

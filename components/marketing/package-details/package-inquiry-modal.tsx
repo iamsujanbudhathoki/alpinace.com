@@ -12,6 +12,7 @@ import { BookingAddonItem } from "./package-booking-sidebar";
 export interface PackageInquiryModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   tripTitle: string;
   durationDays: number;
   travelers: number;
@@ -23,6 +24,7 @@ export interface PackageInquiryModalProps {
 export function PackageInquiryModal({
   isOpen,
   onClose,
+  onSuccess,
   tripTitle,
   durationDays,
   travelers,
@@ -90,6 +92,7 @@ export function PackageInquiryModal({
 
       if (res?.success) {
         toast.success("Inquiry sent successfully! Our mountain specialist team will reply within 12 hours.");
+        onSuccess?.();
         setFormErrors({});
         setErrorMessage(null);
         setInquiryName("");

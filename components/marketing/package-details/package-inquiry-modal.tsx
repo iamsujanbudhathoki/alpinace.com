@@ -98,6 +98,7 @@ export function PackageInquiryModal({
         travelDates: inquiryTravelSeason || "Flexible",
         groupSize: finalGroupSize,
         message: formattedMessage,
+        type: packageType,
         notes: notesSummary,
       });
 

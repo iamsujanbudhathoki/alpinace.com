@@ -711,6 +711,7 @@ export const InquiryService = {
       travelDates: String(data.travelDates || "").trim(),
       groupSize: Number(data.groupSize) || 1,
       message: String(data.message || "").trim(),
+      ...(data.type ? { type: data.type } : {}),
       ...(data.status ? { status: data.status } : {}),
       ...(data.notes ? { notes: data.notes } : {}),
     };

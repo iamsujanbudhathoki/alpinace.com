@@ -122,14 +122,10 @@ export function PackageBookingSidebar({
 
       setInquirySubmitted(true);
       setFormErrors({});
-      setTimeout(() => {
-        setInquirySubmitted(false);
-        setInquiryName("");
-        setInquiryEmail("");
-        setInquiryPhone("");
-        setInquiryMessage("");
-        setShowInquiryForm(false);
-      }, 5000);
+      setInquiryName("");
+      setInquiryEmail("");
+      setInquiryPhone("");
+      setInquiryMessage("");
     } catch (err) {
       console.error("Inquiry submission error:", err);
     } finally {
@@ -278,19 +274,32 @@ export function PackageBookingSidebar({
             <button
               type="button"
               onClick={() => setShowInquiryForm(!showInquiryForm)}
-              className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              className={`w-full font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                inquirySubmitted
+                  ? "bg-emerald-50 text-emerald-900 border border-emerald-300 hover:bg-emerald-100/80"
+                  : "bg-white hover:bg-stone-50 text-stone-900 border border-stone-300"
+              }`}
             >
-              <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
-              <span>
-                {showInquiryForm
-                  ? "Hide Custom Inquiry Form"
-                  : "Ask a Question / Custom Dates"}
-              </span>
+              {inquirySubmitted ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-700 shrink-0" strokeWidth={2.5} />
+                  <span>Inquiry Submitted</span>
+                </>
+              ) : (
+                <>
+                  <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
+                  <span>
+                    {showInquiryForm
+                      ? "Hide Custom Inquiry Form"
+                      : "Ask a Question / Custom Dates"}
+                  </span>
+                </>
+              )}
             </button>
           </div>
 
           {/* Inquiry Form */}
-          {showInquiryForm && (
+          {(showInquiryForm || inquirySubmitted) && (
             <form
               onSubmit={handleInquirySubmit}
               noValidate
@@ -304,9 +313,14 @@ export function PackageBookingSidebar({
               </div>
 
               {inquirySubmitted ? (
-                <div className="p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-medium text-center flex items-center justify-center gap-1.5 animate-in fade-in-0 duration-200">
-                  <Check className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>Inquiry received! Our team will contact you shortly.</span>
+                <div className="p-4 bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-xl text-xs font-medium text-center flex flex-col items-center justify-center gap-1.5 animate-in fade-in-0 duration-200">
+                  <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                    <Check className="w-4 h-4" strokeWidth={2.5} />
+                  </div>
+                  <span className="font-bold text-emerald-950 text-xs">Inquiry Successfully Received!</span>
+                  <span className="text-[11px] text-emerald-800 leading-snug">
+                    Thank you! Our mountain specialist team will contact you shortly via email or WhatsApp.
+                  </span>
                 </div>
               ) : (
                 <>

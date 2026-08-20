@@ -197,33 +197,17 @@ export function PackageBookingSidebar({
             </button>
           </div>
 
-          {/* Sleek Trust Guarantee Card */}
-          <div className="pt-3 border-t border-stone-200">
-            {trustBadges && trustBadges.length > 0 ? (
-              <div className="space-y-2 text-xs text-stone-600">
-                {trustBadges.map((badge, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    {badge.icon}
-                    <span className="leading-snug font-medium">{badge.text}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-4 h-4" strokeWidth={2} />
+          {/* Optional Custom Trust Badges */}
+          {trustBadges && trustBadges.length > 0 && (
+            <div className="pt-3 border-t border-stone-200 space-y-2 text-xs text-stone-600">
+              {trustBadges.map((badge, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  {badge.icon}
+                  <span className="leading-snug font-medium">{badge.text}</span>
                 </div>
-                <div>
-                  <span className="text-xs font-bold text-stone-900 block leading-tight">
-                    Verified Local Operator
-                  </span>
-                  <span className="text-[11px] text-stone-500 font-medium leading-tight">
-                    Direct local pricing & 24/7 specialist support
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

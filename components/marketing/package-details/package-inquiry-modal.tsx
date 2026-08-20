@@ -5,6 +5,7 @@ import { MessageSquare, Send, Check, Loader2, Calendar, Users, DollarSign } from
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { InquiryService } from "@/lib/services/admin-service";
+import { COUNTRY_OPTIONS } from "@/lib/country-list";
 import { BookingAddonItem } from "./package-booking-sidebar";
 
 export interface PackageInquiryModalProps {
@@ -32,7 +33,8 @@ export function PackageInquiryModal({
   const [inquiryEmail, setInquiryEmail] = useState("");
   const [inquiryPhone, setInquiryPhone] = useState("");
   const [inquiryCountry, setInquiryCountry] = useState("");
-  const [inquiryTravelDates, setInquiryTravelDates] = useState("");
+  const [inquiryTravelSeason, setInquiryTravelSeason] = useState("");
+  const [inquiryGroupSize, setInquiryGroupSize] = useState(String(travelers));
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -66,6 +68,7 @@ export function PackageInquiryModal({
     try {
       const activeAddons = addons.filter((a) => a.checked).map((a) => a.label);
       const addonsSummary = activeAddons.length > 0 ? activeAddons.join(", ") : "None";
+      const finalGroupSize = Number(inquiryGroupSize) || travelers || 1;
 
       const formattedMessage = [
         inquiryMessage.trim(),
@@ -74,11 +77,11 @@ export function PackageInquiryModal({
         `Trip Title: ${tripTitle}`,
         `Package Domain: ${packageType}`,
         `Duration: ${durationDays} Days`,
-        `Travelers Count: ${travelers}`,
         `Selected Upgrades: ${addonsSummary}`,
         `Estimated Rate: $${totalPrice.toLocaleString()} USD`,
         inquiryCountry.trim() ? `Country: ${inquiryCountry.trim()}` : undefined,
-        inquiryTravelDates.trim() ? `Preferred Dates: ${inquiryTravelDates.trim()}` : undefined,
+        inquiryTravelSeason ? `Preferred Season: ${inquiryTravelSeason}` : undefined,
+        `Group Size: ${finalGroupSize} Traveler(s)`,
       ]
         .filter((line) => line !== undefined)
         .join("\n")
@@ -92,8 +95,8 @@ export function PackageInquiryModal({
         phone: inquiryPhone.trim(),
         country: inquiryCountry.trim() || "N/A",
         interestedTrip: tripTitle,
-        travelDates: inquiryTravelDates.trim() || "Flexible",
-        groupSize: travelers,
+        travelDates: inquiryTravelSeason || "Flexible",
+        groupSize: finalGroupSize,
         message: formattedMessage,
         notes: notesSummary,
       });
@@ -104,7 +107,7 @@ export function PackageInquiryModal({
       setInquiryEmail("");
       setInquiryPhone("");
       setInquiryCountry("");
-      setInquiryTravelDates("");
+      setInquiryTravelSeason("");
       setInquiryMessage("");
     } catch (err) {
       console.error("Inquiry submission error:", err);
@@ -201,7 +204,7 @@ export function PackageInquiryModal({
                     className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none transition-all font-medium ${
                       formErrors.name
                         ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
+                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                     }`}
                   />
                   {formErrors.name && (
@@ -224,7 +227,7 @@ export function PackageInquiryModal({
                     className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none transition-all font-medium ${
                       formErrors.email
                         ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
+                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                     }`}
                   />
                   {formErrors.email && (
@@ -249,7 +252,7 @@ export function PackageInquiryModal({
                   className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none transition-all font-medium ${
                     formErrors.phone
                       ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                      : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
+                      : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                   }`}
                 />
                 {formErrors.phone && (
@@ -257,32 +260,43 @@ export function PackageInquiryModal({
                 )}
               </div>
 
-              {/* Optional Grid: Country & Travel Dates */}
+              {/* Optional Dropdowns: Country & Season & Group Size */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Country Dropdown */}
                 <div>
                   <label className="block text-xs font-bold text-stone-900 mb-1">
                     Country <span className="text-stone-400 font-normal">(Optional)</span>
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. United States"
+                  <select
                     value={inquiryCountry}
                     onChange={(e) => setInquiryCountry(e.target.value)}
-                    className="w-full text-xs px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white font-medium transition-all"
-                  />
+                    className="w-full text-xs px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
+                  >
+                    <option value="">Select Country...</option>
+                    {COUNTRY_OPTIONS.map((c) => (
+                      <option key={c.value} value={c.value}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
+                {/* Preferred Travel Season Dropdown */}
                 <div>
                   <label className="block text-xs font-bold text-stone-900 mb-1">
-                    Preferred Dates <span className="text-stone-400 font-normal">(Optional)</span>
+                    Preferred Season <span className="text-stone-400 font-normal">(Optional)</span>
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Oct 2026 or Spring"
-                    value={inquiryTravelDates}
-                    onChange={(e) => setInquiryTravelDates(e.target.value)}
-                    className="w-full text-xs px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white font-medium transition-all"
-                  />
+                  <select
+                    value={inquiryTravelSeason}
+                    onChange={(e) => setInquiryTravelSeason(e.target.value)}
+                    className="w-full text-xs px-3.5 py-2 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
+                  >
+                    <option value="">Flexible / Any Season</option>
+                    <option value="Spring (March - May)">Spring (March - May)</option>
+                    <option value="Autumn / Fall (September - November)">Autumn / Fall (September - November)</option>
+                    <option value="Monsoon / Summer (June - August)">Monsoon / Summer (June - August)</option>
+                    <option value="Winter (December - February)">Winter (December - February)</option>
+                  </select>
                 </div>
               </div>
 
@@ -302,7 +316,7 @@ export function PackageInquiryModal({
                   className={`w-full text-xs px-3.5 py-2 rounded-xl border focus:outline-none resize-none transition-all font-medium ${
                     formErrors.message
                       ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                      : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
+                      : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                   }`}
                 />
                 {formErrors.message && (

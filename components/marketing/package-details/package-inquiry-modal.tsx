@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button";
 import { InquiryService } from "@/lib/services/admin-service";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
+import { BookingPackageType } from "@/lib/admin-data";
 import { BookingAddonItem } from "./package-booking-sidebar";
 
 export interface PackageInquiryModalProps {
@@ -17,7 +18,7 @@ export interface PackageInquiryModalProps {
   durationDays: number;
   travelers: number;
   totalPrice: number;
-  packageType?: "Trekking" | "Tour" | "Expedition";
+  packageType?: BookingPackageType;
   addons?: BookingAddonItem[];
 }
 
@@ -29,7 +30,7 @@ export function PackageInquiryModal({
   durationDays,
   travelers,
   totalPrice,
-  packageType = "Trekking",
+  packageType = BookingPackageType.TREKKING,
   addons = [],
 }: PackageInquiryModalProps) {
   const [inquiryName, setInquiryName] = useState("");

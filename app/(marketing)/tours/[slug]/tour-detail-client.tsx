@@ -497,7 +497,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Reserve Private Tour"
-              packageType="Tour"
+              packageType={BookingPackageType.TOUR}
               isBooked={isBooked}
             />
           </div>

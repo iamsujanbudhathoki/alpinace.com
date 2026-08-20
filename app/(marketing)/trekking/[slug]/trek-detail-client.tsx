@@ -537,7 +537,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Book Trek"
-              packageType="Trekking"
+              packageType={BookingPackageType.TREKKING}
               isBooked={isBooked}
             />
           </div>

@@ -10,6 +10,7 @@ import {
   Check,
 } from "lucide-react";
 import { PackageInquiryModal } from "./package-inquiry-modal";
+import { BookingPackageType } from "@/lib/admin-data";
 
 export interface BookingAddonItem {
   id: string;
@@ -31,7 +32,7 @@ export interface PackageBookingSidebarProps {
   priceLabel?: string;
   bookButtonLabel?: string;
   trustBadges?: { icon?: React.ReactNode; text: string }[];
-  packageType?: "Trekking" | "Tour" | "Expedition";
+  packageType?: BookingPackageType;
   isBooked?: boolean;
 }
 
@@ -43,9 +44,10 @@ export function PackageBookingSidebar({
   addons = [],
   totalPrice,
   onBookClick,
-  bookButtonLabel = "Book This Expedition",
+  priceLabel = "Starting from",
+  bookButtonLabel = "Book Now",
   trustBadges,
-  packageType,
+  packageType = BookingPackageType.TREKKING,
   isBooked = false,
 }: PackageBookingSidebarProps) {
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);

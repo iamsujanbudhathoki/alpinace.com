@@ -8,6 +8,8 @@ import { ClimbingGrade, ExpeditionItem } from "@/lib/expedition-data";
 import { ExpeditionService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
 import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
+import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
+import { BookingPackageType } from "@/lib/admin-data";
 
 function ExpeditionsPageContent() {
   const searchParams = useSearchParams();
@@ -17,6 +19,7 @@ function ExpeditionsPageContent() {
   const [loading, setLoading] = useState<boolean>(true);
   const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(null);
   const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
+  const [selectedBookingTrip, setSelectedBookingTrip] = useState<ExpeditionItem | null>(null);
 
   // Filter States
   const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
@@ -249,7 +252,7 @@ function ExpeditionsPageContent() {
 
       {/* Main Content Workspace */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-6 sm:mt-8">
-        {/* Mobile Filter Bar & Search Trigger (< lg) */}
+        {/* Mobile Filter Bar & Search Trigger */}
         <div className="lg:hidden mb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
             <input
@@ -323,7 +326,7 @@ function ExpeditionsPageContent() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Sidebar Filter Column (Desktop only lg:col-span-4) */}
+          {/* Left Sidebar Filter Column */}
           <aside className="hidden lg:block lg:col-span-4 bg-white border border-slate-200 rounded-xl p-5 shadow-xs sticky top-24">
             <div className="flex items-center justify-between pb-3 mb-5 border-b border-slate-100">
               <h2 className="text-base font-bold text-slate-900">
@@ -424,12 +427,13 @@ function ExpeditionsPageContent() {
                             </button>
                           </Link>
 
-                          <Link href="/contact">
-                            <button className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1.5">
-                              <span>Book</span>
-                              <ArrowRight className="w-3 h-3 text-amber-400" />
-                            </button>
-                          </Link>
+                          <button
+                            onClick={() => setSelectedBookingTrip(exp)}
+                            className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1.5"
+                          >
+                            <span>Book</span>
+                            <ArrowRight className="w-3 h-3 text-amber-400" />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -459,6 +463,24 @@ function ExpeditionsPageContent() {
           </Link>
         </div>
       </section>
+
+      {/* Public Booking Modal */}
+      {selectedBookingTrip && (
+        <PublicBookingModal
+          isOpen={!!selectedBookingTrip}
+          onClose={() => setSelectedBookingTrip(null)}
+          trip={{
+            title: selectedBookingTrip.title,
+            slug: selectedBookingTrip.slug,
+            region: selectedBookingTrip.region,
+            durationDays: selectedBookingTrip.durationDays,
+            priceUSD: selectedBookingTrip.priceUSD,
+            maxAltitudeMeters: selectedBookingTrip.peakHeightM,
+            difficulty: selectedBookingTrip.climbingGrade,
+            categoryType: BookingPackageType.EXPEDITION,
+          }}
+        />
+      )}
     </div>
   );
 }

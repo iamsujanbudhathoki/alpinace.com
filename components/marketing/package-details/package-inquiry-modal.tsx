@@ -124,7 +124,7 @@ export function PackageInquiryModal({
                 Thank you! Our mountain team will respond regarding <strong className="text-stone-900">{tripTitle}</strong> within 12 hours.
               </p>
               <Button onClick={onClose} variant="outline" className="text-xs font-semibold px-6 py-2 rounded-xl cursor-pointer mt-2">
-                Close Window
+                Done
               </Button>
             </div>
           ) : (

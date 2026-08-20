@@ -36,6 +36,7 @@ export function PackageInquiryModal({
   const [inquiryCountry, setInquiryCountry] = useState("");
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; phone?: string; message?: string }>({});
 
   const validateForm = () => {
@@ -54,6 +55,7 @@ export function PackageInquiryModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -74,7 +76,7 @@ export function PackageInquiryModal({
         .filter(Boolean)
         .join("\n");
 
-      await InquiryService.create({
+      const res = await InquiryService.create({
         guestName: inquiryName.trim(),
         email: inquiryEmail.trim(),
         phone: inquiryPhone.trim(),
@@ -86,17 +88,26 @@ export function PackageInquiryModal({
         type: packageType,
       });
 
-      toast.success("Inquiry sent successfully! Our mountain specialist team will reply within 12 hours.");
-      setFormErrors({});
-      setInquiryName("");
-      setInquiryEmail("");
-      setInquiryPhone("");
-      setInquiryCountry("");
-      setInquiryMessage("");
-      onClose();
-    } catch (err) {
+      if (res?.success) {
+        toast.success("Inquiry sent successfully! Our mountain specialist team will reply within 12 hours.");
+        setFormErrors({});
+        setErrorMessage(null);
+        setInquiryName("");
+        setInquiryEmail("");
+        setInquiryPhone("");
+        setInquiryCountry("");
+        setInquiryMessage("");
+        onClose();
+      } else {
+        const msg = res?.message || "Failed to send inquiry. Please try again.";
+        setErrorMessage(msg);
+        toast.error(msg);
+      }
+    } catch (err: any) {
       console.error("Inquiry error:", err);
-      toast.error("Failed to send inquiry. Please try again or contact us directly.");
+      const msg = err?.message || "Failed to send inquiry. Please try again or contact us directly.";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -116,6 +127,12 @@ export function PackageInquiryModal({
         </div>
 
         <div className="p-7">
+          {errorMessage && (
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
+              {errorMessage}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {/* Row 1: Full Name & Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

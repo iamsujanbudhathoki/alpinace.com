@@ -102,37 +102,37 @@ export function PackageInquiryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent showCloseButton onCloseClick={onClose} className="sm:max-w-md w-full p-0 overflow-hidden bg-white rounded-2xl shadow-xl border border-stone-200">
+      <DialogContent showCloseButton onCloseClick={onClose} className="sm:max-w-lg w-full p-0 overflow-hidden bg-white rounded-2xl shadow-xl border border-stone-200">
         {/* Header */}
-        <div className="bg-stone-50 border-b border-stone-200 px-6 py-4 pr-12">
-          <DialogTitle className="font-heading text-base font-bold text-stone-900">
-            Quick Inquiry
+        <div className="bg-stone-50 border-b border-stone-200 px-7 py-4.5 pr-12">
+          <DialogTitle className="font-heading text-base sm:text-lg font-bold text-stone-900">
+            Inquire About Trip
           </DialogTitle>
-          <DialogDescription className="text-xs text-stone-500 mt-0.5 font-medium truncate">
+          <DialogDescription className="text-xs text-stone-500 font-medium truncate mt-0.5">
             {tripTitle}
           </DialogDescription>
         </div>
 
-        <div className="p-6">
+        <div className="p-7">
           {isSubmitted ? (
             <div className="py-6 text-center space-y-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
-                <Check className="w-5 h-5" strokeWidth={2.5} />
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
+                <Check className="w-6 h-6" strokeWidth={2.5} />
               </div>
-              <h4 className="font-heading font-bold text-sm text-stone-900">Message Sent Successfully!</h4>
-              <p className="text-xs text-stone-600 max-w-xs mx-auto leading-relaxed">
-                Thank you! Our mountain team will respond to your request regarding <strong className="text-stone-900">{tripTitle}</strong> within 12 hours.
+              <h4 className="font-heading font-bold text-base text-stone-900">Message Sent Successfully!</h4>
+              <p className="text-xs text-stone-600 max-w-sm mx-auto leading-relaxed">
+                Thank you! Our mountain team will respond regarding <strong className="text-stone-900">{tripTitle}</strong> within 12 hours.
               </p>
-              <Button onClick={onClose} variant="outline" className="text-xs font-semibold px-5 py-1.5 rounded-lg cursor-pointer mt-2">
+              <Button onClick={onClose} variant="outline" className="text-xs font-semibold px-6 py-2 rounded-xl cursor-pointer mt-2">
                 Close Window
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
               {/* Row 1: Full Name & Email */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-stone-800 mb-1">
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
                     Full Name <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -143,18 +143,18 @@ export function PackageInquiryModal({
                       setInquiryName(e.target.value);
                       if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: undefined }));
                     }}
-                    className={`w-full text-xs px-3 py-2 rounded-lg border font-medium focus:outline-none transition-all ${
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                       formErrors.name
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                     }`}
                   />
-                  {formErrors.name && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{formErrors.name}</p>}
+                  {formErrors.name && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-stone-800 mb-1">
-                    Email <span className="text-rose-500">*</span>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                    Email Address <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
@@ -164,20 +164,20 @@ export function PackageInquiryModal({
                       setInquiryEmail(e.target.value);
                       if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: undefined }));
                     }}
-                    className={`w-full text-xs px-3 py-2 rounded-lg border font-medium focus:outline-none transition-all ${
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                       formErrors.email
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                     }`}
                   />
-                  {formErrors.email && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{formErrors.email}</p>}
+                  {formErrors.email && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.email}</p>}
                 </div>
               </div>
 
               {/* Row 2: Phone & Country */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-stone-800 mb-1">
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
                     Phone / WhatsApp <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -188,23 +188,23 @@ export function PackageInquiryModal({
                       setInquiryPhone(e.target.value);
                       if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
                     }}
-                    className={`w-full text-xs px-3 py-2 rounded-lg border font-medium focus:outline-none transition-all ${
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                       formErrors.phone
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                     }`}
                   />
-                  {formErrors.phone && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{formErrors.phone}</p>}
+                  {formErrors.phone && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.phone}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-stone-800 mb-1">
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
                     Country <span className="text-stone-400 font-normal">(Optional)</span>
                   </label>
                   <select
                     value={inquiryCountry}
                     onChange={(e) => setInquiryCountry(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
                   >
                     <option value="">Select Country...</option>
                     {COUNTRY_OPTIONS.map((c) => (
@@ -218,35 +218,35 @@ export function PackageInquiryModal({
 
               {/* Row 3: Your Message */}
               <div>
-                <label className="block text-xs font-semibold text-stone-800 mb-1">
-                  Your Message <span className="text-rose-500">*</span>
+                <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                  Message <span className="text-rose-500">*</span>
                 </label>
                 <textarea
-                  placeholder="Ask about custom dates, group pricing, or trip details..."
+                  placeholder="How can we help with your trip?"
                   rows={3}
                   value={inquiryMessage}
                   onChange={(e) => {
                     setInquiryMessage(e.target.value);
                     if (formErrors.message) setFormErrors((prev) => ({ ...prev, message: undefined }));
                   }}
-                  className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none resize-none transition-all font-medium ${
+                  className={`w-full text-xs px-3.5 py-2.5 rounded-xl border focus:outline-none resize-none transition-all font-medium ${
                     formErrors.message
                       ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                       : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                   }`}
                 />
-                {formErrors.message && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{formErrors.message}</p>}
+                {formErrors.message && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.message}</p>}
               </div>
 
-              {/* Submit Action */}
-              <div className="pt-1 flex items-center justify-end gap-2">
-                <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2 px-4 rounded-lg">
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-xl">
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-5 py-2 rounded-lg cursor-pointer shadow-xs transition-colors"
+                  className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-1.5">

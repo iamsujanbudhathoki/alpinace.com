@@ -216,8 +216,8 @@ export default function AdminToursPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <AdminPageHeader
-        title="Cultural Tours & Sightseeing"
-        description="Manage private heritage circuits, day explorations, and wildlife adventures."
+        title="Tours"
+        description="Manage tour packages and itineraries."
       >
         <Button
           size="sm"

@@ -17,6 +17,8 @@ import {
   ChevronDown,
   Check,
   Inbox,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -44,9 +46,15 @@ import { NotificationType } from "@/lib/admin-data";
 
 interface AdminHeaderProps {
   onToggleMobileSidebar?: () => void;
+  isSidebarCollapsed?: boolean;
+  onToggleDesktopSidebar?: () => void;
 }
 
-export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
+export function AdminHeader({
+  onToggleMobileSidebar,
+  isSidebarCollapsed = false,
+  onToggleDesktopSidebar,
+}: AdminHeaderProps) {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -160,7 +168,7 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-4 sticky top-0 z-30 shadow-xs">
-      {/* Left Area: Mobile Toggle */}
+      {/* Left Area: Mobile & Desktop Toggles */}
       <div className="flex items-center gap-3">
         {onToggleMobileSidebar && (
           <button
@@ -171,6 +179,8 @@ export function AdminHeader({ onToggleMobileSidebar }: AdminHeaderProps) {
             <Menu className="w-5 h-5" />
           </button>
         )}
+
+      
       </div>
 
       {/* Center Area: Centered Search Command Trigger */}

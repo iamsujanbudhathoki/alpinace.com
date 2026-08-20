@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
-import { CategoryItem, CategoryType } from "@/lib/admin-data";
+import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
 import { CategoryFormModal, DeleteCategoryModal } from "@/components/admin/modals/category-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import { AdminInlineSelect } from "@/components/admin/ui/admin-inline-select";
 import {
   AdminTableContainer,
   AdminTable,
@@ -163,6 +164,40 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const handleInlineTypeChange = async (cat: CategoryItem, newType: string): Promise<boolean> => {
+    try {
+      const res = await CategoryService.update(cat.id, { type: newType as CategoryType });
+      if (res.success) {
+        toast.success(`Category type updated to ${newType}`);
+        await Promise.all([loadCategories(), loadStats()]);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update category type");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Error updating category type");
+      return false;
+    }
+  };
+
+  const handleInlineStatusChange = async (cat: CategoryItem, newStatus: string): Promise<boolean> => {
+    try {
+      const res = await CategoryService.update(cat.id, { status: newStatus as CategoryStatus });
+      if (res.success) {
+        toast.success(`Category status updated to ${newStatus}`);
+        await Promise.all([loadCategories(), loadStats()]);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update category status");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Error updating category status");
+      return false;
+    }
+  };
+
   const getTypeIcon = (type: CategoryType) => {
     switch (type) {
       case CategoryType.TREKKING:
@@ -287,12 +322,12 @@ export default function AdminCategoriesPage() {
             onChange={(e) => setSelectedType(e.target.value)}
             className="bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
           >
-            <option value="All">All Modules (All Categories)</option>
-            <option value={CategoryType.TREKKING}>Trekking Packages</option>
-            <option value={CategoryType.TOURS}>Sightseeing Tours</option>
-            <option value={CategoryType.EXPEDITIONS}>Peak Expeditions</option>
-            <option value={CategoryType.BLOGS}>Blogs &amp; Articles</option>
-            <option value={CategoryType.MEDIA}>Media Assets &amp; Gallery</option>
+            <option value="All">All Categories</option>
+            <option value={CategoryType.TREKKING}>Trekking</option>
+            <option value={CategoryType.TOURS}>Tours</option>
+            <option value={CategoryType.EXPEDITIONS}>Expeditions</option>
+            <option value={CategoryType.BLOGS}>Blogs</option>
+            <option value={CategoryType.MEDIA}>Media</option>
           </select>
         </div>
       </div>
@@ -328,16 +363,35 @@ export default function AdminCategoriesPage() {
                       </div>
                       <div className="text-xs text-slate-600 line-clamp-1 max-w-md font-normal">{cat.description}</div>
                     </AdminTableCell>
-                    <AdminTableCell className="font-medium text-slate-800">
-                      <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md w-fit">
-                        {getTypeIcon(cat.type)}
-                        <span>{cat.type}</span>
-                      </div>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={cat.type}
+                        options={[
+                          { label: "Trekking", value: CategoryType.TREKKING, icon: getTypeIcon(CategoryType.TREKKING) },
+                          { label: "Tours", value: CategoryType.TOURS, icon: getTypeIcon(CategoryType.TOURS) },
+                          { label: "Expeditions", value: CategoryType.EXPEDITIONS, icon: getTypeIcon(CategoryType.EXPEDITIONS) },
+                          { label: "Blogs", value: CategoryType.BLOGS, icon: getTypeIcon(CategoryType.BLOGS) },
+                          { label: "Media", value: CategoryType.MEDIA, icon: getTypeIcon(CategoryType.MEDIA) },
+                        ]}
+                        onChange={(newVal) => handleInlineTypeChange(cat, newVal)}
+                        variant="category"
+                        placeholder={cat.type}
+                        title="Click to change category type"
+                      />
                     </AdminTableCell>
                     <AdminTableCell className="text-slate-600 text-xs font-normal">/{cat.slug}</AdminTableCell>
                     <AdminTableCell className="font-medium text-slate-800">{cat.itemCount} Items</AdminTableCell>
                     <AdminTableCell>
-                      <AdminStatusBadge status={cat.status} />
+                      <AdminInlineSelect
+                        value={cat.status}
+                        options={[
+                          { label: "Active", value: CategoryStatus.ACTIVE },
+                          { label: "Draft", value: CategoryStatus.DRAFT },
+                        ]}
+                        onChange={(newVal) => handleInlineStatusChange(cat, newVal)}
+                        variant="badge"
+                        title="Click to change category status"
+                      />
                     </AdminTableCell>
                     <AdminTableCell align="right">
                       <AdminTableActions>

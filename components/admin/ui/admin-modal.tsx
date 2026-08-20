@@ -54,8 +54,7 @@ export function AdminModal({
     full: "sm:max-w-[92vw]",
   }[maxWidth];
 
-  const isSmallModal = maxWidth === "sm" || maxWidth === "md";
-  const isFixedHeight = fixedHeight !== undefined ? fixedHeight : !isSmallModal;
+  const isFixedHeight = Boolean(fixedHeight);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleOpenChange = (open: boolean, eventDetails?: any) => {
@@ -92,8 +91,10 @@ export function AdminModal({
       <DialogContent
         showCloseButton={true}
         onCloseClick={onClose}
-        className={`${maxWidthClass} w-full flex flex-col overflow-hidden ${
-          isFixedHeight ? "h-[85vh] max-h-[85vh] sm:h-[85vh] sm:max-h-[85vh] min-h-[460px]" : ""
+        className={`${maxWidthClass} w-full flex flex-col overflow-hidden max-h-[85vh] ${
+          isFixedHeight
+            ? "h-[85vh] max-h-[85vh] sm:h-[85vh] sm:max-h-[85vh] min-h-[460px]"
+            : "h-auto"
         } ${
           isDark
             ? "bg-slate-950 text-white border-slate-800 shadow-2xl rounded-2xl p-0"

@@ -5,6 +5,7 @@ import {
   BlogStatus,
   Booking,
   CategoryItem,
+  CategoryStatus,
   CategoryType,
   FaqItem,
   FaqStatus,
@@ -122,12 +123,24 @@ export const CategoryService = {
     }
   },
 
-  async create(data: CategoryFormValues): Promise<ApiResponse<CategoryItem>> {
-    return apiClient.post<CategoryItem>("/categories", data);
+  async create(data: Partial<CategoryFormValues> | Record<string, any>): Promise<ApiResponse<CategoryItem>> {
+    const payload = {
+      name: String(data.name || "").trim(),
+      type: data.type,
+      description: String(data.description || "").trim(),
+      status: data.status || CategoryStatus.ACTIVE,
+    };
+    return apiClient.post<CategoryItem>("/categories", payload);
   },
 
-  async update(id: string, data: Partial<CategoryFormValues>): Promise<ApiResponse<CategoryItem>> {
-    return apiClient.put<CategoryItem>(`/categories/${id}`, data);
+  async update(id: string, data: Partial<CategoryFormValues> | Record<string, any>): Promise<ApiResponse<CategoryItem>> {
+    const payload: Record<string, any> = {};
+    if (data.name !== undefined) payload.name = String(data.name).trim();
+    if (data.type !== undefined) payload.type = data.type;
+    if (data.description !== undefined) payload.description = String(data.description).trim();
+    if (data.status !== undefined) payload.status = data.status;
+
+    return apiClient.put<CategoryItem>(`/categories/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {

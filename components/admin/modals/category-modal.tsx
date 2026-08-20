@@ -68,13 +68,11 @@ export function CategoryFormModal({
   const onSubmit = async (values: CategoryFormValues) => {
     setIsSubmitting(true);
     try {
-      const categoryToSave: CategoryItem = {
-        id: initialData?.id || `cat-${Date.now()}`,
-        name: values.name,
-        slug: initialData?.slug || values.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      const categoryToSave: any = {
+        ...(initialData?.id ? { id: initialData.id } : {}),
+        name: values.name.trim(),
         type: values.type,
-        description: values.description,
-        itemCount: initialData?.itemCount || 0,
+        description: values.description.trim(),
         status: values.status,
       };
 
@@ -94,7 +92,7 @@ export function CategoryFormModal({
     : initialData.name;
 
   const modalDescription = !initialData
-    ? "Create a global taxonomy category for Trekking, Tours, Expeditions, Blogs, or Media."
+    ? "Create a category for Trekking, Tours, Expeditions, Blogs, or Media."
     : editingMode
     ? "Modify category attributes and module scope."
     : "Category details and assigned items.";
@@ -165,11 +163,11 @@ export function CategoryFormModal({
                 required
                 error={errors.type?.message}
                 options={[
-                  { label: "Trekking Packages", value: CategoryType.TREKKING },
-                  { label: "Sightseeing Tours", value: CategoryType.TOURS },
-                  { label: "Peak Expeditions", value: CategoryType.EXPEDITIONS },
-                  { label: "Blogs & Articles", value: CategoryType.BLOGS },
-                  { label: "Media Assets & Gallery", value: CategoryType.MEDIA },
+                  { label: "Trekking", value: CategoryType.TREKKING },
+                  { label: "Tours", value: CategoryType.TOURS },
+                  { label: "Expeditions", value: CategoryType.EXPEDITIONS },
+                  { label: "Blogs", value: CategoryType.BLOGS },
+                  { label: "Media", value: CategoryType.MEDIA },
                 ]}
                 {...register("type")}
               />

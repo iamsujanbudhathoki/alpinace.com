@@ -396,6 +396,7 @@ export function TrekFormModal({
       title={modalTitle}
       description={modalDescription}
       maxWidth="4xl"
+      fixedHeight={true}
       footer={editingMode ? editFooter : viewFooter}
     >
       {editingMode ? (

@@ -19,6 +19,7 @@ import {
   Mountain,
   X
 } from "lucide-react";
+import { COUNTRY_OPTIONS } from "@/lib/country-list";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface PublicBookingModalProps {
@@ -575,18 +576,23 @@ export function PublicBookingModal({
                     <label htmlFor="country" className="text-xs font-medium text-slate-600">
                       Country <span className="text-red-500">*</span>
                     </label>
-                    <input
+                    <select
                       id="country"
-                      type="text"
                       required
-                      placeholder="United States"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
                       onBlur={() => markTouched("country")}
                       aria-invalid={!!showError("country")}
                       aria-describedby={showError("country") ? "country-error" : undefined}
-                      className={`${inputBase} ${showError("country") ? inputBad : inputOk}`}
-                    />
+                      className={`${inputBase} ${showError("country") ? inputBad : inputOk} cursor-pointer`}
+                    >
+                      <option value="">Select Country...</option>
+                      {COUNTRY_OPTIONS.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
                     {showError("country") && (
                       <p id="country-error" className="text-xs text-red-600">
                         {showError("country")}

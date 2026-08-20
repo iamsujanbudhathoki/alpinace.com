@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Send, Check, Loader2 } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { InquiryService } from "@/lib/services/admin-service";
@@ -35,7 +36,6 @@ export function PackageInquiryModal({
   const [inquiryCountry, setInquiryCountry] = useState("");
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; phone?: string; message?: string }>({});
 
   const validateForm = () => {
@@ -86,15 +86,17 @@ export function PackageInquiryModal({
         type: packageType,
       });
 
-      setIsSubmitted(true);
+      toast.success("Inquiry sent successfully! Our mountain specialist team will reply within 12 hours.");
       setFormErrors({});
       setInquiryName("");
       setInquiryEmail("");
       setInquiryPhone("");
       setInquiryCountry("");
       setInquiryMessage("");
+      onClose();
     } catch (err) {
       console.error("Inquiry error:", err);
+      toast.error("Failed to send inquiry. Please try again or contact us directly.");
     } finally {
       setIsSubmitting(false);
     }
@@ -114,155 +116,140 @@ export function PackageInquiryModal({
         </div>
 
         <div className="p-7">
-          {isSubmitted ? (
-            <div className="py-6 text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
-                <Check className="w-6 h-6" strokeWidth={2.5} />
-              </div>
-              <h4 className="font-heading font-bold text-base text-stone-900">Message Sent Successfully!</h4>
-              <p className="text-xs text-stone-600 max-w-sm mx-auto leading-relaxed">
-                Thank you! Our mountain team will respond regarding <strong className="text-stone-900">{tripTitle}</strong> within 12 hours.
-              </p>
-              <Button onClick={onClose} variant="outline" className="text-xs font-semibold px-6 py-2 rounded-xl cursor-pointer mt-2">
-                Done
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-4">
-              {/* Row 1: Full Name & Email */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
-                    Full Name <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Alex Wright"
-                    value={inquiryName}
-                    onChange={(e) => {
-                      setInquiryName(e.target.value);
-                      if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: undefined }));
-                    }}
-                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
-                      formErrors.name
-                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
-                    }`}
-                  />
-                  {formErrors.name && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.name}</p>}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
-                    Email Address <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="alex@example.com"
-                    value={inquiryEmail}
-                    onChange={(e) => {
-                      setInquiryEmail(e.target.value);
-                      if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: undefined }));
-                    }}
-                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
-                      formErrors.email
-                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
-                    }`}
-                  />
-                  {formErrors.email && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.email}</p>}
-                </div>
-              </div>
-
-              {/* Row 2: Phone & Country */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
-                    Phone / WhatsApp <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+1 555-019-2834"
-                    value={inquiryPhone}
-                    onChange={(e) => {
-                      setInquiryPhone(e.target.value);
-                      if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
-                    }}
-                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
-                      formErrors.phone
-                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
-                    }`}
-                  />
-                  {formErrors.phone && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.phone}</p>}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
-                    Country <span className="text-stone-400 font-normal">(Optional)</span>
-                  </label>
-                  <select
-                    value={inquiryCountry}
-                    onChange={(e) => setInquiryCountry(e.target.value)}
-                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
-                  >
-                    <option value="">Select Country...</option>
-                    {COUNTRY_OPTIONS.map((c) => (
-                      <option key={c.value} value={c.value}>
-                        {c.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Row 3: Your Message */}
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+            {/* Row 1: Full Name & Email */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-stone-800 mb-1.5">
-                  Message <span className="text-rose-500">*</span>
+                  Full Name <span className="text-rose-500">*</span>
                 </label>
-                <textarea
-                  placeholder="How can we help with your trip?"
-                  rows={3}
-                  value={inquiryMessage}
+                <input
+                  type="text"
+                  placeholder="e.g. Alex Wright"
+                  value={inquiryName}
                   onChange={(e) => {
-                    setInquiryMessage(e.target.value);
-                    if (formErrors.message) setFormErrors((prev) => ({ ...prev, message: undefined }));
+                    setInquiryName(e.target.value);
+                    if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: undefined }));
                   }}
-                  className={`w-full text-xs px-3.5 py-2.5 rounded-xl border focus:outline-none resize-none transition-all font-medium ${
-                    formErrors.message
+                  className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                    formErrors.name
                       ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                       : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
                   }`}
                 />
-                {formErrors.message && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.message}</p>}
+                {formErrors.name && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.name}</p>}
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-xl">
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-1.5">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Sending...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5">
-                      <Send className="w-3.5 h-3.5" />
-                      Send Inquiry
-                    </span>
-                  )}
-                </Button>
+              <div>
+                <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                  Email Address <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="alex@example.com"
+                  value={inquiryEmail}
+                  onChange={(e) => {
+                    setInquiryEmail(e.target.value);
+                    if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: undefined }));
+                  }}
+                  className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                    formErrors.email
+                      ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                      : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
+                  }`}
+                />
+                {formErrors.email && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.email}</p>}
               </div>
-            </form>
-          )}
+            </div>
+
+            {/* Row 2: Phone & Country */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                  Phone / WhatsApp <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  placeholder="+1 555-019-2834"
+                  value={inquiryPhone}
+                  onChange={(e) => {
+                    setInquiryPhone(e.target.value);
+                    if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
+                  }}
+                  className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                    formErrors.phone
+                      ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                      : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
+                  }`}
+                />
+                {formErrors.phone && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.phone}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                  Country <span className="text-stone-400 font-normal">(Optional)</span>
+                </label>
+                <select
+                  value={inquiryCountry}
+                  onChange={(e) => setInquiryCountry(e.target.value)}
+                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
+                >
+                  <option value="">Select Country...</option>
+                  {COUNTRY_OPTIONS.map((c) => (
+                    <option key={c.value} value={c.value}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Row 3: Your Message */}
+            <div>
+              <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                Message <span className="text-rose-500">*</span>
+              </label>
+              <textarea
+                placeholder="How can we help with your trip?"
+                rows={3}
+                value={inquiryMessage}
+                onChange={(e) => {
+                  setInquiryMessage(e.target.value);
+                  if (formErrors.message) setFormErrors((prev) => ({ ...prev, message: undefined }));
+                }}
+                className={`w-full text-xs px-3.5 py-2.5 rounded-xl border focus:outline-none resize-none transition-all font-medium ${
+                  formErrors.message
+                    ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                    : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
+                }`}
+              />
+              {formErrors.message && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.message}</p>}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex items-center justify-end gap-3">
+              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-xl">
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center gap-1.5">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Sending...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5">
+                    <Send className="w-3.5 h-3.5" />
+                    Send Inquiry
+                  </span>
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
       </DialogContent>
     </Dialog>

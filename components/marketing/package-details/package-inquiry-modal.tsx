@@ -126,15 +126,15 @@ export function PackageInquiryModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent showCloseButton onCloseClick={handleClose} className="sm:max-w-lg w-full p-0 overflow-hidden bg-white rounded-2xl shadow-2xl border border-stone-200">
         {/* Header */}
-        <div className="bg-stone-900 text-white p-5 pr-10">
-          <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
+        <div className="bg-stone-50 border-b border-stone-200 p-5 pr-10">
+          <div className="flex items-center gap-2 text-amber-800 text-xs font-bold uppercase tracking-wider mb-1">
             <MessageSquare className="w-3.5 h-3.5" />
             <span>Direct Specialist Inquiry</span>
           </div>
-          <DialogTitle className="font-heading text-base sm:text-lg font-bold text-white leading-snug">
+          <DialogTitle className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug">
             {tripTitle}
           </DialogTitle>
-          <DialogDescription className="text-xs text-stone-300 mt-1 font-medium leading-normal">
+          <DialogDescription className="text-xs text-stone-600 mt-1 font-medium leading-normal">
             Ask a mountain specialist about custom dates, private departures, or trip details. Replies within 12 hours.
           </DialogDescription>
         </div>

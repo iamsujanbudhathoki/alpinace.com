@@ -55,25 +55,25 @@ export function PackageBookingSidebar({
     <aside className="w-full">
       <div className="bg-white border border-stone-200 rounded-2xl shadow-xs overflow-hidden">
         {/* Pricing Header */}
-        <div className="bg-stone-900 text-white p-4.5 sm:p-5 relative overflow-hidden">
+        <div className="bg-amber-50/90 border-b border-amber-200/80 p-4.5 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="type-caption text-amber-400 font-semibold">
+            <span className="type-caption text-amber-800 font-bold uppercase tracking-wider">
               Trip Rate
             </span>
-            <span className="type-caption text-stone-300 font-medium">
+            <span className="type-caption text-stone-600 font-medium">
               {durationDays} Days Total
             </span>
           </div>
 
           <div className="flex items-baseline gap-1.5 mt-1.5">
-            <span className="text-xl sm:text-2xl font-bold font-heading tracking-tight text-white">
+            <span className="text-xl sm:text-2xl font-bold font-heading tracking-tight text-stone-900">
               ${perPersonCalculated.toLocaleString()}
             </span>
-            <span className="type-caption text-stone-300">
+            <span className="type-caption text-stone-600">
               USD / person
             </span>
           </div>
-          <p className="type-body-sm text-stone-400 mt-0.5">
+          <p className="type-body-sm text-stone-600 mt-0.5 font-medium">
             Includes all guided logistics, permits, and accommodations
           </p>
         </div>

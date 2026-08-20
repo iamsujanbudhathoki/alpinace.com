@@ -53,17 +53,35 @@ export function PackageBookingSidebar({
   const [inquiryName, setInquiryName] = useState("");
   const [inquiryEmail, setInquiryEmail] = useState("");
   const [inquiryPhone, setInquiryPhone] = useState("");
-  const [inquiryCountry, setInquiryCountry] = useState("");
-  const [inquiryTravelDates, setInquiryTravelDates] = useState("");
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
   const [inquiryLoading, setInquiryLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
 
   const perPersonCalculated = Math.round(totalPrice / Math.max(1, travelers));
 
+  const validateForm = () => {
+    const errors: { name?: string; email?: string; phone?: string } = {};
+    if (!inquiryName.trim()) {
+      errors.name = "Full name is required";
+    }
+    if (!inquiryEmail.trim()) {
+      errors.email = "Email address is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inquiryEmail.trim())) {
+      errors.email = "Please enter a valid email address";
+    }
+    if (!inquiryPhone.trim()) {
+      errors.phone = "Phone or WhatsApp number is required";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inquiryName.trim() || !inquiryEmail.trim()) return;
+    if (!validateForm()) {
+      return;
+    }
 
     setInquiryLoading(true);
     try {
@@ -90,23 +108,22 @@ export function PackageBookingSidebar({
       await InquiryService.create({
         guestName: inquiryName.trim(),
         email: inquiryEmail.trim(),
-        phone: inquiryPhone.trim() || "+1 000-000-0000",
-        country: inquiryCountry.trim() || "International",
+        phone: inquiryPhone.trim(),
+        country: "N/A",
         interestedTrip: tripTitle,
-        travelDates: inquiryTravelDates.trim() || "Upcoming Season",
+        travelDates: "Flexible",
         groupSize: travelers,
         message: formattedMessage,
         notes: notesSummary,
       });
 
       setInquirySubmitted(true);
+      setFormErrors({});
       setTimeout(() => {
         setInquirySubmitted(false);
         setInquiryName("");
         setInquiryEmail("");
         setInquiryPhone("");
-        setInquiryCountry("");
-        setInquiryTravelDates("");
         setInquiryMessage("");
         setShowInquiryForm(false);
       }, 5000);
@@ -288,6 +305,7 @@ export function PackageBookingSidebar({
           {showInquiryForm && (
             <form
               onSubmit={handleInquirySubmit}
+              noValidate
               className="pt-4 border-t border-stone-200 space-y-3"
             >
               <div className="flex items-center justify-between">
@@ -298,63 +316,104 @@ export function PackageBookingSidebar({
               </div>
 
               {inquirySubmitted ? (
-                <div className="p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-medium text-center flex items-center justify-center gap-1.5">
-                  <Check className="w-4 h-4 text-emerald-700" />
+                <div className="p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-medium text-center flex items-center justify-center gap-1.5 animate-in fade-in-0 duration-200">
+                  <Check className="w-4 h-4 text-emerald-700 shrink-0" />
                   <span>Inquiry received! Our team will contact you shortly.</span>
                 </div>
               ) : (
                 <>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Your Full Name *"
-                    value={inquiryName}
-                    onChange={(e) => setInquiryName(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email Address *"
-                    value={inquiryEmail}
-                    onChange={(e) => setInquiryEmail(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
-                  />
-                  <input
-                    type="tel"
-                    required
-                    placeholder="Phone / WhatsApp (with country code) *"
-                    value={inquiryPhone}
-                    onChange={(e) => setInquiryPhone(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
-                  />
-                  <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-800 mb-1">
+                      Full Name <span className="text-rose-500 font-bold">*</span>
+                    </label>
                     <input
                       type="text"
-                      placeholder="Country"
-                      value={inquiryCountry}
-                      onChange={(e) => setInquiryCountry(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
+                      placeholder="e.g. Alexander Wright"
+                      value={inquiryName}
+                      onChange={(e) => {
+                        setInquiryName(e.target.value);
+                        if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: undefined }));
+                      }}
+                      className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none transition-all font-medium ${
+                        formErrors.name
+                          ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                          : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
+                      }`}
                     />
+                    {formErrors.name && (
+                      <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                        {formErrors.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-800 mb-1">
+                      Email Address <span className="text-rose-500 font-bold">*</span>
+                    </label>
                     <input
-                      type="text"
-                      placeholder="Preferred Dates"
-                      value={inquiryTravelDates}
-                      onChange={(e) => setInquiryTravelDates(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
+                      type="email"
+                      placeholder="e.g. alexander@example.com"
+                      value={inquiryEmail}
+                      onChange={(e) => {
+                        setInquiryEmail(e.target.value);
+                        if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: undefined }));
+                      }}
+                      className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none transition-all font-medium ${
+                        formErrors.email
+                          ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                          : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
+                      }`}
+                    />
+                    {formErrors.email && (
+                      <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                        {formErrors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-800 mb-1">
+                      Phone / WhatsApp Number <span className="text-rose-500 font-bold">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="e.g. +1 555-019-2834"
+                      value={inquiryPhone}
+                      onChange={(e) => {
+                        setInquiryPhone(e.target.value);
+                        if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
+                      }}
+                      className={`w-full text-xs px-3 py-2 rounded-lg border focus:outline-none transition-all font-medium ${
+                        formErrors.phone
+                          ? "border-rose-400 bg-rose-50/20 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                          : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
+                      }`}
+                    />
+                    {formErrors.phone && (
+                      <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                        {formErrors.phone}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-800 mb-1">
+                      Custom Requests / Questions <span className="text-stone-400 font-normal">(Optional)</span>
+                    </label>
+                    <textarea
+                      placeholder="Any custom dates, fitness questions, or special requests..."
+                      rows={3}
+                      value={inquiryMessage}
+                      onChange={(e) => setInquiryMessage(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white resize-none transition-all font-medium"
                     />
                   </div>
-                  <textarea
-                    placeholder="Questions, custom requests, or itinerary preferences..."
-                    rows={3}
-                    value={inquiryMessage}
-                    onChange={(e) => setInquiryMessage(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white resize-none transition-all font-medium"
-                  />
+
                   <button
                     type="submit"
                     disabled={inquiryLoading}
-                    className="w-full btn-primary py-2.5"
+                    className="w-full btn-primary py-2.5 cursor-pointer font-bold text-xs"
                   >
                     <Send className="w-3.5 h-3.5" strokeWidth={2} />
                     <span>{inquiryLoading ? "Sending..." : "Send Inquiry"}</span>

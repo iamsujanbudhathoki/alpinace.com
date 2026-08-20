@@ -536,6 +536,7 @@ export function ExpeditionDetailClient({
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Apply for Expedition"
+              packageType="Expedition"
             />
           </div>
         </div>

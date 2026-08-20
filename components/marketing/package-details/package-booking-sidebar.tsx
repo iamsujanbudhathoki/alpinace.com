@@ -34,6 +34,7 @@ export interface PackageBookingSidebarProps {
   priceLabel?: string;
   bookButtonLabel?: string;
   trustBadges?: { icon?: React.ReactNode; text: string }[];
+  packageType?: "Trekking" | "Tour" | "Expedition";
 }
 
 export function PackageBookingSidebar({
@@ -46,10 +47,14 @@ export function PackageBookingSidebar({
   onBookClick,
   bookButtonLabel = "Book This Expedition",
   trustBadges,
+  packageType,
 }: PackageBookingSidebarProps) {
   const [showInquiryForm, setShowInquiryForm] = useState(false);
   const [inquiryName, setInquiryName] = useState("");
   const [inquiryEmail, setInquiryEmail] = useState("");
+  const [inquiryPhone, setInquiryPhone] = useState("");
+  const [inquiryCountry, setInquiryCountry] = useState("");
+  const [inquiryTravelDates, setInquiryTravelDates] = useState("");
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
   const [inquiryLoading, setInquiryLoading] = useState(false);
@@ -62,21 +67,46 @@ export function PackageBookingSidebar({
 
     setInquiryLoading(true);
     try {
+      const activeAddons = addons.filter((a) => a.checked).map((a) => a.label);
+      const addonsSummary = activeAddons.length > 0 ? activeAddons.join(", ") : "None";
+
+      const formattedMessage = [
+        inquiryMessage.trim(),
+        "",
+        "--- Trip Inquiry Context ---",
+        `Trip Title: ${tripTitle}`,
+        `Package Domain: ${packageType || "Adventure Package"}`,
+        `Duration: ${durationDays} Days`,
+        `Travelers Count: ${travelers}`,
+        `Selected Upgrades: ${addonsSummary}`,
+        `Estimated Rate: $${totalPrice.toLocaleString()} USD`,
+      ]
+        .filter((line) => line !== undefined)
+        .join("\n")
+        .trim();
+
+      const notesSummary = `[Type: ${packageType || "Adventure"}] | [Duration: ${durationDays}D] | [Upgrades: ${addonsSummary}] | [Est Total: $${totalPrice.toLocaleString()} USD]`;
+
       await InquiryService.create({
         guestName: inquiryName.trim(),
         email: inquiryEmail.trim(),
-        phone: "+1 000-000-0000",
-        country: "International",
+        phone: inquiryPhone.trim() || "+1 000-000-0000",
+        country: inquiryCountry.trim() || "International",
         interestedTrip: tripTitle,
-        travelDates: "Upcoming Season",
+        travelDates: inquiryTravelDates.trim() || "Upcoming Season",
         groupSize: travelers,
-        message: `${inquiryMessage || "Direct custom inquiry"} for ${tripTitle} (${travelers} travelers, Est: $${totalPrice.toLocaleString()} USD).`,
+        message: formattedMessage,
+        notes: notesSummary,
       });
+
       setInquirySubmitted(true);
       setTimeout(() => {
         setInquirySubmitted(false);
         setInquiryName("");
         setInquiryEmail("");
+        setInquiryPhone("");
+        setInquiryCountry("");
+        setInquiryTravelDates("");
         setInquiryMessage("");
         setShowInquiryForm(false);
       }, 5000);
@@ -277,25 +307,49 @@ export function PackageBookingSidebar({
                   <input
                     type="text"
                     required
-                    placeholder="Your Full Name"
+                    placeholder="Your Full Name *"
                     value={inquiryName}
                     onChange={(e) => setInquiryName(e.target.value)}
-                    className="w-full text-xs px-3 py-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all"
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
                   />
                   <input
                     type="email"
                     required
-                    placeholder="Your Email Address"
+                    placeholder="Email Address *"
                     value={inquiryEmail}
                     onChange={(e) => setInquiryEmail(e.target.value)}
-                    className="w-full text-xs px-3 py-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all"
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
                   />
+                  <input
+                    type="tel"
+                    required
+                    placeholder="Phone / WhatsApp (with country code) *"
+                    value={inquiryPhone}
+                    onChange={(e) => setInquiryPhone(e.target.value)}
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="Country"
+                      value={inquiryCountry}
+                      onChange={(e) => setInquiryCountry(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Preferred Dates"
+                      value={inquiryTravelDates}
+                      onChange={(e) => setInquiryTravelDates(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white transition-all font-medium"
+                    />
+                  </div>
                   <textarea
-                    placeholder="Preferred travel dates, questions, or custom requests..."
+                    placeholder="Questions, custom requests, or itinerary preferences..."
                     rows={3}
                     value={inquiryMessage}
                     onChange={(e) => setInquiryMessage(e.target.value)}
-                    className="w-full text-xs px-3 py-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white resize-none transition-all"
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white resize-none transition-all font-medium"
                   />
                   <button
                     type="submit"

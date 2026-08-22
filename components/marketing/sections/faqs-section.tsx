@@ -46,31 +46,28 @@ export function FaqsSection() {
   }
 
   return (
-    <section className="py-24 bg-white border-b border-stone-200">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 space-y-3">
-          <span className="text-amber-700 text-sm font-medium block">
-            Have Questions?
-          </span>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-zinc-900">
-            Pre-Trip Consultations
+    <section className="py-20 bg-stone-50 border-b border-stone-200">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 space-y-2">
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-zinc-900">
+            Common Questions
           </h2>
-          <p className="text-zinc-700 text-sm font-normal leading-relaxed max-w-xl mx-auto">
-            Clear answers regarding safety protocols, permits, high-altitude preparation, and expedition compliance.
+          <p className="text-zinc-600 text-sm font-normal leading-relaxed">
+            Answers about permits, altitude preparation, safety, and what to expect on the trail.
           </p>
         </div>
 
         {/* Category Pills (if more than 1 category exists) */}
         {categories.length > 1 && (
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+          <div className="flex flex-wrap items-center gap-2 mb-8">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`text-xs px-4 py-2 rounded-full font-semibold transition-all cursor-pointer ${
+                className={`text-xs px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer border ${
                   selectedCategory === cat
-                    ? "bg-slate-900 text-white shadow-xs"
-                    : "bg-stone-100 text-slate-700 hover:bg-stone-200/80"
+                    ? "bg-zinc-900 text-white border-zinc-900"
+                    : "bg-white text-zinc-600 border-stone-200 hover:border-stone-300 hover:text-zinc-800"
                 }`}
               >
                 {cat}
@@ -81,43 +78,40 @@ export function FaqsSection() {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12 gap-2 text-stone-500">
-            <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
-            <span className="text-xs font-medium">Loading consultations...</span>
+            <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
+            <span className="text-xs font-medium">Loading…</span>
           </div>
         ) : filteredFaqs.length === 0 ? (
-          <div className="text-center py-12 bg-stone-50 rounded-2xl border border-stone-200 text-stone-500 text-xs">
-            No consultations found in this category.
+          <div className="text-center py-12 text-stone-500 text-xs">
+            No questions found in this category.
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="divide-y divide-stone-200">
             {filteredFaqs.map((faq) => {
               const isOpen = activeFaq === faq.id;
               return (
-                <div
-                  key={faq.id}
-                  className="bg-stone-50/80 border border-stone-200 rounded-2xl overflow-hidden transition-all duration-300 shadow-xs hover:border-amber-200/80"
-                >
+                <div key={faq.id}>
                   <button
                     onClick={() => toggleFaq(faq.id)}
-                    className="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-stone-100/60 transition-colors"
+                    className="w-full py-5 text-left flex items-start justify-between gap-4 cursor-pointer group"
                   >
-                    <span className="font-heading text-sm sm:text-base font-bold text-zinc-900">
+                    <span className="font-heading text-sm sm:text-base font-semibold text-zinc-900 group-hover:text-zinc-700 transition-colors leading-snug">
                       {faq.question}
                     </span>
                     <ChevronDown
-                      className={`h-4 w-4 text-amber-700 shrink-0 transition-transform duration-300 ${
-                        isOpen ? "rotate-180" : ""
+                      className={`h-4 w-4 text-stone-400 shrink-0 mt-0.5 transition-transform duration-200 ${
+                        isOpen ? "rotate-180 text-amber-700" : ""
                       }`}
                     />
                   </button>
                   <div
-                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                      isOpen ? "max-h-96 border-t border-stone-200" : "max-h-0"
+                    className={`transition-all duration-200 ease-in-out overflow-hidden ${
+                      isOpen ? "max-h-96 pb-5" : "max-h-0"
                     }`}
                   >
-                    <div className="p-6 pt-4 text-zinc-700 text-xs sm:text-sm leading-relaxed font-normal bg-white">
+                    <p className="text-zinc-600 text-sm leading-relaxed font-normal">
                       {faq.answer}
-                    </div>
+                    </p>
                   </div>
                 </div>
               );

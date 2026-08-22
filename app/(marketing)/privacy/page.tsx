@@ -25,7 +25,7 @@ export default function PrivacyPage() {
 
       {/* Main Content */}
       <main className="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <div className="bg-white p-8 sm:p-12 rounded-3xl border border-stone-200 space-y-8 text-zinc-700 text-sm leading-relaxed font-normal">
+        <div className="bg-white p-6 sm:p-10 rounded-xl border border-stone-200 space-y-8 text-zinc-700 text-sm leading-relaxed font-normal">
           
           <div className="border-b border-stone-100 pb-6 flex items-center justify-between">
             <div>

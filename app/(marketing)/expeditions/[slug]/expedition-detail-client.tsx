@@ -552,7 +552,7 @@ export function ExpeditionDetailClient({
             id: e.id,
             title: e.title,
             slug: e.slug,
-            region: e.region || "Himalayas",
+            region: e.region,
             durationDays: e.durationDays,
             maxAltitudeMeters: e.peakHeightM || e.maxAltitudeMeters || 8000,
             difficulty: e.difficulty || "Extreme",

@@ -309,7 +309,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
         bookButtonLabel="Book Tour"
         onBookClick={() => setIsBookingModalOpen(true)}
         badges={[
-          { label: tour.region || "Nepal" },
+          ...(tour.region ? [{ label: tour.region }] : []),
           { label: tour.tourType || "Heritage Tour", highlight: true },
           { label: `${tour.durationDays} Days` },
         ]}
@@ -511,7 +511,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             id: t.id,
             title: t.title,
             slug: t.slug,
-            region: t.region || "Nepal",
+            region: t.region,
             durationDays: t.durationDays,
             maxAltitudeMeters: t.maxAltitudeMeters || 1400,
             difficulty: t.difficulty || "Easy",
@@ -521,7 +521,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             reviewsCount: t.reviewsCount || 10,
           }))}
           categoryPath="/tours"
-          title="Explore More Luxury Nepal Tours"
+          title="Explore More Luxury Tours"
         />
       )}
 

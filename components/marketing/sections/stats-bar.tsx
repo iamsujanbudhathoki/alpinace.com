@@ -2,18 +2,18 @@ import { HOME_STATS } from "@/lib/home-data";
 
 export function StatsBar() {
   return (
-    <section className="py-14 bg-amber-500 text-slate-950">
+    <section className="py-10 bg-stone-900 text-white border-y border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {HOME_STATS.map((s, index) => (
             <div key={index} className="space-y-1">
-              <span className="font-heading text-4xl sm:text-5xl font-extrabold block leading-none">
+              <span className="font-heading text-3xl sm:text-4xl font-extrabold text-white block leading-none">
                 {s.number}
               </span>
-              <span className="font-heading text-sm font-bold block text-slate-950">
+              <span className="font-heading text-xs font-semibold text-stone-300 block uppercase tracking-wider">
                 {s.label}
               </span>
-              <span className="text-slate-900 text-xs block font-normal leading-snug">
+              <span className="text-stone-500 text-xs block font-normal leading-snug">
                 {s.desc}
               </span>
             </div>

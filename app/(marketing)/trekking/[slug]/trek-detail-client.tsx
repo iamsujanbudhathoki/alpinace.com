@@ -329,7 +329,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         bookButtonLabel="Book Trek"
         onBookClick={() => setIsBookingModalOpen(true)}
         badges={[
-          { label: trek.region || "Trekking" },
+          ...(trek.region ? [{ label: trek.region }] : []),
           { label: trek.difficulty || "Moderate", highlight: true },
           { label: `${trek.durationDays} Days` },
         ]}

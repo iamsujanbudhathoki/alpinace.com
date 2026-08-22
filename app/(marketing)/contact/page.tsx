@@ -102,7 +102,7 @@ export default function ContactView() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Panel: Direct Concierge & Operations Contact Details */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-xs space-y-6">
+            <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 space-y-6">
               <div className="space-y-2">
                 <span className="text-xs font-bold text-amber-800 uppercase tracking-wider block">
                   Direct Line &amp; Desk
@@ -160,7 +160,7 @@ export default function ContactView() {
 
             {/* Interactive Google Map */}
             {(settings.googleMapsUrl || settings.companyAddress) && (
-              <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs space-y-3">
+              <div className="bg-white p-4 rounded-xl border border-stone-200 space-y-3">
                 <div className="flex items-center justify-between px-1">
                   <h3 className="font-heading text-sm font-semibold text-zinc-900">Find Our Office</h3>
                   {settings.googleMapsUrl && (
@@ -199,7 +199,7 @@ export default function ContactView() {
           </div>
 
           {/* Right Panel: Contact Inquiry Form */}
-          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-stone-200 shadow-xs">
+          <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-xl border border-stone-200">
             
             {submitted ? (
               <div className="py-12 text-center space-y-6 max-w-lg mx-auto animate-fade-in">
@@ -223,11 +223,10 @@ export default function ContactView() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
-                <div className="space-y-2">
-                  <h2 className="font-heading text-2xl font-bold text-zinc-900">Plan Your Journey</h2>
-                  <p className="text-zinc-600 text-xs font-light leading-relaxed">
-                    Provide your tentative dates, travelers count, and desired goals, and we will formulate a personalized expedition draft.
+              <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+                <div className="space-y-1 pb-4 border-b border-stone-100">
+                  <p className="text-zinc-600 text-xs font-normal leading-relaxed">
+                    Provide your travel dates, group size, and region of interest and we'll put together a draft itinerary.
                   </p>
                 </div>
 

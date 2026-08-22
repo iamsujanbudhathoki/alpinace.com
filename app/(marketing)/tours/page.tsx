@@ -245,7 +245,7 @@ function ToursPageContent() {
           </h1>
 
           <p className="text-slate-600 text-xs sm:text-sm max-w-2xl font-normal leading-relaxed pt-1">
-            Experience UNESCO World Heritage temples in Kathmandu Valley, private Chitwan jungle safaris, and sunrise over the Annapurnas in Pokhara. Curated for travelers who value heritage, luxury transport, and private local historians.
+            Kathmandu Valley temples, Chitwan jungle safaris, Pokhara lake views, and Lumbini cultural circuits — all with private transport and local expert guides.
           </p>
         </div>
       </section>

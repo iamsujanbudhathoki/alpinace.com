@@ -279,17 +279,17 @@ function TrekkingPageContent() {
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
-      {/* Page Hero Header */}
-      <section className="bg-slate-900 text-white py-14 sm:py-16 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-            <span>Himalayan Trekking Catalog</span>
-          </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold font-heading text-white">
-            Nepal Trekking Packages
+      {/* Page Header */}
+      <section className="bg-slate-900 text-white py-10 sm:py-12 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <span className="text-amber-400 text-xs font-semibold uppercase tracking-wider block mb-2">
+            Nepal Trekking
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-white mb-2">
+            Trekking Packages
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto font-normal leading-relaxed">
-            Explore world-renowned teahouse trekking routes across Everest, Annapurna, Langtang, and Manaslu with licensed Sherpa guides.
+          <p className="text-sm text-slate-400 max-w-2xl font-normal leading-relaxed">
+            Everest, Annapurna, Langtang, Manaslu, and restricted regions — all routes led by licensed Sherpa guides.
           </p>
         </div>
       </section>

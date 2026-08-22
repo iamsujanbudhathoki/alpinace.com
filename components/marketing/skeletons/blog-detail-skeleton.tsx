@@ -44,10 +44,10 @@ export function BlogDetailSkeleton() {
         </header>
 
         {/* Hero Image Skeleton */}
-        <div className="w-full aspect-16/9 sm:aspect-21/9 rounded-3xl bg-stone-200 mb-10 overflow-hidden shadow-xs" />
+        <div className="w-full aspect-16/9 sm:aspect-21/9 rounded-xl bg-stone-200 mb-8 overflow-hidden" />
 
         {/* Body Content Card Skeleton */}
-        <div className="bg-white rounded-3xl p-6 sm:p-12 border border-stone-200 space-y-6 shadow-2xs">
+        <div className="bg-white rounded-xl p-6 sm:p-10 border border-stone-200 space-y-6">
           {/* Excerpt Pull-quote Skeleton */}
           <div className="border-l-4 border-stone-300 pl-6 py-2">
             <Skeleton className="h-5 w-11/12 rounded-md bg-stone-200" />

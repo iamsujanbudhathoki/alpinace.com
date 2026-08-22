@@ -15,51 +15,72 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.title,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  keywords: [...siteConfig.keywords],
-  alternates: {
-    canonical: siteConfig.url,
-  },
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
-  openGraph: {
-    type: "website",
-    url: siteConfig.url,
-    title: siteConfig.title,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
-    images: [
-      {
-        url: "/logo.jpg",
-        width: 800,
-        height: 600,
-        alt: siteConfig.name,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.title,
-    description: siteConfig.description,
-    images: ["/logo.jpg"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
-
 import { Toaster } from "sonner";
 import { SettingsProvider } from "@/lib/settings-context";
+import { SiteAnalytics, extractVerificationToken } from "@/components/common/site-analytics";
+import { SettingService } from "@/lib/services/admin-service";
+
+export async function generateMetadata(): Promise<Metadata> {
+  let googleVerificationToken = "";
+  try {
+    const settings = await SettingService.getAll();
+    if (settings?.googleSiteVerification) {
+      googleVerificationToken = extractVerificationToken(settings.googleSiteVerification);
+    }
+  } catch (e) {
+    // Ignore fetch error, fallback to defaults
+  }
+
+  return {
+    metadataBase: new URL(siteConfig.url),
+    title: {
+      default: siteConfig.title,
+      template: `%s | ${siteConfig.name}`,
+    },
+    description: siteConfig.description,
+    keywords: [...siteConfig.keywords],
+    alternates: {
+      canonical: siteConfig.url,
+    },
+    ...(googleVerificationToken
+      ? {
+          verification: {
+            google: googleVerificationToken,
+          },
+        }
+      : {}),
+    icons: {
+      icon: "/favicon.ico",
+      shortcut: "/favicon.ico",
+      apple: "/apple-touch-icon.png",
+    },
+    openGraph: {
+      type: "website",
+      url: siteConfig.url,
+      title: siteConfig.title,
+      description: siteConfig.description,
+      siteName: siteConfig.name,
+      images: [
+        {
+          url: "/logo.jpg",
+          width: 800,
+          height: 600,
+          alt: siteConfig.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: siteConfig.title,
+      description: siteConfig.description,
+      images: ["/logo.jpg"],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -126,6 +147,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <SettingsProvider>
+          <SiteAnalytics />
           <TopLoaderProvider>{children}</TopLoaderProvider>
           <Toaster richColors position="top-right" duration={3000} />
         </SettingsProvider>

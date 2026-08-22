@@ -45,7 +45,7 @@ export function generatePackageMetadata({
   const description =
     item.metaDescription?.trim() ||
     cleanShortDesc ||
-    `Experience the ${item.title} in Nepal (${item.durationDays || 0} Days). Guided by certified IFMGA/NNMGA Sherpa masters with luxury mountain lodge hospitality. Book with AlpineAce.`;
+    `Experience ${item.title} (${item.durationDays || 0} Days). Guided by certified IFMGA/NNMGA Sherpa masters with luxury mountain lodge hospitality. Book with AlpineAce.`;
 
   const rawKeywords = item.keywords
     ? item.keywords.split(",").map((s: string) => s.trim()).filter(Boolean)
@@ -53,10 +53,10 @@ export function generatePackageMetadata({
 
   const defaultKeywords = [
     item.title,
-    `${item.region || "Nepal"} trekking`,
+    ...(item.region ? [`${item.region} trekking`] : []),
     `${item.title} price`,
     `${item.title} itinerary`,
-    "Nepal guided expeditions",
+    "Guided expeditions",
     "Sherpa mountain guides",
     "AlpineAce",
   ];

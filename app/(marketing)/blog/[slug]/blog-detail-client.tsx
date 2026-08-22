@@ -97,7 +97,7 @@ export function BlogDetailClient({ initialPost, slug }: BlogDetailClientProps) {
   if (!post) {
     return (
       <div className="pt-32 min-h-screen bg-stone-50/60 pb-20 flex flex-col items-center justify-center px-4">
-        <div className="bg-white p-10 rounded-3xl border border-stone-200 shadow-xs text-center max-w-md w-full">
+        <div className="bg-white p-8 rounded-xl border border-stone-200 text-center max-w-md w-full">
           <div className="w-12 h-12 rounded-2xl bg-stone-100 text-stone-600 flex items-center justify-center mx-auto mb-4">
             <BookOpen className="w-6 h-6 text-amber-600" />
           </div>
@@ -233,7 +233,7 @@ export function BlogDetailClient({ initialPost, slug }: BlogDetailClientProps) {
                 post.excerpt || post.title,
               )
             }
-            className="relative aspect-16/9 sm:aspect-21/9 w-full rounded-3xl overflow-hidden bg-slate-900 border border-stone-200/80 shadow-md mb-10 group cursor-pointer"
+            className="relative aspect-16/9 sm:aspect-21/9 w-full rounded-xl overflow-hidden bg-slate-900 border border-stone-200 mb-8 group cursor-pointer"
             title="Click to view full screen"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -253,7 +253,7 @@ export function BlogDetailClient({ initialPost, slug }: BlogDetailClientProps) {
         )}
 
         {/* Editorial Body Content Area */}
-        <div className="bg-white rounded-3xl p-6 sm:p-12 border border-stone-200/80 shadow-xs space-y-8">
+        <div className="bg-white rounded-xl p-6 sm:p-10 border border-stone-200 space-y-8">
           {/* Excerpt / Lead Paragraph */}
           {post.excerpt && (
             <div className="relative pl-6 border-l-4 border-amber-500 py-1.5">

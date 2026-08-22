@@ -80,15 +80,15 @@ export function TravelProcess() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-amber-800 text-xs font-semibold block">
+        <div className="max-w-2xl space-y-2">
+          <span className="text-amber-800 text-xs font-semibold uppercase tracking-wider block">
             How It Works
           </span>
-          <h2 className="font-heading text-3xl sm:text-5xl font-semibold tracking-tight text-zinc-900">
-            Your Journey To The Sky
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+            From inquiry to the trail
           </h2>
           <p className="text-zinc-600 text-sm font-normal leading-relaxed">
-            From your initial consultation call to boarding your final helicopter, we engineer every step of your Himalayan expedition.
+            We handle everything between your first call and your first step on the mountain — permits, logistics, guides, lodges, and safety coordination.
           </p>
         </div>
 
@@ -133,11 +133,11 @@ export function TravelProcess() {
           </div>
         </div>
 
-        {/* Main Step Detail Display Card */}
-        <div className="bg-white rounded-3xl border border-stone-200 p-8 sm:p-12 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        {/* Main Step Detail Display */}
+        <div className="bg-white rounded-xl border border-stone-200 p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* Left Details */}
-          <div className="lg:col-span-7 space-y-8 flex flex-col justify-between min-h-[380px]">
+          <div className="lg:col-span-7 space-y-6 flex flex-col justify-between min-h-[320px]">
             
             <div className="space-y-6">
               

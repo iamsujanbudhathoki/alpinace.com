@@ -122,15 +122,15 @@ function BlogPageContent() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/65 to-slate-950/90" />
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="text-amber-400 text-xs sm:text-sm font-bold uppercase tracking-widest block mb-2">
-            The Alpine Dispatch
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <span className="text-amber-400 text-xs font-semibold uppercase tracking-wider block mb-2">
+            Journal
           </span>
-          <h1 className="font-heading text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-            Blogs &amp; Expedition Guides
+          <h1 className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
+            Articles &amp; Guides
           </h1>
-          <p className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto font-light leading-relaxed">
-            Route briefings, gear reviews, packing checklists, and stories from our certified Sherpa and IFMGA mountain guides on Himalayan trails.
+          <p className="text-slate-300 text-sm max-w-2xl font-normal leading-relaxed">
+            Route briefings, gear advice, packing lists, and trail notes from our Sherpa guides.
           </p>
         </div>
       </section>
@@ -139,7 +139,7 @@ function BlogPageContent() {
       <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Filter Controls Bar */}
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-10 bg-white p-4 rounded-2xl border border-stone-200 shadow-2xs">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-8 bg-white p-3.5 rounded-xl border border-stone-200">
           
           {/* Dynamic Category filter buttons */}
           <div className="flex flex-wrap items-center gap-2">
@@ -195,7 +195,7 @@ function BlogPageContent() {
 
           {/* Empty State */}
           {!initialLoading && posts.length === 0 && (
-            <div className="bg-white rounded-3xl border border-stone-200 p-16 text-center max-w-md mx-auto shadow-xs my-8 animate-in fade-in duration-300">
+            <div className="bg-white rounded-xl border border-stone-200 p-12 text-center max-w-md mx-auto my-8 animate-in fade-in duration-300">
               <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-7 h-7" />
               </div>
@@ -233,7 +233,7 @@ function BlogPageContent() {
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug || post.id}`}
-                  className="bg-white rounded-3xl overflow-hidden border border-stone-200/90 hover:border-amber-400 hover:shadow-md transition-all duration-300 flex flex-col h-full cursor-pointer group shadow-2xs"
+                  className="bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-stone-300 transition-all duration-200 flex flex-col h-full cursor-pointer group"
                 >
                   {post.image ? (
                     <div className="relative aspect-16/10 overflow-hidden bg-slate-100">

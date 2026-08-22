@@ -213,7 +213,7 @@ export function FeaturedPackages() {
                 <Link
                   key={pkg.id}
                   href={packageHref}
-                  className="group flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden hover:border-stone-400 hover:shadow-xl hover:shadow-stone-900/5 transition-all duration-300 cursor-pointer"
+                  className="group flex flex-col bg-white rounded-xl border border-stone-200 overflow-hidden hover:border-stone-300 transition-all duration-200 cursor-pointer"
                 >
                   {/* Image Frame */}
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
@@ -271,19 +271,14 @@ export function FeaturedPackages() {
 
                       <div className="flex items-center justify-between pt-1">
                         <div>
-                          <span className="text-xs uppercase font-semibold text-stone-600 tracking-wider block">
+                          <span className="text-xs uppercase font-semibold text-stone-500 tracking-wider block">
                             From
                           </span>
                           <span className="text-base font-extrabold text-stone-900">
                             ${pkg.priceUSD.toLocaleString()}{" "}
-                            <span className="text-xs font-semibold text-stone-600">USD</span>
+                            <span className="text-xs font-semibold text-stone-500">USD</span>
                           </span>
                         </div>
-
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-stone-800 group-hover:text-amber-800 group-hover:translate-x-0.5 transition-all">
-                          <span>Explore</span>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-amber-700" />
-                        </span>
                       </div>
                     </div>
                   </div>

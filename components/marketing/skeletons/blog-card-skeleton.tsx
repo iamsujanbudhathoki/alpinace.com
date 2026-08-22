@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function BlogCardSkeleton() {
   return (
-    <div className="bg-white rounded-3xl overflow-hidden border border-stone-200/80 animate-pulse flex flex-col h-[380px] shadow-2xs">
+    <div className="bg-white rounded-xl overflow-hidden border border-stone-200 animate-pulse flex flex-col h-[380px]">
       {/* Image Skeleton */}
       <Skeleton className="w-full aspect-16/10 rounded-none bg-stone-200/80" />
       

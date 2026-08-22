@@ -173,7 +173,7 @@ export function FeaturedPackages() {
           <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight">
             Featured Himalayan Experiences
           </h2>
-          <p className="text-stone-500 text-xs sm:text-sm leading-relaxed px-2 font-normal">
+          <p className="text-stone-700 text-xs sm:text-sm leading-relaxed px-2 font-medium">
             Hand-picked alpine expeditions, iconic high-pass circuits, and cultural journeys through Nepal.
           </p>
 
@@ -194,7 +194,7 @@ export function FeaturedPackages() {
                     className={`relative flex items-center gap-2 pb-2.5 text-sm sm:text-base font-bold transition-all duration-200 cursor-pointer ${
                       isActive
                         ? "text-stone-900"
-                        : "text-stone-400 hover:text-stone-700"
+                        : "text-stone-600 hover:text-stone-900 font-semibold"
                     }`}
                     aria-selected={isActive}
                     role="tab"
@@ -205,7 +205,7 @@ export function FeaturedPackages() {
                         className={`text-xs font-semibold px-2 py-0.5 rounded-full transition-colors ${
                           isActive
                             ? "bg-amber-100 text-amber-900"
-                            : "bg-stone-100 text-stone-500"
+                            : "bg-stone-100 text-stone-700 font-medium"
                         }`}
                       >
                         {tab.count}
@@ -326,7 +326,7 @@ export function FeaturedPackages() {
                           {pkg.title}
                         </h3>
                         {pkg.shortDesc && (
-                          <p className="text-stone-500 text-xs leading-relaxed font-normal line-clamp-2">
+                          <p className="text-stone-700 text-xs leading-relaxed font-medium line-clamp-2">
                             {pkg.shortDesc.replace(/<[^>]*>?/gm, "")}
                           </p>
                         )}
@@ -334,14 +334,14 @@ export function FeaturedPackages() {
 
                       {/* Metadata & Pricing Footer */}
                       <div className="pt-4 border-t border-stone-100 space-y-3">
-                        <div className="flex items-center justify-between text-xs text-stone-600 font-medium">
+                        <div className="flex items-center justify-between text-xs text-stone-800 font-semibold">
                           <span className="flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5 text-stone-400" />
+                            <Clock className="w-3.5 h-3.5 text-amber-800/80" />
                             {pkg.durationDays} Days
                           </span>
                           {pkg.maxAltitudeMeters > 0 && (
-                            <span className="flex items-center gap-1.5 text-stone-700 font-semibold">
-                              <TrendingUp className="w-3.5 h-3.5 text-stone-400" />
+                            <span className="flex items-center gap-1.5 text-stone-800 font-bold">
+                              <TrendingUp className="w-3.5 h-3.5 text-amber-800/80" />
                               {pkg.maxAltitudeMeters.toLocaleString()}m
                             </span>
                           )}
@@ -349,12 +349,12 @@ export function FeaturedPackages() {
 
                         <div className="flex items-center justify-between pt-1">
                           <div>
-                            <span className="text-[10px] sm:text-xs uppercase font-semibold text-stone-400 tracking-wider block">
+                            <span className="text-[10px] sm:text-xs uppercase font-semibold text-stone-600 tracking-wider block">
                               From
                             </span>
                             <span className="text-sm sm:text-base font-extrabold text-stone-900">
                               ${pkg.priceUSD.toLocaleString()}{" "}
-                              <span className="text-xs font-semibold text-stone-500">USD</span>
+                              <span className="text-xs font-bold text-stone-700">USD</span>
                             </span>
                           </div>
                           <span className="text-xs font-bold text-amber-800 group-hover:translate-x-1 transition-transform flex items-center gap-1">

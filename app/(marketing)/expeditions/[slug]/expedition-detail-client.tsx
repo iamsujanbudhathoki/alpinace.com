@@ -569,14 +569,14 @@ export function ExpeditionDetailClient({
       {/* 5. MOBILE STICKY BOOKING ACTION BAR (< 1024px) */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-stone-200 py-2 px-4 z-30 shadow-lg flex items-center justify-between gap-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
         <div className="min-w-0">
-          <span className="type-caption text-stone-500 block truncate">
+          <span className="type-caption text-stone-700 font-semibold block truncate">
             Estimated Rate ({expedition.durationDays} Days)
           </span>
           <div className="flex items-baseline gap-1">
             <span className="type-heading-xl text-stone-900">
               ${perPersonCalculated.toLocaleString()}
             </span>
-            <span className="type-caption text-stone-400">USD / person</span>
+            <span className="type-caption text-stone-700 font-bold">USD / person</span>
           </div>
         </div>
         {isBooked ? (

@@ -83,13 +83,13 @@ export function TestimonialsSection() {
                     <h3 className="font-heading text-xs font-bold text-zinc-900 leading-none">
                       {item.author}
                     </h3>
-                    <p className="text-xs text-zinc-500 font-medium mt-0.5">
+                    <p className="text-xs text-zinc-700 font-semibold mt-0.5">
                       {item.role} · {item.country}
                     </p>
                   </div>
                 </div>
 
-                <span className="text-xs font-semibold text-zinc-600 bg-white px-2 py-1 rounded border border-stone-200">
+                <span className="text-xs font-bold text-zinc-800 bg-white px-2 py-1 rounded border border-stone-200">
                   {item.tripName.split(" ").slice(0, 2).join(" ")}
                 </span>
               </div>

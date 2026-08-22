@@ -288,7 +288,7 @@ function TrekkingPageContent() {
           <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-white mb-2">
             Trekking Packages
           </h1>
-          <p className="text-sm text-slate-400 max-w-2xl font-normal leading-relaxed">
+          <p className="text-sm text-slate-200 max-w-2xl font-medium leading-relaxed">
             Everest, Annapurna, Langtang, Manaslu, and restricted regions — all routes led by licensed Sherpa guides.
           </p>
         </div>
@@ -306,7 +306,7 @@ function TrekkingPageContent() {
             <span>Filter Routes {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
           </button>
 
-          <span className="text-xs text-slate-500 font-medium">
+          <span className="text-xs text-slate-800 font-semibold">
             {filteredTreks.length} Treks Found
           </span>
         </div>
@@ -322,7 +322,7 @@ function TrekkingPageContent() {
                   </h3>
                   <button
                     onClick={() => setIsMobileFilterOpen(false)}
-                    className="p-1 rounded-lg text-slate-400 hover:text-slate-600 cursor-pointer"
+                    className="p-1 rounded-lg text-slate-600 hover:text-slate-900 cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -336,7 +336,7 @@ function TrekkingPageContent() {
                     resetFilters();
                     setIsMobileFilterOpen(false);
                   }}
-                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 cursor-pointer"
+                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-800 font-bold text-xs hover:bg-slate-50 cursor-pointer"
                 >
                   Reset
                 </button>
@@ -360,7 +360,7 @@ function TrekkingPageContent() {
               </h2>
               <button
                 onClick={resetFilters}
-                className="text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors cursor-pointer flex items-center gap-1.5"
+                className="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset</span>
@@ -372,7 +372,7 @@ function TrekkingPageContent() {
 
           {/* Right Main Catalog Content Column */}
           <main className="lg:col-span-8 space-y-5">
-            <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm text-slate-600 font-medium shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm text-slate-800 font-semibold shadow-xs">
               <span>Showing <strong className="text-slate-900">{loading ? "..." : filteredTreks.length}</strong> trekking itineraries</span>
               {activeFilterCount > 0 && (
                 <button
@@ -388,7 +388,7 @@ function TrekkingPageContent() {
               <PackageGridSkeleton count={6} />
             ) : filteredTreks.length === 0 ? (
               <div className="bg-white border border-slate-200 rounded-xl p-10 text-center space-y-3">
-                <p className="text-slate-500 text-xs font-medium">
+                <p className="text-slate-700 text-xs font-semibold">
                   No matching trekking routes found.
                 </p>
                 <button
@@ -417,7 +417,7 @@ function TrekkingPageContent() {
                       </div>
 
                       <div className="p-4 space-y-2">
-                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <div className="text-xs font-bold text-amber-800 uppercase tracking-wider">
                           {trk.region} • {trk.durationDays} DAYS
                         </div>
 
@@ -425,13 +425,13 @@ function TrekkingPageContent() {
                           {trk.title}
                         </h3>
 
-                        <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+                        <p className="text-xs text-slate-700 leading-relaxed font-medium line-clamp-2">
                           {(trk.shortDesc || "").replace(/<[^>]*>?/gm, "")}
                         </p>
 
-                        <div className="pt-2 text-xs text-slate-600 font-semibold border-t border-slate-100 flex items-center justify-between">
+                        <div className="pt-2 text-xs text-slate-800 font-semibold border-t border-slate-100 flex items-center justify-between">
                           <span>Difficulty: {trk.difficulty.replace(" Trek", "")}</span>
-                          <span className="text-slate-800 font-bold">★ {trk.rating}</span>
+                          <span className="text-slate-900 font-bold">★ {trk.rating}</span>
                         </div>
                       </div>
                     </Link>
@@ -440,9 +440,9 @@ function TrekkingPageContent() {
                     <div className="p-4 pt-0 border-t border-slate-100 mt-2">
                       <div className="flex items-center justify-between pt-3">
                         <div>
-                          <span className="text-xs text-slate-800 uppercase font-bold block">Starting from</span>
+                          <span className="text-xs text-slate-700 uppercase font-bold block">Starting from</span>
                           <div className="text-base font-extrabold text-slate-900">
-                            ${trk.priceUSD.toLocaleString()} <span className="text-xs font-normal text-slate-500">USD</span>
+                            ${trk.priceUSD.toLocaleString()} <span className="text-xs font-bold text-slate-700">USD</span>
                           </div>
                         </div>
 

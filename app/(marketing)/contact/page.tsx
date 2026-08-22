@@ -288,7 +288,7 @@ export default function ContactView() {
 
                   <div className="space-y-1">
                     <FormLabel>
-                      Country of Residence <span className="text-stone-400 font-normal">(Optional)</span>
+                      Country of Residence <span className="text-stone-600 font-medium">(Optional)</span>
                     </FormLabel>
                     <select
                       {...register("country")}
@@ -305,7 +305,7 @@ export default function ContactView() {
 
                   <div className="space-y-1">
                     <FormLabel>
-                      Region of Interest <span className="text-stone-400 font-normal">(Optional)</span>
+                      Region of Interest <span className="text-stone-600 font-medium">(Optional)</span>
                     </FormLabel>
                     <select
                       {...register("destination")}
@@ -321,7 +321,7 @@ export default function ContactView() {
 
                   <div className="space-y-1">
                     <FormLabel>
-                      Number of Travelers <span className="text-stone-400 font-normal">(Optional)</span>
+                      Number of Travelers <span className="text-stone-600 font-medium">(Optional)</span>
                     </FormLabel>
                     <select
                       {...register("travelers")}

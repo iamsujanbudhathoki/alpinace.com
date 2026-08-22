@@ -35,7 +35,7 @@ export function WhyChooseUs() {
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-zinc-900 leading-tight">
               Built on local Sherpa expertise — not outsourced to third parties
             </h2>
-            <p className="text-zinc-600 text-sm leading-relaxed">
+            <p className="text-zinc-800 text-sm leading-relaxed font-medium">
               We are 100% Sherpa-owned and operated from Kathmandu. Our team has lived and worked at altitude for decades. That experience is the difference between a trek that goes smoothly and one that doesn't.
             </p>
 
@@ -43,11 +43,11 @@ export function WhyChooseUs() {
               <div className="flex gap-8">
                 <div>
                   <span className="font-heading text-2xl font-extrabold text-zinc-900 block">1:1</span>
-                  <span className="text-zinc-600 text-xs font-medium">Guide-to-client ratio on mountaineering routes</span>
+                  <span className="text-zinc-800 text-xs font-semibold">Guide-to-client ratio on mountaineering routes</span>
                 </div>
                 <div>
                   <span className="font-heading text-2xl font-extrabold text-zinc-900 block">25+</span>
-                  <span className="text-zinc-600 text-xs font-medium">Active IFMGA-certified Sherpa guides</span>
+                  <span className="text-zinc-800 text-xs font-semibold">Active IFMGA-certified Sherpa guides</span>
                 </div>
               </div>
             </div>
@@ -58,14 +58,14 @@ export function WhyChooseUs() {
             <ul className="divide-y divide-stone-100">
               {reasons.map((item) => (
                 <li key={item.num} className="py-6 flex gap-5 items-start">
-                  <span className="text-xs font-bold text-stone-400 w-6 shrink-0 pt-0.5">
+                  <span className="text-xs font-bold text-amber-800 w-6 shrink-0 pt-0.5">
                     {item.num}
                   </span>
                   <div className="space-y-1.5">
                     <h3 className="font-heading text-sm font-bold text-zinc-900 leading-snug">
                       {item.title}
                     </h3>
-                    <p className="text-zinc-600 text-sm leading-relaxed font-normal">
+                    <p className="text-zinc-800 text-sm leading-relaxed font-medium">
                       {item.desc}
                     </p>
                   </div>

@@ -78,13 +78,13 @@ export function FeaturedBlogs() {
                   </div>
                 )}
                 <div className="p-5 flex flex-col flex-grow">
-                  <span className="text-zinc-500 text-xs font-medium block mb-2">
+                  <span className="text-amber-800 text-xs font-semibold block mb-2">
                     {post.date}{post.readTime && ` · ${post.readTime}`}
                   </span>
                   <h3 className="font-heading text-sm font-bold text-zinc-900 group-hover:text-amber-700 transition-colors mb-2 leading-snug line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-zinc-500 text-xs leading-relaxed font-normal line-clamp-3">
+                  <p className="text-stone-700 text-xs leading-relaxed font-medium line-clamp-3">
                     {post.excerpt}
                   </p>
                 </div>

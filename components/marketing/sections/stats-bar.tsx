@@ -13,7 +13,7 @@ export function StatsBar() {
               <span className="font-heading text-xs font-semibold text-stone-300 block uppercase tracking-wider">
                 {s.label}
               </span>
-              <span className="text-stone-500 text-xs block font-normal leading-snug">
+              <span className="text-stone-300 text-xs block font-medium leading-snug">
                 {s.desc}
               </span>
             </div>

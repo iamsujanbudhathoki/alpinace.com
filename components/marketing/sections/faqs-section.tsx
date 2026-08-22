@@ -99,7 +99,7 @@ export function FaqsSection() {
                       {faq.question}
                     </span>
                     <ChevronDown
-                      className={`h-4 w-4 text-stone-400 shrink-0 mt-0.5 transition-transform duration-200 ${
+                      className={`h-4 w-4 text-stone-600 shrink-0 mt-0.5 transition-transform duration-200 ${
                         isOpen ? "rotate-180 text-amber-700" : ""
                       }`}
                     />
@@ -109,7 +109,7 @@ export function FaqsSection() {
                       isOpen ? "max-h-96 pb-5" : "max-h-0"
                     }`}
                   >
-                    <p className="text-zinc-600 text-sm leading-relaxed font-normal">
+                    <p className="text-zinc-800 text-sm sm:text-base leading-relaxed font-medium">
                       {faq.answer}
                     </p>
                   </div>

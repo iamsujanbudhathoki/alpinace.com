@@ -111,7 +111,7 @@ export function TravelProcess() {
                     className={`w-10 h-10 rounded-full font-heading text-xs font-semibold flex items-center justify-center transition-all duration-200 mb-3 ${
                       isActive
                         ? "bg-amber-800 text-white ring-4 ring-amber-100 border-2 border-amber-800 scale-110"
-                        : "bg-white text-zinc-600 border-2 border-stone-300 group-hover:border-amber-600 group-hover:text-amber-800"
+                        : "bg-white text-zinc-700 border-2 border-stone-300 group-hover:border-amber-600 group-hover:text-amber-800"
                     }`}
                   >
                     {step.id}
@@ -122,7 +122,7 @@ export function TravelProcess() {
                     className={`font-heading text-xs sm:text-sm transition-colors ${
                       isActive
                         ? "font-semibold text-zinc-900"
-                        : "font-medium text-zinc-500 group-hover:text-zinc-800"
+                        : "font-semibold text-zinc-700 group-hover:text-zinc-900"
                     }`}
                   >
                     {step.title}
@@ -146,7 +146,7 @@ export function TravelProcess() {
                   <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60">
                     Step {currentStep.id} of 04
                   </span>
-                  <span className="text-xs text-zinc-500 font-normal">
+                  <span className="text-xs text-zinc-700 font-semibold">
                     {currentStep.subtitle}
                   </span>
                 </div>
@@ -155,7 +155,7 @@ export function TravelProcess() {
                 </h3>
               </div>
 
-              <p className="text-zinc-600 text-sm sm:text-base leading-relaxed font-normal">
+              <p className="text-zinc-800 text-sm sm:text-base leading-relaxed font-medium">
                 {currentStep.desc}
               </p>
 

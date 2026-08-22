@@ -19,7 +19,7 @@ export function FinalCta() {
         <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
           Ready to plan your expedition?
         </h2>
-        <p className="text-slate-600 text-sm sm:text-base font-normal leading-relaxed">
+        <p className="text-slate-800 text-sm sm:text-base font-medium leading-relaxed">
           Reach out to our team in Kathmandu. We'll help with permits, logistics, itinerary planning, and any questions about the route.
         </p>
 
@@ -42,7 +42,7 @@ export function FinalCta() {
           </a>
         </div>
 
-        <div className="pt-3 text-xs text-slate-500 flex flex-wrap justify-center items-center gap-5 font-medium">
+        <div className="pt-3 text-xs text-slate-700 flex flex-wrap justify-center items-center gap-5 font-semibold">
           <span>Sherpa-led teams</span>
           <span>·</span>
           <span>Custom itineraries</span>

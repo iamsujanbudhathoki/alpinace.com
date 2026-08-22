@@ -163,23 +163,23 @@ export function FeaturedPackages() {
   ];
 
   return (
-    <section className="py-16 sm:py-24 bg-stone-50/50 border-b border-stone-200 overflow-hidden">
+    <section className="py-16 sm:py-24 bg-white border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Centered Section Header */}
-        <div className="text-center space-y-4 max-w-2xl mx-auto mb-8 sm:mb-12">
+        <div className="text-center space-y-3 max-w-2xl mx-auto mb-8 sm:mb-12">
           <span className="text-amber-800 text-xs font-bold uppercase tracking-wider block">
             Curated Itineraries
           </span>
           <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight">
             Featured Himalayan Experiences
           </h2>
-          <p className="text-stone-500 text-xs sm:text-sm leading-relaxed px-2">
+          <p className="text-stone-500 text-xs sm:text-sm leading-relaxed px-2 font-normal">
             Hand-picked alpine expeditions, iconic high-pass circuits, and cultural journeys through Nepal.
           </p>
 
-          {/* Centered Segmented Tabs */}
-          <div className="pt-2 flex items-center justify-center">
-            <div className="flex flex-wrap items-center justify-center gap-1.5 bg-stone-200/70 p-1.5 rounded-xl border border-stone-300/60 shadow-xs">
+          {/* Unboxed Sleek Tab Bar */}
+          <div className="pt-4 flex items-center justify-center">
+            <div className="inline-flex items-center justify-center gap-6 sm:gap-10 border-b border-stone-200/80 pb-2">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.key;
                 return (
@@ -191,10 +191,10 @@ export function FeaturedPackages() {
                         scrollContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
                       }
                     }}
-                    className={`flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
+                    className={`relative flex items-center gap-2 pb-2.5 text-sm sm:text-base font-bold transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? "bg-white text-stone-900 shadow-md border border-stone-200/80"
-                        : "text-stone-600 hover:text-stone-900 hover:bg-white/60"
+                        ? "text-stone-900"
+                        : "text-stone-400 hover:text-stone-700"
                     }`}
                     aria-selected={isActive}
                     role="tab"
@@ -202,14 +202,18 @@ export function FeaturedPackages() {
                     <span>{tab.label}</span>
                     {!loading && tab.count > 0 && (
                       <span
-                        className={`text-xs font-bold px-2 py-0.5 rounded-md ${
+                        className={`text-xs font-semibold px-2 py-0.5 rounded-full transition-colors ${
                           isActive
                             ? "bg-amber-100 text-amber-900"
-                            : "bg-stone-300/60 text-stone-700"
+                            : "bg-stone-100 text-stone-500"
                         }`}
                       >
                         {tab.count}
                       </span>
+                    )}
+                    {/* Sleek active underline */}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-800 rounded-full transition-all duration-300" />
                     )}
                   </button>
                 );

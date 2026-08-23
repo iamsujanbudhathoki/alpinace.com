@@ -116,28 +116,28 @@ export function FeaturedPackages({
 
   // Smooth Auto-scroll interval
   useEffect(() => {
-    if (isPaused || loading) return;
+    if (isPaused || loading || currentPackages.length === 0) return;
 
     const interval = setInterval(() => {
       if (!scrollContainerRef.current) return;
       const el = scrollContainerRef.current;
       const maxScroll = el.scrollWidth - el.clientWidth;
 
-      if (maxScroll <= 0) return;
+      if (maxScroll <= 5) return;
 
-      if (el.scrollLeft >= maxScroll - 10) {
+      if (el.scrollLeft >= maxScroll - 20) {
         el.scrollTo({ left: 0, behavior: "smooth" });
       } else {
-        el.scrollBy({ left: 340, behavior: "smooth" });
+        el.scrollBy({ left: 360, behavior: "smooth" });
       }
-    }, 3800);
+    }, 4000);
 
     return () => clearInterval(interval);
-  }, [isPaused, loading, activeTab]);
+  }, [isPaused, loading, activeTab, currentPackages.length]);
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollContainerRef.current) return;
-    const scrollAmount = direction === "left" ? -340 : 340;
+    const scrollAmount = direction === "left" ? -360 : 360;
     scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
@@ -177,21 +177,24 @@ export function FeaturedPackages({
   return (
     <section className="py-16 sm:py-24 bg-white border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Centered Section Header */}
-        <div className="text-center space-y-3 max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span className="text-amber-800 text-xs font-bold uppercase tracking-wider block">
-            Curated Itineraries
-          </span>
-          <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight">
-            Featured Himalayan Experiences
-          </h2>
-          <p className="text-stone-700 text-xs sm:text-sm leading-relaxed px-2 font-medium">
-            Hand-picked alpine expeditions, iconic high-pass circuits, and cultural journeys through Nepal.
-          </p>
+        {/* Responsive Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-12 border-b border-stone-200/60 pb-6">
+          <div className="space-y-2 max-w-xl">
+            <span className="text-amber-800 text-xs font-bold uppercase tracking-wider block">
+              Curated Itineraries
+            </span>
+            <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight">
+              Featured Himalayan Experiences
+            </h2>
+            <p className="text-stone-700 text-xs sm:text-sm leading-relaxed font-medium">
+              Hand-picked alpine expeditions, iconic high-pass circuits, and cultural journeys through Nepal.
+            </p>
+          </div>
 
-          {/* Unboxed Sleek Tab Bar */}
-          <div className="pt-4 flex items-center justify-center">
-            <div className="inline-flex items-center justify-center gap-6 sm:gap-10 border-b border-stone-200/80 pb-2">
+          {/* Right Header Controls: Sleek Tab Switcher & Top-Right View All Link */}
+          <div className="flex flex-wrap items-center justify-between md:justify-end gap-6 sm:gap-8">
+            {/* Unboxed Sleek Tab Bar */}
+            <div className="inline-flex items-center gap-6 sm:gap-8 border-b md:border-b-0 border-stone-200/80 pb-2 md:pb-0">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.key;
                 return (
@@ -206,7 +209,7 @@ export function FeaturedPackages({
                     className={`relative flex items-center gap-2 pb-2.5 text-sm sm:text-base font-bold transition-all duration-200 cursor-pointer ${
                       isActive
                         ? "text-stone-900"
-                        : "text-stone-600 hover:text-stone-900 font-semibold"
+                        : "text-stone-500 hover:text-stone-900 font-semibold"
                     }`}
                     aria-selected={isActive}
                     role="tab"
@@ -231,6 +234,15 @@ export function FeaturedPackages({
                 );
               })}
             </div>
+
+            {/* Top-Right Lightweight View All Link */}
+            <Link
+              href={exploreInfo.href}
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-800 hover:text-amber-950 transition-colors group py-1"
+            >
+              <span>{exploreInfo.label}</span>
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
 
@@ -290,6 +302,8 @@ export function FeaturedPackages({
               onMouseLeave={() => setIsPaused(false)}
               onTouchStart={() => setIsPaused(true)}
               onTouchEnd={() => setIsPaused(false)}
+              onFocus={() => setIsPaused(true)}
+              onBlur={() => setIsPaused(false)}
               className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth py-4 px-1 touch-pan-x scrollbar-none snap-x snap-mandatory focus:outline-none"
               style={{
                 scrollbarWidth: "none",
@@ -380,17 +394,6 @@ export function FeaturedPackages({
               })}
             </div>
           )}
-        </div>
-
-        {/* Bottom Explore All CTA */}
-        <div className="mt-10 sm:mt-12 text-center">
-          <Link
-            href={exploreInfo.href}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition-all shadow-xs hover:shadow-md cursor-pointer group"
-          >
-            <span>{exploreInfo.label}</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </Link>
         </div>
       </div>
     </section>

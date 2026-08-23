@@ -14,3 +14,4 @@ export * from "./package-trek-map";
 export * from "./package-downloads";
 export * from "./package-addons";
 export * from "./package-useful-info";
+export * from "./package-highlights-grid";

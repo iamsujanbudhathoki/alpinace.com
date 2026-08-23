@@ -44,6 +44,8 @@ export interface TrekItem {
   reviewsCount: number;
   image: string;
   coverMediaId?: string;
+  country?: string;
+  activity?: string;
   shortDesc: string;
   durationDays: number;
   maxAltitudeMeters?: number;

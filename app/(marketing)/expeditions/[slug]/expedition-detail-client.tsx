@@ -28,6 +28,7 @@ import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import {
   PackageDetailHero,
+  PackageHighlightsGrid,
   PackageQuickFacts,
   PackageGallery,
   PackageTabsNav,
@@ -344,32 +345,9 @@ export function ExpeditionDetailClient({
         ]}
       />
 
-      {/* 2. QUICK FACTS BAR */}
+      {/* 2. HIGHLIGHT SPECS GRID */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
-        <PackageQuickFacts
-          facts={[
-            {
-              icon: <Mountain className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Summit Altitude",
-              value: `${peakMeters.toLocaleString()}m`,
-            },
-            {
-              icon: <Compass className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Climbing Grade",
-              value: expedition.climbingGrade || ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-            },
-            {
-              icon: <ShieldCheck className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Sherpa Ratio",
-              value: expedition.sherpaGuideRatio || "1:1 Personal Sherpa",
-            },
-            {
-              icon: <Calendar className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Climbing Window",
-              value: expedition.bestSeason || "Spring & Autumn",
-            },
-          ]}
-        />
+        <PackageHighlightsGrid packageData={expedition} />
       </div>
 
       {/* 3. MAIN CONTENT GRID */}

@@ -27,6 +27,8 @@ import {
   PackageItem,
   PackageStatus,
   TripDifficulty,
+  TripActivity,
+  PACKAGE_COUNTRIES,
 } from "@/lib/admin-data";
 import { ExpeditionFormValues, expeditionSchema } from "@/lib/admin-schemas";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
@@ -474,6 +476,33 @@ export function ExpeditionFormModal({
                       { label: "Dolpo & West", value: "Dolpo" },
                     ]}
                     {...register("region")}
+                  />
+                </div>
+
+                <div className="sm:col-span-1">
+                  <AdminSelectField
+                    label="Country"
+                    required
+                    error={errors.country?.message}
+                    options={PACKAGE_COUNTRIES.map((c) => ({ label: c, value: c }))}
+                    {...register("country")}
+                  />
+                </div>
+
+                <div className="sm:col-span-1">
+                  <AdminSelectField
+                    label="Activity"
+                    required
+                    error={errors.activity?.message}
+                    options={[
+                      { label: "Peak Climbing", value: TripActivity.PEAK_CLIMBING },
+                      { label: "Trekking/Hiking", value: TripActivity.TREKKING_HIKING },
+                      { label: "Cultural Sightseeing", value: TripActivity.CULTURAL_SIGHTSEEING },
+                      { label: "Heli Trek & Tour", value: TripActivity.HELI_TREK_TOUR },
+                      { label: "Wildlife Safari", value: TripActivity.WILDLIFE_SAFARI },
+                      { label: "Other", value: TripActivity.OTHER },
+                    ]}
+                    {...register("activity")}
                   />
                 </div>
 

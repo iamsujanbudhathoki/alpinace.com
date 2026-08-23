@@ -23,6 +23,7 @@ import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import {
   PackageDetailHero,
+  PackageHighlightsGrid,
   PackageQuickFacts,
   PackageGallery,
   PackageTabsNav,
@@ -335,32 +336,9 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         ]}
       />
 
-      {/* 2. QUICK FACTS BAR */}
+      {/* 2. HIGHLIGHT SPECS GRID */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
-        <PackageQuickFacts
-          facts={[
-            {
-              icon: <Mountain className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Max Elevation",
-              value: `${(trek.maxAltitudeMeters || 1400).toLocaleString()}m`,
-            },
-            {
-              icon: <Compass className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Difficulty Grade",
-              value: trek.difficulty,
-            },
-            {
-              icon: <Calendar className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Best Season",
-              value: trek.bestSeason,
-            },
-            {
-              icon: <BedDouble className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Accommodation",
-              value: trek.accommodation || "Lodge / Teahouse",
-            },
-          ]}
-        />
+        <PackageHighlightsGrid packageData={trek} />
       </div>
 
       {/* 3. MAIN CONTENT GRID */}

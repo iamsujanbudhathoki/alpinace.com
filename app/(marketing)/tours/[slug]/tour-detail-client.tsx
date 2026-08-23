@@ -19,6 +19,7 @@ import { PublicBookingModal } from "@/components/marketing/modals/public-booking
 import {
   PackageBookingSidebar,
   PackageDetailHero,
+  PackageHighlightsGrid,
   PackageFaqs,
   PackageGallery,
   PackageInclusions,
@@ -315,32 +316,9 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
         ]}
       />
 
-      {/* 2. QUICK FACTS BAR */}
+      {/* 2. HIGHLIGHT SPECS GRID */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
-        <PackageQuickFacts
-          facts={[
-            {
-              icon: <Compass className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Tour Style",
-              value: tour.tourType || "Heritage & Luxury",
-            },
-            {
-              icon: <Calendar className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Best Season",
-              value: tour.bestSeason || "Year Round",
-            },
-            {
-              icon: <BedDouble className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Accommodation",
-              value: tour.accommodation || "Luxury Boutique Hotel",
-            },
-            {
-              icon: <Utensils className="w-5 h-5" strokeWidth={1.75} />,
-              label: "Meals Included",
-              value: tour.meals || "Breakfast & Dinners",
-            },
-          ]}
-        />
+        <PackageHighlightsGrid packageData={tour} />
       </div>
 
       {/* 3. MAIN CONTENT GRID */}

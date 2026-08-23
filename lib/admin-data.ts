@@ -9,12 +9,31 @@ export const PACKAGE_REGIONS = [
 
 export type PackageRegion = (typeof PACKAGE_REGIONS)[number] | string;
 
+export const PACKAGE_COUNTRIES = [
+  "Nepal",
+  "Tibet",
+  "Bhutan",
+  "India",
+  "Pakistan",
+] as const;
+
+export type PackageCountry = (typeof PACKAGE_COUNTRIES)[number] | string;
+
 export enum TripDifficulty {
   EASY = "easy",
   MODERATE = "moderate",
   CHALLENGING = "challenging",
   STRENUOUS = "strenuous",
   EXTREME = "extreme",
+}
+
+export enum TripActivity {
+  TREKKING_HIKING = "Trekking/Hiking",
+  CULTURAL_SIGHTSEEING = "Cultural Sightseeing",
+  PEAK_CLIMBING = "Peak Climbing",
+  HELI_TREK_TOUR = "Heli Trek & Tour",
+  WILDLIFE_SAFARI = "Wildlife Safari",
+  OTHER = "Other",
 }
 
 export enum PackageStatus {
@@ -192,6 +211,8 @@ export interface PackageItem {
   reviewsCount?: number;
   image?: string;
   coverMediaId?: string;
+  country?: string;
+  activity?: string;
   shortDesc?: string;
   bestSeason?: string;
   startEndLocation?: string;

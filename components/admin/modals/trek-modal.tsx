@@ -21,7 +21,7 @@ import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
-import { CategoryType, PackageStatus, TripDifficulty } from "@/lib/admin-data";
+import { CategoryType, PackageStatus, TripDifficulty, TripActivity, PACKAGE_COUNTRIES } from "@/lib/admin-data";
 import { TrekFormValues, trekSchema } from "@/lib/admin-schemas";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { TrekItem } from "@/lib/trek-data";
@@ -479,6 +479,33 @@ export function TrekFormModal({
                       { label: "Kathmandu & Pokhara", value: "Kathmandu & Pokhara" },
                     ]}
                     {...register("region")}
+                  />
+                </div>
+
+                <div className="sm:col-span-1">
+                  <AdminSelectField
+                    label="Country"
+                    required
+                    error={errors.country?.message}
+                    options={PACKAGE_COUNTRIES.map((c) => ({ label: c, value: c }))}
+                    {...register("country")}
+                  />
+                </div>
+
+                <div className="sm:col-span-1">
+                  <AdminSelectField
+                    label="Activity"
+                    required
+                    error={errors.activity?.message}
+                    options={[
+                      { label: "Trekking/Hiking", value: TripActivity.TREKKING_HIKING },
+                      { label: "Cultural Sightseeing", value: TripActivity.CULTURAL_SIGHTSEEING },
+                      { label: "Peak Climbing", value: TripActivity.PEAK_CLIMBING },
+                      { label: "Heli Trek & Tour", value: TripActivity.HELI_TREK_TOUR },
+                      { label: "Wildlife Safari", value: TripActivity.WILDLIFE_SAFARI },
+                      { label: "Other", value: TripActivity.OTHER },
+                    ]}
+                    {...register("activity")}
                   />
                 </div>
 

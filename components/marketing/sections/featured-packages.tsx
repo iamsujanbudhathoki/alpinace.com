@@ -114,6 +114,13 @@ export function FeaturedPackages({
     loadFeatured();
   }, []);
 
+  const currentPackages =
+    activeTab === "treks"
+      ? treks
+      : activeTab === "tours"
+      ? tours
+      : expeditions;
+
   // Smooth Auto-scroll interval
   useEffect(() => {
     if (isPaused || loading || currentPackages.length === 0) return;
@@ -158,13 +165,6 @@ export function FeaturedPackages({
         return { href: "/trekking", label: "View All Treks" };
     }
   };
-
-  const currentPackages =
-    activeTab === "treks"
-      ? treks
-      : activeTab === "tours"
-      ? tours
-      : expeditions;
 
   const exploreInfo = getExploreAllLink(activeTab);
 

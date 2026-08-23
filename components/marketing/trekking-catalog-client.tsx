@@ -143,7 +143,21 @@ export function TrekkingCatalogClient({
     }
 
     if (selectedCategory !== "All") {
-      list = list.filter((t) => (t as any).categorySlug === selectedCategory || t.category === selectedCategory || t.categoryId === selectedCategory);
+      const cat = String(selectedCategory).toLowerCase();
+      const kw = cat.split("-")[0];
+      list = list.filter((t) => {
+        const cSlug = (t as any).categorySlug ? String((t as any).categorySlug).toLowerCase() : "";
+        const cName = t.category ? String(t.category).toLowerCase() : "";
+        const cId = t.categoryId ? String(t.categoryId).toLowerCase() : "";
+        const cRegion = t.region ? String(t.region).toLowerCase() : "";
+        return (
+          cSlug === cat ||
+          cName.includes(cat) ||
+          cId === cat ||
+          cRegion.includes(kw) ||
+          t.title.toLowerCase().includes(kw)
+        );
+      });
     }
 
     if (selectedDifficulty !== "All") {

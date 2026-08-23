@@ -381,7 +381,6 @@ export default function AdminMediaPage() {
               onChange={(e) => setSelectedCategoryId(e.target.value)}
               className="bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
             >
-              <option value="All">All Categories</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}

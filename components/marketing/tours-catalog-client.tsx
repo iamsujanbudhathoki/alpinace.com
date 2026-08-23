@@ -159,21 +159,12 @@ export function ToursCatalogClient({
     }
 
     if (selectedCategory !== "All") {
-      const cat = String(selectedCategory).toLowerCase();
-      const kw = cat.split("-")[0];
+      const selected = selectedCategory.toLowerCase();
       list = list.filter((t) => {
-        const cSlug = (t as any).categorySlug ? String((t as any).categorySlug).toLowerCase() : "";
-        const cName = t.category ? String(t.category).toLowerCase() : "";
-        const cId = (t as any).categoryId ? String((t as any).categoryId).toLowerCase() : "";
-        const cRegion = t.region ? String(t.region).toLowerCase() : "";
-        return (
-          cSlug === cat ||
-          cName.includes(cat) ||
-          cId === cat ||
-          cRegion.includes(kw) ||
-          t.title.toLowerCase().includes(kw) ||
-          true
-        );
+        const itemSlug = (t as any).categorySlug ? String((t as any).categorySlug).toLowerCase() : "";
+        const itemCategory = t.category ? String(t.category).toLowerCase() : "";
+        const itemCategoryId = (t as any).categoryId ? String((t as any).categoryId).toLowerCase() : "";
+        return itemSlug === selected || itemCategory === selected || itemCategoryId === selected;
       });
     }
 

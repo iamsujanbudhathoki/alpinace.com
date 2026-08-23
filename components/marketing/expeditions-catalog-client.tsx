@@ -159,21 +159,12 @@ export function ExpeditionsCatalogClient({
     }
 
     if (selectedCategory !== "All") {
-      const cat = String(selectedCategory).toLowerCase();
-      const kw = cat.split("-")[0];
+      const selected = selectedCategory.toLowerCase();
       list = list.filter((e) => {
-        const cSlug = (e as any).categorySlug ? String((e as any).categorySlug).toLowerCase() : "";
-        const cName = e.category ? String(e.category).toLowerCase() : "";
-        const cId = (e as any).categoryId ? String((e as any).categoryId).toLowerCase() : "";
-        const cRegion = e.region ? String(e.region).toLowerCase() : "";
-        return (
-          cSlug === cat ||
-          cName.includes(cat) ||
-          cId === cat ||
-          cRegion.includes(kw) ||
-          e.title.toLowerCase().includes(kw) ||
-          true
-        );
+        const itemSlug = (e as any).categorySlug ? String((e as any).categorySlug).toLowerCase() : "";
+        const itemCategory = e.category ? String(e.category).toLowerCase() : "";
+        const itemCategoryId = (e as any).categoryId ? String((e as any).categoryId).toLowerCase() : "";
+        return itemSlug === selected || itemCategory === selected || itemCategoryId === selected;
       });
     }
 

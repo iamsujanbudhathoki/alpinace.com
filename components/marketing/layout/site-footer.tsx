@@ -30,8 +30,8 @@ export function SiteFooter() {
               </span>
             </Link>
 
-            <p className="text-zinc-600 text-xs sm:text-sm leading-relaxed font-normal max-w-md">
-              We organize guided treks, cultural tours, and mountain expeditions in Nepal, led by experienced local Sherpa guides with a strong focus on safety, luxury lodges, and eco-ethics.
+            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-normal max-w-md">
+              Sherpa-owned trek and expedition agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang with certified leaders and authentic mountain teahouses.
             </p>
 
             {/* Certifications and Badges */}
@@ -119,11 +119,11 @@ export function SiteFooter() {
           </div>
 
           {/* Column 2: Navigation Links (lg:col-span-3) */}
-          <div className="space-y-4 lg:col-span-3">
+          <div className="space-y-4 sm:col-span-1 lg:col-span-3">
             <h3 className="font-heading text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">
               Quick Links
             </h3>
-            <ul className="space-y-2.5 text-xs sm:text-sm font-medium text-slate-700">
+            <ul className="space-y-2 text-xs sm:text-sm font-medium text-slate-700">
               <li>
                 <Link href="/trekking" className="hover:text-amber-700 transition-colors inline-block py-0.5 cursor-pointer">
                   Trekking in Nepal
@@ -158,7 +158,7 @@ export function SiteFooter() {
           </div>
 
           {/* Column 3: Contact Details (lg:col-span-4) */}
-          <div className="space-y-4 lg:col-span-4">
+          <div className="space-y-4 sm:col-span-1 lg:col-span-4">
             <h3 className="font-heading text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">
               Kathmandu Operations
             </h3>

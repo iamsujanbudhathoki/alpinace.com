@@ -23,31 +23,28 @@ export function WhyChooseUs() {
   ];
 
   return (
-    <section className="py-20 bg-white border-b border-stone-200">
+    <section className="py-16 sm:py-20 bg-stone-50/50 border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
 
           {/* Left: Narrative */}
-          <div className="lg:col-span-5 space-y-5 lg:sticky lg:top-28">
-            <span className="text-amber-700 text-xs font-semibold uppercase tracking-wider block">
-              Why travel with us
-            </span>
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-zinc-900 leading-tight">
-              Built on local Sherpa expertise — not outsourced to third parties
+          <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-28">
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-tight">
+              Sherpa expertise from start to finish
             </h2>
-            <p className="text-zinc-800 text-sm leading-relaxed font-medium">
-              We are 100% Sherpa-owned and operated from Kathmandu. Our team has lived and worked at altitude for decades. That experience is the difference between a trek that goes smoothly and one that doesn't.
+            <p className="text-stone-700 text-sm leading-relaxed font-normal">
+              AlpineAce is 100% Sherpa-owned and based in Thamel, Kathmandu. Our leaders have spent decades guiding high-altitude Himalayan routes. That mountain experience directly informs how we plan your itinerary, safety protocols, and daily trail pacing.
             </p>
 
-            <div className="pt-4 border-t border-stone-100">
-              <div className="flex gap-8">
+            <div className="pt-4 border-t border-stone-200">
+              <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <span className="font-heading text-2xl font-extrabold text-zinc-900 block">1:1</span>
-                  <span className="text-zinc-800 text-xs font-semibold">Guide-to-client ratio on mountaineering routes</span>
+                  <span className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 block">100%</span>
+                  <span className="text-stone-600 text-xs font-normal mt-0.5 block">Sherpa-owned and Kathmandu based</span>
                 </div>
                 <div>
-                  <span className="font-heading text-2xl font-extrabold text-zinc-900 block">25+</span>
-                  <span className="text-zinc-800 text-xs font-semibold">Active IFMGA-certified Sherpa guides</span>
+                  <span className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 block">25+</span>
+                  <span className="text-stone-600 text-xs font-normal mt-0.5 block">Active IFMGA-certified guides</span>
                 </div>
               </div>
             </div>
@@ -55,20 +52,15 @@ export function WhyChooseUs() {
 
           {/* Right: Clean List */}
           <div className="lg:col-span-7">
-            <ul className="divide-y divide-stone-100">
-              {reasons.map((item) => (
-                <li key={item.num} className="py-6 flex gap-5 items-start">
-                  <span className="text-xs font-bold text-amber-800 w-6 shrink-0 pt-0.5">
-                    {item.num}
-                  </span>
-                  <div className="space-y-1.5">
-                    <h3 className="font-heading text-sm font-bold text-zinc-900 leading-snug">
-                      {item.title}
-                    </h3>
-                    <p className="text-zinc-800 text-sm leading-relaxed font-medium">
-                      {item.desc}
-                    </p>
-                  </div>
+            <ul className="divide-y divide-stone-200">
+              {reasons.map((item, idx) => (
+                <li key={idx} className="py-5 space-y-1">
+                  <h3 className="font-heading text-base font-bold text-stone-900">
+                    {item.title}
+                  </h3>
+                  <p className="text-stone-700 text-sm leading-relaxed font-normal">
+                    {item.desc}
+                  </p>
                 </li>
               ))}
             </ul>

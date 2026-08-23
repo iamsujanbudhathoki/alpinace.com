@@ -60,10 +60,10 @@ export function PackageTabsNav({
   };
 
   return (
-    <div className={`pb-3 border-b border-stone-200 ${className}`}>
+    <div className={`border-b border-stone-200 pb-1 ${className}`}>
       <div
         ref={containerRef}
-        className="flex items-center gap-1 sm:gap-2 text-sm overflow-x-auto scrollbar-none pb-0.5"
+        className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none py-1 -mb-px touch-pan-x"
       >
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
@@ -73,15 +73,15 @@ export function PackageTabsNav({
               ref={isActive ? activeBtnRef : null}
               type="button"
               onClick={() => handleTabClick(tab.key)}
-              className={`px-3 py-1.5 rounded-lg font-semibold text-xs whitespace-nowrap transition-all relative cursor-pointer ${
+              className={`px-3 py-1.5 rounded-md font-medium text-xs whitespace-nowrap transition-all relative cursor-pointer shrink-0 ${
                 isActive
-                  ? "text-amber-900 bg-amber-50/80 font-bold border border-amber-200/80"
-                  : "text-stone-600 hover:text-amber-900 hover:bg-amber-50/40"
+                  ? "text-amber-900 bg-amber-50/80 font-bold"
+                  : "text-stone-600 hover:text-amber-900 hover:bg-stone-100/60"
               }`}
             >
               <span>{tab.label}</span>
               {isActive && (
-                <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-amber-700 rounded-full" />
+                <span className="absolute bottom-0 inset-x-1.5 h-0.5 bg-amber-700 rounded-full" />
               )}
             </button>
           );
@@ -90,3 +90,4 @@ export function PackageTabsNav({
     </div>
   );
 }
+

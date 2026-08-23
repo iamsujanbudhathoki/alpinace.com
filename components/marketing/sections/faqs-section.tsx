@@ -109,7 +109,7 @@ export function FaqsSection() {
                       isOpen ? "max-h-96 pb-5" : "max-h-0"
                     }`}
                   >
-                    <p className="text-zinc-800 text-sm sm:text-base leading-relaxed font-medium">
+                    <p className="text-stone-700 text-sm leading-relaxed font-normal pt-1">
                       {faq.answer}
                     </p>
                   </div>

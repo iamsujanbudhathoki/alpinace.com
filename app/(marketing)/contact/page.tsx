@@ -94,16 +94,13 @@ export default function ContactView() {
   return (
     <div className="pt-28 pb-20 min-h-screen bg-stone-50 text-zinc-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        {/* Editorial Title */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-amber-800 text-sm font-medium block">
-            Get in Touch
-          </span>
-          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-zinc-900">
-            Plan Your Journey
+        {/* Section Title */}
+        <div className="text-center max-w-3xl mx-auto space-y-2">
+          <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
+            Plan Your Expedition
           </h1>
-          <p className="text-zinc-600 text-sm max-w-2xl mx-auto font-normal leading-relaxed">
-            Reach out to our local team in Kathmandu to secure permits, reserve lodges, or craft your custom Himalayan itinerary.
+          <p className="text-stone-600 text-sm max-w-xl mx-auto font-normal leading-relaxed">
+            Contact our team in Thamel, Kathmandu to arrange permits, custom itineraries, flight connections, or route recommendations.
           </p>
         </div>
 

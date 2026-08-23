@@ -45,21 +45,21 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
   return (
     <section className="py-20 bg-white border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-3">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-3 border-b border-stone-200 pb-5">
           <div>
-            <span className="text-amber-700 text-xs font-semibold uppercase tracking-wider block mb-1.5">
-              From the journal
-            </span>
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-zinc-900">
-              Recent Articles
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
+              Expedition Journal
             </h2>
+            <p className="text-stone-600 text-sm font-normal mt-1">
+              Field reports, packing advice, and high-altitude travel guides.
+            </p>
           </div>
           <Link
             href="/blog"
-            className="text-zinc-700 hover:text-amber-700 font-heading text-sm font-semibold flex items-center gap-1 transition-colors cursor-pointer self-start md:self-auto"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 hover:text-amber-950 transition-colors self-start md:self-auto group"
           >
-            <span>View all posts</span>
-            <ChevronRight className="h-4 w-4" />
+            <span>View all articles</span>
+            <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
 

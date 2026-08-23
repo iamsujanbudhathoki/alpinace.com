@@ -21,7 +21,7 @@ export function ToursCatalogClient({
   initialFilterOptions,
 }: ToursCatalogClientProps) {
   const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("categoryId") || "All";
+  const categoryParam = searchParams.get("category") || "All";
 
   const [tours, setTours] = useState<TourItem[]>(initialTours);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,7 +40,7 @@ export function ToursCatalogClient({
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  // Sync categoryId safely during render when query param changes
+  // Sync category parameter safely during render when query param changes
   if (categoryParam !== prevCategoryParam) {
     setPrevCategoryParam(categoryParam);
     setSelectedCategory(categoryParam);
@@ -89,7 +89,7 @@ export function ToursCatalogClient({
       try {
         const raw = await TourService.getAll({
           search: debouncedSearch,
-          categoryId: selectedCategory === "All" ? undefined : selectedCategory,
+          category: selectedCategory === "All" ? undefined : selectedCategory,
           region: selectedType === "All" ? undefined : selectedType,
           maxDuration: maxDuration < (filterOptions?.maxDuration || 10) ? maxDuration : undefined,
           sortBy,
@@ -145,7 +145,45 @@ export function ToursCatalogClient({
     return count;
   }, [searchQuery, selectedCategory, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
 
-  const filteredTours = tours;
+  const filteredTours = useMemo(() => {
+    let list = [...tours];
+
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase();
+      list = list.filter(
+        (t) =>
+          t.title.toLowerCase().includes(q) ||
+          (t.region && t.region.toLowerCase().includes(q)) ||
+          (t.shortDesc && t.shortDesc.toLowerCase().includes(q))
+      );
+    }
+
+    if (selectedCategory !== "All") {
+      list = list.filter((t) => (t as any).categorySlug === selectedCategory || t.category === selectedCategory || (t as any).categoryId === selectedCategory);
+    }
+
+    if (selectedType !== "All") {
+      list = list.filter(
+        (t) =>
+          (t.region && t.region.toLowerCase().includes(selectedType.toLowerCase())) ||
+          (t.tourType && String(t.tourType).toLowerCase().includes(selectedType.toLowerCase()))
+      );
+    }
+
+    if (maxDuration < (filterOptions?.maxDuration || 10)) {
+      list = list.filter((t) => t.durationDays <= maxDuration);
+    }
+
+    if (sortBy === "priceAsc" || sortBy === "price-low") {
+      list.sort((a, b) => a.priceUSD - b.priceUSD);
+    } else if (sortBy === "priceDesc" || sortBy === "price-high") {
+      list.sort((a, b) => b.priceUSD - a.priceUSD);
+    } else if (sortBy === "duration") {
+      list.sort((a, b) => a.durationDays - b.durationDays);
+    }
+
+    return list;
+  }, [tours, debouncedSearch, selectedCategory, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
 
   const styles = filterOptions?.styles || [
     { label: "All Styles", value: "All" },
@@ -250,18 +288,14 @@ export function ToursCatalogClient({
   return (
     <div className="min-h-screen bg-stone-50 text-slate-900 pt-16 sm:pt-20 pb-20 font-sans">
       {/* Hero Header */}
-      <section className="bg-white border-b border-slate-200 py-8 sm:py-12 px-4 sm:px-6 md:px-12">
-        <div className="max-w-7xl mx-auto space-y-2">
-          <p className="text-xs font-semibold text-amber-700 uppercase tracking-widest">
-            Nepal Cultural Tours &amp; Safaris
-          </p>
-
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
-            Nepal Tours &amp; Heritage Journeys
+      <section className="bg-white border-b border-stone-200 py-8 sm:py-10 px-4 sm:px-6 md:px-12">
+        <div className="max-w-7xl mx-auto space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-stone-900">
+            Cultural &amp; Heritage Tours
           </h1>
 
-          <p className="text-slate-600 text-xs sm:text-sm max-w-2xl font-normal leading-relaxed pt-1">
-            Kathmandu Valley temples, Chitwan jungle safaris, Pokhara lake views, and Lumbini cultural circuits — all with private transport and local expert guides.
+          <p className="text-stone-600 text-xs sm:text-sm max-w-2xl font-normal leading-relaxed">
+            Kathmandu Valley UNESCO heritage sites, Pokhara lake views, Chitwan safaris, and Lumbini historical tours.
           </p>
         </div>
       </section>
@@ -343,7 +377,7 @@ export function ToursCatalogClient({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Sidebar Filter Column */}
-          <aside className="hidden lg:block lg:col-span-4 bg-white border border-slate-200 rounded-xl p-5 shadow-xs sticky top-24">
+          <aside className="hidden lg:block lg:col-span-4 bg-white border border-stone-200/80 rounded-xl p-5 sticky top-24">
             <div className="flex items-center justify-between pb-3 mb-5 border-b border-slate-100">
               <h2 className="text-base font-bold text-slate-900">
                 Filter Tours
@@ -362,12 +396,12 @@ export function ToursCatalogClient({
 
           {/* Right Main Catalog Content Column */}
           <main className="lg:col-span-8 space-y-5">
-            <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm text-slate-800 font-semibold shadow-xs">
-              <span>Showing <strong className="text-slate-900">{loading ? "..." : filteredTours.length}</strong> guided tours</span>
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200/80 text-xs sm:text-sm text-slate-700 font-medium">
+              <span>Showing <strong className="text-slate-900 font-bold">{loading ? "..." : filteredTours.length}</strong> guided tours</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-sm text-amber-700 font-semibold hover:underline cursor-pointer"
+                  className="text-xs font-bold text-amber-800 hover:underline cursor-pointer"
                 >
                   Clear filters ({activeFilterCount})
                 </button>

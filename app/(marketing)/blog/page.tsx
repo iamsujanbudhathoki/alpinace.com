@@ -45,7 +45,7 @@ export default async function BlogPage() {
 
   const initialCategories = [
     { id: "All", name: "All Blogs" },
-    ...blogCats.map((c) => ({ id: c.id, name: c.name })),
+    ...blogCats.map((c) => ({ id: c.slug || c.id, name: c.name, slug: c.slug })),
   ];
 
   return (

@@ -43,7 +43,7 @@ export const siteConfig = {
   title: `${SITE_SHORT_NAME} | Nepal Trekking, Historical Tours & Peak Expeditions`,
   tagline: SITE_TAGLINE,
   description:
-    "Experience Nepal's spectacular trekking routes, historical tours, and elite peak expeditions under the safe guidance of multi-summit Sherpas, combined with luxury mountain lodges.",
+    "Sherpa-guided trekking, cultural tours, and mountaineering expeditions in Nepal. Planned directly from our Kathmandu office with certified guides, comfortable teahouses, and safety-first logistics.",
   keywords: [
     "AlpineAce",
     "AlpineAce Treks",

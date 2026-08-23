@@ -21,7 +21,7 @@ export function ExpeditionsCatalogClient({
   initialFilterOptions,
 }: ExpeditionsCatalogClientProps) {
   const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("categoryId") || "All";
+  const categoryParam = searchParams.get("category") || "All";
 
   const [expeditions, setExpeditions] = useState<ExpeditionItem[]>(initialExpeditions);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,7 +40,7 @@ export function ExpeditionsCatalogClient({
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  // Sync categoryId safely during render when query param changes
+  // Sync category parameter safely during render when query param changes
   if (categoryParam !== prevCategoryParam) {
     setPrevCategoryParam(categoryParam);
     setSelectedCategory(categoryParam);
@@ -89,7 +89,7 @@ export function ExpeditionsCatalogClient({
       try {
         const raw = await ExpeditionService.getAll({
           search: debouncedSearch,
-          categoryId: selectedCategory === "All" ? undefined : selectedCategory,
+          category: selectedCategory === "All" ? undefined : selectedCategory,
           difficulty: selectedGrade === "All" ? undefined : selectedGrade,
           sortBy,
           status: PackageStatus.ACTIVE,
@@ -145,7 +145,45 @@ export function ExpeditionsCatalogClient({
     return count;
   }, [searchQuery, selectedCategory, selectedGrade, minPeakHeight, sortBy, filterOptions?.minAltitude]);
 
-  const filteredExpeditions = expeditions;
+  const filteredExpeditions = useMemo(() => {
+    let list = [...expeditions];
+
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase();
+      list = list.filter(
+        (e) =>
+          e.title.toLowerCase().includes(q) ||
+          (e.region && e.region.toLowerCase().includes(q)) ||
+          (e.shortDesc && e.shortDesc.toLowerCase().includes(q))
+      );
+    }
+
+    if (selectedCategory !== "All") {
+      list = list.filter((e) => (e as any).categorySlug === selectedCategory || e.category === selectedCategory || (e as any).categoryId === selectedCategory);
+    }
+
+    if (selectedGrade !== "All") {
+      list = list.filter(
+        (e) =>
+          (e.climbingGrade && String(e.climbingGrade).toLowerCase().includes(selectedGrade.toLowerCase())) ||
+          (e.difficulty && String(e.difficulty).toLowerCase().includes(selectedGrade.toLowerCase()))
+      );
+    }
+
+    if (minPeakHeight > (filterOptions?.minAltitude || 5500)) {
+      list = list.filter((e) => e.peakHeightM >= minPeakHeight);
+    }
+
+    if (sortBy === "priceAsc" || sortBy === "price-low") {
+      list.sort((a, b) => a.priceUSD - b.priceUSD);
+    } else if (sortBy === "priceDesc" || sortBy === "price-high") {
+      list.sort((a, b) => b.priceUSD - a.priceUSD);
+    } else if (sortBy === "duration") {
+      list.sort((a, b) => a.durationDays - b.durationDays);
+    }
+
+    return list;
+  }, [expeditions, debouncedSearch, selectedCategory, selectedGrade, minPeakHeight, sortBy, filterOptions?.minAltitude]);
 
   const difficulties = filterOptions?.difficulties || [
     { label: "All Alpine Grades", value: "All" },
@@ -251,18 +289,14 @@ export function ExpeditionsCatalogClient({
   return (
     <div className="min-h-screen bg-stone-50 text-slate-900 pt-16 sm:pt-20 pb-20 font-sans">
       {/* Hero Header */}
-      <section className="bg-white border-b border-slate-200 py-8 sm:py-12 px-4 sm:px-6 md:px-12">
-        <div className="max-w-7xl mx-auto space-y-2">
-          <p className="text-xs font-semibold text-amber-700 uppercase tracking-widest">
-            Nepal Mountaineering &amp; Climbing
-          </p>
-
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
+      <section className="bg-white border-b border-stone-200 py-8 sm:py-10 px-4 sm:px-6 md:px-12">
+        <div className="max-w-7xl mx-auto space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-stone-900">
             Himalayan Peak Expeditions
           </h1>
 
-          <p className="text-slate-600 text-xs sm:text-sm max-w-2xl font-normal leading-relaxed pt-1">
-            Mountaineering ascents across Island Peak, Mera Peak, Lobuche East, Ama Dablam, and Himlung Himal. Directed by certified IFMGA Sherpa Masters with fixed rope logistics, 1:1 summit ratios, and satellite safety communications.
+          <p className="text-stone-600 text-xs sm:text-sm max-w-2xl font-normal leading-relaxed">
+            Technical ascents across Island Peak, Mera Peak, Lobuche East, and Ama Dablam led by certified IFMGA Sherpa guide leaders.
           </p>
         </div>
       </section>
@@ -344,7 +378,7 @@ export function ExpeditionsCatalogClient({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Sidebar Filter Column */}
-          <aside className="hidden lg:block lg:col-span-4 bg-white border border-slate-200 rounded-xl p-5 shadow-xs sticky top-24">
+          <aside className="hidden lg:block lg:col-span-4 bg-white border border-stone-200/80 rounded-xl p-5 sticky top-24">
             <div className="flex items-center justify-between pb-3 mb-5 border-b border-slate-100">
               <h2 className="text-base font-bold text-slate-900">
                 Filter Expeditions
@@ -363,12 +397,12 @@ export function ExpeditionsCatalogClient({
 
           {/* Right Main Catalog Content Column */}
           <main className="lg:col-span-8 space-y-5">
-            <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm text-slate-800 font-semibold shadow-xs">
-              <span>Showing <strong className="text-slate-900">{loading ? "..." : filteredExpeditions.length}</strong> peak expeditions</span>
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200/80 text-xs sm:text-sm text-slate-700 font-medium">
+              <span>Showing <strong className="text-slate-900 font-bold">{loading ? "..." : filteredExpeditions.length}</strong> peak expeditions</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-sm text-amber-700 font-semibold hover:underline cursor-pointer"
+                  className="text-xs font-bold text-amber-800 hover:underline cursor-pointer"
                 >
                   Clear filters ({activeFilterCount})
                 </button>

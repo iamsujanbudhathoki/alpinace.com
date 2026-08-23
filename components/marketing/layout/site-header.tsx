@@ -233,7 +233,7 @@ export function SiteHeader() {
   };
 
   const getCategoryLink = (baseHref: string, cat: CategoryItem) => {
-    return `${baseHref}?categoryId=${encodeURIComponent(cat.id)}`;
+    return `${baseHref}?category=${encodeURIComponent(cat.slug || cat.id)}`;
   };
 
   const handleDetailTabClick = (key: string) => {
@@ -262,13 +262,13 @@ export function SiteHeader() {
       >
         {showDetailNav && detailNav ? (
           /* 1. CONTEXTUAL DETAIL TAB NAVIGATION (Cleanly replaces main navbar when scrolling details page) */
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:px-8 w-full animate-in fade-in duration-200">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:px-8 w-full animate-in fade-in duration-200">
             {/* Contextual Tabs List */}
             <div
               ref={detailTabsContainerRef}
-              className="flex-1 min-w-0 flex items-center overflow-x-auto scrollbar-none py-0.5"
+              className="flex-1 min-w-0 flex items-center overflow-x-auto scrollbar-none py-0.5 touch-pan-x"
             >
-              <div className="flex items-center gap-1 sm:gap-1.5 p-1 bg-stone-50 border border-stone-200 rounded-xl">
+              <div className="flex items-center gap-1 sm:gap-1.5">
                 {detailNav.tabs.map((tab) => {
                   const isActive = detailNav.activeTab === tab.key;
                   return (
@@ -277,10 +277,10 @@ export function SiteHeader() {
                       data-tab-key={tab.key}
                       type="button"
                       onClick={() => handleDetailTabClick(tab.key)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
                         isActive
-                          ? "bg-white text-amber-900 shadow-xs border border-stone-200 font-bold"
-                          : "text-stone-600 hover:text-amber-900 hover:bg-white/60"
+                          ? "bg-amber-100/80 text-amber-900 font-bold border border-amber-300/60 shadow-2xs"
+                          : "text-stone-600 hover:text-amber-900 hover:bg-stone-100/70"
                       }`}
                     >
                       <span>{tab.label}</span>
@@ -291,13 +291,13 @@ export function SiteHeader() {
             </div>
 
             {/* Right Action (Price & Book Now CTA) */}
-            <div className="shrink-0 hidden sm:flex items-center gap-3">
+            <div className="shrink-0 flex items-center gap-3">
               {detailNav.priceUSD !== undefined && (
-                <div className="text-right hidden lg:block">
-                  <span className="type-caption text-stone-400 block">
-                    Starting from
+                <div className="text-right hidden sm:block">
+                  <span className="type-caption text-stone-600 block text-[10px]">
+                    From
                   </span>
-                  <span className="type-heading-md text-stone-900 block">
+                  <span className="type-heading-md text-stone-900 block leading-tight">
                     ${detailNav.priceUSD.toLocaleString()} USD
                   </span>
                 </div>
@@ -315,29 +315,29 @@ export function SiteHeader() {
           </div>
         ) : (
           /* 2. STANDARD WEBSITE NAVIGATION BAR (At top of page or on general pages) */
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 md:px-10 animate-in fade-in duration-200">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 sm:gap-6 px-4 sm:px-6 md:px-10 animate-in fade-in duration-200">
             {/* Brand Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
               <Image
                 src="/logo.jpg"
                 alt="AlpineAce Logo"
                 width={36}
                 height={36}
                 priority
-                className="h-9 w-9 object-cover rounded-lg border border-stone-200"
+                className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-lg border border-stone-200"
               />
               <span className="flex flex-col leading-none">
-                <span className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
+                <span className="font-heading text-sm sm:text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
                   Alpine Ace
                 </span>
-                <span className="text-xs font-medium text-zinc-500 mt-0.5">
+                <span className="text-[10px] sm:text-xs font-medium text-zinc-500 mt-0.5 hidden xs:inline-block">
                   Nepal Trekking &amp; Expeditions
                 </span>
               </span>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden items-center gap-7 lg:flex relative">
+            <nav className="hidden items-center gap-5 xl:gap-7 lg:flex relative">
               {navLinks.map((link) => {
                 const isActive =
                   link.href === "/"

@@ -14,19 +14,19 @@ export function FinalCta() {
     : "#";
 
   return (
-    <section className="py-20 bg-stone-50 text-slate-900 border-t border-stone-200 text-center">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
-        <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
-          Ready to plan your expedition?
+    <section className="py-16 sm:py-20 bg-stone-50 text-stone-900 border-t border-stone-200 text-center">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+        <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
+          Have Questions About a Trek?
         </h2>
-        <p className="text-slate-800 text-sm sm:text-base font-medium leading-relaxed">
-          Reach out to our team in Kathmandu. We'll help with permits, logistics, itinerary planning, and any questions about the route.
+        <p className="text-stone-600 text-sm font-normal leading-relaxed">
+          Our team in Thamel, Kathmandu is here to help with route selection, permit requirements, custom dates, and physical preparation.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-2">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-3">
           <Link
             href="/contact"
-            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm px-7 py-3 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs sm:text-sm px-6 py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
           >
             <span>Get in Touch</span>
             <ArrowRight className="h-4 w-4 text-amber-400" />
@@ -35,19 +35,11 @@ export function FinalCta() {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto bg-white hover:bg-stone-100 border border-stone-200 text-slate-800 font-semibold text-sm px-7 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-white hover:bg-stone-100 border border-stone-300 text-stone-900 font-semibold text-xs sm:text-sm px-6 py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
           >
             <MessageCircle className="h-4 w-4 text-emerald-600" />
-            <span>WhatsApp Us</span>
+            <span>Chat on WhatsApp</span>
           </a>
-        </div>
-
-        <div className="pt-3 text-xs text-slate-700 flex flex-wrap justify-center items-center gap-5 font-semibold">
-          <span>Sherpa-led teams</span>
-          <span>·</span>
-          <span>Custom itineraries</span>
-          <span>·</span>
-          <span>High-altitude safety</span>
         </div>
       </div>
     </section>

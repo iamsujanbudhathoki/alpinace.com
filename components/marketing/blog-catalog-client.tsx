@@ -19,10 +19,10 @@ export function BlogCatalogClient({
   initialCategories,
 }: BlogCatalogClientProps) {
   const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("categoryId") || "All";
+  const categoryParam = searchParams.get("category") || "All";
 
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>(initialCategories);
+  const [categories, setCategories] = useState<{ id: string; name: string; slug?: string }[]>(initialCategories);
   const [initialLoading, setInitialLoading] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +30,7 @@ export function BlogCatalogClient({
   const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>(categoryParam);
 
-  // Sync categoryId safely during render when query param changes
+  // Sync category parameter safely during render when query param changes
   if (categoryParam !== prevCategoryParam) {
     setPrevCategoryParam(categoryParam);
     setSelectedCategoryId(categoryParam);
@@ -53,7 +53,7 @@ export function BlogCatalogClient({
         if (blogCats && blogCats.length > 0) {
           setCategories([
             { id: "All", name: "All Blogs" },
-            ...blogCats.map((c) => ({ id: c.id, name: c.name })),
+            ...blogCats.map((c) => ({ id: c.slug || c.id, name: c.name, slug: c.slug })),
           ]);
         }
       } catch (err) {
@@ -123,14 +123,11 @@ export function BlogCatalogClient({
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/65 to-slate-950/90" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <span className="text-amber-400 text-xs font-semibold uppercase tracking-wider block mb-2">
-            Journal
-          </span>
-          <h1 className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
-            Articles &amp; Guides
+          <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">
+            Expedition Journal
           </h1>
-          <p className="text-slate-300 text-sm max-w-2xl font-normal leading-relaxed">
-            Route briefings, gear advice, packing lists, and trail notes from our Sherpa guides.
+          <p className="text-slate-200 text-sm sm:text-base font-normal leading-relaxed max-w-2xl">
+            Trekking advice, high-altitude acclimatization guides, packing lists, and Sherpa stories from the field.
           </p>
         </div>
       </section>

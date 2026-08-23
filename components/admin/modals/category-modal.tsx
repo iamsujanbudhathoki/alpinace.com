@@ -34,12 +34,15 @@ export function CategoryFormModal({
     register,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm<CategoryFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(categorySchema) as any,
     defaultValues: {
       name: "",
+      slug: "",
       type: CategoryType.TREKKING,
       description: "",
       status: CategoryStatus.ACTIVE,
@@ -50,6 +53,7 @@ export function CategoryFormModal({
     if (initialData) {
       reset({
         name: initialData.name,
+        slug: initialData.slug || "",
         type: initialData.type,
         description: initialData.description,
         status: (initialData.status as CategoryStatus) || CategoryStatus.ACTIVE,
@@ -57,6 +61,7 @@ export function CategoryFormModal({
     } else {
       reset({
         name: "",
+        slug: "",
         type: CategoryType.TREKKING,
         description: "",
         status: CategoryStatus.ACTIVE,
@@ -68,9 +73,16 @@ export function CategoryFormModal({
   const onSubmit = async (values: CategoryFormValues) => {
     setIsSubmitting(true);
     try {
+      const formattedSlug = values.slug
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
       const categoryToSave: any = {
         ...(initialData?.id ? { id: initialData.id } : {}),
         name: values.name.trim(),
+        slug: formattedSlug,
         type: values.type,
         description: values.description.trim(),
         status: values.status,
@@ -153,7 +165,28 @@ export function CategoryFormModal({
                 required
                 placeholder="e.g. Everest & Khumbu Region"
                 error={errors.name?.message}
-                {...register("name")}
+                {...register("name", {
+                  onChange: (e) => {
+                    if (!initialData) {
+                      const generated = e.target.value
+                        .toLowerCase()
+                        .trim()
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/^-+|-+$/g, "");
+                      setValue("slug", generated, { shouldValidate: true });
+                    }
+                  },
+                })}
+              />
+            </div>
+
+            <div className="col-span-2 sm:col-span-1">
+              <AdminInputField
+                label="Category Slug"
+                required
+                placeholder="e.g. everest-khumbu-region"
+                error={errors.slug?.message}
+                {...register("slug")}
               />
             </div>
 
@@ -173,7 +206,7 @@ export function CategoryFormModal({
               />
             </div>
 
-            <div className="col-span-2">
+            <div className="col-span-2 sm:col-span-1">
               <AdminSelectField
                 label="Status"
                 required

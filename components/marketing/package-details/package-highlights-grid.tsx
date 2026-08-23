@@ -130,29 +130,29 @@ export function PackageHighlightsGrid({
 
   return (
     <div
-      className={`bg-[#EEF4FF] rounded-2xl p-6 sm:p-8 border border-[#D8E5FF] shadow-xs ${className}`}
+      className={`bg-stone-50 rounded-xl p-6 sm:p-7 border border-stone-200 ${className}`}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8">
         {items.map((item, idx) => (
           <div key={idx} className="flex items-start gap-3.5">
-            <div className="shrink-0 pt-0.5">{item.icon}</div>
+            <div className="shrink-0 pt-0.5 text-stone-700">{item.icon}</div>
             <div className="space-y-0.5">
               <div className="flex items-center gap-1">
-                <span className="text-xs font-medium text-slate-500 tracking-wide">
+                <span className="text-xs font-semibold text-stone-600">
                   {item.label}
                 </span>
                 {item.hasTooltip && (
                   <div className="group relative inline-block">
-                    <HelpCircle className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                    <HelpCircle className="w-3.5 h-3.5 text-stone-400 cursor-help" />
                     {item.tooltipText && (
-                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-48 p-2 bg-slate-900 text-white text-[11px] rounded shadow-lg z-50 text-center font-normal">
+                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-48 p-2 bg-stone-900 text-white text-[11px] rounded shadow-lg z-50 text-center font-normal">
                         {item.tooltipText}
                       </div>
                     )}
                   </div>
                 )}
               </div>
-              <p className="text-sm font-semibold text-slate-900 capitalize">
+              <p className="text-sm font-bold text-stone-900 capitalize">
                 {item.value || "—"}
               </p>
             </div>

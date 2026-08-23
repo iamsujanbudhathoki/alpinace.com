@@ -126,6 +126,9 @@ export const CategoryService = {
   async create(data: Partial<CategoryFormValues> | Record<string, any>): Promise<ApiResponse<CategoryItem>> {
     const payload = {
       name: String(data.name || "").trim(),
+      slug: data.slug
+        ? String(data.slug).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+        : String(data.name || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
       type: data.type,
       description: String(data.description || "").trim(),
       status: data.status || CategoryStatus.ACTIVE,
@@ -136,6 +139,7 @@ export const CategoryService = {
   async update(id: string, data: Partial<CategoryFormValues> | Record<string, any>): Promise<ApiResponse<CategoryItem>> {
     const payload: Record<string, any> = {};
     if (data.name !== undefined) payload.name = String(data.name).trim();
+    if (data.slug !== undefined) payload.slug = String(data.slug).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     if (data.type !== undefined) payload.type = data.type;
     if (data.description !== undefined) payload.description = String(data.description).trim();
     if (data.status !== undefined) payload.status = data.status;
@@ -150,6 +154,7 @@ export const CategoryService = {
 
 export interface PackageFilterParams {
   categoryType?: "Trekking" | "Expedition" | "Tour";
+  category?: string;
   categoryId?: string;
   region?: string;
   difficulty?: string;
@@ -168,7 +173,8 @@ export function buildPackageQuery(params?: PackageFilterParams): string {
   if (!params) return "";
   const query = new URLSearchParams();
   if (params.categoryType) query.set("categoryType", params.categoryType);
-  if (params.categoryId && params.categoryId !== "All") query.set("categoryId", params.categoryId);
+  const cat = params.category || params.categoryId;
+  if (cat && cat !== "All") query.set("category", cat);
   if (params.region && params.region !== "All") query.set("region", params.region);
   if (params.difficulty && params.difficulty !== "All") query.set("difficulty", params.difficulty);
   if (params.status) query.set("status", params.status);

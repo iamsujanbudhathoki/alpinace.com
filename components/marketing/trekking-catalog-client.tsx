@@ -21,7 +21,7 @@ export function TrekkingCatalogClient({
   initialFilterOptions,
 }: TrekkingCatalogClientProps) {
   const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("categoryId") || "All";
+  const categoryParam = searchParams.get("category") || "All";
 
   const [treks, setTreks] = useState<TrekItem[]>(initialTreks);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,7 +40,7 @@ export function TrekkingCatalogClient({
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  // Sync categoryId safely during render when query param changes
+  // Sync category parameter safely during render when query param changes
   if (categoryParam !== prevCategoryParam) {
     setPrevCategoryParam(categoryParam);
     setSelectedCategory(categoryParam);
@@ -90,7 +90,7 @@ export function TrekkingCatalogClient({
       try {
         const data = await TrekService.getAll({
           search: debouncedSearch,
-          categoryId: selectedCategory === "All" ? undefined : selectedCategory,
+          category: selectedCategory === "All" ? undefined : selectedCategory,
           difficulty: selectedDifficulty === "All" ? undefined : selectedDifficulty,
           maxDuration: maxDuration < (filterOptions?.maxDuration || 30) ? maxDuration : undefined,
           sortBy,
@@ -143,7 +143,7 @@ export function TrekkingCatalogClient({
     }
 
     if (selectedCategory !== "All") {
-      list = list.filter((t) => t.categoryId === selectedCategory);
+      list = list.filter((t) => (t as any).categorySlug === selectedCategory || t.category === selectedCategory || t.categoryId === selectedCategory);
     }
 
     if (selectedDifficulty !== "All") {
@@ -201,17 +201,17 @@ export function TrekkingCatalogClient({
         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
           Trek Category
         </label>
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <button
             onClick={() => setSelectedCategory("All")}
-            className={`w-full text-left text-xs px-3 py-2 rounded-lg font-semibold transition-colors flex items-center justify-between cursor-pointer ${
+            className={`w-full text-left text-xs px-2.5 py-1.5 transition-all flex items-center justify-between cursor-pointer ${
               selectedCategory === "All"
-                ? "bg-amber-50 text-amber-800 border border-amber-200"
-                : "text-slate-600 hover:bg-slate-50"
+                ? "border-l-2 border-amber-700 text-amber-900 font-bold bg-amber-50/60 pl-3"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
             }`}
           >
             <span>All Categories</span>
-            <span className="text-[10px] text-slate-400">({treks.length})</span>
+            <span className="text-[10px] text-slate-400 font-normal">({treks.length})</span>
           </button>
           {loadingOptions ? (
             <FilterSidebarSkeleton />
@@ -220,10 +220,10 @@ export function TrekkingCatalogClient({
               <button
                 key={cat.value}
                 onClick={() => setSelectedCategory(cat.value)}
-                className={`w-full text-left text-xs px-3 py-2 rounded-lg font-semibold transition-colors flex items-center justify-between cursor-pointer ${
+                className={`w-full text-left text-xs px-2.5 py-1.5 transition-all flex items-center justify-between cursor-pointer ${
                   selectedCategory === cat.value
-                    ? "bg-amber-50 text-amber-800 border border-amber-200"
-                    : "text-slate-600 hover:bg-slate-50"
+                    ? "border-l-2 border-amber-700 text-amber-900 font-bold bg-amber-50/60 pl-3"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
                 }`}
               >
                 <span>{cat.label}</span>
@@ -235,18 +235,18 @@ export function TrekkingCatalogClient({
 
       {/* Difficulty Filter */}
       <div>
-        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+        <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2">
           Difficulty Level
         </label>
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           {["All", "Moderate", "Challenging", "Strenuous"].map((diff) => (
             <button
               key={diff}
               onClick={() => setSelectedDifficulty(diff)}
-              className={`w-full text-left text-xs px-3 py-2 rounded-lg font-semibold transition-colors flex items-center justify-between cursor-pointer ${
+              className={`w-full text-left text-xs px-2.5 py-1.5 transition-all flex items-center justify-between cursor-pointer ${
                 selectedDifficulty === diff
-                  ? "bg-amber-50 text-amber-800 border border-amber-200"
-                  : "text-slate-600 hover:bg-slate-50"
+                  ? "border-l-2 border-amber-700 text-amber-900 font-bold bg-amber-50/60 pl-3"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
               }`}
             >
               <span>{diff === "All" ? "All Difficulties" : diff}</span>
@@ -299,14 +299,11 @@ export function TrekkingCatalogClient({
       {/* Page Header */}
       <section className="bg-slate-900 text-white py-10 sm:py-12 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <span className="text-amber-400 text-xs font-semibold uppercase tracking-wider block mb-2">
-            Nepal Trekking
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-white mb-2">
-            Trekking Packages
+          <h1 className="text-2xl sm:text-3xl font-bold font-heading text-white mb-2">
+            Himalayan Trekking Routes
           </h1>
-          <p className="text-sm text-slate-200 max-w-2xl font-medium leading-relaxed">
-            Everest, Annapurna, Langtang, Manaslu, and restricted regions — all routes led by licensed Sherpa guides.
+          <p className="text-sm text-stone-200 max-w-2xl font-normal leading-relaxed">
+            Guided circuits across Khumbu, Annapurna, Manaslu, and Langtang organized directly by our team in Kathmandu.
           </p>
         </div>
       </section>
@@ -370,7 +367,7 @@ export function TrekkingCatalogClient({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Sidebar Filter Column */}
-          <aside className="hidden lg:block lg:col-span-4 bg-white border border-slate-200 rounded-xl p-5 shadow-xs sticky top-24">
+          <aside className="hidden lg:block lg:col-span-4 bg-white border border-stone-200/80 rounded-xl p-5 sticky top-24">
             <div className="flex items-center justify-between pb-3 mb-5 border-b border-slate-100">
               <h2 className="text-base font-bold text-slate-900">
                 Filter Routes
@@ -389,12 +386,12 @@ export function TrekkingCatalogClient({
 
           {/* Right Main Catalog Content Column */}
           <main className="lg:col-span-8 space-y-5">
-            <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm text-slate-800 font-semibold shadow-xs">
-              <span>Showing <strong className="text-slate-900">{loading ? "..." : filteredTreks.length}</strong> trekking itineraries</span>
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200/80 text-xs sm:text-sm text-slate-700 font-medium">
+              <span>Showing <strong className="text-slate-900 font-bold">{loading ? "..." : filteredTreks.length}</strong> trekking itineraries</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-sm text-amber-700 font-semibold hover:underline cursor-pointer"
+                  className="text-xs font-bold text-amber-800 hover:underline cursor-pointer"
                 >
                   Clear filters ({activeFilterCount})
                 </button>

@@ -291,6 +291,13 @@ export type GuideFormValues = z.infer<typeof guideSchema>;
 
 export const categorySchema = z.object({
   name: z.string().min(2, "Category name must be at least 2 characters"),
+  slug: z
+    .string()
+    .min(1, "Category slug is required")
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Slug must contain only lowercase letters, numbers, and hyphens (e.g. everest-region)"
+    ),
   type: z.nativeEnum(CategoryType),
   description: z.string().min(5, "Description must be at least 5 characters"),
   status: z.nativeEnum(CategoryStatus).default(CategoryStatus.ACTIVE),

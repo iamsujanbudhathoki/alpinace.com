@@ -175,95 +175,75 @@ export function FeaturedPackages({
   ];
 
   return (
-    <section className="py-16 sm:py-24 bg-white border-b border-stone-200 overflow-hidden">
+    <section className="py-12 sm:py-16 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header with Centered Heading/Tabs & Top-Right View All */}
-        <div className="relative mb-8 sm:mb-12">
-          {/* Top-Right Lightweight View All Link */}
-          <div className="flex sm:absolute sm:top-1 sm:right-0 justify-end mb-3 sm:mb-0 z-10">
-            <Link
-              href={exploreInfo.href}
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-800 hover:text-amber-950 transition-colors group"
-            >
-              <span>{exploreInfo.label}</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 pb-4 border-b border-stone-200/80">
+          <div className="space-y-1">
+            <h2 className="type-heading-xl text-2xl sm:text-3xl text-stone-900">
+              Featured Treks &amp; Expeditions
+            </h2>
+            <p className="text-stone-600 text-xs sm:text-sm font-normal">
+              Guided Himalayan routes organized directly by our team in Kathmandu.
+            </p>
           </div>
 
-          {/* Centered Heading, Subtitle & Tab Bar */}
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <span className="text-amber-800 text-xs font-bold uppercase tracking-wider block">
-              Curated Itineraries
-            </span>
-            <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight">
-              Featured Himalayan Experiences
-            </h2>
-            <p className="text-stone-700 text-xs sm:text-sm leading-relaxed px-2 font-medium">
-              Hand-picked alpine expeditions, iconic high-pass circuits, and cultural journeys through Nepal.
-            </p>
-
-            {/* Centered Tab Switcher */}
-            <div className="pt-4 flex items-center justify-center">
-              <div className="inline-flex items-center justify-center gap-6 sm:gap-10 border-b border-stone-200/80 pb-2">
-                {tabs.map((tab) => {
-                  const isActive = activeTab === tab.key;
-                  return (
-                    <button
-                      key={tab.key}
-                      onClick={() => {
-                        setActiveTab(tab.key);
-                        if (scrollContainerRef.current) {
-                          scrollContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
-                        }
-                      }}
-                      className={`relative flex items-center gap-2 pb-2.5 text-sm sm:text-base font-bold transition-all duration-200 cursor-pointer ${
-                        isActive
-                          ? "text-stone-900"
-                          : "text-stone-500 hover:text-stone-900 font-semibold"
-                      }`}
-                      aria-selected={isActive}
-                      role="tab"
-                    >
-                      <span>{tab.label}</span>
-                      {!loading && tab.count > 0 && (
-                        <span
-                          className={`text-xs font-semibold px-2 py-0.5 rounded-full transition-colors ${
-                            isActive
-                              ? "bg-amber-100 text-amber-900"
-                              : "bg-stone-100 text-stone-700 font-medium"
-                          }`}
-                        >
-                          {tab.count}
-                        </span>
-                      )}
-                      {/* Sleek active underline */}
-                      {isActive && (
-                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-800 rounded-full transition-all duration-300" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+          <div className="flex items-center gap-4 sm:gap-6 self-start md:self-auto">
+            <div className="flex items-center gap-5 sm:gap-6 py-1">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => {
+                      setActiveTab(tab.key);
+                      if (scrollContainerRef.current) {
+                        scrollContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className={`relative pb-2 text-xs font-semibold transition-all cursor-pointer ${
+                      isActive
+                        ? "text-amber-900 font-bold"
+                        : "text-stone-500 hover:text-stone-900"
+                    }`}
+                    aria-selected={isActive}
+                    role="tab"
+                  >
+                    <span>{tab.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-700 rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
+
+            <Link
+              href={exploreInfo.href}
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 hover:text-amber-950 transition-colors group shrink-0"
+            >
+              <span>{exploreInfo.label}</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
         </div>
 
         {/* Carousel Container with Controls */}
-        <div className="relative group/carousel px-1 sm:px-2">
+        <div className="relative group/carousel">
           {/* Scroll Navigation Arrows */}
           {!loading && currentPackages.length > 0 && (
             <>
               <button
                 onClick={() => scroll("left")}
                 aria-label="Scroll Left"
-                className="absolute -left-2 sm:-left-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/95 text-stone-800 shadow-lg border border-stone-200 flex items-center justify-center hover:bg-stone-900 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                className="absolute -left-2 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 text-stone-800 shadow-md border border-stone-200/80 flex items-center justify-center hover:bg-amber-800 hover:text-white transition-all cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={() => scroll("right")}
                 aria-label="Scroll Right"
-                className="absolute -right-2 sm:-right-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/95 text-stone-800 shadow-lg border border-stone-200 flex items-center justify-center hover:bg-stone-900 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                className="absolute -right-2 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 text-stone-800 shadow-md border border-stone-200/80 flex items-center justify-center hover:bg-amber-800 hover:text-white transition-all cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
@@ -271,13 +251,13 @@ export function FeaturedPackages({
           )}
 
           {loading ? (
-            <div className="flex gap-4 sm:gap-6 overflow-x-hidden py-4">
+            <div className="flex gap-4 sm:gap-6 overflow-x-hidden py-3">
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
-                  className="w-[280px] sm:w-[340px] md:w-[360px] flex-shrink-0 bg-white rounded-2xl border border-stone-200 p-4 space-y-4 animate-pulse shadow-xs"
+                  className="w-[280px] sm:w-[320px] md:w-[340px] flex-shrink-0 bg-stone-50/50 rounded-xl border border-stone-200/60 p-4 space-y-4 animate-pulse"
                 >
-                  <div className="h-48 sm:h-56 bg-stone-200 rounded-xl w-full" />
+                  <div className="h-44 sm:h-48 bg-stone-200/80 rounded-lg w-full" />
                   <div className="h-4 bg-stone-200 rounded w-1/3" />
                   <div className="h-5 bg-stone-200 rounded w-3/4" />
                   <div className="h-3 bg-stone-100 rounded w-full" />
@@ -285,7 +265,7 @@ export function FeaturedPackages({
               ))}
             </div>
           ) : currentPackages.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-stone-200 p-8 sm:p-12 text-center space-y-3 shadow-xs">
+            <div className="bg-stone-50/50 rounded-xl p-8 sm:p-12 text-center space-y-3 border border-stone-200/60">
               <p className="text-sm font-medium text-stone-600">
                 No featured {activeTab} available at this moment.
               </p>
@@ -306,7 +286,7 @@ export function FeaturedPackages({
               onTouchEnd={() => setIsPaused(false)}
               onFocus={() => setIsPaused(true)}
               onBlur={() => setIsPaused(false)}
-              className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth py-4 px-1 touch-pan-x scrollbar-none snap-x snap-mandatory focus:outline-none"
+              className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth py-3 px-0.5 touch-pan-x scrollbar-none snap-x snap-mandatory focus:outline-none"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
@@ -319,57 +299,57 @@ export function FeaturedPackages({
                   <Link
                     key={pkg.id}
                     href={packageHref}
-                    className="w-[280px] sm:w-[340px] md:w-[360px] flex-shrink-0 snap-start group flex flex-col bg-white rounded-2xl border border-stone-200/90 overflow-hidden hover:border-amber-700/40 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                    className="w-[280px] sm:w-[320px] lg:w-[340px] flex-shrink-0 snap-start group flex flex-col bg-white rounded-xl border border-stone-200/80 hover:border-amber-700/40 hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden"
                   >
                     {/* Image Frame */}
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
                       <img
                         src={pkg.image || "/mountain-placeholder.jpg"}
                         alt={pkg.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
 
                       {/* Top Badges */}
                       {pkg.region && (
-                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-stone-900 text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-lg border border-stone-200/60 shadow-xs">
+                        <div className="absolute top-2.5 left-2.5 bg-stone-900/80 backdrop-blur-md text-white text-[11px] font-medium px-2.5 py-0.5 rounded-md">
                           {pkg.region}
                         </div>
                       )}
 
-                      <div className="absolute top-3 right-3 bg-stone-900/85 backdrop-blur-md text-white text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-xs">
-                        <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                      <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md text-stone-900 text-[11px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                        <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
                         <span>{pkg.rating.toFixed(1)}</span>
                       </div>
                     </div>
 
                     {/* Card Content */}
-                    <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
-                      <div className="space-y-2">
+                    <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
+                      <div className="space-y-1.5">
                         {pkg.difficulty && (
-                          <div className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-amber-800">
+                          <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-800">
                             {pkg.difficulty}
                           </div>
                         )}
-                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug group-hover:text-amber-800 transition-colors line-clamp-2">
+                        <h3 className="font-heading text-sm sm:text-base font-bold text-stone-900 leading-snug group-hover:text-amber-800 transition-colors line-clamp-2">
                           {pkg.title}
                         </h3>
                         {pkg.shortDesc && (
-                          <p className="text-stone-700 text-xs leading-relaxed font-medium line-clamp-2">
+                          <p className="text-stone-600 text-xs leading-relaxed font-normal line-clamp-2">
                             {pkg.shortDesc.replace(/<[^>]*>?/gm, "")}
                           </p>
                         )}
                       </div>
 
                       {/* Metadata & Pricing Footer */}
-                      <div className="pt-4 border-t border-stone-100 space-y-3">
-                        <div className="flex items-center justify-between text-xs text-stone-800 font-semibold">
+                      <div className="pt-3 border-t border-stone-100 space-y-2.5">
+                        <div className="flex items-center justify-between text-xs text-stone-600 font-medium">
                           <span className="flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5 text-amber-800/80" />
+                            <Clock className="w-3.5 h-3.5 text-stone-400" />
                             {pkg.durationDays} Days
                           </span>
                           {pkg.maxAltitudeMeters > 0 && (
-                            <span className="flex items-center gap-1.5 text-stone-800 font-bold">
-                              <TrendingUp className="w-3.5 h-3.5 text-amber-800/80" />
+                            <span className="flex items-center gap-1.5 text-stone-700 font-semibold">
+                              <TrendingUp className="w-3.5 h-3.5 text-stone-400" />
                               {pkg.maxAltitudeMeters.toLocaleString()}m
                             </span>
                           )}
@@ -377,17 +357,16 @@ export function FeaturedPackages({
 
                         <div className="flex items-center justify-between pt-1">
                           <div>
-                            <span className="text-[10px] sm:text-xs uppercase font-semibold text-stone-600 tracking-wider block">
-                              From
-                            </span>
-                            <span className="text-sm sm:text-base font-extrabold text-stone-900">
-                              ${pkg.priceUSD.toLocaleString()}{" "}
-                              <span className="text-xs font-bold text-stone-700">USD</span>
+                            <span className="text-[10px] text-stone-500 font-medium block">Starting from</span>
+                            <span className="text-sm sm:text-base font-bold text-stone-900">
+                              ${pkg.priceUSD.toLocaleString()} <span className="text-[10px] font-normal text-stone-500">USD</span>
                             </span>
                           </div>
-                          <span className="text-xs font-bold text-amber-800 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                            Explore <ArrowRight className="w-3 h-3" />
-                          </span>
+
+                          <div className="inline-flex items-center gap-1 text-xs font-bold text-amber-800 group-hover:translate-x-0.5 transition-transform">
+                            <span>Explore</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </div>
                         </div>
                       </div>
                     </div>

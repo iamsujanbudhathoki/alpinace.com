@@ -22,7 +22,7 @@ export const ENV_SITE_EMAIL =
   process.env.NEXT_PUBLIC_SITE_EMAIL || "info@alpineacetreks.com";
 
 export const ENV_SITE_TAGLINE =
-  process.env.NEXT_PUBLIC_SITE_TAGLINE || "Venture Beyond the Ordinary";
+  process.env.NEXT_PUBLIC_SITE_TAGLINE || "Guided Himalayan Treks & High Altitude Expeditions";
 
 /**
  * Standard website domain constant (e.g. https://alpineacetreks.com)

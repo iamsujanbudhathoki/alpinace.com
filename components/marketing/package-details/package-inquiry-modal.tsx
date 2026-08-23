@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { InquiryService } from "@/lib/services/admin-service";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
 import { BookingPackageType } from "@/lib/admin-data";
+import { TurnstileWidget } from "@/components/ui/turnstile-widget";
 import { BookingAddonItem } from "./package-booking-sidebar";
 
 export interface PackageInquiryModalProps {
@@ -38,6 +39,7 @@ export function PackageInquiryModal({
   const [inquiryPhone, setInquiryPhone] = useState("");
   const [inquiryCountry, setInquiryCountry] = useState("");
   const [inquiryMessage, setInquiryMessage] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; phone?: string; message?: string }>({});
@@ -60,6 +62,11 @@ export function PackageInquiryModal({
     e.preventDefault();
     setErrorMessage(null);
     if (!validateForm()) return;
+
+    if (!turnstileToken) {
+      setErrorMessage("Please complete the Turnstile CAPTCHA verification.");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -89,6 +96,7 @@ export function PackageInquiryModal({
         groupSize: travelers || 1,
         message: formattedMessage,
         type: packageType,
+        cfTurnstileToken: turnstileToken,
       });
 
       if (res?.success) {
@@ -101,6 +109,7 @@ export function PackageInquiryModal({
         setInquiryPhone("");
         setInquiryCountry("");
         setInquiryMessage("");
+        setTurnstileToken("");
         onClose();
       } else {
         const msg = res?.message || "Failed to send inquiry. Please try again.";
@@ -247,6 +256,18 @@ export function PackageInquiryModal({
               {formErrors.message && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.message}</p>}
             </div>
 
+            {errorMessage && (
+              <p className="text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-2.5 text-center">
+                {errorMessage}
+              </p>
+            )}
+
+            <TurnstileWidget
+              onVerify={(t) => setTurnstileToken(t)}
+              onExpire={() => setTurnstileToken('')}
+              onError={() => setTurnstileToken('')}
+            />
+
             {/* Action Buttons */}
             <div className="pt-2 flex items-center justify-end gap-3">
               <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-xl">
@@ -254,8 +275,8 @@ export function PackageInquiryModal({
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
-                className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors"
+                disabled={isSubmitting || !turnstileToken}
+                className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-1.5">

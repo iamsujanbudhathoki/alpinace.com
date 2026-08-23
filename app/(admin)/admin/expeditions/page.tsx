@@ -88,7 +88,7 @@ export default function AdminExpeditionsPage() {
   const loadExpeditions = async () => {
     setLoading(true);
     try {
-      const data = await ExpeditionService.getAll({
+      const data = await ExpeditionService.getAdminAll({
         search: debouncedSearch,
         status: statusFilter === "All" ? undefined : statusFilter,
         page,

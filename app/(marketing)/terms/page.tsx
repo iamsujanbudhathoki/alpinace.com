@@ -1,11 +1,16 @@
-import Metadata from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldAlert, ArrowLeft, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
+import { generateStaticMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Terms & Conditions | Alpine Ace",
-  description: "Terms and conditions, booking policies, and expedition agreements for Alpine Ace Treks & Expeditions.",
-};
+export function generateMetadata(): Metadata {
+  return generateStaticMetadata({
+    title: "Terms & Conditions | AlpineAce Expeditions",
+    description: "Terms and conditions, booking policies, and expedition agreements for AlpineAce Treks & Expeditions in Nepal.",
+    path: "/terms",
+    keywords: ["Terms and conditions", "AlpineAce Booking Terms", "Nepal expedition contract"],
+  });
+}
 
 export default function TermsPage() {
   return (
@@ -18,7 +23,7 @@ export default function TermsPage() {
             Terms &amp; Conditions
           </h1>
           <p className="text-slate-300 text-sm max-w-xl mx-auto font-light leading-relaxed">
-            Please review our booking policies, high-altitude safety agreements, and cancellation terms prior to reserving your trip with Alpine Ace.
+            Please review our booking policies, high-altitude safety agreements, and cancellation terms prior to reserving your trip with AlpineAce.
           </p>
         </div>
       </section>
@@ -45,7 +50,7 @@ export default function TermsPage() {
               1. Booking &amp; Contract Agreement
             </h2>
             <p>
-              By submitting a trip deposit or booking confirmation with Alpine Ace Treks &amp; Expeditions Pvt. Ltd. (&ldquo;Alpine Ace&rdquo;), you acknowledge that you have read, understood, and agreed to be legally bound by these Terms &amp; Conditions. All bookings become active upon receipt of your initial deposit and official booking confirmation email from our Kathmandu concierge.
+              By submitting a trip deposit or booking confirmation with AlpineAce Treks &amp; Expeditions Pvt. Ltd. (&ldquo;AlpineAce&rdquo;), you acknowledge that you have read, understood, and agreed to be legally bound by these Terms &amp; Conditions. All bookings become active upon receipt of your initial deposit and official booking confirmation email from our Kathmandu concierge.
             </p>
           </section>
 
@@ -136,7 +141,7 @@ export default function TermsPage() {
             <h3 className="font-heading text-base font-bold text-zinc-900">Questions Regarding Terms?</h3>
             <p className="text-xs text-zinc-600">
               Contact our Operations Office in Kathmandu:<br />
-              Alpine Ace Treks &amp; Expeditions Pvt. Ltd.<br />
+              AlpineAce Treks &amp; Expeditions Pvt. Ltd.<br />
               Tridevi Marg, Thamel, Kathmandu, Nepal<br />
               Email: <a href="mailto:concierge@alpineacetreks.com" className="text-amber-800 font-semibold underline">concierge@alpineacetreks.com</a>
             </p>

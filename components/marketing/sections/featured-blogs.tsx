@@ -8,8 +8,12 @@ import { BlogPost } from "@/lib/home-data";
 import { BlogService } from "@/lib/services/admin-service";
 import { BlogStatus } from "@/lib/admin-data";
 
-export function FeaturedBlogs() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+interface FeaturedBlogsProps {
+  initialPosts?: BlogPost[];
+}
+
+export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
+  const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
 
   useEffect(() => {
     async function loadFeatured() {

@@ -88,7 +88,7 @@ export default function AdminToursPage() {
   const loadTours = async () => {
     setLoading(true);
     try {
-      const data = await TourService.getAll({
+      const data = await TourService.getAdminAll({
         search: debouncedSearch,
         status: statusFilter === "All" ? undefined : statusFilter,
         page,

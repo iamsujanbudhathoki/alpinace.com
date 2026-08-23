@@ -1,23 +1,22 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { siteConfig } from '@/lib/site-config';
+import { generateStaticMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'About AlpineAce | Our Team, Sherpa Heritage & Values',
-  description:
-    'AlpineAce is a Sherpa-owned trekking and expedition company based in Kathmandu. Founded in 2012 to combine local expertise with international safety and comfort standards.',
-  alternates: {
-    canonical: `${siteConfig.url}/about`,
-  },
-  openGraph: {
-    title: 'About AlpineAce | Sherpa-Owned, Kathmandu-Based',
+export function generateMetadata(): Metadata {
+  return generateStaticMetadata({
+    title: 'About AlpineAce | Our Team, Sherpa Heritage & Values',
     description:
-      'AlpineAce is a Sherpa-owned trekking and expedition company based in Kathmandu, founded in 2012.',
-    url: `${siteConfig.url}/about`,
-    siteName: siteConfig.name,
-    type: 'website',
-  },
-};
+      'AlpineAce is a Sherpa-owned trekking and expedition company based in Thamel, Kathmandu. Founded in 2012 to combine local Sherpa expertise with international safety standards.',
+    path: '/about',
+    keywords: [
+      'About AlpineAce',
+      'Sherpa owned trek company',
+      'Kathmandu trekking agency',
+      'IFMGA Sherpa guides',
+      'Himalayan trekking team',
+    ],
+  });
+}
 
 export default function AboutView() {
   const team = [

@@ -26,28 +26,16 @@ export interface ApiResponse<T = any> {
 
 export const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 15000,
 });
 
-// Request Interceptor: Attach Authorization Bearer Token
+// Request Interceptor
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (typeof window !== 'undefined') {
-      try {
-        const session = localStorage.getItem(AUTH_KEY);
-        if (session) {
-          const parsed = JSON.parse(session);
-          if (parsed.token) {
-            config.headers.Authorization = `Bearer ${parsed.token}`;
-          }
-        }
-      } catch (e) {
-        // Ignore JSON parse errors
-      }
-    }
     return config;
   },
   (error: AxiosError) => {

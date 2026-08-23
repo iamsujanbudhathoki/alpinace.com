@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
-import { siteConfig } from "@/lib/site-config";
+import { generateStaticMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generateStaticMetadata({
   title: "Contact AlpineAce | Expedition Inquiries & Custom Itineraries",
   description:
-    "Get in touch with AlpineAce's Himalayan expedition specialists in Kathmandu. Plan your custom trek, peak climb, or private tour with certified Sherpa guides.",
-  alternates: {
-    canonical: `${siteConfig.url}/contact`,
-  },
-  openGraph: {
-    title: "Contact AlpineAce Expeditions",
-    description:
-      "Speak directly with our Sherpa expedition leaders and custom journey designers.",
-    url: `${siteConfig.url}/contact`,
-    siteName: siteConfig.name,
-    type: "website",
-  },
-};
+    "Get in touch with AlpineAce's Himalayan expedition specialists in Thamel, Kathmandu. Plan your custom trek, peak climb, or private tour with certified Sherpa guides.",
+  path: "/contact",
+  keywords: [
+    "Contact AlpineAce",
+    "Kathmandu trek agency contact",
+    "Custom Nepal trekking inquiry",
+    "Sherpa guides phone number",
+  ],
+});
 
 export default function ContactLayout({
   children,

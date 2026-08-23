@@ -33,6 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL(siteConfig.url),
+    applicationName: siteConfig.name,
     title: {
       default: siteConfig.title,
       template: `%s | ${siteConfig.name}`,
@@ -41,6 +42,12 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: [...siteConfig.keywords],
     alternates: {
       canonical: siteConfig.url,
+      types: {
+        "text/markdown": `${siteConfig.url}/llms.txt`,
+      },
+    },
+    appleWebApp: {
+      title: siteConfig.name,
     },
     ...(googleVerificationToken
       ? {
@@ -59,13 +66,13 @@ export async function generateMetadata(): Promise<Metadata> {
       url: siteConfig.url,
       title: siteConfig.title,
       description: siteConfig.description,
-      siteName: siteConfig.name,
+      siteName: siteConfig.fullName,
       images: [
         {
           url: "/logo.jpg",
           width: 800,
           height: 600,
-          alt: siteConfig.name,
+          alt: siteConfig.fullName,
         },
       ],
     },
@@ -82,23 +89,73 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const jsonLd = {
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${siteConfig.url}/#organization`,
+  name: siteConfig.fullName,
+  alternateName: [...siteConfig.alternateNames],
+  url: siteConfig.url,
+  logo: `${siteConfig.url}/logo.jpg`,
+  image: `${siteConfig.url}/logo.jpg`,
+  description: siteConfig.description,
+  telephone: siteConfig.telephone,
+  email: siteConfig.email,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: siteConfig.address.streetAddress,
+    addressLocality: siteConfig.address.addressLocality,
+    addressRegion: siteConfig.address.addressRegion,
+    postalCode: siteConfig.address.postalCode,
+    addressCountry: siteConfig.address.addressCountry,
+  },
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: siteConfig.telephone,
+      email: siteConfig.email,
+      contactType: "customer service",
+      availableLanguage: ["English", "Nepali"],
+      areaServed: "Worldwide",
+    },
+  ],
+  sameAs: [
+    "https://facebook.com/alpineacenepal",
+    "https://instagram.com/alpineacenepal",
+    "https://youtube.com/@alpineacenepal",
+  ],
+};
+
+const agencyJsonLd = {
   "@context": "https://schema.org",
   "@type": "TravelAgency",
-  name: siteConfig.name,
+  "@id": `${siteConfig.url}/#agency`,
+  name: siteConfig.fullName,
+  alternateName: [...siteConfig.alternateNames],
   description: siteConfig.description,
   url: siteConfig.url,
   logo: `${siteConfig.url}/logo.jpg`,
   image: `${siteConfig.url}/logo.jpg`,
-  telephone: "+977 1 4700543",
+  telephone: siteConfig.telephone,
   email: siteConfig.email,
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Tridevi Marg, Thamel",
-    addressLocality: "Kathmandu",
-    postalCode: "44600",
-    addressCountry: "NP",
+    streetAddress: siteConfig.address.streetAddress,
+    addressLocality: siteConfig.address.addressLocality,
+    addressRegion: siteConfig.address.addressRegion,
+    postalCode: siteConfig.address.postalCode,
+    addressCountry: siteConfig.address.addressCountry,
   },
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: siteConfig.telephone,
+      email: siteConfig.email,
+      contactType: "customer service",
+      availableLanguage: ["English", "Nepali"],
+      areaServed: "Worldwide",
+    },
+  ],
   geo: {
     "@type": "GeoCoordinates",
     latitude: "27.714649",
@@ -139,7 +196,11 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(agencyJsonLd) }}
         />
       </head>
       <body

@@ -13,6 +13,93 @@ interface PackageMetadataParams {
   slug: string;
 }
 
+interface StaticMetadataParams {
+  title: string;
+  description?: string;
+  path?: string;
+  keywords?: string[];
+  noindex?: boolean;
+}
+
+/**
+ * Ensures any image URL (relative, uploaded, or absolute) is normalized
+ * to an absolute URL safe for OpenGraph and Twitter crawlers.
+ */
+export function normalizeImageUrl(imgUrl?: string | null): string {
+  const baseUrl = siteConfig.url;
+  if (!imgUrl || !imgUrl.trim()) {
+    return `${baseUrl}/logo.jpg`;
+  }
+  const cleanUrl = imgUrl.trim();
+  if (cleanUrl.startsWith("http://") || cleanUrl.startsWith("https://")) {
+    return cleanUrl;
+  }
+  if (cleanUrl.startsWith("/")) {
+    return `${baseUrl}${cleanUrl}`;
+  }
+  return `${baseUrl}/${cleanUrl}`;
+}
+
+/**
+ * Generate centralized static page SEO metadata (e.g. /about, /contact, /privacy, /terms, catalog pages)
+ */
+export function generateStaticMetadata({
+  title,
+  description,
+  path = "",
+  keywords = [],
+  noindex = false,
+}: StaticMetadataParams): Metadata {
+  const baseUrl = siteConfig.url;
+  const canonicalUrl = path ? `${baseUrl}${path.startsWith("/") ? path : `/${path}`}` : baseUrl;
+  const fullTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteConfig.name}`;
+  const metaDescription = description || siteConfig.description;
+  const defaultKeywords = Array.from(new Set([...keywords, ...siteConfig.keywords]));
+  const ogImage = `${baseUrl}/logo.jpg`;
+
+  return {
+    title: fullTitle,
+    description: metaDescription,
+    keywords: defaultKeywords,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: {
+      index: !noindex,
+      follow: true,
+      googleBot: {
+        index: !noindex,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: canonicalUrl,
+      title: fullTitle,
+      description: metaDescription,
+      siteName: siteConfig.name,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${siteConfig.fullName} - ${title}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description: metaDescription,
+      images: [ogImage],
+      creator: "@AlpineAceExpeditions",
+    },
+  };
+}
+
 /**
  * Generate rich OpenGraph, Twitter, and SEO metadata for Package Detail pages
  */
@@ -62,7 +149,9 @@ export function generatePackageMetadata({
   ];
 
   const keywords = Array.from(new Set([...rawKeywords, ...defaultKeywords]));
-  const primaryImage = item.image || `${baseUrl}/logo.jpg`;
+  const primaryImage = normalizeImageUrl(item.image || item.coverMediaId);
+
+  const isIndexed = item.status !== "draft" && item.status !== "inactive";
 
   return {
     title: { absolute: titleString },
@@ -72,10 +161,10 @@ export function generatePackageMetadata({
       canonical: canonicalUrl,
     },
     robots: {
-      index: item.status === "draft" ? false : true,
+      index: isIndexed,
       follow: true,
       googleBot: {
-        index: item.status === "draft" ? false : true,
+        index: isIndexed,
         follow: true,
         "max-video-preview": -1,
         "max-image-preview": "large",
@@ -121,6 +210,7 @@ export function generatePackageJsonLd({
   const baseUrl = siteConfig.url;
   const canonicalUrl = `${baseUrl}/${categoryType}/${slug}`;
   const categoryLabel = categoryType.charAt(0).toUpperCase() + categoryType.slice(1);
+  const primaryImage = normalizeImageUrl(item.image);
 
   // 1. BreadcrumbList Schema
   const breadcrumbSchema = {
@@ -159,7 +249,7 @@ export function generatePackageJsonLd({
     name: item.title,
     description: cleanShortDesc || item.metaDescription || `${item.title} expedition in Nepal.`,
     url: canonicalUrl,
-    image: item.image ? [item.image] : [`${baseUrl}/logo.jpg`],
+    image: [primaryImage],
     touristType: ["Adventure Enthusiasts", "Trekkers", "Mountaineers"],
     offers: {
       "@type": "Offer",
@@ -288,7 +378,7 @@ export function generateBlogMetadata(post: BlogPost | null, slug: string): Metad
         "AlpineAce journal",
       ];
 
-  const primaryImage = post.image || `${baseUrl}/logo.jpg`;
+  const primaryImage = normalizeImageUrl(post.image);
 
   return {
     title: { absolute: titleString },
@@ -343,6 +433,7 @@ export function generateBlogJsonLd(post: BlogPost | null, slug: string) {
 
   const baseUrl = siteConfig.url;
   const canonicalUrl = `${baseUrl}/blog/${slug}`;
+  const primaryImage = normalizeImageUrl(post.image);
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -374,7 +465,7 @@ export function generateBlogJsonLd(post: BlogPost | null, slug: string) {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt || post.metaDescription || post.title,
-    image: post.image ? [post.image] : [`${baseUrl}/logo.jpg`],
+    image: [primaryImage],
     datePublished: post.date || new Date().toISOString(),
     dateModified: post.date || new Date().toISOString(),
     author: {

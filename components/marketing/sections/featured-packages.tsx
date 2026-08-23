@@ -16,12 +16,24 @@ import { PackageStatus } from "@/lib/admin-data";
 
 type FeaturedTab = "treks" | "tours" | "expeditions";
 
-export function FeaturedPackages() {
+interface FeaturedPackagesProps {
+  initialTreks?: TravelPackage[];
+  initialTours?: TravelPackage[];
+  initialExpeditions?: TravelPackage[];
+}
+
+export function FeaturedPackages({
+  initialTreks = [],
+  initialTours = [],
+  initialExpeditions = [],
+}: FeaturedPackagesProps) {
   const [activeTab, setActiveTab] = useState<FeaturedTab>("treks");
-  const [treks, setTreks] = useState<TravelPackage[]>([]);
-  const [tours, setTours] = useState<TravelPackage[]>([]);
-  const [expeditions, setExpeditions] = useState<TravelPackage[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [treks, setTreks] = useState<TravelPackage[]>(initialTreks);
+  const [tours, setTours] = useState<TravelPackage[]>(initialTours);
+  const [expeditions, setExpeditions] = useState<TravelPackage[]>(initialExpeditions);
+  const [loading, setLoading] = useState(
+    initialTreks.length === 0 && initialTours.length === 0 && initialExpeditions.length === 0
+  );
   const [isPaused, setIsPaused] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);

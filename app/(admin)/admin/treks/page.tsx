@@ -89,7 +89,7 @@ export default function AdminTreksPage() {
   const loadTreks = async () => {
     setLoading(true);
     try {
-      const data = await TrekService.getAll({
+      const data = await TrekService.getAdminAll({
         search: debouncedSearch,
         difficulty: selectedDifficulty,
         page,

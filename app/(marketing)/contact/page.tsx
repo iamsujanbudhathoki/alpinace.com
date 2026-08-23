@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { InquiryService } from '@/lib/services/admin-service';
 import { useSettings } from '@/lib/settings-context';
 import { FormLabel } from '@/components/ui/form-label';
+import { TurnstileWidget } from '@/components/ui/turnstile-widget';
 import { cn } from '@/lib/utils';
 import { COUNTRY_OPTIONS } from '@/lib/country-list';
 
@@ -37,6 +38,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 export default function ContactView() {
   const { settings } = useSettings();
   const [submitted, setSubmitted] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
 
   const {
     register,
@@ -57,6 +59,11 @@ export default function ContactView() {
   });
 
   const onSubmit = async (data: ContactFormData) => {
+    if (!turnstileToken) {
+      toast.error("Please complete the Turnstile CAPTCHA verification.");
+      return;
+    }
+
     try {
       const res = await InquiryService.create({
         guestName: data.fullName,
@@ -67,11 +74,13 @@ export default function ContactView() {
         travelDates: 'Flexible',
         groupSize: Number(data.travelers) || 1,
         message: data.message,
+        cfTurnstileToken: turnstileToken,
       });
 
       if (res?.success !== false) {
         setSubmitted(true);
         reset();
+        setTurnstileToken('');
         toast.success("Your inquiry has been submitted! Our team will reach out shortly.");
       } else {
         toast.error(res.message || "Failed to submit inquiry. Please try again.");
@@ -353,9 +362,15 @@ export default function ContactView() {
                   )}
                 </div>
 
+                <TurnstileWidget
+                  onVerify={(token) => setTurnstileToken(token)}
+                  onExpire={() => setTurnstileToken('')}
+                  onError={() => setTurnstileToken('')}
+                />
+
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !turnstileToken}
                   className="w-full bg-amber-800 hover:bg-amber-900 text-white font-heading text-sm font-semibold py-3.5 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
                 >
                   <Send className="h-4 w-4 text-amber-300" />

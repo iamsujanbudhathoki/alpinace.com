@@ -449,16 +449,32 @@ export function formatBackendPackage(p: any): PackageItem {
 }
 
 export const TrekService = {
-  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<TrekItem>> {
+  async getPublicAll(filters?: PackageFilterParams): Promise<PaginatedList<TrekItem>> {
     try {
       const q = buildPackageQuery(filters);
       const res = await apiClient.get<any[]>(`/treks${q}`);
       const items = Array.isArray(res?.data) ? res.data.map(formatBackendTrek) : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
-      console.warn("Backend treks fetch error:", e);
+      console.warn("Backend public treks fetch error:", e);
       return makePaginatedList([]);
     }
+  },
+
+  async getAdminAll(filters?: PackageFilterParams): Promise<PaginatedList<TrekItem>> {
+    try {
+      const q = buildPackageQuery(filters);
+      const res = await apiClient.get<any[]>(`/admin/treks${q}`);
+      const items = Array.isArray(res?.data) ? res.data.map(formatBackendTrek) : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend admin treks fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<TrekItem>> {
+    return this.getPublicAll(filters);
   },
 
   async getBySlug(slug: string): Promise<TrekItem | null> {
@@ -495,16 +511,32 @@ export const TrekService = {
 };
 
 export const TourService = {
-  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
+  async getPublicAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
     try {
       const q = buildPackageQuery(filters);
       const res = await apiClient.get<any[]>(`/tours${q}`);
       const items = Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
-      console.warn("Backend tours fetch error:", e);
+      console.warn("Backend public tours fetch error:", e);
       return makePaginatedList([]);
     }
+  },
+
+  async getAdminAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
+    try {
+      const q = buildPackageQuery(filters);
+      const res = await apiClient.get<any[]>(`/admin/tours${q}`);
+      const items = Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend admin tours fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
+    return this.getPublicAll(filters);
   },
 
   async getBySlug(slug: string): Promise<PackageItem | null> {
@@ -541,16 +573,32 @@ export const TourService = {
 };
 
 export const ExpeditionService = {
-  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
+  async getPublicAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
     try {
       const q = buildPackageQuery(filters);
       const res = await apiClient.get<any[]>(`/expeditions${q}`);
       const items = Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
-      console.warn("Backend expeditions fetch error:", e);
+      console.warn("Backend public expeditions fetch error:", e);
       return makePaginatedList([]);
     }
+  },
+
+  async getAdminAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
+    try {
+      const q = buildPackageQuery(filters);
+      const res = await apiClient.get<any[]>(`/admin/expeditions${q}`);
+      const items = Array.isArray(res?.data) ? res.data.map(formatBackendPackage) : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend admin expeditions fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getAll(filters?: PackageFilterParams): Promise<PaginatedList<PackageItem>> {
+    return this.getPublicAll(filters);
   },
 
   async getBySlug(slug: string): Promise<PackageItem | null> {
@@ -756,7 +804,7 @@ export const GuideService = {
 };
 
 export const BlogService = {
-  async getAll(
+  async getPublicAll(
     statusOrParams?: BlogStatus | string | { status?: BlogStatus | string; categoryId?: string; category?: string; search?: string; limit?: number; page?: number },
     categoryId?: string,
     search?: string,
@@ -785,9 +833,53 @@ export const BlogService = {
       const items = Array.isArray(res?.data) ? res.data : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
-      console.warn("Backend blog articles fetch error:", e);
+      console.warn("Backend public blog articles fetch error:", e);
       return makePaginatedList([]);
     }
+  },
+
+  async getAdminAll(
+    statusOrParams?: BlogStatus | string | { status?: BlogStatus | string; categoryId?: string; category?: string; search?: string; limit?: number; page?: number },
+    categoryId?: string,
+    search?: string,
+    limit?: number,
+    page?: number
+  ): Promise<PaginatedList<BlogArticle>> {
+    try {
+      const params = new URLSearchParams();
+      if (statusOrParams && typeof statusOrParams === "object") {
+        if (statusOrParams.status && statusOrParams.status !== "All") params.append("status", statusOrParams.status);
+        if (statusOrParams.categoryId && statusOrParams.categoryId !== "All") params.append("categoryId", statusOrParams.categoryId);
+        if (statusOrParams.category && statusOrParams.category !== "All") params.append("category", statusOrParams.category);
+        if (statusOrParams.search && statusOrParams.search.trim() !== "") params.append("search", statusOrParams.search.trim());
+        if (statusOrParams.limit) params.append("limit", String(statusOrParams.limit));
+        if (statusOrParams.page) params.append("page", String(statusOrParams.page));
+      } else {
+        if (statusOrParams && statusOrParams !== "All") params.append("status", statusOrParams);
+        if (categoryId && categoryId !== "All") params.append("categoryId", categoryId);
+        if (search && search.trim() !== "") params.append("search", search.trim());
+        if (limit) params.append("limit", String(limit));
+        if (page) params.append("page", String(page));
+      }
+      const query = params.toString();
+      const endpoint = query ? `/admin/blogs?${query}` : "/admin/blogs";
+      const res = await apiClient.get<BlogArticle[]>(endpoint);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend admin blog articles fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getAll(
+    statusOrParams?: BlogStatus | string | { status?: BlogStatus | string; categoryId?: string; category?: string; search?: string; limit?: number; page?: number },
+    categoryId?: string,
+    search?: string,
+    limit?: number,
+    page?: number
+  ): Promise<PaginatedList<BlogArticle>> {
+    return this.getPublicAll(statusOrParams, categoryId, search, limit, page);
   },
 
   async getById(idOrSlug: string): Promise<BlogArticle | null> {

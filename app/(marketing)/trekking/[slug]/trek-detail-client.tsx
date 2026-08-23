@@ -16,7 +16,7 @@ import {
   FaqService,
   SettingService,
 } from "@/lib/services/admin-service";
-import { FaqItem, FaqStatus, BookingPackageType, TripDepartureDate } from "@/lib/admin-data";
+import { FaqItem, FaqStatus, BookingPackageType, TripDepartureDate, PackageStatus } from "@/lib/admin-data";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -93,7 +93,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
 
           if (allTreks && allTreks.length > 0) {
             const filtered = allTreks.filter(
-              (t) => t.slug !== slug && t.status === "active"
+              (t) => t.slug !== slug && t.status === PackageStatus.ACTIVE
             );
             setRelatedTreks(filtered.slice(0, 3) as unknown as TrekItem[]);
           } else {

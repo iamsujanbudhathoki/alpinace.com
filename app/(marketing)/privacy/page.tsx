@@ -1,11 +1,16 @@
-import Metadata from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck, ArrowLeft, Lock, FileText, Eye } from "lucide-react";
+import { generateStaticMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Privacy Policy | Alpine Ace",
-  description: "Privacy policy and data protection guidelines for Alpine Ace Treks & Expeditions.",
-};
+export function generateMetadata(): Metadata {
+  return generateStaticMetadata({
+    title: "Privacy Policy | AlpineAce Treks & Expeditions",
+    description: "Privacy policy and data protection guidelines for AlpineAce Treks & Expeditions in Nepal.",
+    path: "/privacy",
+    keywords: ["Privacy Policy", "AlpineAce Data Protection", "Nepal trekking privacy"],
+  });
+}
 
 export default function PrivacyPage() {
   return (
@@ -18,7 +23,7 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
           <p className="text-slate-300 text-sm max-w-xl mx-auto font-light leading-relaxed">
-            How Alpine Ace Treks &amp; Expeditions collects, uses, and safeguards your personal data during trip planning and high-altitude operations.
+            How AlpineAce Treks &amp; Expeditions collects, uses, and safeguards your personal data during trip planning and high-altitude operations.
           </p>
         </div>
       </section>
@@ -45,7 +50,7 @@ export default function PrivacyPage() {
               1. Our Commitment to Your Privacy
             </h2>
             <p>
-              Alpine Ace Treks &amp; Expeditions (&ldquo;Alpine Ace&rdquo;, &ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;) respects your privacy and is dedicated to protecting the personal information you share with us. This Privacy Policy details how we gather, utilize, disclose, and guard your personal details when you access our website, make inquiries, or book high-altitude treks, cultural tours, and peak climbing expeditions in Nepal.
+              AlpineAce Treks &amp; Expeditions (&ldquo;AlpineAce&rdquo;, &ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;) respects your privacy and is dedicated to protecting the personal information you share with us. This Privacy Policy details how we gather, utilize, disclose, and guard your personal details when you access our website, make inquiries, or book high-altitude treks, cultural tours, and peak climbing expeditions in Nepal.
             </p>
           </section>
 
@@ -123,7 +128,7 @@ export default function PrivacyPage() {
           <div className="pt-6 border-t border-stone-100 space-y-2 bg-stone-50 p-6 rounded-2xl">
             <h3 className="font-heading text-base font-bold text-zinc-900">Contact Concierge Legal Desk</h3>
             <p className="text-xs text-zinc-600">
-              Alpine Ace Treks &amp; Expeditions Pvt. Ltd.<br />
+              AlpineAce Treks &amp; Expeditions Pvt. Ltd.<br />
               Tridevi Marg, Thamel, Kathmandu 44600, Nepal<br />
               Email: <a href="mailto:concierge@alpineacetreks.com" className="text-amber-800 font-semibold underline">concierge@alpineacetreks.com</a><br />
               Phone: +977 1 4410988

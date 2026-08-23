@@ -153,7 +153,10 @@ export default function AdminBookingsPage() {
       if (isEditing && activeBooking) {
         res = await BookingService.update(activeBooking.id, savedBooking as any);
       } else {
-        res = await BookingService.create(savedBooking as any);
+        res = await BookingService.create({
+          ...savedBooking,
+          cfTurnstileToken: 'ADMIN_BYPASS',
+        } as any);
       }
       if (res.success) {
         toast.success(res.message || "Booking saved successfully");

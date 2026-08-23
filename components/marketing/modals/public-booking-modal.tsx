@@ -20,6 +20,7 @@ import {
   X
 } from "lucide-react";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
+import { TurnstileWidget } from "@/components/ui/turnstile-widget";
 import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -77,6 +78,7 @@ export function PublicBookingModal({
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   // 1. Prevent background page scrolling when modal is open
   useEffect(() => {
@@ -157,7 +159,10 @@ export function PublicBookingModal({
     return Math.round(perPerson * travelers);
   }, [travelers, baseCostPerPerson]);
 
-  const depositUSD = Math.round(totalPriceUSD * 0.2);
+  const depositUSD = useMemo(() => {
+    return Math.round(totalPriceUSD * 0.25);
+  }, [totalPriceUSD]);
+
   const todayStr = new Date().toISOString().split("T")[0];
 
   const fieldErrors: FieldErrors = useMemo(() => {
@@ -192,6 +197,7 @@ export function PublicBookingModal({
     setErrorMessage(null);
     setTouched({});
     setIsSubmitting(false);
+    setTurnstileToken("");
     onClose();
   }, [onClose]);
 
@@ -239,9 +245,14 @@ export function PublicBookingModal({
 
     if (!isFormValid) return;
 
+    if (!turnstileToken) {
+      setErrorMessage("Please complete the Turnstile CAPTCHA verification.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const payload: BookingFormValues = {
+      const payload: BookingFormValues & { cfTurnstileToken?: string } = {
         guestName: guestName.trim(),
         guestEmail: guestEmail.trim(),
         guestPhone: guestPhone.trim(),
@@ -256,6 +267,7 @@ export function PublicBookingModal({
         bookingStatus: BookingStatus.IN_REVIEW,
         permitStatus: BookingPermitStatus.PROCESSING,
         specialRequests: specialRequests.trim(),
+        cfTurnstileToken: turnstileToken,
       };
 
       const res = await BookingService.create(payload);
@@ -651,9 +663,15 @@ export function PublicBookingModal({
                 </div>
               </div>
 
+              <TurnstileWidget
+                onVerify={(t) => setTurnstileToken(t)}
+                onExpire={() => setTurnstileToken('')}
+                onError={() => setTurnstileToken('')}
+              />
+
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !turnstileToken}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-600 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-800"
               >
                 {isSubmitting ? (

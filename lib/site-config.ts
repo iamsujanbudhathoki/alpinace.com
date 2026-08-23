@@ -20,15 +20,34 @@ export const SITE_SUPPORT_EMAIL = `support@${ENV_SITE_DOMAIN}` as const;
 export const siteConfig = {
   name: SITE_SHORT_NAME,
   fullName: SITE_NAME,
+  alternateNames: [
+    "AlpineAce",
+    "AlpineAce Treks",
+    "Alpine Ace",
+    "AlpineAce Expeditions",
+    "AlpineAce Treks & Expeditions",
+    "alpineacetreks.com",
+  ],
   domain: SITE_DOMAIN,
   url: SITE_URL,
   email: SITE_EMAIL,
   supportEmail: SITE_SUPPORT_EMAIL,
+  telephone: "+977 1 4700543",
+  address: {
+    streetAddress: "Tridevi Marg, Thamel",
+    addressLocality: "Kathmandu",
+    addressRegion: "Bagmati",
+    postalCode: "44600",
+    addressCountry: "NP",
+  },
   title: `${SITE_SHORT_NAME} | Nepal Trekking, Historical Tours & Peak Expeditions`,
   tagline: SITE_TAGLINE,
   description:
     "Experience Nepal's spectacular trekking routes, historical tours, and elite peak expeditions under the safe guidance of multi-summit Sherpas, combined with luxury mountain lodges.",
   keywords: [
+    "AlpineAce",
+    "AlpineAce Treks",
+    "Alpine Ace",
     "Nepal trekking",
     "peak expeditions",
     "Sherpa guides",
@@ -37,6 +56,8 @@ export const siteConfig = {
     "Everest Base Camp trek",
     "Annapurna circuit",
   ],
+  llmsTxtUrl: `${SITE_URL}/llms.txt`,
+  llmsFullTxtUrl: `${SITE_URL}/llms-full.txt`,
 } as const;
 
 import { CategoryType } from "@/lib/admin-data";

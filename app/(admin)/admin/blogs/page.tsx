@@ -64,7 +64,7 @@ export default function AdminBlogsPage() {
   const loadArticles = async () => {
     setLoading(true);
     try {
-      const data = await BlogService.getAll({
+      const data = await BlogService.getAdminAll({
         search: debouncedSearch,
         page,
         limit,

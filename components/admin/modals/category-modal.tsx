@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { CategoryItem, CategoryType, CategoryStatus } from "@/lib/admin-data";
 import { categorySchema, CategoryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
+import { AdminSearchableSelect } from "@/components/admin/forms/admin-searchable-select";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
@@ -267,9 +268,13 @@ export function CategoryFormModal({
             </div>
 
             <div className="col-span-2 sm:col-span-1">
-              <AdminSelectField
+              <AdminSearchableSelect
                 label="Parent Category (Optional Subcategory)"
+                value={watch("parentId") || ""}
+                onChange={(val) => setValue("parentId", val, { shouldValidate: true })}
                 error={errors.parentId?.message}
+                placeholder="-- None (Top-Level Category) --"
+                searchPlaceholder="Search parent category..."
                 options={[
                   { label: "-- None (Top-Level Category) --", value: "" },
                   ...potentialParents.map((parent) => ({
@@ -277,7 +282,6 @@ export function CategoryFormModal({
                     value: parent.id,
                   })),
                 ]}
-                {...register("parentId")}
               />
             </div>
 

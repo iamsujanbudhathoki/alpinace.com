@@ -222,25 +222,7 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Tag className="w-4 h-4" /> Taxonomy System
-          </div>
-          <h1 className="text-xl md:text-2xl font-black">Categories &amp; Subcategories</h1>
-          <p className="text-slate-400 text-xs mt-1">
-            Manage top-level regions, subcategory hierarchies, and module taxonomy across the website.
-          </p>
-        </div>
-
-        <Button
-          onClick={handleCreateNew}
-          className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs cursor-pointer shadow-sm transition-all shrink-0 self-start md:self-auto"
-        >
-          <Plus className="w-4 h-4 mr-1.5" /> Add New Category
-        </Button>
-      </div>
+    
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">

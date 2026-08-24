@@ -5,6 +5,7 @@ import {
   AdminSelectField,
   AdminTextareaField,
 } from "@/components/admin/forms/admin-form-fields";
+import { AdminSearchableSelect } from "@/components/admin/forms/admin-searchable-select";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import {
   TripFaqItem,
@@ -451,12 +452,15 @@ export function TourFormModal({
                 </div>
 
                 <div className="sm:col-span-1">
-                  <AdminSelectField
+                  <AdminSearchableSelect
                     label="Category"
                     required
+                    value={watch("categoryId") || ""}
+                    onChange={(val) => setValue("categoryId", val, { shouldValidate: true })}
                     error={errors.categoryId?.message}
+                    placeholder="Select category..."
+                    searchPlaceholder="Search categories..."
                     options={tourCategories}
-                    {...register("categoryId")}
                   />
                 </div>
 

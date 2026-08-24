@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Loader2, UploadCloud, Trash2, Image as ImageIcon } from "lucide-react";
+import { Edit, Loader2, UploadCloud, Trash2, Image as ImageIcon, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
 import { CategoryItem, CategoryType, CategoryStatus } from "@/lib/admin-data";
 import { categorySchema, CategoryFormValues } from "@/lib/admin-schemas";
@@ -13,6 +13,7 @@ import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import { MediaService } from "@/lib/services/admin-service";
+import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface CategoryFormModalProps {
   isOpen: boolean;
@@ -313,13 +314,32 @@ export function CategoryFormModal({
               <label className="text-xs font-bold text-slate-800 block">Category Image / Banner (Optional)</label>
               {currentImage ? (
                 <div className="rounded-xl border border-slate-200 bg-white p-3 flex items-center justify-between gap-3 shadow-2xs">
-                  <div className="flex items-center gap-3">
-                    <img src={currentImage} alt="Category image" className="w-16 h-12 object-cover rounded-lg border border-slate-200 bg-slate-900" />
-                    <span className="text-xs font-semibold text-slate-700 truncate max-w-[200px]">
-                      {currentImage.split("/").pop() || "category-image.jpg"}
-                    </span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      onClick={(e) => openSingleImage(currentImage, watch("name") || "Category Image", e.currentTarget)}
+                      className="relative w-16 h-12 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-950 group cursor-pointer shadow-xs"
+                      title="Click to view full image in Lightbox"
+                    >
+                      <img src={currentImage} alt="Category image" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Maximize2 className="w-3.5 h-3.5 text-white drop-shadow-xs" />
+                      </div>
+                    </div>
+                    <div className="min-w-0 space-y-0.5">
+                      <span className="text-xs font-semibold text-slate-700 truncate block max-w-[180px] sm:max-w-[220px]">
+                        {currentImage.split("/").pop() || "category-image.jpg"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => openSingleImage(currentImage, watch("name") || "Category Image", e.currentTarget)}
+                        className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Maximize2 className="w-3 h-3" />
+                        View Full Image
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <label className="cursor-pointer">
                       <span className="inline-flex items-center gap-1.5 h-8 px-2.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
                         {isUploadingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" /> : <UploadCloud className="w-3.5 h-3.5 text-slate-500" />}
@@ -352,7 +372,17 @@ export function CategoryFormModal({
           {initialData?.image && (
             <div className="space-y-1">
               <span className="font-extrabold text-slate-950 block">Category Image:</span>
-              <img src={initialData.image} alt={initialData.name} className="w-full h-40 object-cover rounded-xl border border-slate-200" />
+              <div
+                onClick={(e) => openSingleImage(initialData.image!, initialData.name, e.currentTarget)}
+                className="relative w-full h-44 rounded-xl overflow-hidden border border-slate-200 bg-slate-950 group cursor-pointer shadow-xs"
+                title="Click to view full image in Lightbox"
+              >
+                <img src={initialData.image} alt={initialData.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-white text-xs font-bold">
+                  <Maximize2 className="w-4 h-4" />
+                  <span>View Fullscreen Lightbox</span>
+                </div>
+              </div>
             </div>
           )}
 

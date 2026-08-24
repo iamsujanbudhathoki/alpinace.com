@@ -24,7 +24,7 @@ export const siteConfig = {
     "AlpineAce",
     "AlpineAce Treks",
     "Alpine Ace",
-    "AlpineAce Expeditions",
+    "AlpineAce",
     "AlpineAce Treks & Expeditions",
     "alpineacetreks.com",
   ],

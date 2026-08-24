@@ -172,7 +172,6 @@ export default async function Home() {
             description: "14-day guided trek to Everest Base Camp and Kala Patthar under safe Sherpa guidance.",
             url: `${siteConfig.url}/trekking/everest-base-camp-trek`,
           },
-          priceCurrency: "USD",
           availability: "https://schema.org/InStock",
         },
         {
@@ -183,7 +182,6 @@ export default async function Home() {
             description: "16-day iconic high-pass circuit crossing Thorong La Pass.",
             url: `${siteConfig.url}/trekking/annapurna-circuit-trek`,
           },
-          priceCurrency: "USD",
           availability: "https://schema.org/InStock",
         },
         {
@@ -194,7 +192,6 @@ export default async function Home() {
             description: "19-day technical peak climbing expedition in Khumbu.",
             url: `${siteConfig.url}/expeditions/island-peak-expedition`,
           },
-          priceCurrency: "USD",
           availability: "https://schema.org/InStock",
         },
       ],

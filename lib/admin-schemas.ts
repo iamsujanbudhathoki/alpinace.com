@@ -301,6 +301,9 @@ export const categorySchema = z.object({
   type: z.nativeEnum(CategoryType),
   description: z.string().min(5, "Description must be at least 5 characters"),
   status: z.nativeEnum(CategoryStatus).default(CategoryStatus.ACTIVE),
+  image: z.string().optional(),
+  mediaId: z.string().optional(),
+  parentId: z.string().optional(),
 });
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;

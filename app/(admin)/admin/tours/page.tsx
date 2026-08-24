@@ -274,10 +274,7 @@ export default function AdminToursPage() {
               <AdminTableLoading colSpan={8} rows={limit > 10 ? 10 : limit} />
             ) : tours.length > 0 ? (
               tours.map((tur, idx) => {
-                const currentCatId =
-                  tur.categoryId ||
-                  categories.find((c) => c.name.toLowerCase() === (tur.category || "").toLowerCase())?.id ||
-                  "";
+                const currentCatId = tur.categoryId;
                 const serialNumber = (page - 1) * limit + idx + 1;
 
                 return (

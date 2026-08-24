@@ -1,6 +1,6 @@
-import React from 'react';
 import type { Metadata } from 'next';
 import { generateStaticMetadata } from '@/lib/seo';
+import { AssociatesSection } from '@/components/marketing/associates-section';
 
 export function generateMetadata(): Metadata {
   return generateStaticMetadata({
@@ -169,6 +169,9 @@ export default function AboutView() {
           </div>
         </div>
       </section>
+
+      {/* Official Partners & Affiliations */}
+      <AssociatesSection />
     </div>
   );
 }

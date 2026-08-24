@@ -456,9 +456,11 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             )}
 
             {/* SECTION: INCLUSIONS & EXCLUSIONS */}
-            {(costIncludes.length > 0 || costExclusions.length > 0) && (
+            {(trek.inclusionsText || trek.exclusionsText || costIncludes.length > 0 || costExclusions.length > 0) && (
               <section id="cost" className="scroll-mt-24">
                 <PackageInclusions
+                  inclusionsText={trek.inclusionsText}
+                  exclusionsText={trek.exclusionsText}
                   inclusions={costIncludes}
                   exclusions={costExclusions}
                 />

@@ -40,6 +40,7 @@ export interface TrekItem {
   slug: string;
   category: string;
   categoryId?: string;
+  categorySlug?: string;
   rating: number;
   reviewsCount: number;
   image: string;

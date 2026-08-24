@@ -36,6 +36,8 @@ export default async function ToursPage() {
     title: p.title,
     slug: p.slug,
     category: p.category,
+    categoryId: p.categoryId,
+    categorySlug: p.categorySlug,
     rating: Number(p.rating),
     reviewsCount: Number(p.reviewsCount),
     image: p.image || "",

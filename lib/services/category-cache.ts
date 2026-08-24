@@ -8,6 +8,37 @@ interface CacheEntry {
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes fresh cache
 
+export function buildCategoryTree(items: CategoryItem[]): CategoryItem[] {
+  if (!items || items.length === 0) return [];
+
+  // Check if items already come with populated children from backend
+  const hasPopulatedChildren = items.some((i) => i.children && i.children.length > 0);
+  if (hasPopulatedChildren) {
+    return items.filter((i) => !i.parentId);
+  }
+
+  const parents = items.filter((i) => !i.parentId);
+  // If there are no parentId fields set at all, treat all as top-level
+  const hasAnyParentId = items.some((i) => Boolean(i.parentId));
+  if (!hasAnyParentId) {
+    return items;
+  }
+
+  const childrenMap = new Map<string, CategoryItem[]>();
+  items.forEach((i) => {
+    if (i.parentId) {
+      const list = childrenMap.get(i.parentId) || [];
+      list.push(i);
+      childrenMap.set(i.parentId, list);
+    }
+  });
+
+  return parents.map((p) => ({
+    ...p,
+    children: childrenMap.get(p.id) || p.children || [],
+  }));
+}
+
 class CategoryCacheService {
   private cache = new Map<string, CacheEntry>();
   private inFlight = new Map<string, Promise<CategoryItem[]>>();
@@ -50,11 +81,12 @@ class CategoryCacheService {
         const activeItems = (data || []).filter(
           (c) => c.status === CategoryStatus.ACTIVE
         );
+        const structuredTree = buildCategoryTree(activeItems);
         this.cache.set(type, {
-          data: activeItems,
+          data: structuredTree,
           timestamp: Date.now(),
         });
-        return activeItems;
+        return structuredTree;
       } catch (err) {
         console.warn(`[CategoryCache] Failed to prefetch categories for "${type}":`, err);
         return [];

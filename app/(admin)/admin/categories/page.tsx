@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon, GitMerge } from "lucide-react";
 import { toast } from "sonner";
 import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
+import { categoryCache } from "@/lib/services/category-cache";
 import { CategoryFormModal, DeleteCategoryModal } from "@/components/admin/modals/category-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { AdminInlineSelect } from "@/components/admin/ui/admin-inline-select";
@@ -45,7 +46,7 @@ export default function AdminCategoriesPage() {
   const [activeCategory, setActiveCategory] = useState<CategoryItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Load all categories once for stats summary cards
+  // Load all categories once for stats summary cards & parent dropdown list
   const loadStats = async () => {
     try {
       const data = await CategoryService.getAll();
@@ -103,12 +104,6 @@ export default function AdminCategoriesPage() {
 
   const handleCreateNew = () => {
     setActiveCategory(null);
-    setIsEditing(true);
-    setIsFormModalOpen(true);
-  };
-
-  const handleView = (category: CategoryItem) => {
-    setActiveCategory(category);
     setIsEditing(false);
     setIsFormModalOpen(true);
   };
@@ -116,6 +111,12 @@ export default function AdminCategoriesPage() {
   const handleEdit = (category: CategoryItem) => {
     setActiveCategory(category);
     setIsEditing(true);
+    setIsFormModalOpen(true);
+  };
+
+  const handleView = (category: CategoryItem) => {
+    setActiveCategory(category);
+    setIsEditing(false);
     setIsFormModalOpen(true);
   };
 
@@ -130,6 +131,7 @@ export default function AdminCategoriesPage() {
       const res = await CategoryService.delete(activeCategory.id);
       if (res.success) {
         toast.success(res.message || "Category deleted successfully");
+        categoryCache.clear();
         await Promise.all([loadCategories(), loadStats()]);
       } else {
         toast.error(res.message || "Failed to delete category");
@@ -151,6 +153,7 @@ export default function AdminCategoriesPage() {
       }
       if (res.success) {
         toast.success(res.message || "Category saved successfully");
+        categoryCache.clear();
         setIsFormModalOpen(false);
         await Promise.all([loadCategories(), loadStats()]);
         return true;
@@ -169,6 +172,7 @@ export default function AdminCategoriesPage() {
       const res = await CategoryService.update(cat.id, { type: newType as CategoryType });
       if (res.success) {
         toast.success(`Category type updated to ${newType}`);
+        categoryCache.clear();
         await Promise.all([loadCategories(), loadStats()]);
         return true;
       } else {
@@ -186,6 +190,7 @@ export default function AdminCategoriesPage() {
       const res = await CategoryService.update(cat.id, { status: newStatus as CategoryStatus });
       if (res.success) {
         toast.success(`Category status updated to ${newStatus}`);
+        categoryCache.clear();
         await Promise.all([loadCategories(), loadStats()]);
         return true;
       } else {
@@ -201,40 +206,50 @@ export default function AdminCategoriesPage() {
   const getTypeIcon = (type: CategoryType) => {
     switch (type) {
       case CategoryType.TREKKING:
-        return <Mountain className="w-3.5 h-3.5 text-amber-500" />;
-      case CategoryType.TOURS:
-        return <Compass className="w-3.5 h-3.5 text-blue-500" />;
+        return <Mountain className="w-3.5 h-3.5 text-amber-600" />;
       case CategoryType.EXPEDITIONS:
-        return <MapPin className="w-3.5 h-3.5 text-red-500" />;
+        return <MapPin className="w-3.5 h-3.5 text-red-600" />;
+      case CategoryType.TOURS:
+        return <Compass className="w-3.5 h-3.5 text-blue-600" />;
       case CategoryType.BLOGS:
-        return <BookOpen className="w-3.5 h-3.5 text-purple-500" />;
+        return <BookOpen className="w-3.5 h-3.5 text-purple-600" />;
       case CategoryType.MEDIA:
-        return <ImageIcon className="w-3.5 h-3.5 text-emerald-500" />;
+        return <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />;
       default:
-        return <Tag className="w-3.5 h-3.5 text-slate-500" />;
+        return <Tag className="w-3.5 h-3.5 text-slate-600" />;
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl shadow-sm">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Category Taxonomy</h1>
-          <p className="text-xs text-slate-600 font-medium mt-0.5">
-            Manage hierarchical classifications and trip styles across packages, media, and blogs.
+          <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
+            <Tag className="w-4 h-4" /> Taxonomy System
+          </div>
+          <h1 className="text-xl md:text-2xl font-black">Categories &amp; Subcategories</h1>
+          <p className="text-slate-400 text-xs mt-1">
+            Manage top-level regions, subcategory hierarchies, and module taxonomy across the website.
           </p>
         </div>
+
+        <Button
+          onClick={handleCreateNew}
+          className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs cursor-pointer shadow-sm transition-all shrink-0 self-start md:self-auto"
+        >
+          <Plus className="w-4 h-4 mr-1.5" /> Add New Category
+        </Button>
       </div>
 
-      {/* Top Stat Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      {/* Summary KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold">
             <Mountain className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">Trek Categories</div>
+            <div className="text-sm font-bold text-slate-900">Trekking Categories</div>
             <div className="text-lg font-bold text-slate-900">
               {allCategoriesForStats.filter((c) => c.type === CategoryType.TREKKING).length}
             </div>
@@ -246,7 +261,7 @@ export default function AdminCategoriesPage() {
             <MapPin className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">Expeditions</div>
+            <div className="text-sm font-bold text-slate-900">Expedition Categories</div>
             <div className="text-lg font-bold text-slate-900">
               {allCategoriesForStats.filter((c) => c.type === CategoryType.EXPEDITIONS).length}
             </div>
@@ -339,9 +354,9 @@ export default function AdminCategoriesPage() {
             <tr>
               <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead>Category Name</AdminTableHead>
+              <AdminTableHead>Level / Hierarchy</AdminTableHead>
               <AdminTableHead>Target Domain</AdminTableHead>
               <AdminTableHead>Slug</AdminTableHead>
-              <AdminTableHead>Assigned Items</AdminTableHead>
               <AdminTableHead>Status</AdminTableHead>
               <AdminTableHead align="right">Actions</AdminTableHead>
             </tr>
@@ -352,6 +367,10 @@ export default function AdminCategoriesPage() {
             ) : categories.length > 0 ? (
               categories.map((cat, idx) => {
                 const serialNumber = (page - 1) * limit + idx + 1;
+                const parentCat = cat.parentId
+                  ? allCategoriesForStats.find((c) => c.id === cat.parentId)
+                  : null;
+
                 return (
                   <AdminTableRow key={cat.id}>
                     <AdminTableCell className="text-center font-semibold text-slate-500">
@@ -362,6 +381,18 @@ export default function AdminCategoriesPage() {
                         {cat.name}
                       </div>
                       <div className="text-xs text-slate-600 line-clamp-1 max-w-md font-normal">{cat.description}</div>
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      {parentCat ? (
+                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-50 text-amber-900 text-[11px] font-semibold border border-amber-200">
+                          <GitMerge className="w-3 h-3 text-amber-700 shrink-0" />
+                          <span>Under: {parentCat.name}</span>
+                        </div>
+                      ) : (
+                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 text-slate-800 text-[11px] font-bold border border-slate-200">
+                          <span>Top-Level Region</span>
+                        </div>
+                      )}
                     </AdminTableCell>
                     <AdminTableCell>
                       <AdminInlineSelect
@@ -380,7 +411,6 @@ export default function AdminCategoriesPage() {
                       />
                     </AdminTableCell>
                     <AdminTableCell className="text-slate-600 text-xs font-normal">/{cat.slug}</AdminTableCell>
-                    <AdminTableCell className="font-medium text-slate-800">{cat.itemCount} Items</AdminTableCell>
                     <AdminTableCell>
                       <AdminInlineSelect
                         value={cat.status}
@@ -444,6 +474,7 @@ export default function AdminCategoriesPage() {
         onSave={handleSaveCategory}
         initialData={activeCategory}
         isEditing={isEditing}
+        categoriesList={allCategoriesForStats}
       />
 
       {/* Delete Confirmation Modal */}

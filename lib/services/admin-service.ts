@@ -132,6 +132,9 @@ export const CategoryService = {
       type: data.type,
       description: String(data.description || "").trim(),
       status: data.status || CategoryStatus.ACTIVE,
+      image: data.image || null,
+      mediaId: data.mediaId || null,
+      parentId: data.parentId || null,
     };
     return apiClient.post<CategoryItem>("/categories", payload);
   },
@@ -143,6 +146,9 @@ export const CategoryService = {
     if (data.type !== undefined) payload.type = data.type;
     if (data.description !== undefined) payload.description = String(data.description).trim();
     if (data.status !== undefined) payload.status = data.status;
+    if (data.image !== undefined) payload.image = data.image || null;
+    if (data.mediaId !== undefined) payload.mediaId = data.mediaId || null;
+    if (data.parentId !== undefined) payload.parentId = data.parentId || null;
 
     return apiClient.put<CategoryItem>(`/categories/${id}`, payload);
   },
@@ -342,10 +348,10 @@ function cleanPackagePayload(data: any) {
   if (Array.isArray(rest.galleryImages)) payload.galleryImages = rest.galleryImages;
   if (Array.isArray(rest.galleryMediaIds)) payload.galleryMediaIds = rest.galleryMediaIds.filter(Boolean);
 
-  if (rest.mapImage !== undefined) payload.mapImage = rest.mapImage;
-  if (rest.mapMediaId !== undefined) payload.mapMediaId = rest.mapMediaId;
+  if (rest.mapImage !== undefined) payload.mapImage = rest.mapImage || null;
+  if (rest.mapMediaId !== undefined) payload.mapMediaId = rest.mapMediaId || null;
 
-  if (rest.coverMediaId !== undefined) payload.coverMediaId = rest.coverMediaId;
+  if (rest.coverMediaId !== undefined) payload.coverMediaId = rest.coverMediaId || null;
 
   if (Array.isArray(rest.packageFiles)) payload.packageFiles = rest.packageFiles;
 

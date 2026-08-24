@@ -279,10 +279,7 @@ export default function AdminTreksPage() {
               <AdminTableLoading colSpan={10} rows={limit > 10 ? 10 : limit} />
             ) : treks.length > 0 ? (
               treks.map((trk, idx) => {
-                const currentCatId =
-                  trk.categoryId ||
-                  categories.find((c) => c.name.toLowerCase() === (trk.category || "").toLowerCase())?.id ||
-                  "";
+                const currentCatId = trk.categoryId;
                 const serialNumber = (page - 1) * limit + idx + 1;
 
                 return (

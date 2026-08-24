@@ -10,6 +10,7 @@ import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-gr
 import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import { BookingPackageType, PackageStatus } from "@/lib/admin-data";
+import { SearchableCategorySelect } from "@/components/marketing/searchable-category-select";
 
 interface ExpeditionsCatalogClientProps {
   initialExpeditions: ExpeditionItem[];
@@ -99,6 +100,8 @@ export function ExpeditionsCatalogClient({
           title: p.title,
           slug: p.slug,
           category: p.category,
+          categoryId: p.categoryId,
+          categorySlug: p.categorySlug,
           rating: Number(p.rating),
           reviewsCount: Number(p.reviewsCount),
           image: p.image || "",
@@ -160,12 +163,12 @@ export function ExpeditionsCatalogClient({
 
     if (selectedCategory !== "All") {
       const selected = selectedCategory.toLowerCase();
-      list = list.filter((e) => {
-        const itemSlug = (e as any).categorySlug ? String((e as any).categorySlug).toLowerCase() : "";
-        const itemCategory = e.category ? String(e.category).toLowerCase() : "";
-        const itemCategoryId = (e as any).categoryId ? String((e as any).categoryId).toLowerCase() : "";
-        return itemSlug === selected || itemCategory === selected || itemCategoryId === selected;
-      });
+      list = list.filter(
+        (e) =>
+          (e.categoryId && e.categoryId.toLowerCase() === selected) ||
+          (e.category && e.category.toLowerCase() === selected) ||
+          (e.categorySlug && e.categorySlug.toLowerCase() === selected)
+      );
     }
 
     if (selectedGrade !== "All") {
@@ -226,9 +229,19 @@ export function ExpeditionsCatalogClient({
             placeholder="Search Island Peak, Mera Peak, Lobuche..."
             className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-400 transition-all"
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
         </div>
       </div>
+
+      {/* Category Filter */}
+      <SearchableCategorySelect
+        label="Expedition Category"
+        categories={filterOptions?.categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={(val) => setSelectedCategory(val)}
+        totalCount={expeditions.length}
+        loadingOptions={loadingOptions}
+        placeholder="Search expedition category..."
+      />
 
       {/* Climbing Difficulty Level */}
       <div className="space-y-1.5">

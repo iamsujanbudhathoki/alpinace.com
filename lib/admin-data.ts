@@ -200,6 +200,7 @@ export interface PackageItem {
   slug: string;
   category: string;
   categoryId?: string;
+  categorySlug?: string;
   region: PackageRegion;
   durationDays: number;
   maxAltitudeMeters: number;
@@ -315,6 +316,10 @@ export interface CategoryItem {
   description: string;
   itemCount: number;
   status: CategoryStatus;
+  image?: string | null;
+  mediaId?: string | null;
+  parentId?: string | null;
+  children?: CategoryItem[];
 }
 
 export interface AssociateItem {

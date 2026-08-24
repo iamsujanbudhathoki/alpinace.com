@@ -273,10 +273,7 @@ export default function AdminExpeditionsPage() {
               <AdminTableLoading colSpan={9} rows={limit > 10 ? 10 : limit} />
             ) : expeditions.length > 0 ? (
               expeditions.map((exp, idx) => {
-                const currentCatId =
-                  exp.categoryId ||
-                  categories.find((c) => c.name.toLowerCase() === (exp.category || "").toLowerCase())?.id ||
-                  "";
+                const currentCatId = exp.categoryId;
                 const serialNumber = (page - 1) * limit + idx + 1;
 
                 return (

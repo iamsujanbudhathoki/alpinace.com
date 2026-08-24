@@ -457,9 +457,11 @@ export function ExpeditionDetailClient({
             )}
 
             {/* SECTION: INCLUSIONS & EXCLUSIONS */}
-            {(costIncludes.length > 0 || costExclusions.length > 0) && (
+            {(expedition.inclusionsText || expedition.exclusionsText || costIncludes.length > 0 || costExclusions.length > 0) && (
               <section id="cost" className="scroll-mt-24">
                 <PackageInclusions
+                  inclusionsText={expedition.inclusionsText}
+                  exclusionsText={expedition.exclusionsText}
                   inclusions={costIncludes}
                   exclusions={costExclusions}
                 />

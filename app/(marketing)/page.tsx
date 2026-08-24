@@ -6,6 +6,7 @@ import { TestimonialsSection } from "@/components/marketing/sections/testimonial
 import { StatsBar } from "@/components/marketing/sections/stats-bar";
 import { FeaturedBlogs } from "@/components/marketing/sections/featured-blogs";
 import { FaqsSection } from "@/components/marketing/sections/faqs-section";
+import { AssociatesSection } from "@/components/marketing/associates-section";
 import { FinalCta } from "@/components/marketing/sections/final-cta";
 import { siteConfig } from "@/lib/site-config";
 import {
@@ -291,6 +292,9 @@ export default async function Home() {
 
       {/* 8. FAQs Accordion (H2 + H3 questions) */}
       <FaqsSection />
+
+      {/* 8.5 Official Partners & Affiliations */}
+      <AssociatesSection />
 
       {/* 9. Final Call To Action (H2) */}
       <FinalCta />

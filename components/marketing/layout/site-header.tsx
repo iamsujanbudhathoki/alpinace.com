@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone, ChevronDown, ChevronRight, ArrowRight, MessageCircle } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
 import { navLinks, NavLink } from "@/lib/site-config";
 import { useSettings } from "@/lib/settings-context";
 import { useDetailNav } from "@/lib/detail-nav-context";
@@ -24,9 +24,11 @@ export function SiteHeader() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [categoriesMap, setCategoriesMap] = useState<Record<string, CategoryItem[]>>({});
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
+  const [hoveredCategoryMap, setHoveredCategoryMap] = useState<Record<string, string>>({});
 
   // Mobile Accordion State
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
+  const [mobileCategoryExpanded, setMobileCategoryExpanded] = useState<Record<string, boolean>>({});
 
   // Timers for hover intent and graceful mouse leave
   const hoverIntentTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -232,8 +234,15 @@ export function SiteHeader() {
     }
   };
 
-  const getCategoryLink = (baseHref: string, cat: CategoryItem) => {
-    return `${baseHref}?category=${encodeURIComponent(cat.slug || cat.id)}`;
+  const handleMobileCategoryToggle = (catId: string) => {
+    setMobileCategoryExpanded((prev) => ({
+      ...prev,
+      [catId]: !prev[catId],
+    }));
+  };
+
+  const getCategoryLink = (baseHref: string, cat: { slug?: string; id?: string }) => {
+    return `${baseHref}?category=${encodeURIComponent(cat.slug || cat.id || "")}`;
   };
 
   const handleDetailTabClick = (key: string) => {
@@ -261,9 +270,8 @@ export function SiteHeader() {
         }`}
       >
         {showDetailNav && detailNav ? (
-          /* 1. CONTEXTUAL DETAIL TAB NAVIGATION (Cleanly replaces main navbar when scrolling details page) */
+          /* 1. CONTEXTUAL DETAIL TAB NAVIGATION (Replaces main navbar when scrolling details page) */
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:px-8 w-full animate-in fade-in duration-200">
-            {/* Contextual Tabs List */}
             <div
               ref={detailTabsContainerRef}
               className="flex-1 min-w-0 flex items-center overflow-x-auto scrollbar-none py-0.5 touch-pan-x"
@@ -290,7 +298,6 @@ export function SiteHeader() {
               </div>
             </div>
 
-            {/* Right Action (Price & Book Now CTA) */}
             <div className="shrink-0 flex items-center gap-3">
               {detailNav.priceUSD !== undefined && (
                 <div className="text-right hidden sm:block">
@@ -314,7 +321,7 @@ export function SiteHeader() {
             </div>
           </div>
         ) : (
-          /* 2. STANDARD WEBSITE NAVIGATION BAR (At top of page or on general pages) */
+          /* 2. STANDARD WEBSITE NAVIGATION BAR */
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 sm:gap-6 px-4 sm:px-6 md:px-10 animate-in fade-in duration-200">
             {/* Brand Logo */}
             <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
@@ -326,13 +333,8 @@ export function SiteHeader() {
                 priority
                 className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-lg border border-stone-200"
               />
-              <span className="flex flex-col leading-none">
-                <span className="font-heading text-sm sm:text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
-                  Alpine Ace
-                </span>
-                <span className="text-[10px] sm:text-xs font-medium text-zinc-500 mt-0.5 hidden xs:inline-block">
-                  Nepal Trekking &amp; Expeditions
-                </span>
+              <span className="font-heading text-sm sm:text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
+                {settings.siteName || "Alpine Ace"}
               </span>
             </Link>
 
@@ -381,92 +383,161 @@ export function SiteHeader() {
                       )}
                     </Link>
 
-                    {/* Desktop Dropdown Menu */}
+                    {/* Desktop Subcategories Mega-Menu */}
                     {hasDropdown && isDropdownOpen && (
                       <div
                         onMouseEnter={handleDropdownMouseEnter}
                         onMouseLeave={handleDropdownMouseLeave}
-                        className="absolute top-full left-0 pt-2 w-72 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
+                        className="absolute top-full left-0 pt-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
                       >
-                        <div className="bg-white rounded-xl border border-stone-200 shadow-lg shadow-stone-950/5 p-1.5 space-y-0.5">
-                          {/* Static Sub-Items (e.g. Resources: Blogs, Contacts) */}
+                        <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xl shadow-stone-950/10 p-2.5 w-[490px] overflow-hidden">
                           {link.items && link.items.length > 0 ? (
-                            <div className="space-y-0.5">
+                            /* Simple Sub-Items (e.g. Resources: Blog, Contact) */
+                            <div className="space-y-0.5 p-0.5">
                               {link.items.map((subItem) => (
                                 <Link
                                   key={subItem.href}
                                   href={subItem.href}
                                   onClick={() => setActiveDropdown(null)}
-                                  className="group/item flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-amber-50/50 transition-colors cursor-pointer"
+                                  className="group/item flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-stone-50 transition-colors cursor-pointer"
                                 >
                                   <div className="space-y-0.5 pr-2">
-                                    <div className="text-xs font-semibold text-stone-800 group-hover/item:text-amber-800 transition-colors">
+                                    <div className="text-xs font-semibold text-stone-900 group-hover/item:text-amber-800 transition-colors">
                                       {subItem.label}
                                     </div>
                                     {subItem.description && (
-                                      <p className="text-xs text-stone-600 line-clamp-1 leading-snug">
+                                      <p className="text-[11px] text-stone-500 line-clamp-1 font-normal">
                                         {subItem.description}
                                       </p>
                                     )}
                                   </div>
-
-                                  <ChevronRight className="w-3.5 h-3.5 text-stone-400 opacity-0 group-hover/item:opacity-100 group-hover/item:text-amber-700 -translate-x-1 group-hover/item:translate-x-0 transition-all duration-150 shrink-0" />
+                                  <ChevronRight className="w-3.5 h-3.5 text-stone-400 group-hover/item:text-amber-700 transition-transform group-hover/item:translate-x-0.5 shrink-0" />
                                 </Link>
                               ))}
                             </div>
                           ) : (
-                            /* Dynamic Categories (Trekking, Tours, Expeditions) */
-                            <>
+                            /* Subcategory Mega Menu */
+                            <div>
                               {isLoading ? (
-                                <div className="space-y-1 p-2">
-                                  {[1, 2, 3].map((n) => (
-                                    <div key={n} className="py-2 px-2 space-y-1.5 animate-pulse">
-                                      <div className="h-3 bg-stone-200/80 rounded w-2/3" />
-                                      <div className="h-2 bg-stone-100 rounded w-1/2" />
-                                    </div>
-                                  ))}
+                                <div className="space-y-2 p-3 animate-pulse">
+                                  <div className="h-9 bg-stone-100 rounded-xl" />
+                                  <div className="h-9 bg-stone-100 rounded-xl" />
                                 </div>
                               ) : categories.length === 0 ? (
-                                <div className="py-4 px-3 text-center text-xs text-stone-500 font-medium">
+                                <div className="py-5 px-4 text-center text-xs text-stone-500 font-medium">
                                   No categories available.
                                 </div>
                               ) : (
-                                <div className="space-y-0.5">
-                                  {categories.map((cat) => (
-                                    <Link
-                                      key={cat.id}
-                                      href={getCategoryLink(link.href, cat)}
-                                      onClick={() => setActiveDropdown(null)}
-                                      className="group/item flex items-center justify-between px-3 py-2 rounded-lg hover:bg-stone-50 transition-colors cursor-pointer"
-                                    >
-                                      <div className="space-y-0.5 pr-2">
-                                        <div className="text-xs font-semibold text-stone-800 group-hover/item:text-amber-800 transition-colors">
-                                          {cat.name}
-                                        </div>
-                                        {cat.description && (
-                                          <p className="text-xs text-stone-600 line-clamp-1 leading-snug">
-                                            {cat.description}
-                                          </p>
-                                        )}
+                                (() => {
+                                  const activeParentId =
+                                    hoveredCategoryMap[catType] || categories[0]?.id;
+                                  const selectedParent =
+                                    categories.find((c) => c.id === activeParentId) ||
+                                    categories[0];
+                                  const subcategories = selectedParent?.children || [];
+
+                                  return (
+                                    <div className="grid grid-cols-12 gap-0 divide-x divide-stone-100">
+                                      {/* Left Parent Categories (col-span-5) */}
+                                      <div className="col-span-5 pr-2 space-y-0.5">
+                                        {categories.map((cat) => {
+                                          const isHovered = cat.id === selectedParent.id;
+                                          return (
+                                            <div
+                                              key={cat.id}
+                                              onMouseEnter={() =>
+                                                setHoveredCategoryMap((prev) => ({
+                                                  ...prev,
+                                                  [catType]: cat.id,
+                                                }))
+                                              }
+                                              className={`group/cat px-2.5 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
+                                                isHovered
+                                                  ? "bg-amber-50 text-amber-900 font-semibold"
+                                                  : "hover:bg-stone-50 text-stone-700 font-medium"
+                                              }`}
+                                            >
+                                              <Link
+                                                href={getCategoryLink(link.href, cat)}
+                                                onClick={() => setActiveDropdown(null)}
+                                                className="block flex-1 min-w-0"
+                                              >
+                                                <div className="text-xs truncate">
+                                                  {cat.name}
+                                                </div>
+                                              </Link>
+                                              <ChevronRight
+                                                className={`w-3.5 h-3.5 shrink-0 transition-transform ${
+                                                  isHovered
+                                                    ? "text-amber-700 translate-x-0.5 opacity-100"
+                                                    : "text-stone-300 opacity-0 group-hover/cat:opacity-100"
+                                                }`}
+                                              />
+                                            </div>
+                                          );
+                                        })}
                                       </div>
 
-                                      <ChevronRight className="w-3.5 h-3.5 text-stone-400 opacity-0 group-hover/item:opacity-100 group-hover/item:text-amber-700 -translate-x-1 group-hover/item:translate-x-0 transition-all duration-150 shrink-0" />
-                                    </Link>
-                                  ))}
-                                </div>
-                              )}
+                                      {/* Right Subcategories (col-span-7) */}
+                                      <div className="col-span-7 pl-3 space-y-2 flex flex-col justify-between">
+                                        <div>
+                                          {subcategories.length > 0 ? (
+                                            <div className="space-y-0.5 max-h-[220px] overflow-y-auto pr-1">
+                                              {subcategories.map((subCat) => (
+                                                <Link
+                                                  key={subCat.id}
+                                                  href={getCategoryLink(link.href, subCat)}
+                                                  onClick={() => setActiveDropdown(null)}
+                                                  className="group/sub flex items-center justify-between p-2 rounded-lg hover:bg-amber-50/70 transition-colors"
+                                                >
+                                                  <div className="flex-1 min-w-0 pr-1">
+                                                    <div className="text-xs font-semibold text-stone-800 group-hover/sub:text-amber-900 transition-colors truncate">
+                                                      {subCat.name}
+                                                    </div>
+                                                    {subCat.description && (
+                                                      <p className="text-[10px] text-stone-500 line-clamp-1 font-normal">
+                                                        {subCat.description}
+                                                      </p>
+                                                    )}
+                                                  </div>
+                                                  <ChevronRight className="w-3 h-3 text-stone-400 group-hover/sub:text-amber-700 opacity-0 group-hover/sub:opacity-100 transition-all shrink-0" />
+                                                </Link>
+                                              ))}
+                                            </div>
+                                          ) : (
+                                            <div className="py-4 text-center bg-stone-50/70 rounded-xl p-3 space-y-2">
+                                              <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                                                {selectedParent.description}
+                                              </p>
+                                              <Link
+                                                href={getCategoryLink(link.href, selectedParent)}
+                                                onClick={() => setActiveDropdown(null)}
+                                                className="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 hover:text-amber-900"
+                                              >
+                                                <span>Explore {selectedParent.name}</span>
+                                                <ArrowRight className="w-3 h-3" />
+                                              </Link>
+                                            </div>
+                                          )}
+                                        </div>
 
-                              <div className="pt-1.5 border-t border-stone-100 mt-1">
-                                <Link
-                                  href={link.href}
-                                  onClick={() => setActiveDropdown(null)}
-                                  className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-stone-700 hover:text-amber-800 hover:bg-amber-50/60 transition-colors"
-                                >
-                                  <span>All {link.label}</span>
-                                  <ArrowRight className="w-3 h-3 text-amber-700" />
-                                </Link>
-                              </div>
-                            </>
+                                        {/* Bottom Action Bar */}
+                                        <div className="pt-2 border-t border-stone-100">
+                                          <Link
+                                            href={link.href}
+                                            onClick={() => setActiveDropdown(null)}
+                                            className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-stone-50 hover:bg-amber-50 text-xs font-semibold text-stone-700 hover:text-amber-900 transition-colors"
+                                          >
+                                            <span>All {link.label}</span>
+                                            <ArrowRight className="w-3.5 h-3.5 text-amber-700" />
+                                          </Link>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })()
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -522,7 +593,7 @@ export function SiteHeader() {
                 className="h-9 w-9 object-cover rounded-lg border border-slate-200"
               />
               <span className="font-heading text-base font-bold text-slate-900">
-                AlpineAce
+                {settings.siteName || "AlpineAce"}
               </span>
             </Link>
 
@@ -588,7 +659,7 @@ export function SiteHeader() {
                     </div>
 
                     {hasDropdown && isExpanded && (
-                      <div className="pl-4 pr-2 py-2 space-y-1 bg-stone-50/70 rounded-xl mt-1 mb-2 border border-stone-200/60 animate-in fade-in duration-150">
+                      <div className="pl-3 pr-2 py-2 space-y-1.5 bg-stone-50/70 rounded-xl mt-1 mb-2 border border-stone-200/60 animate-in fade-in duration-150">
                         {link.items && link.items.length > 0 ? (
                           <>
                             {link.items.map((subItem) => (
@@ -624,23 +695,54 @@ export function SiteHeader() {
                               </div>
                             ) : (
                               <>
-                                {categories.map((cat) => (
-                                  <Link
-                                    key={cat.id}
-                                    href={getCategoryLink(link.href, cat)}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center justify-between p-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-amber-800 hover:bg-amber-50 transition-colors"
-                                  >
-                                    <span className="font-semibold text-xs text-slate-800">
-                                      {cat.name}
-                                    </span>
-                                    {cat.itemCount > 0 && (
-                                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-white text-stone-600 border border-stone-200/80">
-                                        {cat.itemCount}
-                                      </span>
-                                    )}
-                                  </Link>
-                                ))}
+                                {categories.map((cat) => {
+                                  const subcategories = cat.children || [];
+                                  const isCategoryOpen = !!mobileCategoryExpanded[cat.id];
+
+                                  return (
+                                    <div key={cat.id} className="space-y-1">
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-stone-200/80">
+                                        <Link
+                                          href={getCategoryLink(link.href, cat)}
+                                          onClick={() => setMobileMenuOpen(false)}
+                                          className="font-semibold text-xs text-stone-900 flex-1 min-w-0 pr-2"
+                                        >
+                                          {cat.name}
+                                        </Link>
+
+                                        {subcategories.length > 0 && (
+                                          <button
+                                            type="button"
+                                            onClick={() => handleMobileCategoryToggle(cat.id)}
+                                            className="p-1 text-stone-500 hover:text-amber-800 cursor-pointer"
+                                          >
+                                            <ChevronDown
+                                              className={`w-3.5 h-3.5 transition-transform ${
+                                                isCategoryOpen ? "rotate-180 text-amber-700" : ""
+                                              }`}
+                                            />
+                                          </button>
+                                        )}
+                                      </div>
+
+                                      {/* Subcategories Accordion List */}
+                                      {subcategories.length > 0 && isCategoryOpen && (
+                                        <div className="pl-3 space-y-1 border-l-2 border-amber-300 ml-2 py-1">
+                                          {subcategories.map((subCat) => (
+                                            <Link
+                                              key={subCat.id}
+                                              href={getCategoryLink(link.href, subCat)}
+                                              onClick={() => setMobileMenuOpen(false)}
+                                              className="block p-1.5 text-xs font-semibold text-stone-700 hover:text-amber-800 hover:bg-amber-50 rounded"
+                                            >
+                                              {subCat.name}
+                                            </Link>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
 
                                 <div className="pt-1.5 mt-1 border-t border-stone-200/60">
                                   <Link
@@ -648,7 +750,7 @@ export function SiteHeader() {
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="flex items-center justify-between p-2 text-xs font-bold text-amber-800 hover:underline"
                                   >
-                                    <span>All {link.label}</span>
+                                    <span>View All {link.label}</span>
                                     <ArrowRight className="w-3.5 h-3.5" />
                                   </Link>
                                 </div>
@@ -663,59 +765,15 @@ export function SiteHeader() {
               })}
             </nav>
 
-            {/* Bottom Primary Action & Contact */}
-            <div className="pt-6 border-t border-slate-100 space-y-3 shrink-0">
+            <div className="pt-6 border-t border-slate-100 mt-6 space-y-4">
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm py-3 px-4 transition-colors shadow-xs"
+                className="flex items-center justify-center gap-2 rounded-xl bg-amber-800 text-white py-3 px-4 font-semibold text-sm shadow-md transition-colors"
               >
                 <span>Plan Your Trip</span>
-                <ArrowRight className="w-4 h-4 text-amber-400" />
+                <ArrowRight className="w-4 h-4" />
               </Link>
-
-              {settings.whatsappNumber && (
-                <a
-                  href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
-                    "Hello! I am interested in planning a trek or expedition with Alpine Ace."
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold text-sm py-2.5 px-4 transition-colors"
-                  aria-label="Chat on WhatsApp"
-                >
-                  <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-100" />
-                  <span>Chat on WhatsApp</span>
-                </a>
-              )}
-
-              {(settings.contactPhone || settings.emergencyPhone) && (
-                <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-500 font-medium pt-1">
-                  <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                  <div className="flex flex-wrap justify-center gap-1.5 text-xs font-bold text-slate-800">
-                    {settings.contactPhone && (
-                      <a
-                        href={`tel:${settings.contactPhone.replace(/\s+/g, "")}`}
-                        className="hover:text-amber-700 transition-colors"
-                      >
-                        {settings.contactPhone}
-                      </a>
-                    )}
-                    {settings.contactPhone && settings.emergencyPhone && (
-                      <span>/</span>
-                    )}
-                    {settings.emergencyPhone && (
-                      <a
-                        href={`tel:${settings.emergencyPhone.replace(/\s+/g, "")}`}
-                        className="hover:text-amber-700 transition-colors text-slate-600"
-                      >
-                        {settings.emergencyPhone}
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>

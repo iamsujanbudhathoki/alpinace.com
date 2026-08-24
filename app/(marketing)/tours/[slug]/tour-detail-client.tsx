@@ -416,9 +416,11 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             )}
 
             {/* SECTION: INCLUSIONS & EXCLUSIONS */}
-            {(costIncludes.length > 0 || costExclusions.length > 0) && (
+            {(tour.inclusionsText || tour.exclusionsText || costIncludes.length > 0 || costExclusions.length > 0) && (
               <section id="cost" className="scroll-mt-24">
                 <PackageInclusions
+                  inclusionsText={tour.inclusionsText}
+                  exclusionsText={tour.exclusionsText}
                   inclusions={costIncludes}
                   exclusions={costExclusions}
                 />

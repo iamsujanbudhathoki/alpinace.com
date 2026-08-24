@@ -291,10 +291,10 @@ export function TourFormModal({
         galleryImages: values.galleryImages || [],
         galleryMediaIds: values.galleryMediaIds || initialData?.galleryMediaIds || [],
         mapImage: values.mapImage,
-        mapMediaId: values.mapMediaId || initialData?.mapMediaId,
+        mapMediaId: values.mapMediaId || (initialData?.mapMediaId ? initialData.mapMediaId : undefined),
         packageFiles: values.packageFiles || [],
         image: values.image || "",
-        coverMediaId: values.coverMediaId || initialData?.coverMediaId,
+        coverMediaId: values.coverMediaId || (initialData?.coverMediaId ? initialData.coverMediaId : undefined),
         metaTitle: values.metaTitle,
         metaDescription: values.metaDescription,
         keywords: values.keywords,
@@ -693,30 +693,42 @@ export function TourFormModal({
 
             {/* 3. INCLUSIONS & EXCLUSIONS TAB */}
             {activeTab === "inclusions" && (
-              <div className="space-y-4 pr-1">
+              <div className="space-y-6 pr-1">
                 <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200/80 space-y-2">
                   <div className="flex items-center gap-2 text-emerald-900 font-bold">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>What&apos;s Included in Cost</span>
+                    <span>What&apos;s Included in Cost (Rich Text)</span>
                   </div>
-                  <textarea
-                    rows={4}
-                    placeholder="e.g. Private AC Vehicle Transportation, English Speaking Cultural Guide, Hotel Accommodation with Breakfast, All Monument Entry Fees"
-                    className="w-full text-xs bg-white border border-emerald-200 rounded-lg p-3 text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                    {...register("inclusionsText")}
+                  <Controller
+                    name="inclusionsText"
+                    control={control}
+                    render={({ field }) => (
+                      <AppRichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="e.g. Private AC Vehicle Transportation, English Speaking Cultural Guide, Hotel Accommodation with Breakfast..."
+                        height="200px"
+                      />
+                    )}
                   />
                 </div>
 
                 <div className="bg-rose-50/60 p-4 rounded-xl border border-rose-200/80 space-y-2">
                   <div className="flex items-center gap-2 text-rose-900 font-bold">
                     <XCircle className="w-4 h-4 text-rose-600" />
-                    <span>What&apos;s Excluded from Cost</span>
+                    <span>What&apos;s Excluded from Cost (Rich Text)</span>
                   </div>
-                  <textarea
-                    rows={4}
-                    placeholder="e.g. International Flights, Visa Fees, Personal Expenses, Lunch & Dinner Unless Specified, Discretionary Tips"
-                    className="w-full text-xs bg-white border border-rose-200 rounded-lg p-3 text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-rose-500/30"
-                    {...register("exclusionsText")}
+                  <Controller
+                    name="exclusionsText"
+                    control={control}
+                    render={({ field }) => (
+                      <AppRichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="e.g. International Flights, Visa Fees, Personal Expenses, Lunch & Dinner Unless Specified..."
+                        height="200px"
+                      />
+                    )}
                   />
                 </div>
               </div>

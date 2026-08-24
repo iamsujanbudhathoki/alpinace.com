@@ -12,7 +12,7 @@ export interface InlineSelectOption {
 }
 
 interface AdminInlineSelectProps {
-  value: string;
+  value?: string;
   options: InlineSelectOption[];
   onChange: (newValue: string) => Promise<boolean | void> | boolean | void;
   disabled?: boolean;
@@ -22,7 +22,7 @@ interface AdminInlineSelectProps {
   title?: string;
 }
 
-export function getStatusBadgeStyle(status: string): string {
+export function getStatusBadgeStyle(status?: string): string {
   const raw = status || "";
   const normalized = raw.toLowerCase().replace(/_/g, " ");
 
@@ -68,7 +68,7 @@ export function getStatusBadgeStyle(status: string): string {
   }
 }
 
-export function getCategoryBadgeStyle(category: string): string {
+export function getCategoryBadgeStyle(category?: string): string {
   const raw = (category || "").toLowerCase();
   if (raw.includes("trek")) {
     return "bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100/80 hover:border-amber-300";
@@ -95,8 +95,8 @@ export function AdminInlineSelect({
   const [isUpdating, setIsUpdating] = useState(false);
   const selectId = useId();
 
-  const selectedOption = options.find((opt) => opt.value === value);
-  const displayLabel = selectedOption ? selectedOption.label : value || placeholder;
+  const selectedOption = value ? options.find((opt) => opt.value === value) : undefined;
+  const displayLabel = selectedOption ? selectedOption.label : placeholder;
 
   const handleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value;
@@ -109,11 +109,11 @@ export function AdminInlineSelect({
       const success = await onChange(newValue);
       if (success === false) {
         // Revert back
-        e.target.value = value;
+        if (value !== undefined) e.target.value = value;
       }
     } catch (err) {
       console.error("Inline edit failed:", err);
-      e.target.value = value;
+      if (value !== undefined) e.target.value = value;
     } finally {
       setIsUpdating(false);
     }

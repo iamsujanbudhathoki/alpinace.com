@@ -10,6 +10,7 @@ import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-gr
 import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import { BookingPackageType, PackageStatus } from "@/lib/admin-data";
+import { SearchableCategorySelect } from "@/components/marketing/searchable-category-select";
 
 interface TrekkingCatalogClientProps {
   initialTreks: TrekItem[];
@@ -144,12 +145,12 @@ export function TrekkingCatalogClient({
 
     if (selectedCategory !== "All") {
       const selected = selectedCategory.toLowerCase();
-      list = list.filter((t) => {
-        const itemSlug = (t as any).categorySlug ? String((t as any).categorySlug).toLowerCase() : "";
-        const itemCategory = t.category ? String(t.category).toLowerCase() : "";
-        const itemCategoryId = t.categoryId ? String(t.categoryId).toLowerCase() : "";
-        return itemSlug === selected || itemCategory === selected || itemCategoryId === selected;
-      });
+      list = list.filter(
+        (t) =>
+          (t.categoryId && t.categoryId.toLowerCase() === selected) ||
+          (t.category && t.category.toLowerCase() === selected) ||
+          (t.categorySlug && t.categorySlug.toLowerCase() === selected)
+      );
     }
 
     if (selectedDifficulty !== "All") {
@@ -202,42 +203,16 @@ export function TrekkingCatalogClient({
         </div>
       </div>
 
-      {/* Category Filter */}
-      <div>
-        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-          Trek Category
-        </label>
-        <div className="space-y-0.5">
-          <button
-            onClick={() => setSelectedCategory("All")}
-            className={`w-full text-left text-xs px-2.5 py-1.5 transition-all flex items-center justify-between cursor-pointer ${
-              selectedCategory === "All"
-                ? "border-l-2 border-amber-700 text-amber-900 font-bold bg-amber-50/60 pl-3"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
-            }`}
-          >
-            <span>All Categories</span>
-            <span className="text-[10px] text-slate-400 font-normal">({treks.length})</span>
-          </button>
-          {loadingOptions ? (
-            <FilterSidebarSkeleton />
-          ) : (
-            filterOptions?.categories?.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => setSelectedCategory(cat.value)}
-                className={`w-full text-left text-xs px-2.5 py-1.5 transition-all flex items-center justify-between cursor-pointer ${
-                  selectedCategory === cat.value
-                    ? "border-l-2 border-amber-700 text-amber-900 font-bold bg-amber-50/60 pl-3"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
-                }`}
-              >
-                <span>{cat.label}</span>
-              </button>
-            ))
-          )}
-        </div>
-      </div>
+      {/* Searchable Category Dropdown */}
+      <SearchableCategorySelect
+        label="Trek Category"
+        categories={filterOptions?.categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={(val) => setSelectedCategory(val)}
+        totalCount={treks.length}
+        loadingOptions={loadingOptions}
+        placeholder="Search trek category..."
+      />
 
       {/* Difficulty Filter */}
       <div>

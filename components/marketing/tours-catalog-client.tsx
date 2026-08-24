@@ -10,6 +10,7 @@ import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-gr
 import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
 import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
 import { BookingPackageType, PackageStatus } from "@/lib/admin-data";
+import { SearchableCategorySelect } from "@/components/marketing/searchable-category-select";
 
 interface ToursCatalogClientProps {
   initialTours: TourItem[];
@@ -100,6 +101,8 @@ export function ToursCatalogClient({
           title: p.title,
           slug: p.slug,
           category: p.category,
+          categoryId: p.categoryId,
+          categorySlug: p.categorySlug,
           rating: Number(p.rating),
           reviewsCount: Number(p.reviewsCount),
           image: p.image || "",
@@ -160,12 +163,12 @@ export function ToursCatalogClient({
 
     if (selectedCategory !== "All") {
       const selected = selectedCategory.toLowerCase();
-      list = list.filter((t) => {
-        const itemSlug = (t as any).categorySlug ? String((t as any).categorySlug).toLowerCase() : "";
-        const itemCategory = t.category ? String(t.category).toLowerCase() : "";
-        const itemCategoryId = (t as any).categoryId ? String((t as any).categoryId).toLowerCase() : "";
-        return itemSlug === selected || itemCategory === selected || itemCategoryId === selected;
-      });
+      list = list.filter(
+        (t) =>
+          (t.categoryId && t.categoryId.toLowerCase() === selected) ||
+          (t.category && t.category.toLowerCase() === selected) ||
+          (t.categorySlug && t.categorySlug.toLowerCase() === selected)
+      );
     }
 
     if (selectedType !== "All") {
@@ -225,9 +228,19 @@ export function ToursCatalogClient({
             placeholder="Search cultural, safari, luxury..."
             className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-400 transition-all"
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
         </div>
       </div>
+
+      {/* Category Filter */}
+      <SearchableCategorySelect
+        label="Tour Category"
+        categories={filterOptions?.categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={(val) => setSelectedCategory(val)}
+        totalCount={tours.length}
+        loadingOptions={loadingOptions}
+        placeholder="Search tour category..."
+      />
 
       {/* Tour Style Filter */}
       <div className="space-y-1.5">
@@ -367,7 +380,6 @@ export function ToursCatalogClient({
                 </div>
               </div>
 
-              {filterControls}
 
               <div className="pt-4 border-t border-slate-100">
                 <button

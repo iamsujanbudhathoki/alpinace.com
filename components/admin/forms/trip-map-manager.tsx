@@ -57,7 +57,7 @@ export function TripMapManager({
   };
 
   const handleRemove = () => {
-    onChange("");
+    onChange("", "");
     toast.info("Trek map image removed");
   };
 

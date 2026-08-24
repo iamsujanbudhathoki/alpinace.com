@@ -4,11 +4,11 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-xs font-semibold whitespace-nowrap transition-all outline-none select-none cursor-pointer focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-sm border border-transparent bg-clip-padding text-xs font-semibold whitespace-nowrap transition-all outline-none select-none cursor-pointer focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80 shadow-xs",
+        default: "bg-primary text-primary-foreground hover:bg-primary/80",
         outline:
           "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
@@ -20,14 +20,14 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 gap-2 text-xs font-semibold rounded-lg",
-        sm: "h-8 px-3 py-1.5 gap-1.5 text-xs font-semibold rounded-md",
-        lg: "h-10 px-5 py-2.5 gap-2 text-sm font-semibold rounded-xl",
-        xs: "h-7 px-2.5 py-1 gap-1 text-[11px] font-medium rounded-md",
-        icon: "size-9",
-        "icon-xs": "size-7 rounded-md",
-        "icon-sm": "size-8 rounded-md",
-        "icon-lg": "size-10 rounded-xl",
+        default: "h-9 px-4 py-2 gap-2 text-xs font-semibold rounded-sm",
+        sm: "h-8 px-3 py-1.5 gap-1.5 text-xs font-semibold rounded-sm",
+        lg: "h-10 px-5 py-2.5 gap-2 text-sm font-semibold rounded-sm",
+        xs: "h-7 px-2.5 py-1 gap-1 text-[11px] font-medium rounded-sm",
+        icon: "size-9 rounded-sm",
+        "icon-xs": "size-7 rounded-sm",
+        "icon-sm": "size-8 rounded-sm",
+        "icon-lg": "size-10 rounded-sm",
       },
     },
     defaultVariants: {

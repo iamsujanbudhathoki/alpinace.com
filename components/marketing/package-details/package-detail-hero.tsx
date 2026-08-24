@@ -48,7 +48,7 @@ export function PackageDetailHero({
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-white/80 hover:text-white transition-all bg-white/10 hover:bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-white/80 hover:text-white transition-all bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1 rounded-sm border border-white/10"
         >
           <ArrowLeft className="h-3 w-3" strokeWidth={2} />
           <span>{backLabel}</span>
@@ -65,10 +65,10 @@ export function PackageDetailHero({
                 {badges.map((badge, idx) => (
                   <span
                     key={idx}
-                    className={`px-2.5 py-0.5 rounded-full font-medium transition-all ${
+                    className={`px-2.5 py-0.5 rounded-sm font-medium transition-all ${
                       badge.highlight
                         ? "bg-emerald-900/80 text-emerald-100 border border-emerald-700/60 tracking-wider text-xs uppercase shadow-xs"
-                        : "bg-white/15 text-white border border-white/20 backdrop-blur-md text-xs"
+                        : "bg-white/15 text-white border border-white/20 backdrop-blur-sm text-xs"
                     }`}
                   >
                     {badge.label}
@@ -96,7 +96,7 @@ export function PackageDetailHero({
               <button
                 type="button"
                 onClick={onBookClick}
-                className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm px-4.5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer group"
+                className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm px-4.5 py-2.5 rounded-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
               >
                 <span>{bookButtonLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />

@@ -47,7 +47,7 @@ export function TestimonialsSection() {
           {items.slice(0, 3).map((item, idx) => (
             <div
               key={`${item.id}-${idx}`}
-              className="bg-white rounded-xl border border-stone-200 p-6 flex flex-col justify-between"
+              className="bg-white rounded-sm border border-stone-200 p-6 flex flex-col justify-between"
             >
               <div className="space-y-3">
                 <div className="flex gap-0.5">

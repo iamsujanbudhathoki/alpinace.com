@@ -58,7 +58,7 @@ export function PackageBookingSidebar({
 
   return (
     <aside className="w-full">
-      <div className="bg-white border border-stone-200 rounded-2xl shadow-xs overflow-hidden">
+      <div className="bg-white border border-stone-200 rounded-sm shadow-md overflow-hidden">
         {/* Pricing Header */}
         <div className="bg-amber-50/90 border-b border-amber-200/80 p-4.5 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between gap-2 mb-1">
@@ -93,13 +93,13 @@ export function PackageBookingSidebar({
               </label>
             </div>
 
-            <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 p-1.5 rounded-xl">
+            <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 p-1.5 rounded-sm">
               <button
                 type="button"
                 disabled={travelers <= 1}
                 onClick={() => onTravelersChange(Math.max(1, travelers - 1))}
                 aria-label="Decrease traveler count"
-                className="w-8 h-8 rounded-lg bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-2xs"
+                className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
               >
                 <Minus className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
@@ -113,7 +113,7 @@ export function PackageBookingSidebar({
                 disabled={travelers >= 16}
                 onClick={() => onTravelersChange(Math.min(16, travelers + 1))}
                 aria-label="Increase traveler count"
-                className="w-8 h-8 rounded-lg bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-2xs"
+                className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
               >
                 <Plus className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
@@ -130,7 +130,7 @@ export function PackageBookingSidebar({
                 {addons.map((addon) => (
                   <label
                     key={addon.id}
-                    className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${
+                    className={`p-2.5 rounded-sm border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${
                       addon.checked
                         ? "bg-stone-50 border-stone-400"
                         : "bg-white border-stone-200 hover:border-stone-300"
@@ -184,7 +184,7 @@ export function PackageBookingSidebar({
           {/* Action CTAs */}
           <div className="space-y-2 pt-0.5">
             {isBooked ? (
-              <div className="w-full bg-emerald-700 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs flex items-center justify-center gap-2">
+              <div className="w-full bg-emerald-700 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-sm flex items-center justify-center gap-2">
                 <Check className="w-4 h-4" strokeWidth={3} />
                 <span>Request Submitted</span>
               </div>
@@ -192,7 +192,7 @@ export function PackageBookingSidebar({
               <button
                 type="button"
                 onClick={onBookClick}
-                className="w-full bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                className="w-full bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span>{bookButtonLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
@@ -202,7 +202,7 @@ export function PackageBookingSidebar({
             <button
               type="button"
               onClick={() => setIsInquiryModalOpen(true)}
-              className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
             >
               <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
               <span>Ask a Question / Custom Dates</span>

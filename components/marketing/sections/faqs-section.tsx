@@ -64,7 +64,7 @@ export function FaqsSection() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`text-xs px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer border ${
+                className={`text-xs px-3.5 py-1.5 rounded-sm font-semibold transition-all cursor-pointer border ${
                   selectedCategory === cat
                     ? "bg-zinc-900 text-white border-zinc-900"
                     : "bg-white text-zinc-600 border-stone-200 hover:border-stone-300 hover:text-zinc-800"

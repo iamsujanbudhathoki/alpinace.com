@@ -213,10 +213,7 @@ export function FeaturedPackages({
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 pb-4 border-b border-stone-200/80">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 uppercase tracking-wider bg-amber-100/60 px-2.5 py-0.5 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-              <span>Handcrafted Expeditions</span>
-            </div>
+            
             <h2 className="type-heading-xl text-2xl sm:text-3xl text-stone-900 font-extrabold tracking-tight">
               Featured Treks &amp; Expeditions
             </h2>
@@ -227,25 +224,25 @@ export function FeaturedPackages({
 
           <div className="flex items-center gap-4 sm:gap-6 self-start md:self-auto">
             {/* Tabs */}
-            <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-stone-200/80 shadow-2xs">
+            <div className="flex items-center gap-2 border-b border-stone-200">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.key;
                 return (
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-3 py-2 text-sm font-semibold transition-all cursor-pointer flex items-center gap-1.5 border-b-2 ${
                       isActive
-                        ? "bg-slate-900 text-white shadow-xs"
-                        : "text-stone-600 hover:text-stone-900 hover:bg-stone-100/80"
+                        ? "border-amber-700 text-stone-900"
+                        : "border-transparent text-stone-500 hover:text-stone-800"
                     }`}
                     aria-selected={isActive}
                     role="tab"
                   >
                     <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                        isActive ? "bg-amber-500 text-slate-950" : "bg-stone-200/70 text-stone-600"
+                      className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium ${
+                        isActive ? "bg-amber-100 text-amber-900" : "bg-stone-100 text-stone-500"
                       }`}
                     >
                       {tab.count}
@@ -273,14 +270,14 @@ export function FeaturedPackages({
               <button
                 onClick={scrollPrev}
                 aria-label="Previous Slide"
-                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200/90 shadow-md items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 hover:scale-110 transition-all duration-200 cursor-pointer"
+                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white text-stone-800 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-100 hover:scale-105 transition-all duration-200 cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={scrollNext}
                 aria-label="Next Slide"
-                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200/90 shadow-md items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 hover:scale-110 transition-all duration-200 cursor-pointer"
+                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white text-stone-800 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-100 hover:scale-105 transition-all duration-200 cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -292,9 +289,9 @@ export function FeaturedPackages({
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
-                  className="bg-white rounded-2xl border border-stone-200/80 p-4 space-y-4 animate-pulse shadow-xs"
+                  className="bg-white rounded-sm border border-stone-200 p-4 space-y-4 animate-pulse shadow-sm"
                 >
-                  <div className="h-48 bg-stone-200/70 rounded-xl w-full" />
+                  <div className="h-48 bg-stone-100 rounded-sm w-full" />
                   <div className="h-4 bg-stone-200 rounded w-1/3" />
                   <div className="h-5 bg-stone-200 rounded w-3/4" />
                   <div className="h-3 bg-stone-100 rounded w-full" />
@@ -327,7 +324,7 @@ export function FeaturedPackages({
                     >
                       <Link
                         href={packageHref}
-                        className="group h-full flex flex-col bg-white rounded-2xl border border-stone-200/80 hover:border-amber-600/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden"
+                        className="group h-full flex flex-col bg-white rounded-sm border border-stone-200 hover:border-stone-300 hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden"
                       >
                         {/* Image Frame */}
                         <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
@@ -340,13 +337,13 @@ export function FeaturedPackages({
 
                           {/* Top Badges */}
                           {pkg.region && (
-                            <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-0.5 rounded-lg border border-white/10 shadow-xs">
+                            <div className="absolute top-3 left-3 bg-stone-900/80 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm border border-stone-700">
                               {pkg.region}
                             </div>
                           )}
 
-                          <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md text-slate-900 text-[11px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-xs border border-stone-200">
-                            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                          <div className="absolute top-3 right-3 bg-white/95 text-stone-900 text-[11px] font-bold px-2 py-0.5 rounded-sm flex items-center gap-1 border border-stone-200">
+                            <Star className="w-3 h-3 text-amber-600 fill-amber-600" />
                             <span>{pkg.rating.toFixed(1)}</span>
                           </div>
                         </div>
@@ -355,7 +352,7 @@ export function FeaturedPackages({
                         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                           <div className="space-y-2">
                             {pkg.difficulty && (
-                              <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50/80 px-2.5 py-0.5 rounded-md border border-amber-200/70 inline-block">
+                              <div className="text-[10px] font-semibold uppercase tracking-wider text-amber-900 bg-amber-50 px-2.5 py-0.5 rounded-sm border border-amber-200 inline-block">
                                 {pkg.difficulty}
                               </div>
                             )}
@@ -392,7 +389,7 @@ export function FeaturedPackages({
                                 </span>
                               </div>
 
-                              <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-stone-100 text-stone-800 group-hover:bg-amber-700 group-hover:text-white text-xs font-bold transition-all duration-200 shadow-2xs">
+                              <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-stone-100 text-stone-800 group-hover:bg-amber-800 group-hover:text-white text-xs font-semibold transition-all duration-200">
                                 <span>Explore</span>
                                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                               </div>
@@ -433,14 +430,14 @@ export function FeaturedPackages({
                 <button
                   onClick={scrollPrev}
                   aria-label="Previous Slide"
-                  className="w-8 h-8 rounded-lg bg-white border border-stone-200 text-stone-700 flex items-center justify-center"
+                  className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-700 flex items-center justify-center"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={scrollNext}
                   aria-label="Next Slide"
-                  className="w-8 h-8 rounded-lg bg-white border border-stone-200 text-stone-700 flex items-center justify-center"
+                  className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-700 flex items-center justify-center"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>

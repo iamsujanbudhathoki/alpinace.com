@@ -85,27 +85,27 @@
   --color-card: var(--card);
 }
 
-/* Light theme (default) - High contrast, sharp text */
+/* Light theme (default) - Natural editorial contrast */
 :root {
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.18 0 0);
-  --border: oklch(0.88 0 0);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.09 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.09 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.09 0 0);
-  --primary: oklch(0.12 0 0);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.12 0 0);
-  --accent: oklch(0.12 0 0);
-  --accent-foreground: oklch(0.99 0 0);
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --background: #fafaf9;
+  --foreground: #1e293b;
+  --card: #ffffff;
+  --card-foreground: #1e293b;
+  --popover: #ffffff;
+  --popover-foreground: #1e293b;
+  --primary: #0f172a;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f8f5;
+  --secondary-foreground: #111a15;
+  --accent: #d4a338;
+  --accent-foreground: #211909;
   --destructive: oklch(0.577 0.245 27.325);
-  --input: oklch(0.88 0 0);
-  --ring: oklch(0.4 0 0);
-  --radius: 0.625rem;
+  --input: #e2e8f0;
+  --ring: #d4a338;
+  --radius: 0.15rem; /* Reduced radius for editorial feel */
 }
 
 /* Infinite Marquee Animation for X-Axis Slider */
@@ -181,10 +181,10 @@
 /* ── Standardized Typography Scale Utilities for Detail & Content Pages ── */
 @utility type-display {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   line-height: 1.25;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 
   @media (min-width: 640px) {
     font-size: 1.875rem;
@@ -196,10 +196,10 @@
 
 @utility type-heading-xl {
   font-family: var(--font-heading);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   line-height: 1.35;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: normal;
   color: var(--color-charcoal-900);
 
   @media (min-width: 640px) {
@@ -209,9 +209,9 @@
 
 @utility type-heading-lg {
   font-family: var(--font-heading);
-  font-size: 0.875rem;
+  font-size: 1rem;
   line-height: 1.4;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-charcoal-900);
 
   @media (min-width: 640px) {
@@ -221,9 +221,9 @@
 
 @utility type-heading-md {
   font-family: var(--font-heading);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   line-height: 1.4;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-charcoal-900);
 
   @media (min-width: 640px) {
@@ -233,10 +233,10 @@
 
 @utility type-body {
   font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  line-height: 1.65;
+  font-size: 0.875rem;
+  line-height: 1.7;
   font-weight: 400;
-  color: var(--color-primary-700);
+  color: var(--color-primary-800);
 
   @media (min-width: 640px) {
     font-size: 0.875rem;
@@ -257,12 +257,11 @@
 
 @utility type-caption {
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  line-height: 1.35;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-primary-500);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: normal;
+  color: var(--color-primary-600);
 
   @media (min-width: 640px) {
     font-size: 0.75rem;

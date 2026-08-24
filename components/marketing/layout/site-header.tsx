@@ -263,9 +263,9 @@ export function SiteHeader() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-40 bg-white/95 backdrop-blur-md transition-all duration-200 ${
+        className={`fixed inset-x-0 top-0 z-40 bg-white/95 backdrop-blur-sm transition-all duration-200 ${
           isScrolled
-            ? "border-b border-stone-200 shadow-2xs py-2 sm:py-2.5"
+            ? "border-b border-stone-200 shadow-sm py-2 sm:py-2.5"
             : "border-b border-stone-100 py-3 sm:py-3.5"
         }`}
       >
@@ -331,7 +331,7 @@ export function SiteHeader() {
                 width={36}
                 height={36}
                 priority
-                className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-lg border border-stone-200"
+                className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-sm border border-stone-200"
               />
               <span className="font-heading text-sm sm:text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
                 {settings.siteName || "Alpine Ace"}
@@ -390,7 +390,7 @@ export function SiteHeader() {
                         onMouseLeave={handleDropdownMouseLeave}
                         className="absolute top-full left-0 pt-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
                       >
-                        <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xl shadow-stone-950/10 p-2.5 w-[490px] overflow-hidden">
+                        <div className="bg-white rounded-md border border-stone-200/90 shadow-lg p-2.5 w-[490px] overflow-hidden">
                           {link.items && link.items.length > 0 ? (
                             /* Simple Sub-Items (e.g. Resources: Blog, Contact) */
                             <div className="space-y-0.5 p-0.5">
@@ -546,7 +546,7 @@ export function SiteHeader() {
             <div className="flex items-center gap-3">
               <Link
                 href="/contact"
-                className="hidden sm:inline-flex items-center gap-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all duration-200 cursor-pointer group"
+                className="hidden sm:inline-flex items-center gap-2 rounded-md bg-stone-900 hover:bg-stone-800 text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all duration-200 cursor-pointer group"
               >
                 <span>Plan Your Trip</span>
                 <ArrowRight className="w-3.5 h-3.5 text-amber-400 transition-transform group-hover:translate-x-0.5" />
@@ -764,7 +764,7 @@ export function SiteHeader() {
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-xl bg-amber-800 text-white py-3 px-4 font-semibold text-sm shadow-md transition-colors"
+                className="flex items-center justify-center gap-2 rounded-md bg-amber-800 text-white py-3 px-4 font-semibold text-sm shadow-md transition-colors"
               >
                 <span>Plan Your Trip</span>
                 <ArrowRight className="w-4 h-4" />

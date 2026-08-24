@@ -378,7 +378,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               )}
 
               {/* Key Specs Typographic Grid */}
-              {(trek.startEndLocation ||
+              {/* {(trek.startEndLocation ||
                 trek.meals ||
                 trek.groupSizeRange) && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 py-3.5 border-y border-stone-200">
@@ -415,7 +415,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
                     </div>
                   )}
                 </div>
-              )}
+              )} */}
 
               {/* Permits Section */}
               {trek.permitsRequired && trek.permitsRequired.length > 0 && (

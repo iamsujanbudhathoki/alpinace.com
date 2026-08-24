@@ -494,11 +494,6 @@ export function SiteHeader() {
                                                     <div className="text-xs font-semibold text-stone-800 group-hover/sub:text-amber-900 transition-colors truncate">
                                                       {subCat.name}
                                                     </div>
-                                                    {subCat.description && (
-                                                      <p className="text-[10px] text-stone-500 line-clamp-1 font-normal">
-                                                        {subCat.description}
-                                                      </p>
-                                                    )}
                                                   </div>
                                                   <ChevronRight className="w-3 h-3 text-stone-400 group-hover/sub:text-amber-700 opacity-0 group-hover/sub:opacity-100 transition-all shrink-0" />
                                                 </Link>

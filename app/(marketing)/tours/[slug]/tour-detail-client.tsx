@@ -373,7 +373,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
                     </div>
                   )}
 
-                  {tour.startEndLocation && (
+                  {/* {tour.startEndLocation && (
                     <div className="space-y-0.5">
                       <span className="type-caption block">
                         Start &amp; Finish
@@ -382,9 +382,9 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
                         {tour.startEndLocation}
                       </p>
                     </div>
-                  )}
+                  )} */}
 
-                  {tour.groupSizeRange && (
+                  {/* {tour.groupSizeRange && (
                     <div className="space-y-0.5">
                       <span className="type-caption block">
                         Group Capacity
@@ -393,7 +393,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
                         {tour.groupSizeRange}
                       </p>
                     </div>
-                  )}
+                  )} */}
                 </div>
               )}
 

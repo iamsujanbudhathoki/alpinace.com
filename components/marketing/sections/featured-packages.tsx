@@ -267,24 +267,24 @@ export function FeaturedPackages({
 
         {/* Embla Carousel Container */}
         <div className="relative group/carousel">
-          {/* Navigation Arrows */}
-          {!loading && currentPackages.length > 0 && (
-            <div className="hidden sm:flex items-center gap-2 absolute -top-14 right-0 z-20">
+          {/* Floating Side Navigation Arrows (Desktop & Tablet) */}
+          {!loading && currentPackages.length > 1 && (
+            <>
               <button
                 onClick={scrollPrev}
                 aria-label="Previous Slide"
-                className="w-9 h-9 rounded-xl bg-white text-stone-800 border border-stone-200/90 shadow-2xs flex items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all cursor-pointer"
+                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200/90 shadow-md items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 hover:scale-110 transition-all duration-200 cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={scrollNext}
                 aria-label="Next Slide"
-                className="w-9 h-9 rounded-xl bg-white text-stone-800 border border-stone-200/90 shadow-2xs flex items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all cursor-pointer"
+                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200/90 shadow-md items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 hover:scale-110 transition-all duration-200 cursor-pointer"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-5 h-5" />
               </button>
-            </div>
+            </>
           )}
 
           {loading ? (
@@ -327,15 +327,16 @@ export function FeaturedPackages({
                     >
                       <Link
                         href={packageHref}
-                        className="group h-full flex flex-col bg-white rounded-2xl border border-stone-200/80 hover:border-amber-700/40 hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
+                        className="group h-full flex flex-col bg-white rounded-2xl border border-stone-200/80 hover:border-amber-600/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden"
                       >
                         {/* Image Frame */}
                         <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
                           <img
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                            className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out opacity-95 group-hover:opacity-100"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
 
                           {/* Top Badges */}
                           {pkg.region && (
@@ -354,11 +355,11 @@ export function FeaturedPackages({
                         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                           <div className="space-y-2">
                             {pkg.difficulty && (
-                              <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60 inline-block">
+                              <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50/80 px-2.5 py-0.5 rounded-md border border-amber-200/70 inline-block">
                                 {pkg.difficulty}
                               </div>
                             )}
-                            <h3 className="font-heading text-base font-bold text-stone-900 leading-snug group-hover:text-amber-900 transition-colors line-clamp-2">
+                            <h3 className="font-heading text-base font-bold text-stone-900 leading-snug group-hover:text-amber-800 transition-colors line-clamp-2">
                               {pkg.title}
                             </h3>
                             {pkg.shortDesc && (
@@ -385,13 +386,13 @@ export function FeaturedPackages({
 
                             <div className="flex items-center justify-between pt-1">
                               <div>
-                                <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider block">From</span>
+                                <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider block">Starting from</span>
                                 <span className="text-base sm:text-lg font-black text-stone-900">
                                   ${pkg.priceUSD.toLocaleString()} <span className="text-[11px] font-normal text-stone-500">USD</span>
                                 </span>
                               </div>
 
-                              <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-900 group-hover:bg-amber-700 group-hover:text-white text-xs font-bold transition-all duration-200">
+                              <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-stone-100 text-stone-800 group-hover:bg-amber-700 group-hover:text-white text-xs font-bold transition-all duration-200 shadow-2xs">
                                 <span>Explore</span>
                                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                               </div>
@@ -406,21 +407,44 @@ export function FeaturedPackages({
             </div>
           )}
 
-          {/* Pagination Indicators */}
+          {/* Pagination Indicators & Slide Counter */}
           {!loading && currentPackages.length > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-6">
-              {scrollSnaps.map((_, idx) => (
+            <div className="flex items-center justify-between mt-6 px-1">
+              <div className="text-xs font-semibold text-stone-500">
+                Showing <span className="text-stone-900 font-bold">{selectedIndex + 1}</span> of <span className="text-stone-900 font-bold">{scrollSnaps.length}</span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {scrollSnaps.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => scrollTo(idx)}
+                    aria-label={`Go to slide ${idx + 1}`}
+                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                      idx === selectedIndex
+                        ? "w-8 bg-amber-700"
+                        : "w-2 bg-stone-300 hover:bg-stone-400"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <div className="flex md:hidden items-center gap-1">
                 <button
-                  key={idx}
-                  onClick={() => scrollTo(idx)}
-                  aria-label={`Go to slide ${idx + 1}`}
-                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                    idx === selectedIndex
-                      ? "w-7 bg-amber-700"
-                      : "w-2 bg-stone-300 hover:bg-stone-400"
-                  }`}
-                />
-              ))}
+                  onClick={scrollPrev}
+                  aria-label="Previous Slide"
+                  className="w-8 h-8 rounded-lg bg-white border border-stone-200 text-stone-700 flex items-center justify-center"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={scrollNext}
+                  aria-label="Next Slide"
+                  className="w-8 h-8 rounded-lg bg-white border border-stone-200 text-stone-700 flex items-center justify-center"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
         </div>

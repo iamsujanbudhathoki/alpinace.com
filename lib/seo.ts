@@ -262,7 +262,7 @@ export function generatePackageJsonLd({
     },
     provider: {
       "@type": "TravelAgency",
-      name: "AlpineAce Expeditions",
+      name: "AlpineAce",
       url: baseUrl,
       logo: `${baseUrl}/logo.jpg`,
       telephone: "+977-1-4700000",

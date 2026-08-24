@@ -5,7 +5,7 @@ import { generateStaticMetadata } from "@/lib/seo";
 
 export function generateMetadata(): Metadata {
   return generateStaticMetadata({
-    title: "Terms & Conditions | AlpineAce Expeditions",
+    title: "Terms & Conditions | AlpineAce",
     description: "Terms and conditions, booking policies, and expedition agreements for AlpineAce Treks & Expeditions in Nepal.",
     path: "/terms",
     keywords: ["Terms and conditions", "AlpineAce Booking Terms", "Nepal expedition contract"],

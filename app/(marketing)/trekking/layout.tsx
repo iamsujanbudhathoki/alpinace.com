@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     canonical: `${siteConfig.url}/trekking`,
   },
   openGraph: {
-    title: "Himalayan Trekking in Nepal | AlpineAce Expeditions",
+    title: "Himalayan Trekking in Nepal | AlpineAce",
     description:
       "Explore iconic trekking routes in Nepal with AlpineAce. Certified Sherpa leaders, small groups, and luxury mountain lodges.",
     url: `${siteConfig.url}/trekking`,

@@ -484,8 +484,8 @@ export function SiteHeader() {
                                   return (
                                     <div className="flex flex-col gap-5">
                                       <div className="grid grid-cols-12 gap-8 divide-x divide-stone-100">
-                                        {/* Column 1: Main Navigation Categories (col-span-3) */}
-                                        <div className="col-span-3 pr-2 space-y-3">
+                                        {/* Column 1: Main Navigation Categories (col-span-4) */}
+                                        <div className="col-span-4 pr-3 space-y-3">
                                           <div className="text-xs font-bold text-stone-900 uppercase tracking-wider px-1">
                                             Categories
                                           </div>
@@ -512,7 +512,7 @@ export function SiteHeader() {
                                                     onClick={() => setActiveDropdown(null)}
                                                     className="flex-1 min-w-0 pr-2"
                                                   >
-                                                    <div className="text-xs sm:text-sm truncate">
+                                                    <div className="text-xs sm:text-sm font-semibold truncate">
                                                       {cat.name}
                                                     </div>
                                                   </Link>
@@ -532,7 +532,7 @@ export function SiteHeader() {
                                         {/* Column 2: Relevant Subcategories Text Navigation */}
                                         <div
                                           className={`${
-                                            hasSubCatImages ? "col-span-4 px-3" : "col-span-9 pl-6"
+                                            hasSubCatImages ? "col-span-4 px-3" : "col-span-8 pl-6"
                                           } space-y-3 flex flex-col justify-between`}
                                         >
                                           <div>
@@ -545,7 +545,7 @@ export function SiteHeader() {
                                                 className={`gap-1.5 ${
                                                   hasSubCatImages
                                                     ? "flex flex-col space-y-1 max-h-[340px] overflow-y-auto pr-1"
-                                                    : "grid grid-cols-3 gap-x-6 gap-y-2"
+                                                    : "grid grid-cols-2 gap-x-6 gap-y-2"
                                                 }`}
                                               >
                                                 {subcategories.map((subCat) => {
@@ -596,9 +596,9 @@ export function SiteHeader() {
                                           </div>
                                         </div>
 
-                                        {/* Column 3: Subcategories Visual Exploration Grid (Subcategory Images + Natural Hover Name Overlay) */}
+                                        {/* Column 3: Subcategories Visual Exploration Grid (Pure Images by default, Name Overlay strictly on Hover) */}
                                         {hasSubCatImages && (
-                                          <div className="col-span-5 pl-5 flex flex-col justify-between">
+                                          <div className="col-span-4 pl-4 flex flex-col justify-between">
                                             <div>
                                               <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-3">
                                                 Subcategory Visuals
@@ -633,12 +633,12 @@ export function SiteHeader() {
                                                         className="object-cover group-hover/imgcard:scale-105 transition-transform duration-300"
                                                         sizes="240px"
                                                       />
-                                                      {/* Default subtle gradient shade + Hover overlay revealing subcategory name naturally */}
+                                                      {/* Pure clean image by default; text overlay reveals strictly on hover */}
                                                       <div
-                                                        className={`absolute inset-0 transition-all duration-200 flex flex-col justify-end p-3.5 ${
+                                                        className={`absolute inset-0 transition-opacity duration-200 flex flex-col justify-end p-3.5 bg-stone-950/80 backdrop-blur-[2px] ${
                                                           isSubHovered
-                                                            ? "bg-stone-950/80 backdrop-blur-[2px]"
-                                                            : "bg-gradient-to-t from-stone-950/70 via-stone-950/20 to-transparent group-hover/imgcard:bg-stone-950/80 group-hover/imgcard:backdrop-blur-[2px]"
+                                                            ? "opacity-100"
+                                                            : "opacity-0 group-hover/imgcard:opacity-100"
                                                         }`}
                                                       >
                                                         <span className="text-xs sm:text-sm font-semibold text-white line-clamp-2 leading-snug">

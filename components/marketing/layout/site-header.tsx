@@ -13,6 +13,8 @@ import { CategoryItem, CategoryType } from "@/lib/admin-data";
 
 
 
+
+
 export function SiteHeader() {
   const { settings } = useSettings();
   const { detailNav } = useDetailNav();

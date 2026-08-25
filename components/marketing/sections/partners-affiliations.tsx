@@ -22,7 +22,7 @@ const OFFICIAL_PARTNERS: Partner[] = [
     id: "taan",
     name: "Trekking Agencies' Association of Nepal",
     website: "https://www.taan.org.np",
-    logoUrl: "https://www.taan.org.np/images/logo.png",
+    logoUrl: "https://www.taan.org.np/public/images/taan-logo.jpg",
     fallbackUrl: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=200&q=80",
   },
   {

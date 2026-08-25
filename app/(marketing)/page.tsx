@@ -266,15 +266,15 @@ export default async function Home() {
       {/* 1. Video Hero Section (Contains H1) */}
       <Hero />
 
-      {/* 2. Official Partners & Affiliations Trust Strip */}
-      <PartnersAffiliationsSection />
-
-      {/* 3. Featured Trekking & Expedition Packages (H2 + H3 cards) */}
+      {/* 2. Featured Trekking & Expedition Packages (H2 + H3 cards) */}
       <FeaturedPackages
         initialTreks={initialTreks}
         initialTours={initialTours}
         initialExpeditions={initialExpeditions}
       />
+
+      {/* 3. Official Partners & Affiliations Trust Strip */}
+      <PartnersAffiliationsSection />
 
       {/* 4. Why Travel With Us (H2 + H3 items) */}
       <WhyChooseUs />

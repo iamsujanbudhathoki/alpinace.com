@@ -730,3 +730,22 @@
   max-width: min(90vw, 680px) !important;
   text-align: center !important;
 }
+
+/* Official Partners & Affiliations Auto-Scrolling Marquee */
+@keyframes partnerMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-33.33333%, 0, 0);
+  }
+}
+
+.animate-partner-marquee {
+  animation: partnerMarquee 38s linear infinite;
+  will-change: transform;
+}
+
+.animate-partner-marquee:hover {
+  animation-play-state: paused;
+}

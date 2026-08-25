@@ -1,4 +1,5 @@
 import { Hero } from "@/components/marketing/sections/hero";
+import { PartnersAffiliationsSection } from "@/components/marketing/sections/partners-affiliations";
 import { FeaturedPackages } from "@/components/marketing/sections/featured-packages";
 import { WhyChooseUs } from "@/components/marketing/sections/why-choose-us";
 import { TravelProcess } from "@/components/marketing/sections/travel-process";
@@ -265,35 +266,35 @@ export default async function Home() {
       {/* 1. Video Hero Section (Contains H1) */}
       <Hero />
 
-      {/* 2. Featured Trekking & Expedition Packages (H2 + H3 cards) */}
+      {/* 2. Official Partners & Affiliations Trust Strip */}
+      <PartnersAffiliationsSection />
+
+      {/* 3. Featured Trekking & Expedition Packages (H2 + H3 cards) */}
       <FeaturedPackages
         initialTreks={initialTreks}
         initialTours={initialTours}
         initialExpeditions={initialExpeditions}
       />
 
-      {/* 3. Why Travel With Us (H2 + H3 items) */}
+      {/* 4. Why Travel With Us (H2 + H3 items) */}
       <WhyChooseUs />
 
-      {/* 4. Travel Process (H2 + H3 steps) */}
+      {/* 5. Travel Process (H2 + H3 steps) */}
       <TravelProcess />
 
-      {/* 5. Testimonials (H2) */}
+      {/* 6. Testimonials (H2) */}
       <TestimonialsSection />
 
-      {/* 6. Statistics Bar */}
+      {/* 7. Statistics Bar */}
       <StatsBar />
 
-      {/* 7. Featured Blog Articles (H2 + H3 posts) */}
+      {/* 8. Featured Blog Articles (H2 + H3 posts) */}
       <FeaturedBlogs initialPosts={initialBlogs} />
 
-      {/* 8. FAQs Accordion (H2 + H3 questions) */}
+      {/* 9. FAQs Accordion (H2 + H3 questions) */}
       <FaqsSection />
 
-      {/* 8.5 Official Partners & Affiliations */}
-      <AssociatesSection />
-
-      {/* 9. Final Call To Action (H2) */}
+      {/* 10. Final Call To Action (H2) */}
       <FinalCta />
 
       {/* 10. Semantic SSR Content & Agent Guidance Block */}

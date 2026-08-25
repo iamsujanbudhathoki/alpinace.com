@@ -553,13 +553,13 @@ export function SiteHeader() {
                                                         className="object-cover group-hover/imgcard:scale-105 transition-transform duration-300"
                                                         sizes="280px"
                                                       />
-                                                      {/* Clean pure image by default; text overlay reveals strictly on hover */}
-                                                      <div className="absolute inset-0 transition-opacity duration-200 flex flex-col justify-end p-3.5 bg-stone-950/85 backdrop-blur-[2px] opacity-0 group-hover/imgcard:opacity-100">
-                                                        <span className="text-xs sm:text-sm font-semibold text-white line-clamp-2 leading-snug">
+                                                      {/* Clean pure image by default; text overlay reveals strictly on hover with lightweight gradient */}
+                                                      <div className="absolute inset-0 transition-opacity duration-200 flex flex-col justify-end p-3.5 bg-gradient-to-t from-stone-950/70 via-stone-950/30 to-transparent opacity-0 group-hover/imgcard:opacity-100">
+                                                        <span className="text-xs sm:text-sm font-bold text-white line-clamp-2 leading-snug drop-shadow-xs">
                                                           {subCat.name}
                                                         </span>
                                                         {subCat.itemCount > 0 && (
-                                                          <span className="text-[11px] text-stone-300 font-medium mt-1">
+                                                          <span className="text-[11px] text-stone-200 font-medium mt-0.5 drop-shadow-xs">
                                                             {subCat.itemCount}{" "}
                                                             {subCat.itemCount === 1
                                                               ? "trip"

@@ -11,6 +11,8 @@ import { useDetailNav } from "@/lib/detail-nav-context";
 import { categoryCache } from "@/lib/services/category-cache";
 import { CategoryItem, CategoryType } from "@/lib/admin-data";
 
+
+
 export function SiteHeader() {
   const { settings } = useSettings();
   const { detailNav } = useDetailNav();
@@ -25,6 +27,7 @@ export function SiteHeader() {
   const [categoriesMap, setCategoriesMap] = useState<Record<string, CategoryItem[]>>({});
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
   const [hoveredCategoryMap, setHoveredCategoryMap] = useState<Record<string, string>>({});
+  const [hoveredSubcategoryMap, setHoveredSubcategoryMap] = useState<Record<string, string>>({});
 
   // Mobile Accordion State
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
@@ -388,43 +391,68 @@ export function SiteHeader() {
                       <div
                         onMouseEnter={handleDropdownMouseEnter}
                         onMouseLeave={handleDropdownMouseLeave}
-                        className="absolute top-full left-0 pt-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
+                        className={`absolute top-full pt-3 z-50 animate-in fade-in slide-in-from-top-1 duration-150 ease-out ${
+                          link.items && link.items.length > 0
+                            ? "right-0"
+                            : link.label === "Trekking"
+                            ? "-left-28 xl:-left-24"
+                            : link.label === "Tours"
+                            ? "-left-[360px] xl:-left-[320px]"
+                            : link.label === "Expeditions"
+                            ? "-left-[580px] xl:-left-[540px]"
+                            : "left-0"
+                        }`}
                       >
-                        <div className="bg-white rounded-md border border-stone-200/90 shadow-lg p-2.5 w-[490px] overflow-hidden">
+                        <div
+                          className={`bg-white rounded-xl border border-stone-200/90 shadow-xl shadow-stone-900/5 p-6 sm:p-8 overflow-hidden ${
+                            link.items && link.items.length > 0
+                              ? "w-[320px]"
+                              : "w-[1040px] max-w-[calc(100vw-32px)]"
+                          }`}
+                        >
                           {link.items && link.items.length > 0 ? (
                             /* Simple Sub-Items (e.g. Resources: Blog, Contact) */
-                            <div className="space-y-0.5 p-0.5">
-                              {link.items.map((subItem) => (
-                                <Link
-                                  key={subItem.href}
-                                  href={subItem.href}
-                                  onClick={() => setActiveDropdown(null)}
-                                  className="group/item flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-stone-50 transition-colors cursor-pointer"
-                                >
-                                  <div className="space-y-0.5 pr-2">
-                                    <div className="text-xs font-semibold text-stone-900 group-hover/item:text-amber-800 transition-colors">
-                                      {subItem.label}
+                            <div>
+                              <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-2 px-1">
+                                Resources
+                              </div>
+                              <div className="space-y-1">
+                                {link.items.map((subItem) => (
+                                  <Link
+                                    key={subItem.href}
+                                    href={subItem.href}
+                                    onClick={() => setActiveDropdown(null)}
+                                    className="group/item flex items-center justify-between p-2.5 rounded-md hover:bg-stone-50 transition-colors cursor-pointer"
+                                  >
+                                    <div className="space-y-0.5 pr-2">
+                                      <div className="text-xs sm:text-sm font-semibold text-stone-900 group-hover/item:text-stone-900 transition-colors">
+                                        {subItem.label}
+                                      </div>
                                     </div>
-                                    {subItem.description && (
-                                      <p className="text-[11px] text-stone-500 line-clamp-1 font-normal">
-                                        {subItem.description}
-                                      </p>
-                                    )}
-                                  </div>
-                                  <ChevronRight className="w-3.5 h-3.5 text-stone-400 group-hover/item:text-amber-700 transition-transform group-hover/item:translate-x-0.5 shrink-0" />
-                                </Link>
-                              ))}
+                                    <ChevronRight className="w-4 h-4 text-stone-400 group-hover/item:text-stone-900 transition-transform group-hover/item:translate-x-0.5 shrink-0" />
+                                  </Link>
+                                ))}
+                              </div>
                             </div>
                           ) : (
                             /* Subcategory Mega Menu */
                             <div>
                               {isLoading ? (
-                                <div className="space-y-2 p-3 animate-pulse">
-                                  <div className="h-9 bg-stone-100 rounded-xl" />
-                                  <div className="h-9 bg-stone-100 rounded-xl" />
+                                <div className="grid grid-cols-12 gap-8 p-2 animate-pulse">
+                                  <div className="col-span-4 space-y-3">
+                                    <div className="h-3 w-20 bg-stone-200 rounded" />
+                                    <div className="h-8 bg-stone-100 rounded-md" />
+                                    <div className="h-8 bg-stone-100 rounded-md" />
+                                    <div className="h-8 bg-stone-100 rounded-md" />
+                                  </div>
+                                  <div className="col-span-8 space-y-3">
+                                    <div className="h-3 w-28 bg-stone-200 rounded" />
+                                    <div className="h-10 bg-stone-100 rounded-md" />
+                                    <div className="h-10 bg-stone-100 rounded-md" />
+                                  </div>
                                 </div>
                               ) : categories.length === 0 ? (
-                                <div className="py-5 px-4 text-center text-xs text-stone-500 font-medium">
+                                <div className="py-8 px-4 text-center text-xs text-stone-500 font-medium">
                                   No categories available.
                                 </div>
                               ) : (
@@ -435,98 +463,213 @@ export function SiteHeader() {
                                     categories.find((c) => c.id === activeParentId) ||
                                     categories[0];
                                   const subcategories = selectedParent?.children || [];
+                                  const activeSubId =
+                                    hoveredSubcategoryMap[selectedParent.id] ||
+                                    subcategories[0]?.id;
+                                  const selectedSubCat =
+                                    subcategories.find((s) => s.id === activeSubId) ||
+                                    subcategories[0];
+
+                                  // Get ONLY subcategories of selectedParent that HAVE a real image string directly from the API
+                                  const subcategoriesWithImages = subcategories.filter(
+                                    (s) =>
+                                      s.image &&
+                                      typeof s.image === "string" &&
+                                      s.image.trim().length > 0
+                                  );
+                                  const hasSubCatImages = subcategoriesWithImages.length > 0;
 
                                   return (
-                                    <div className="grid grid-cols-12 gap-0 divide-x divide-stone-100">
-                                      {/* Left Parent Categories (col-span-5) */}
-                                      <div className="col-span-5 pr-2 space-y-0.5">
-                                        {categories.map((cat) => {
-                                          const isHovered = cat.id === selectedParent.id;
-                                          return (
-                                            <div
-                                              key={cat.id}
-                                              onMouseEnter={() =>
-                                                setHoveredCategoryMap((prev) => ({
-                                                  ...prev,
-                                                  [catType]: cat.id,
-                                                }))
-                                              }
-                                              className={`group/cat px-2.5 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
-                                                isHovered
-                                                  ? "bg-amber-50 text-amber-900 font-semibold"
-                                                  : "hover:bg-stone-50 text-stone-700 font-medium"
-                                              }`}
-                                            >
-                                              <Link
-                                                href={getCategoryLink(link.href, cat)}
-                                                onClick={() => setActiveDropdown(null)}
-                                                className="block flex-1 min-w-0"
-                                              >
-                                                <div className="text-xs truncate">
-                                                  {cat.name}
+                                    <div className="flex flex-col gap-5">
+                                      <div className="grid grid-cols-12 gap-8 divide-x divide-stone-100">
+                                        {/* Column 1: Main Navigation Categories (col-span-3) */}
+                                        <div className="col-span-3 pr-2 space-y-3">
+                                          <div className="text-xs font-bold text-stone-900 uppercase tracking-wider px-1">
+                                            Categories
+                                          </div>
+                                          <div className="space-y-1">
+                                            {categories.map((cat) => {
+                                              const isSelected = cat.id === selectedParent.id;
+                                              return (
+                                                <div
+                                                  key={cat.id}
+                                                  onMouseEnter={() =>
+                                                    setHoveredCategoryMap((prev) => ({
+                                                      ...prev,
+                                                      [catType]: cat.id,
+                                                    }))
+                                                  }
+                                                  className={`group/cat px-3.5 py-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-between ${
+                                                    isSelected
+                                                      ? "bg-stone-900 text-white font-semibold shadow-xs"
+                                                      : "hover:bg-stone-100/80 text-stone-900 font-medium"
+                                                  }`}
+                                                >
+                                                  <Link
+                                                    href={getCategoryLink(link.href, cat)}
+                                                    onClick={() => setActiveDropdown(null)}
+                                                    className="flex-1 min-w-0 pr-2"
+                                                  >
+                                                    <div className="text-xs sm:text-sm truncate">
+                                                      {cat.name}
+                                                    </div>
+                                                  </Link>
+                                                  <ChevronRight
+                                                    className={`w-3.5 h-3.5 shrink-0 transition-transform ${
+                                                      isSelected
+                                                        ? "text-white translate-x-0.5 opacity-100"
+                                                        : "text-stone-400 opacity-0 group-hover/cat:opacity-100"
+                                                    }`}
+                                                  />
                                                 </div>
-                                              </Link>
-                                              <ChevronRight
-                                                className={`w-3.5 h-3.5 shrink-0 transition-transform ${
-                                                  isHovered
-                                                    ? "text-amber-700 translate-x-0.5 opacity-100"
-                                                    : "text-stone-300 opacity-0 group-hover/cat:opacity-100"
-                                                }`}
-                                              />
+                                              );
+                                            })}
+                                          </div>
+                                        </div>
+
+                                        {/* Column 2: Relevant Subcategories Text Navigation */}
+                                        <div
+                                          className={`${
+                                            hasSubCatImages ? "col-span-4 px-3" : "col-span-9 pl-6"
+                                          } space-y-3 flex flex-col justify-between`}
+                                        >
+                                          <div>
+                                            <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-3 px-1">
+                                              {selectedParent.name} Subcategories
                                             </div>
-                                          );
-                                        })}
+
+                                            {subcategories.length > 0 ? (
+                                              <div
+                                                className={`gap-1.5 ${
+                                                  hasSubCatImages
+                                                    ? "flex flex-col space-y-1 max-h-[340px] overflow-y-auto pr-1"
+                                                    : "grid grid-cols-3 gap-x-6 gap-y-2"
+                                                }`}
+                                              >
+                                                {subcategories.map((subCat) => {
+                                                  const isSubHovered =
+                                                    subCat.id === selectedSubCat?.id;
+
+                                                  return (
+                                                    <Link
+                                                      key={subCat.id}
+                                                      href={getCategoryLink(link.href, subCat)}
+                                                      onClick={() => setActiveDropdown(null)}
+                                                      onMouseEnter={() =>
+                                                        setHoveredSubcategoryMap((prev) => ({
+                                                          ...prev,
+                                                          [selectedParent.id]: subCat.id,
+                                                        }))
+                                                      }
+                                                      className={`group/sub p-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                                                        isSubHovered
+                                                          ? "bg-stone-100 text-stone-900 font-semibold"
+                                                          : "hover:bg-stone-50 text-stone-900"
+                                                      }`}
+                                                    >
+                                                      <span className="text-xs sm:text-sm font-semibold text-stone-900 group-hover/sub:text-stone-900 transition-colors truncate">
+                                                        {subCat.name}
+                                                      </span>
+                                                      {subCat.itemCount > 0 && (
+                                                        <span className="text-xs text-stone-600 font-medium shrink-0">
+                                                          ({subCat.itemCount})
+                                                        </span>
+                                                      )}
+                                                    </Link>
+                                                  );
+                                                })}
+                                              </div>
+                                            ) : (
+                                              <div className="py-4 px-1">
+                                                <Link
+                                                  href={getCategoryLink(link.href, selectedParent)}
+                                                  onClick={() => setActiveDropdown(null)}
+                                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-900 hover:text-stone-700 pt-1"
+                                                >
+                                                  <span>Explore {selectedParent.name}</span>
+                                                  <ArrowRight className="w-3.5 h-3.5" />
+                                                </Link>
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {/* Column 3: Subcategories Visual Exploration Grid (Subcategory Images + Natural Hover Name Overlay) */}
+                                        {hasSubCatImages && (
+                                          <div className="col-span-5 pl-5 flex flex-col justify-between">
+                                            <div>
+                                              <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-3">
+                                                Subcategory Visuals
+                                              </div>
+
+                                              <div className="grid grid-cols-2 gap-3 max-h-[340px] overflow-y-auto pr-1">
+                                                {subcategoriesWithImages.map((subCat) => {
+                                                  const isSubHovered =
+                                                    subCat.id === selectedSubCat?.id;
+
+                                                  return (
+                                                    <Link
+                                                      key={subCat.id}
+                                                      href={getCategoryLink(link.href, subCat)}
+                                                      onClick={() => setActiveDropdown(null)}
+                                                      onMouseEnter={() =>
+                                                        setHoveredSubcategoryMap((prev) => ({
+                                                          ...prev,
+                                                          [selectedParent.id]: subCat.id,
+                                                        }))
+                                                      }
+                                                      className={`group/imgcard relative h-36 sm:h-40 rounded-xl overflow-hidden border transition-all duration-200 cursor-pointer block ${
+                                                        isSubHovered
+                                                          ? "border-stone-900 ring-2 ring-stone-900/40 shadow-md"
+                                                          : "border-stone-200 hover:border-stone-400"
+                                                      }`}
+                                                    >
+                                                      <Image
+                                                        src={subCat.image!}
+                                                        alt={subCat.name}
+                                                        fill
+                                                        className="object-cover group-hover/imgcard:scale-105 transition-transform duration-300"
+                                                        sizes="240px"
+                                                      />
+                                                      {/* Default subtle gradient shade + Hover overlay revealing subcategory name naturally */}
+                                                      <div
+                                                        className={`absolute inset-0 transition-all duration-200 flex flex-col justify-end p-3.5 ${
+                                                          isSubHovered
+                                                            ? "bg-stone-950/80 backdrop-blur-[2px]"
+                                                            : "bg-gradient-to-t from-stone-950/70 via-stone-950/20 to-transparent group-hover/imgcard:bg-stone-950/80 group-hover/imgcard:backdrop-blur-[2px]"
+                                                        }`}
+                                                      >
+                                                        <span className="text-xs sm:text-sm font-semibold text-white line-clamp-2 leading-snug">
+                                                          {subCat.name}
+                                                        </span>
+                                                        {subCat.itemCount > 0 && (
+                                                          <span className="text-[11px] text-stone-300 font-medium mt-1">
+                                                            {subCat.itemCount}{" "}
+                                                            {subCat.itemCount === 1
+                                                              ? "trip"
+                                                              : "trips"}
+                                                          </span>
+                                                        )}
+                                                      </div>
+                                                    </Link>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
 
-                                      {/* Right Subcategories (col-span-7) */}
-                                      <div className="col-span-7 pl-3 space-y-2 flex flex-col justify-between">
-                                        <div>
-                                          {subcategories.length > 0 ? (
-                                            <div className="space-y-0.5 max-h-[220px] overflow-y-auto pr-1">
-                                              {subcategories.map((subCat) => (
-                                                <Link
-                                                  key={subCat.id}
-                                                  href={getCategoryLink(link.href, subCat)}
-                                                  onClick={() => setActiveDropdown(null)}
-                                                  className="group/sub flex items-center justify-between p-2 rounded-lg hover:bg-amber-50/70 transition-colors"
-                                                >
-                                                  <div className="flex-1 min-w-0 pr-1">
-                                                    <div className="text-xs font-semibold text-stone-800 group-hover/sub:text-amber-900 transition-colors truncate">
-                                                      {subCat.name}
-                                                    </div>
-                                                  </div>
-                                                  <ChevronRight className="w-3 h-3 text-stone-400 group-hover/sub:text-amber-700 opacity-0 group-hover/sub:opacity-100 transition-all shrink-0" />
-                                                </Link>
-                                              ))}
-                                            </div>
-                                          ) : (
-                                            <div className="py-4 text-center bg-stone-50/70 rounded-xl p-3 space-y-2">
-                                              <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-                                                {selectedParent.description}
-                                              </p>
-                                              <Link
-                                                href={getCategoryLink(link.href, selectedParent)}
-                                                onClick={() => setActiveDropdown(null)}
-                                                className="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 hover:text-amber-900"
-                                              >
-                                                <span>Explore {selectedParent.name}</span>
-                                                <ArrowRight className="w-3 h-3" />
-                                              </Link>
-                                            </div>
-                                          )}
-                                        </div>
-
-                                        {/* Bottom Action Bar */}
-                                        <div className="pt-2 border-t border-stone-100">
-                                          <Link
-                                            href={link.href}
-                                            onClick={() => setActiveDropdown(null)}
-                                            className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-stone-50 hover:bg-amber-50 text-xs font-semibold text-stone-700 hover:text-amber-900 transition-colors"
-                                          >
-                                            <span>All {link.label}</span>
-                                            <ArrowRight className="w-3.5 h-3.5 text-amber-700" />
-                                          </Link>
-                                        </div>
+                                      {/* Bottom Bar: High-Contrast Pure Navigation Link */}
+                                      <div className="pt-3.5 border-t border-stone-200 flex items-center justify-end">
+                                        <Link
+                                          href={link.href}
+                                          onClick={() => setActiveDropdown(null)}
+                                          className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-900 hover:text-stone-700 transition-colors group/all"
+                                        >
+                                          <span>View All {link.label}</span>
+                                          <ArrowRight className="w-3.5 h-3.5 text-stone-900 transition-transform group-hover/all:translate-x-0.5" />
+                                        </Link>
                                       </div>
                                     </div>
                                   );

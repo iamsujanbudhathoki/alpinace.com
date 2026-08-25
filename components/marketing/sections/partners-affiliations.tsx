@@ -81,7 +81,7 @@ export function PartnersAffiliationsSection() {
   return (
     <section aria-label="Official Partners and Affiliations" className="w-full bg-slate-50/60 py-10 sm:py-12 overflow-hidden relative select-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 text-center">
-        <span className="text-xs font-extrabold uppercase tracking-widest text-amber-800 bg-amber-100/80 px-3.5 py-1 rounded-full border border-amber-200/80 inline-block mb-2">
+        <span className="text-xs font-bold uppercase tracking-wider text-stone-700 bg-stone-100 px-3.5 py-1 rounded-full border border-stone-200 inline-block mb-2">
           Recognized & Certified
         </span>
         <h3 className="font-heading text-lg sm:text-xl font-bold text-slate-900 tracking-tight">

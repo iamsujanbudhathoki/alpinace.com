@@ -25,7 +25,7 @@ export function PackageFaqs({
   if (!faqs || faqs.length === 0) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8 sm:pb-12">
       {/* Header */}
       <div className="pb-3 border-b border-stone-200">
         <h2 className="type-heading-xl">

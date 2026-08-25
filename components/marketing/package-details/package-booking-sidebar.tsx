@@ -10,7 +10,7 @@ import {
   Check,
 } from "lucide-react";
 import { PackageInquiryModal } from "./package-inquiry-modal";
-import { BookingPackageType } from "@/lib/admin-data";
+import { InquiryType } from "@/lib/admin-data";
 
 export interface BookingAddonItem {
   id: string;
@@ -32,7 +32,7 @@ export interface PackageBookingSidebarProps {
   priceLabel?: string;
   bookButtonLabel?: string;
   trustBadges?: { icon?: React.ReactNode; text: string }[];
-  packageType?: BookingPackageType;
+  packageType?: InquiryType;
   isBooked?: boolean;
 }
 
@@ -47,7 +47,7 @@ export function PackageBookingSidebar({
   priceLabel = "Starting from",
   bookButtonLabel = "Book Now",
   trustBadges,
-  packageType = BookingPackageType.TREKKING,
+  packageType = InquiryType.TREKKING,
   isBooked = false,
 }: PackageBookingSidebarProps) {
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
@@ -60,12 +60,12 @@ export function PackageBookingSidebar({
     <aside className="w-full">
       <div className="bg-white border border-stone-200 rounded-sm shadow-md overflow-hidden">
         {/* Pricing Header */}
-        <div className="bg-amber-50/90 border-b border-amber-200/80 p-4.5 sm:p-5 relative overflow-hidden">
+        <div className="bg-stone-900 border-b border-stone-800 p-4.5 sm:p-5 relative overflow-hidden text-white">
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="type-caption text-amber-800 font-bold uppercase tracking-wider">
+            <span className="type-caption text-stone-300 font-bold uppercase tracking-wider">
               Trip Rate
             </span>
-            <span className="type-caption text-stone-600 font-medium">
+            <span className="type-caption text-stone-400 font-medium">
               {durationDays} Days Total
             </span>
           </div>
@@ -192,7 +192,7 @@ export function PackageBookingSidebar({
               <button
                 type="button"
                 onClick={onBookClick}
-                className="w-full bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                className="w-full bg-stone-900 hover:bg-stone-800 active:bg-stone-950 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span>{bookButtonLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />

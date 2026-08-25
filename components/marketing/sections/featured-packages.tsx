@@ -11,7 +11,9 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
+  Footprints,
+  Compass,
+  Mountain,
 } from "lucide-react";
 import { apiClient } from "@/lib/services/api-client";
 import { TravelPackage } from "@/lib/home-data";
@@ -170,8 +172,8 @@ export function FeaturedPackages({
     activeTab === "treks"
       ? treks
       : activeTab === "tours"
-      ? tours
-      : expeditions;
+        ? tours
+        : expeditions;
 
   // Re-initialize Embla when switching active tab
   useEffect(() => {
@@ -201,64 +203,58 @@ export function FeaturedPackages({
 
   const exploreInfo = getExploreAllLink(activeTab);
 
-  const tabs: { key: FeaturedTab; label: string; count: number }[] = [
-    { key: "treks", label: "Treks", count: treks.length },
-    { key: "tours", label: "Tours", count: tours.length },
-    { key: "expeditions", label: "Expeditions", count: expeditions.length },
+  const tabs = [
+    { key: "treks" as FeaturedTab, label: "Treks", count: treks.length, icon: Footprints },
+    { key: "tours" as FeaturedTab, label: "Tours", count: tours.length, icon: Compass },
+    { key: "expeditions" as FeaturedTab, label: "Expeditions", count: expeditions.length, icon: Mountain },
   ];
 
   return (
-    <section className="py-12 sm:py-16 bg-stone-50/50 overflow-hidden border-b border-stone-200/60">
+    <section className="py-12 sm:py-16 bg-stone-50/50 overflow-hidden border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 pb-4 border-b border-stone-200/80">
-          <div className="space-y-1">
-            
-            <h2 className="type-heading-xl text-2xl sm:text-3xl text-stone-900 font-extrabold tracking-tight">
+        {/* Centered Section Header */}
+        <div className="flex flex-col items-center text-center space-y-3 mb-8 pb-5 border-b border-stone-200">
+          <div className="space-y-1 max-w-xl mx-auto">
+            <span className="text-amber-800 text-xs font-bold block tracking-normal">
+              Sherpa-Guided Journeys
+            </span>
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
               Featured Treks &amp; Expeditions
             </h2>
-            <p className="text-stone-600 text-xs sm:text-sm font-normal">
+            <p className="text-stone-700 text-xs sm:text-sm font-normal mt-1 leading-relaxed">
               Guided Himalayan routes organized directly by our team in Kathmandu.
             </p>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6 self-start md:self-auto">
-            {/* Tabs */}
-            <div className="flex items-center gap-2 border-b border-stone-200">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab.key;
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
-                    className={`px-3 py-2 text-sm font-semibold transition-all cursor-pointer flex items-center gap-1.5 border-b-2 ${
-                      isActive
-                        ? "border-amber-700 text-stone-900"
-                        : "border-transparent text-stone-500 hover:text-stone-800"
+          {/* Centered Category Navigation Tabs */}
+          <div className="flex items-center justify-center gap-1.5 sm:gap-3 overflow-x-auto max-w-full scrollbar-none pt-3">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.key;
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 border-b-2 whitespace-nowrap ${
+                    isActive
+                      ? "border-stone-900 text-stone-900 font-bold"
+                      : "border-transparent text-stone-700 hover:text-stone-900 font-medium"
+                  }`}
+                  aria-selected={isActive}
+                  role="tab"
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-stone-900" : "text-stone-500"}`} />
+                  <span>{tab.label}</span>
+                  <span
+                    className={`text-[11px] px-1.5 py-0.5 rounded-sm font-bold ${
+                      isActive ? "bg-stone-900 text-white" : "bg-stone-200/80 text-stone-700"
                     }`}
-                    aria-selected={isActive}
-                    role="tab"
                   >
-                    <span>{tab.label}</span>
-                    <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium ${
-                        isActive ? "bg-amber-100 text-amber-900" : "bg-stone-100 text-stone-500"
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <Link
-              href={exploreInfo.href}
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 hover:text-amber-950 transition-colors group shrink-0"
-            >
-              <span>{exploreInfo.label}</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -270,14 +266,14 @@ export function FeaturedPackages({
               <button
                 onClick={scrollPrev}
                 aria-label="Previous Slide"
-                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white text-stone-800 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-100 hover:scale-105 transition-all duration-200 cursor-pointer"
+                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-100 hover:scale-105 transition-all duration-200 cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={scrollNext}
                 aria-label="Next Slide"
-                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white text-stone-800 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-100 hover:scale-105 transition-all duration-200 cursor-pointer"
+                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-100 hover:scale-105 transition-all duration-200 cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -299,8 +295,8 @@ export function FeaturedPackages({
               ))}
             </div>
           ) : currentPackages.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 sm:p-12 text-center space-y-3 border border-stone-200/80 shadow-2xs">
-              <p className="text-sm font-medium text-stone-600">
+            <div className="bg-white rounded-sm p-8 sm:p-12 text-center space-y-3 border border-stone-200 shadow-2xs">
+              <p className="text-sm font-medium text-stone-700">
                 No featured {activeTab} available at this moment.
               </p>
               <Link
@@ -312,7 +308,7 @@ export function FeaturedPackages({
               </Link>
             </div>
           ) : (
-            <div className="overflow-hidden cursor-grab active:cursor-grabbing py-2 -mx-2 px-2" ref={emblaRef}>
+            <div className="overflow-hidden cursor-grab active:cursor-grabbing py-2 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8" ref={emblaRef}>
               <div className="flex gap-5">
                 {currentPackages.map((pkg) => {
                   const packageHref = getPackageLink(pkg, activeTab);
@@ -324,43 +320,45 @@ export function FeaturedPackages({
                     >
                       <Link
                         href={packageHref}
-                        className="group h-full flex flex-col bg-white rounded-sm border border-stone-200 hover:border-stone-300 hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden"
+                        className="group h-full flex flex-col bg-white rounded-sm border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden"
                       >
                         {/* Image Frame */}
-                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
                           <img
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
-                            className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out opacity-95 group-hover:opacity-100"
+                            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent pointer-events-none" />
 
                           {/* Top Badges */}
                           {pkg.region && (
-                            <div className="absolute top-3 left-3 bg-stone-900/80 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm border border-stone-700">
+                            <div className="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-xs text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm border border-white/10">
                               {pkg.region}
                             </div>
                           )}
 
-                          <div className="absolute top-3 right-3 bg-white/95 text-stone-900 text-[11px] font-bold px-2 py-0.5 rounded-sm flex items-center gap-1 border border-stone-200">
-                            <Star className="w-3 h-3 text-amber-600 fill-amber-600" />
-                            <span>{pkg.rating.toFixed(1)}</span>
-                          </div>
+                          {pkg.rating > 0 && (
+                            <div className="absolute top-3 right-3 bg-white/95 text-stone-900 text-[11px] font-bold px-2 py-0.5 rounded-sm flex items-center gap-1 border border-stone-200">
+                              <Star className="w-3 h-3 text-amber-600 fill-amber-600" />
+                              <span>{pkg.rating.toFixed(1)}</span>
+                            </div>
+                          )}
                         </div>
 
                         {/* Card Content */}
                         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                           <div className="space-y-2">
                             {pkg.difficulty && (
-                              <div className="text-[10px] font-semibold uppercase tracking-wider text-amber-900 bg-amber-50 px-2.5 py-0.5 rounded-sm border border-amber-200 inline-block">
+                              <span className="text-[11px] font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-sm border border-amber-200 inline-block">
                                 {pkg.difficulty}
-                              </div>
+                              </span>
                             )}
-                            <h3 className="font-heading text-base font-bold text-stone-900 leading-snug group-hover:text-amber-800 transition-colors line-clamp-2">
+                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-amber-800 transition-colors line-clamp-2">
                               {pkg.title}
                             </h3>
                             {pkg.shortDesc && (
-                              <p className="text-stone-600 text-xs leading-relaxed font-normal line-clamp-2">
+                              <p className="text-stone-700 text-xs sm:text-sm leading-relaxed font-normal line-clamp-2">
                                 {pkg.shortDesc.replace(/<[^>]*>?/gm, "")}
                               </p>
                             )}
@@ -368,28 +366,28 @@ export function FeaturedPackages({
 
                           {/* Metadata & Pricing Footer */}
                           <div className="pt-3 border-t border-stone-100 space-y-3">
-                            <div className="flex items-center justify-between text-xs text-stone-600 font-semibold">
-                              <span className="flex items-center gap-1.5">
-                                <Clock className="w-3.5 h-3.5 text-stone-400" />
-                                {pkg.durationDays} Days
+                            <div className="flex items-center justify-between text-xs text-stone-800 font-semibold">
+                              <span className="flex items-center gap-1.5 text-stone-800">
+                                <Clock className="w-3.5 h-3.5 text-stone-500" />
+                                <span>{pkg.durationDays} Days</span>
                               </span>
                               {pkg.maxAltitudeMeters > 0 && (
-                                <span className="flex items-center gap-1.5 text-stone-800 font-bold">
-                                  <TrendingUp className="w-3.5 h-3.5 text-amber-700" />
-                                  {pkg.maxAltitudeMeters.toLocaleString()}m
+                                <span className="flex items-center gap-1.5 text-stone-900 font-bold">
+                                  <TrendingUp className="w-3.5 h-3.5 text-amber-800" />
+                                  <span>{pkg.maxAltitudeMeters.toLocaleString()}m max</span>
                                 </span>
                               )}
                             </div>
 
                             <div className="flex items-center justify-between pt-1">
                               <div>
-                                <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider block">Starting from</span>
-                                <span className="text-base sm:text-lg font-black text-stone-900">
-                                  ${pkg.priceUSD.toLocaleString()} <span className="text-[11px] font-normal text-stone-500">USD</span>
+                                <span className="text-xs text-stone-500 font-medium block">Starting from</span>
+                                <span className="text-base sm:text-lg font-extrabold text-stone-900">
+                                  ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-stone-600">USD</span>
                                 </span>
                               </div>
 
-                              <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-stone-100 text-stone-800 group-hover:bg-amber-800 group-hover:text-white text-xs font-semibold transition-all duration-200">
+                              <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-stone-100 text-stone-900 group-hover:bg-stone-900 group-hover:text-white text-xs font-semibold transition-all duration-200">
                                 <span>Explore</span>
                                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                               </div>
@@ -404,44 +402,37 @@ export function FeaturedPackages({
             </div>
           )}
 
-          {/* Pagination Indicators & Slide Counter */}
-          {!loading && currentPackages.length > 1 && (
-            <div className="flex items-center justify-between mt-6 px-1">
-              <div className="text-xs font-semibold text-stone-500">
-                Showing <span className="text-stone-900 font-bold">{selectedIndex + 1}</span> of <span className="text-stone-900 font-bold">{scrollSnaps.length}</span>
+          {/* Pagination Indicators, Slide Counter & View All Link */}
+          {!loading && currentPackages.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-1 pt-2">
+              <div className="flex items-center gap-4 text-xs font-semibold text-stone-700">
+                <span>
+                  Showing <span className="text-stone-900 font-bold">{selectedIndex + 1}</span> of <span className="text-stone-900 font-bold">{scrollSnaps.length}</span>
+                </span>
+
+                <div className="flex items-center gap-1.5">
+                  {scrollSnaps.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => scrollTo(idx)}
+                      aria-label={`Go to slide ${idx + 1}`}
+                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                        idx === selectedIndex
+                          ? "w-8 bg-stone-900"
+                          : "w-2 bg-stone-300 hover:bg-stone-400"
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                {scrollSnaps.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => scrollTo(idx)}
-                    aria-label={`Go to slide ${idx + 1}`}
-                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                      idx === selectedIndex
-                        ? "w-8 bg-amber-700"
-                        : "w-2 bg-stone-300 hover:bg-stone-400"
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <div className="flex md:hidden items-center gap-1">
-                <button
-                  onClick={scrollPrev}
-                  aria-label="Previous Slide"
-                  className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-700 flex items-center justify-center"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={scrollNext}
-                  aria-label="Next Slide"
-                  className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-700 flex items-center justify-center"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+              <Link
+                href={exploreInfo.href}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 hover:text-amber-950 transition-colors group shrink-0"
+              >
+                <span>{exploreInfo.label}</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
           )}
         </div>

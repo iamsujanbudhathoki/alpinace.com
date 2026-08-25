@@ -318,7 +318,7 @@ export function SiteHeader() {
                 <button
                   type="button"
                   onClick={detailNav.onBookClick}
-                  className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+                  className="bg-stone-900 hover:bg-stone-800 active:bg-stone-950 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
                 >
                   <span>{detailNav.bookButtonLabel || "Book Now"}</span>
                 </button>
@@ -338,7 +338,7 @@ export function SiteHeader() {
                 priority
                 className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-sm border border-stone-200"
               />
-              <span className="font-heading text-sm sm:text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
+              <span className="font-heading text-sm sm:text-base font-bold text-zinc-900 group-hover:text-stone-900 transition-colors">
                 {settings.siteName || "Alpine Ace"}
               </span>
             </Link>
@@ -371,20 +371,20 @@ export function SiteHeader() {
                       onClick={() => setActiveDropdown(null)}
                       className={`relative pb-1 text-sm font-medium transition-colors flex items-center gap-1 cursor-pointer ${
                         isActive
-                          ? "text-amber-800 font-semibold"
-                          : "text-slate-600 hover:text-amber-800"
+                          ? "text-stone-900 font-semibold"
+                          : "text-slate-600 hover:text-stone-900"
                       }`}
                     >
                       <span>{link.label}</span>
                       {hasDropdown && (
                         <ChevronDown
-                          className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-400 group-hover:text-amber-700 ${
-                            isDropdownOpen ? "rotate-180 text-amber-700" : ""
+                          className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-400 group-hover:text-stone-900 ${
+                            isDropdownOpen ? "rotate-180 text-stone-900" : ""
                           }`}
                         />
                       )}
                       {isActive && (
-                        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-700 rounded-full" />
+                        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-stone-900 rounded-full" />
                       )}
                     </Link>
 
@@ -853,7 +853,7 @@ export function SiteHeader() {
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-md bg-amber-800 text-white py-3 px-4 font-semibold text-sm shadow-md transition-colors"
+                className="flex items-center justify-center gap-2 rounded-md bg-stone-900 hover:bg-stone-800 text-white py-3 px-4 font-semibold text-sm shadow-md transition-colors"
               >
                 <span>Plan Your Trip</span>
                 <ArrowRight className="w-4 h-4" />

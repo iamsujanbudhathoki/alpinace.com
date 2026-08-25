@@ -75,13 +75,13 @@ export function PackageTabsNav({
               onClick={() => handleTabClick(tab.key)}
               className={`px-3 py-1.5 rounded-md font-medium text-xs whitespace-nowrap transition-all relative cursor-pointer shrink-0 ${
                 isActive
-                  ? "text-amber-900 bg-amber-50/80 font-bold"
-                  : "text-stone-600 hover:text-amber-900 hover:bg-stone-100/60"
+                  ? "text-stone-900 bg-stone-100 font-bold"
+                  : "text-stone-600 hover:text-stone-900 hover:bg-stone-100/60"
               }`}
             >
               <span>{tab.label}</span>
               {isActive && (
-                <span className="absolute bottom-0 inset-x-1.5 h-0.5 bg-amber-700 rounded-full" />
+                <span className="absolute bottom-0 inset-x-1.5 h-0.5 bg-stone-900 rounded-full" />
               )}
             </button>
           );

@@ -34,32 +34,7 @@ export function SiteFooter() {
               Sherpa-owned trek and expedition agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang with certified leaders and authentic mountain teahouses.
             </p>
 
-            {/* Certifications and Badges */}
-            <div className="pt-2 space-y-2">
-              <span className="text-xs text-amber-700 font-medium block">
-                Authorized Operator
-              </span>
-              <div className="flex flex-wrap gap-2">
-                <div
-                  className="border border-stone-300 rounded-sm px-2.5 py-1 flex items-center gap-1.5"
-                  title="Trekking Agencies Association of Nepal"
-                >
-                  <ShieldCheck className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                  <span className="text-xs text-zinc-800 font-medium">
-                    TAAN Member
-                  </span>
-                </div>
-                <div
-                  className="border border-stone-300 rounded-sm px-2.5 py-1 flex items-center gap-1.5"
-                  title="Nepal Mountaineering Association"
-                >
-                  <Award className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                  <span className="text-xs text-zinc-800 font-medium">
-                    NMA Certified
-                  </span>
-                </div>
-              </div>
-            </div>
+      
 
             {/* Social Links */}
             <div className="flex items-center gap-3 pt-2 text-slate-600">

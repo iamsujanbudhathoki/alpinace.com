@@ -279,9 +279,9 @@ export function SiteHeader() {
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:px-8 w-full animate-in fade-in duration-200">
             <div
               ref={detailTabsContainerRef}
-              className="flex-1 min-w-0 flex items-center overflow-x-auto scrollbar-none py-0.5 touch-pan-x"
+              className="flex-1 min-w-0 flex items-center overflow-x-auto scrollbar-none touch-pan-x self-stretch"
             >
-              <div className="flex items-center gap-1 sm:gap-1.5">
+              <div className="flex items-stretch h-full">
                 {detailNav.tabs.map((tab) => {
                   const isActive = detailNav.activeTab === tab.key;
                   return (
@@ -290,13 +290,16 @@ export function SiteHeader() {
                       data-tab-key={tab.key}
                       type="button"
                       onClick={() => handleDetailTabClick(tab.key)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
-                        isActive
-                          ? "bg-amber-100/80 text-amber-900 font-bold border border-amber-300/60 shadow-2xs"
-                          : "text-stone-600 hover:text-amber-900 hover:bg-stone-100/70"
-                      }`}
+                      className={`
+                        relative px-2.5 sm:px-3.5 py-0 text-[11px] sm:text-xs font-medium whitespace-nowrap shrink-0 cursor-pointer
+                        transition-colors duration-200 border-b-2 h-full flex items-center
+                        ${isActive
+                          ? "border-amber-700 text-amber-900 font-semibold"
+                          : "border-transparent text-stone-500 hover:text-stone-800 hover:border-stone-300"
+                        }
+                      `}
                     >
-                      <span>{tab.label}</span>
+                      {tab.label}
                     </button>
                   );
                 })}
@@ -318,9 +321,10 @@ export function SiteHeader() {
                 <button
                   type="button"
                   onClick={detailNav.onBookClick}
-                  className="bg-stone-900 hover:bg-stone-800 active:bg-stone-950 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+                  className="bg-stone-900 hover:bg-stone-800 active:bg-stone-950 text-white font-semibold text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
                 >
-                  <span>{detailNav.bookButtonLabel || "Book Now"}</span>
+                  <span className="hidden sm:inline">{detailNav.bookButtonLabel || "Book Now"}</span>
+                  <span className="sm:hidden">Book</span>
                 </button>
               )}
             </div>

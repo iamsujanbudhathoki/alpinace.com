@@ -19,6 +19,21 @@ const getRemotePatterns = () => {
       hostname: "images.unsplash.com",
       pathname: "/**",
     },
+    {
+      protocol: "https",
+      hostname: "media.alpineacetreks.com",
+      pathname: "/**",
+    },
+    {
+      protocol: "http",
+      hostname: "media.alpineacetreks.com",
+      pathname: "/**",
+    },
+    {
+      protocol: "https",
+      hostname: "alpineacetreks.com",
+      pathname: "/**",
+    },
   ];
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;

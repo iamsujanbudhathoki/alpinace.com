@@ -529,118 +529,32 @@ export function SiteHeader() {
                                           </div>
                                         </div>
 
-                                        {/* Column 2: Relevant Subcategories Text Navigation */}
-                                        <div
-                                          className={`${
-                                            hasSubCatImages ? "col-span-4 px-3" : "col-span-8 pl-6"
-                                          } space-y-3 flex flex-col justify-between`}
-                                        >
+                                        {/* Column 2: Subcategories Visual Image Grid (col-span-8) */}
+                                        <div className="col-span-8 pl-6 flex flex-col justify-between">
                                           <div>
-                                            <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-3 px-1">
+                                            <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-3">
                                               {selectedParent.name} Subcategories
                                             </div>
 
-                                            {subcategories.length > 0 ? (
-                                              <div
-                                                className={`gap-1.5 ${
-                                                  hasSubCatImages
-                                                    ? "flex flex-col space-y-1 max-h-[340px] overflow-y-auto pr-1"
-                                                    : "grid grid-cols-2 gap-x-6 gap-y-2"
-                                                }`}
-                                              >
-                                                {subcategories.map((subCat) => {
-                                                  const isSubHovered =
-                                                    subCat.id === selectedSubCat?.id;
-
-                                                  return (
-                                                    <Link
-                                                      key={subCat.id}
-                                                      href={getCategoryLink(link.href, subCat)}
-                                                      onClick={() => setActiveDropdown(null)}
-                                                      onMouseEnter={() =>
-                                                        setHoveredSubcategoryMap((prev) => ({
-                                                          ...prev,
-                                                          [selectedParent.id]: subCat.id,
-                                                        }))
-                                                      }
-                                                      className={`group/sub p-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-between gap-2 ${
-                                                        isSubHovered
-                                                          ? "bg-stone-100 text-stone-900 font-semibold"
-                                                          : "hover:bg-stone-50 text-stone-900"
-                                                      }`}
-                                                    >
-                                                      <span className="text-xs sm:text-sm font-semibold text-stone-900 group-hover/sub:text-stone-900 transition-colors truncate">
-                                                        {subCat.name}
-                                                      </span>
-                                                      {subCat.itemCount > 0 && (
-                                                        <span className="text-xs text-stone-600 font-medium shrink-0">
-                                                          ({subCat.itemCount})
-                                                        </span>
-                                                      )}
-                                                    </Link>
-                                                  );
-                                                })}
-                                              </div>
-                                            ) : (
-                                              <div className="py-4 px-1">
-                                                <Link
-                                                  href={getCategoryLink(link.href, selectedParent)}
-                                                  onClick={() => setActiveDropdown(null)}
-                                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-900 hover:text-stone-700 pt-1"
-                                                >
-                                                  <span>Explore {selectedParent.name}</span>
-                                                  <ArrowRight className="w-3.5 h-3.5" />
-                                                </Link>
-                                              </div>
-                                            )}
-                                          </div>
-                                        </div>
-
-                                        {/* Column 3: Subcategories Visual Exploration Grid (Pure Images by default, Name Overlay strictly on Hover) */}
-                                        {hasSubCatImages && (
-                                          <div className="col-span-4 pl-4 flex flex-col justify-between">
-                                            <div>
-                                              <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-3">
-                                                Subcategory Visuals
-                                              </div>
-
-                                              <div className="grid grid-cols-2 gap-3 max-h-[340px] overflow-y-auto pr-1">
+                                            {hasSubCatImages ? (
+                                              <div className="grid grid-cols-3 gap-3 max-h-[350px] overflow-y-auto pr-1">
                                                 {subcategoriesWithImages.map((subCat) => {
-                                                  const isSubHovered =
-                                                    subCat.id === selectedSubCat?.id;
-
                                                   return (
                                                     <Link
                                                       key={subCat.id}
                                                       href={getCategoryLink(link.href, subCat)}
                                                       onClick={() => setActiveDropdown(null)}
-                                                      onMouseEnter={() =>
-                                                        setHoveredSubcategoryMap((prev) => ({
-                                                          ...prev,
-                                                          [selectedParent.id]: subCat.id,
-                                                        }))
-                                                      }
-                                                      className={`group/imgcard relative h-36 sm:h-40 rounded-xl overflow-hidden border transition-all duration-200 cursor-pointer block ${
-                                                        isSubHovered
-                                                          ? "border-stone-900 ring-2 ring-stone-900/40 shadow-md"
-                                                          : "border-stone-200 hover:border-stone-400"
-                                                      }`}
+                                                      className="group/imgcard relative h-36 sm:h-40 rounded-xl overflow-hidden border border-stone-200 hover:border-stone-900 transition-all duration-200 cursor-pointer block hover:shadow-md"
                                                     >
                                                       <Image
                                                         src={subCat.image!}
                                                         alt={subCat.name}
                                                         fill
                                                         className="object-cover group-hover/imgcard:scale-105 transition-transform duration-300"
-                                                        sizes="240px"
+                                                        sizes="280px"
                                                       />
-                                                      {/* Pure clean image by default; text overlay reveals strictly on hover */}
-                                                      <div
-                                                        className={`absolute inset-0 transition-opacity duration-200 flex flex-col justify-end p-3.5 bg-stone-950/80 backdrop-blur-[2px] ${
-                                                          isSubHovered
-                                                            ? "opacity-100"
-                                                            : "opacity-0 group-hover/imgcard:opacity-100"
-                                                        }`}
-                                                      >
+                                                      {/* Clean pure image by default; text overlay reveals strictly on hover */}
+                                                      <div className="absolute inset-0 transition-opacity duration-200 flex flex-col justify-end p-3.5 bg-stone-950/85 backdrop-blur-[2px] opacity-0 group-hover/imgcard:opacity-100">
                                                         <span className="text-xs sm:text-sm font-semibold text-white line-clamp-2 leading-snug">
                                                           {subCat.name}
                                                         </span>
@@ -657,9 +571,39 @@ export function SiteHeader() {
                                                   );
                                                 })}
                                               </div>
-                                            </div>
+                                            ) : subcategories.length > 0 ? (
+                                              /* Clean text grid fallback if API returns zero images for subcategories */
+                                              <div className="grid grid-cols-2 gap-x-6 gap-y-2 max-h-[340px] overflow-y-auto pr-1">
+                                                {subcategories.map((subCat) => (
+                                                  <Link
+                                                    key={subCat.id}
+                                                    href={getCategoryLink(link.href, subCat)}
+                                                    onClick={() => setActiveDropdown(null)}
+                                                    className="p-2.5 rounded-lg hover:bg-stone-100 text-stone-900 font-semibold flex items-center justify-between text-xs sm:text-sm"
+                                                  >
+                                                    <span>{subCat.name}</span>
+                                                    {subCat.itemCount > 0 && (
+                                                      <span className="text-stone-500 font-normal">
+                                                        ({subCat.itemCount})
+                                                      </span>
+                                                    )}
+                                                  </Link>
+                                                ))}
+                                              </div>
+                                            ) : (
+                                              <div className="py-4 px-1">
+                                                <Link
+                                                  href={getCategoryLink(link.href, selectedParent)}
+                                                  onClick={() => setActiveDropdown(null)}
+                                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-900 hover:text-stone-700 pt-1"
+                                                >
+                                                  <span>Explore {selectedParent.name}</span>
+                                                  <ArrowRight className="w-3.5 h-3.5" />
+                                                </Link>
+                                              </div>
+                                            )}
                                           </div>
-                                        )}
+                                        </div>
                                       </div>
 
                                       {/* Bottom Bar: High-Contrast Pure Navigation Link */}

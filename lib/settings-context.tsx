@@ -6,6 +6,7 @@ import { SettingService } from "@/lib/services/admin-service";
 export interface SiteSettings {
   siteName: string;
   tagline: string;
+  siteDescription: string;
   contactEmail: string;
   contactPhone: string;
   emergencyPhone: string;
@@ -29,6 +30,7 @@ export interface SiteSettings {
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   siteName: "",
   tagline: "",
+  siteDescription: "",
   contactEmail: "",
   contactPhone: "",
   emergencyPhone: "",

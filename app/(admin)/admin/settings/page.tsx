@@ -36,6 +36,7 @@ export default function AdminSettingsPage() {
     // Agency Profile
     siteName: "",
     tagline: "",
+    siteDescription: "",
     contactEmail: "",
     contactPhone: "",
     emergencyPhone: "",
@@ -172,6 +173,19 @@ export default function AdminSettingsPage() {
                 onChange={(e) => handleChange("tagline", e.target.value)}
                 placeholder="e.g. Venture Beyond the Ordinary"
                 className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-slate-700 font-bold mb-1.5">
+                Agency Bio / Footer Summary
+              </label>
+              <textarea
+                rows={3}
+                value={formData.siteDescription || ""}
+                onChange={(e) => handleChange("siteDescription", e.target.value)}
+                placeholder="e.g. Sherpa-owned trek and expedition agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang..."
+                className="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-medium focus:bg-white focus:outline-none resize-y"
               />
             </div>
 

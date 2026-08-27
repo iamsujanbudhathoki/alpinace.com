@@ -55,11 +55,20 @@ export default function AdminTeamsPage() {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const fetchMembers = useCallback(async () => {
     try {
       setLoading(true);
       const res = await adminTeamsApi.getAll({
-        search: searchQuery,
+        search: debouncedSearchQuery.trim() ? debouncedSearchQuery.trim() : undefined,
         status: statusFilter !== "All" ? statusFilter : undefined,
         page,
         limit,
@@ -73,7 +82,7 @@ export default function AdminTeamsPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, statusFilter, page, limit]);
+  }, [debouncedSearchQuery, statusFilter, page, limit]);
 
   useEffect(() => {
     fetchMembers();

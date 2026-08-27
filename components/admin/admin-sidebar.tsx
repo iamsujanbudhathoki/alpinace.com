@@ -142,18 +142,22 @@ export function AdminSidebar({
           href="/admin"
           onClick={handleNavClick}
           className="flex items-center gap-2.5 min-w-0"
-          title="AlpineAce Admin"
+          title="AlpineAce Admin Console"
         >
-          <div className="w-8 h-8 rounded-lg bg-slate-900 text-amber-400 flex items-center justify-center font-bold shadow-2xs shrink-0">
-            <Mountain className="w-4 h-4" />
-          </div>
+          <img
+            src="/logo.jpg"
+            alt="AlpineAce Logo"
+            className="w-8 h-8 object-cover rounded-lg border border-slate-200 shrink-0 shadow-2xs"
+          />
           {!isCollapsed && (
-            <span className="font-bold text-sm tracking-tight text-slate-900 truncate">
-              Alpine<span className="text-amber-600">Ace</span>
-              <span className="text-[10px] font-semibold text-slate-600 ml-1.5 px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">
-                Admin
+            <div className="flex flex-col min-w-0 leading-none">
+              <span className="font-bold text-sm text-slate-900 tracking-tight truncate">
+                AlpineAce
               </span>
-            </span>
+              <span className="text-[10px] font-medium text-slate-500 truncate mt-0.5">
+                Admin Console
+              </span>
+            </div>
           )}
         </Link>
       </div>

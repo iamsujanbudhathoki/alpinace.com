@@ -452,7 +452,7 @@ export function ExpeditionDetailClient({
               <section id="itinerary" className="scroll-mt-24">
                 <PackageItinerary
                   days={expedition.itinerary}
-                  title="Climbing &amp; Acclimatization Itinerary"
+                  title="Detailed Itinerary"
                   subtitle={`${expedition.itinerary.length} Days expedition schedule for ${expedition.title}`}
                 />
               </section>

@@ -30,9 +30,8 @@ interface NavSection {
   items: NavItem[];
 }
 
-const navSections: NavSection[] = [
+const navGroups: { items: NavItem[] }[] = [
   {
-    label: "Core",
     items: [
       {
         title: "Overview",
@@ -42,7 +41,6 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    label: "Catalog",
     items: [
       {
         title: "Treks",
@@ -67,22 +65,6 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    label: "Content & Media",
-    items: [
-      {
-        title: "Media Library",
-        href: "/admin/media",
-        icon: Images,
-      },
-      {
-        title: "Blogs & Articles",
-        href: "/admin/blogs",
-        icon: FileText,
-      },
-    ],
-  },
-  {
-    label: "Operations",
     items: [
       {
         title: "Bookings",
@@ -95,6 +77,16 @@ const navSections: NavSection[] = [
         icon: Inbox,
       },
       {
+        title: "Media Library",
+        href: "/admin/media",
+        icon: Images,
+      },
+      {
+        title: "Blogs & Articles",
+        href: "/admin/blogs",
+        icon: FileText,
+      },
+      {
         title: "FAQs & Guides",
         href: "/admin/faqs",
         icon: HelpCircle,
@@ -102,7 +94,6 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    label: "Preferences",
     items: [
       {
         title: "Settings",
@@ -162,20 +153,20 @@ export function AdminSidebar({
         </Link>
       </div>
 
-      {/* Navigation Groups */}
+      {/* Navigation Links */}
       <div
-        className={`flex-1 py-3 px-3 space-y-4 ${
+        className={`flex-1 py-3 px-3 space-y-3 ${
           isCollapsed ? "overflow-y-auto hover:overflow-visible" : "overflow-y-auto"
         }`}
       >
-        {navSections.map((section, idx) => (
-          <div key={section.label || idx} className="space-y-1">
-            {!isCollapsed && section.label && (
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2.5 mb-1.5">
-                {section.label}
-              </p>
-            )}
-            {section.items.map((item) => {
+        {navGroups.map((group, gIdx) => (
+          <div
+            key={gIdx}
+            className={`space-y-1 ${
+              gIdx > 0 ? "pt-3 border-t border-slate-100" : ""
+            }`}
+          >
+            {group.items.map((item) => {
               const Icon = item.icon;
               const isActive =
                 pathname === item.href ||

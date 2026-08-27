@@ -18,30 +18,48 @@ export function generateMetadata(): Metadata {
   });
 }
 
-export default function AboutView() {
-  const team = [
-    {
-      name: 'Chhewang Sherpa',
-      role: 'Co-Founder & Lead Expedition Guide',
-      desc: 'Nine Everest summits, two K2 ascents, twelve Ama Dablam routes. IFMGA-certified and ropes coordinator for all technical expeditions.',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150',
-      badge: 'IFMGA Guide'
-    },
-    {
-      name: 'Pasang Lhamu Sherpa',
-      role: 'Operations & Logistics Director',
-      desc: 'Manages permits, helicopter charters, lodge bookings, and client itineraries across Khumbu and Annapurna. 12 years coordinating Himalayan operations.',
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150',
-      badge: 'Operations Lead'
-    },
-    {
-      name: 'Dr. Rajesh Thapa',
-      role: 'Chief Medical Officer',
-      desc: 'Specialist in high-altitude physiology and emergency medicine. Oversees all medical safety protocols, acclimatization planning, and basecamp health monitoring.',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=150',
-      badge: 'MD, Altitude Medicine'
+const DEFAULT_TEAM = [
+  {
+    name: 'Chhewang Sherpa',
+    role: 'Co-Founder & Lead Expedition Guide',
+    desc: 'Nine Everest summits, two K2 ascents, twelve Ama Dablam routes. IFMGA-certified and ropes coordinator for all technical expeditions.',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150',
+    badge: 'IFMGA Guide'
+  },
+  {
+    name: 'Pasang Lhamu Sherpa',
+    role: 'Operations & Logistics Director',
+    desc: 'Manages permits, helicopter charters, lodge bookings, and client itineraries across Khumbu and Annapurna. 12 years coordinating Himalayan operations.',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150',
+    badge: 'Operations Lead'
+  },
+  {
+    name: 'Dr. Rajesh Thapa',
+    role: 'Chief Medical Officer',
+    desc: 'Specialist in high-altitude physiology and emergency medicine. Oversees all medical safety protocols, acclimatization planning, and basecamp health monitoring.',
+    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=150',
+    badge: 'MD, Altitude Medicine'
+  }
+];
+
+export default async function AboutView() {
+  let team = DEFAULT_TEAM;
+
+  try {
+    const { adminTeamsApi } = await import('@/lib/services/admin-service');
+    const res = await adminTeamsApi.getAll({ status: 'active' });
+    if (res.data && res.data.length > 0) {
+      team = res.data.map((m) => ({
+        name: m.name,
+        role: m.role,
+        desc: m.bio || 'Experienced Himalayan expedition specialist.',
+        image: m.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150',
+        badge: m.experience || 'Sherpa Team',
+      }));
     }
-  ];
+  } catch (e) {
+    console.warn('Failed to fetch team members for about page:', e);
+  }
 
   const values = [
     {

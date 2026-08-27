@@ -1123,4 +1123,79 @@ export const FaqService = {
   },
 };
 
+export interface TeamMemberItem {
+  id: string;
+  name: string;
+  role: string;
+  bio?: string;
+  avatar?: string;
+  experience?: string;
+  status: "active" | "inactive";
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TeamMemberFormValues {
+  name: string;
+  role: string;
+  bio?: string;
+  avatar?: string;
+  experience?: string;
+  status?: "active" | "inactive";
+  order?: number;
+}
+
+export const adminTeamsApi = {
+  async getAll(statusOrParams?: string | FaqQueryParams): Promise<PaginatedList<TeamMemberItem>> {
+    try {
+      const params = new URLSearchParams();
+      if (typeof statusOrParams === "object" && statusOrParams !== null) {
+        if (statusOrParams.status && statusOrParams.status !== "All") {
+          params.append("status", statusOrParams.status);
+        }
+        if (statusOrParams.search) params.append("search", statusOrParams.search);
+        if (statusOrParams.page) params.append("page", String(statusOrParams.page));
+        if (statusOrParams.limit) params.append("limit", String(statusOrParams.limit));
+      } else if (statusOrParams && statusOrParams !== "All") {
+        params.append("status", statusOrParams);
+      }
+      const query = params.toString();
+      const endpoint = query ? `/teams?${query}` : "/teams";
+      const res = await apiClient.get<TeamMemberItem[]>(endpoint);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend teams fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getById(id: string): Promise<TeamMemberItem | null> {
+    try {
+      const res = await apiClient.get<TeamMemberItem>(`/teams/${id}`);
+      return res?.data || null;
+    } catch (e) {
+      console.warn("Backend team member by id fetch error:", e);
+      return null;
+    }
+  },
+
+  async create(data: TeamMemberFormValues): Promise<ApiResponse<TeamMemberItem>> {
+    return apiClient.post<TeamMemberItem>("/teams", data);
+  },
+
+  async update(id: string, data: Partial<TeamMemberFormValues>): Promise<ApiResponse<TeamMemberItem>> {
+    return apiClient.put<TeamMemberItem>(`/teams/${id}`, data);
+  },
+
+  async delete(id: string): Promise<ApiResponse<boolean>> {
+    return apiClient.delete<boolean>(`/teams/${id}`);
+  },
+
+  async reorder(items: { id: string; order: number }[]): Promise<ApiResponse<boolean>> {
+    return apiClient.put<boolean>("/teams/reorder", { items });
+  },
+};
+
 

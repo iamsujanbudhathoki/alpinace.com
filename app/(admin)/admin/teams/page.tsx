@@ -21,8 +21,7 @@ import { Input } from "@/components/ui/input";
 import {
   Plus,
   Search,
-  ArrowUp,
-  ArrowDown,
+  GripVertical,
   User,
   Award,
 } from "lucide-react";
@@ -52,6 +51,9 @@ export default function AdminTeamsPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deletingMember, setDeletingMember] = useState<TeamMemberItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const fetchMembers = useCallback(async () => {
     try {
@@ -113,30 +115,37 @@ export default function AdminTeamsPage() {
     }
   };
 
-  const handleMoveOrder = async (index: number, direction: "up" | "down") => {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= members.length) return;
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
 
-    const newMembers = [...members];
-    const temp = newMembers[index];
-    newMembers[index] = newMembers[targetIndex];
-    newMembers[targetIndex] = temp;
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
 
-    // Re-assign order indices
-    const updatedItems = newMembers.map((m, idx) => ({
-      id: m.id,
-      order: idx + 1,
-    }));
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
 
-    setMembers(
-      newMembers.map((m, idx) => ({
-        ...m,
-        order: idx + 1,
-      }))
-    );
+    const reordered = [...members];
+    const [movedItem] = reordered.splice(draggedIndex, 1);
+    reordered.splice(targetIndex, 0, movedItem);
+
+    const updated = reordered.map((item, idx) => ({ ...item, order: idx + 1 }));
+    setMembers(updated);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
 
     try {
-      await adminTeamsApi.reorder(updatedItems);
+      await adminTeamsApi.reorder(updated.map((item) => ({ id: item.id, order: item.order })));
     } catch (err) {
       console.error("Failed to reorder team members:", err);
       fetchMembers();
@@ -216,12 +225,28 @@ export default function AdminTeamsPage() {
               <AdminTableLoading colSpan={5} rows={5} />
             ) : members.length > 0 ? (
               members.map((member, idx) => {
-                return (
-                  <AdminTableRow key={member.id}>
+                const isDragging = draggedIndex === idx;
+                const isOver = dragOverIndex === idx;
 
+                return (
+                  <AdminTableRow
+                    key={member.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, idx)}
+                    onDragOver={(e) => handleDragOver(e, idx)}
+                    onDrop={(e) => handleDrop(e, idx)}
+                    onDragEnd={() => {
+                      setDraggedIndex(null);
+                      setDragOverIndex(null);
+                    }}
+                    className={`transition-colors cursor-move ${
+                      isDragging ? "opacity-40 bg-slate-100/50" : ""
+                    } ${isOver ? "border-t-2 border-slate-900 bg-slate-100/40" : ""}`}
+                  >
                     {/* Member Info */}
                     <AdminTableCell>
                       <div className="flex items-center gap-3">
+                        <GripVertical className="w-4 h-4 text-slate-300 hover:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing" />
                         {member.avatar ? (
                           <img
                             src={member.avatar}
@@ -276,7 +301,7 @@ export default function AdminTeamsPage() {
                       <AdminStatusBadge status={member.status} />
                     </AdminTableCell>
 
-                    {/* Actions: View Profile, Edit, Delete */}
+                    {/* Actions */}
                     <AdminTableCell align="right">
                       <AdminTableActions>
                         <AdminActionButton

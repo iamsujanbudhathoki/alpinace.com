@@ -317,7 +317,7 @@ export function BlogArticleForm({
             </h2>
 
             <AdminImageUpload
-              label="Article Cover"
+              label=""
               value={formData.image || ""}
               onChange={(url, mediaId) => {
                 handleChange("image", url);

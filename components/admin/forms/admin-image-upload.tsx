@@ -15,7 +15,6 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
-import { DialogFooter } from "@/components/ui/dialog";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 
@@ -67,7 +66,6 @@ export function AdminImageUpload({
   const [isUploading, setIsUploading] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
-  const [isConfirmRemoveOpen, setIsConfirmRemoveOpen] = useState(false);
   const [showModalUploader, setShowModalUploader] = useState(false);
   const [deleteConfirmAsset, setDeleteConfirmAsset] = useState<MediaAsset | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -239,77 +237,86 @@ export function AdminImageUpload({
   const filteredAssets = assets;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <label className="font-bold text-slate-900 text-xs tracking-tight">{label}</label>
-        {value && (
-          <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 inline-flex items-center gap-1">
-            <Check className="w-3 h-3" />
-            Image Active
-          </span>
-        )}
-      </div>
+    <div className="space-y-2.5">
+      {label && (
+        <div className="flex items-center justify-between">
+          <label className="font-bold text-slate-900 text-xs tracking-tight">{label}</label>
+          {value && (
+            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 inline-flex items-center gap-1">
+              <Check className="w-3 h-3" />
+              Image Active
+            </span>
+          )}
+        </div>
+      )}
 
       {value ? (
-        /* ── Compact Active Image Preview Card ── */
-        <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            {/* Small Compact Thumbnail with Lightbox click */}
-            <div
-              onClick={(e) => openSingleImage(value, label, e.currentTarget)}
-              className="relative w-36 h-20 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-900 group cursor-pointer shadow-xs"
-              title="Click for Lightbox Full View"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={value} alt="Cover Preview" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Eye className="w-5 h-5 text-white" />
-              </div>
-            </div>
+        /* ── Modern Responsive Active Image Card ── */
+        <div className="group relative rounded-xl border border-slate-200 bg-slate-950 overflow-hidden shadow-xs">
+          <div className="relative w-full h-40 sm:h-44 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={value}
+              alt={label || "Cover Preview"}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+              onClick={(e) => openSingleImage(value, label || "Cover Image", e.currentTarget)}
+              title="Click to view full image"
+            />
+            {/* Dark gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
 
-            <div className="min-w-0 space-y-1">
-              <p className="text-xs font-bold text-slate-900 truncate max-w-[220px]">
-                {value.split("/").pop() || "Cover Image"}
-              </p>
-              <div className="flex items-center gap-2">
-                <button
+            {/* Top Lightbox Button */}
+            <button
+              type="button"
+              onClick={(e) => openSingleImage(value, label || "Cover Image", e.currentTarget)}
+              className="absolute top-2.5 right-2.5 w-7 h-7 rounded-lg bg-slate-900/80 hover:bg-slate-900 text-white backdrop-blur-sm flex items-center justify-center transition-transform active:scale-95 cursor-pointer z-10"
+              title="Full Screen View"
+            >
+              <Eye className="w-3.5 h-3.5 text-amber-400" />
+            </button>
+
+            {/* Bottom info bar & Action Buttons */}
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-end justify-between gap-2 z-10">
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-white truncate drop-shadow-xs max-w-[160px] sm:max-w-[220px]">
+                  {value.split("/").pop() || "Cover Image"}
+                </p>
+                <p className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                  <span>Selected</span>
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                <Button
                   type="button"
-                  onClick={(e) => openSingleImage(value, label, e.currentTarget)}
-                  className="text-[11px] font-bold text-amber-600 hover:text-amber-700 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                  size="sm"
+                  onClick={() => setIsLibraryOpen(true)}
+                  className="h-7 px-2.5 text-[11px] font-bold bg-white/90 hover:bg-white text-slate-900 backdrop-blur-sm border-0 shadow-sm cursor-pointer"
                 >
-                  <Eye className="w-3 h-3" />
-                  <span>View Lightbox</span>
-                </button>
+                  <FolderOpen className="w-3 h-3 mr-1 text-slate-700" />
+                  <span>Change</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    onChange("");
+                    toast.info("Cover image removed.");
+                  }}
+                  className="h-7 w-7 p-0 bg-rose-600/90 hover:bg-rose-600 text-white backdrop-blur-sm border-0 shadow-sm cursor-pointer flex items-center justify-center"
+                  title="Remove Image"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
               </div>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsLibraryOpen(true)}
-              className="text-xs font-bold h-8 px-3 border-slate-300 hover:bg-slate-50 cursor-pointer"
-            >
-              <FolderOpen className="w-3.5 h-3.5 mr-1 text-slate-600" />
-              Change Photo
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsConfirmRemoveOpen(true)}
-              className="text-xs font-bold h-8 px-2.5 text-rose-600 hover:bg-rose-50 hover:text-rose-700 cursor-pointer"
-              title="Remove Cover Image"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </Button>
           </div>
         </div>
       ) : (
         /* ── Clean Compact Dropzone Box ── */
-        <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-100/50 transition-colors relative flex flex-col items-center justify-center text-center group cursor-pointer">
+        <div className="border-2 border-dashed border-slate-300 hover:border-amber-400 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-100/50 transition-colors relative flex flex-col items-center justify-center text-center group cursor-pointer">
           <input
             type="file"
             accept="image/*"
@@ -328,13 +335,13 @@ export function AdminImageUpload({
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-800">
-                  Click or drag image file here to upload
+                  Drop image here or click to upload
                 </p>
                 <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                  High-res WebP, JPG, or PNG (Max 15MB)
+                  WebP, JPG, or PNG (Max 15MB)
                 </p>
               </div>
-              <div className="pt-2 flex items-center justify-center gap-2 z-20 relative">
+              <div className="pt-1.5 flex items-center justify-center gap-2 z-20 relative">
                 <Button
                   type="button"
                   variant="outline"
@@ -346,7 +353,7 @@ export function AdminImageUpload({
                   className="text-xs font-bold h-7 px-3 bg-white border-slate-300 hover:bg-slate-100 shadow-2xs cursor-pointer"
                 >
                   <FolderOpen className="w-3.5 h-3.5 mr-1 text-slate-500" />
-                  Media Library
+                  <span>Choose from Library</span>
                 </Button>
               </div>
             </div>
@@ -355,44 +362,6 @@ export function AdminImageUpload({
       )}
 
       {error && <p className="text-xs font-bold text-rose-600">{error}</p>}
-
-      {/* CONFIRM REMOVE MODAL */}
-      {isConfirmRemoveOpen && (
-        <AdminModal
-          isOpen={isConfirmRemoveOpen}
-          onClose={() => setIsConfirmRemoveOpen(false)}
-          title="Remove Cover Image?"
-          description="Are you sure you want to remove the cover image selection?"
-          maxWidth="sm"
-        >
-          <div className="pt-2">
-            <DialogFooter className="gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setIsConfirmRemoveOpen(false)}
-                className="text-xs font-bold h-8"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={() => {
-                  onChange("");
-                  setIsConfirmRemoveOpen(false);
-                  toast.info("Cover image removed.");
-                }}
-                className="text-xs font-bold h-8"
-              >
-                Remove
-              </Button>
-            </DialogFooter>
-          </div>
-        </AdminModal>
-      )}
 
       {/* MEDIA LIBRARY MODAL */}
       {isLibraryOpen && (

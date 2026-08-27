@@ -46,10 +46,10 @@ export default async function AboutView() {
   let team = DEFAULT_TEAM;
 
   try {
-    const { adminTeamsApi, TeamMemberItem } = await import('@/lib/services/admin-service');
+    const { adminTeamsApi } = await import('@/lib/services/admin-service');
     const res = await adminTeamsApi.getAll({ status: 'active' });
-    if (res.items && res.items.length > 0) {
-      team = res.items.map((m: any) => ({
+    if (Array.isArray(res) && res.length > 0) {
+      team = res.map((m) => ({
         name: m.name,
         role: m.role,
         desc: m.bio || 'Experienced Himalayan expedition specialist.',

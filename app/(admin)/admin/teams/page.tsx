@@ -58,9 +58,9 @@ export default function AdminTeamsPage() {
         limit,
       });
 
-      setMembers(res.items);
-      setTotalItems(res.total);
-      setTotalPages(res.totalPages);
+      setMembers(res);
+      setTotalItems(res.pagination?.count || res.length);
+      setTotalPages(res.pagination?.lastPage || 1);
     } catch (err) {
       console.error("Failed to fetch team members:", err);
     } finally {

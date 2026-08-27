@@ -16,9 +16,7 @@ import {
   CreditCard,
   FileCheck,
   Loader2,
-  Minus,
   Mountain,
-  Plus,
   X
 } from "lucide-react";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
@@ -304,7 +302,7 @@ export function PublicBookingModal({
       }}
     >
       <div className="relative flex w-full max-w-lg sm:max-w-2xl max-h-[90vh] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
-        
+
         {/* Unsaved Changes Confirmation Overlay */}
         {showExitConfirm && (
           <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
@@ -486,95 +484,32 @@ export function PublicBookingModal({
                   ) : null}
                 </div>
 
-                <div className="space-y-3 bg-slate-50/80 border border-slate-200/90 rounded-2xl p-3.5 sm:p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="block text-xs font-bold text-slate-900" id="travelers-label">
-                        Group Size / Travelers <span className="text-red-500">*</span>
-                      </span>
-                      <span className="text-[11px] text-slate-500 font-medium">
-                        Flexible Party Selection
-                      </span>
-                    </div>
-                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100/90 text-amber-900 border border-amber-200/90 shadow-2xs">
-                      {travelers === 1
-                        ? "1 Solo Traveler"
-                        : travelers === 2
-                        ? "2 Duo / Couple"
-                        : travelers <= 5
-                        ? `${travelers} Small Group`
-                        : `${travelers} Expedition Team`}
-                    </span>
-                  </div>
-
-                  {/* Main Stepper & Numeric Input */}
-                  <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl p-1.5 shadow-2xs">
+                <div className="space-y-1.5">
+                  <span className="block text-sm font-semibold text-slate-900" id="travelers-label">
+                    Travelers
+                  </span>
+                  <div className="flex items-center gap-2" role="group" aria-labelledby="travelers-label">
                     <button
                       type="button"
                       disabled={travelers <= 1}
                       onClick={() => setTravelers((prev) => Math.max(1, prev - 1))}
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 text-slate-900 transition-all hover:bg-slate-100 hover:border-slate-300 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-lg font-semibold text-slate-900 transition-colors hover:bg-slate-50 disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
                       aria-label="Decrease travelers"
                     >
-                      <Minus className="w-4 h-4" strokeWidth={2.5} />
+                      −
                     </button>
-                    
-                    <div className="flex-1 flex items-center justify-center gap-1.5 px-2">
-                      <input
-                        type="number"
-                        min={1}
-                        max={99}
-                        value={travelers}
-                        onChange={(e) => {
-                          const val = parseInt(e.target.value, 10);
-                          if (!isNaN(val) && val >= 1) {
-                            setTravelers(Math.min(99, val));
-                          } else if (e.target.value === "") {
-                            setTravelers(1);
-                          }
-                        }}
-                        className="w-12 text-center text-base font-extrabold text-slate-900 focus:outline-none focus:bg-amber-50/50 rounded-md py-0.5"
-                      />
-                      <span className="text-xs font-bold text-slate-600">
-                        {travelers === 1 ? "Person" : "People"}
-                      </span>
+                    <div className="flex h-11 flex-1 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-900">
+                      {travelers} {travelers === 1 ? "traveler" : "travelers"}
                     </div>
-
                     <button
                       type="button"
-                      disabled={travelers >= 99}
-                      onClick={() => setTravelers((prev) => Math.min(99, prev + 1))}
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 text-slate-900 transition-all hover:bg-slate-100 hover:border-slate-300 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                      disabled={travelers >= 12}
+                      onClick={() => setTravelers((prev) => Math.min(12, prev + 1))}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-lg font-semibold text-slate-900 transition-colors hover:bg-slate-50 disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
                       aria-label="Increase travelers"
                     >
-                      <Plus className="w-4 h-4" strokeWidth={2.5} />
+                      +
                     </button>
-                  </div>
-
-                  {/* Preset Options Grid */}
-                  <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 pt-0.5">
-                    {[
-                      { count: 1, label: "1 Solo" },
-                      { count: 2, label: "2 Duo" },
-                      { count: 3, label: "3 People" },
-                      { count: 4, label: "4 People" },
-                      { count: 5, label: "5 People" },
-                      { count: 6, label: "6 People" },
-                      { count: 10, label: "10+ Team" },
-                    ].map((item) => (
-                      <button
-                        key={item.count}
-                        type="button"
-                        onClick={() => setTravelers(item.count)}
-                        className={`py-1.5 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer text-center ${
-                          (item.count < 10 && travelers === item.count) || (item.count === 10 && travelers >= 10)
-                            ? "bg-slate-900 text-white shadow-xs ring-1 ring-slate-900"
-                            : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80"
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
                   </div>
                 </div>
               </div>
@@ -710,7 +645,7 @@ export function PublicBookingModal({
                   </span>
                 </div>
 
-              
+
 
                 <div className="flex items-end justify-between border-t border-slate-200 pt-3">
                   <div>

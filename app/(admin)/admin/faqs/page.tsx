@@ -352,7 +352,6 @@ export default function AdminFaqsPage() {
           <AdminTableHeader>
             <AdminTableRow>
               <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
-              <AdminTableHead className="w-20 text-center">Order</AdminTableHead>
               <AdminTableHead className="w-64">Question</AdminTableHead>
               <AdminTableHead>Answer</AdminTableHead>
               <AdminTableHead className="w-36">Category</AdminTableHead>
@@ -363,10 +362,10 @@ export default function AdminFaqsPage() {
 
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={7} rows={limit > 10 ? 10 : limit} />
+              <AdminTableLoading colSpan={6} rows={limit > 10 ? 10 : limit} />
             ) : faqs.length === 0 ? (
               <AdminTableEmpty
-                colSpan={7}
+                colSpan={6}
                 title="No FAQs found"
                 description={
                   searchQuery
@@ -397,32 +396,6 @@ export default function AdminFaqsPage() {
                   >
                     <AdminTableCell className="text-center font-semibold text-slate-500 text-xs">
                       {serialNumber}
-                    </AdminTableCell>
-                    <AdminTableCell className="text-center font-bold text-slate-500 text-xs">
-                      <div className="flex items-center justify-center gap-1">
-                        <GripVertical className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700 shrink-0 cursor-grab active:cursor-grabbing" />
-                        <span className="w-5 text-slate-800">#{faq.order}</span>
-                        <div className="flex flex-col gap-0.5 ml-1">
-                          <button
-                            type="button"
-                            onClick={() => handleMove(index, "up")}
-                            disabled={index === 0}
-                            className="p-0.5 text-slate-400 hover:text-slate-800 disabled:opacity-20 cursor-pointer"
-                            title="Move Up"
-                          >
-                            <ArrowUp className="w-2.5 h-2.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleMove(index, "down")}
-                            disabled={index === faqs.length - 1}
-                            className="p-0.5 text-slate-400 hover:text-slate-800 disabled:opacity-20 cursor-pointer"
-                            title="Move Down"
-                          >
-                            <ArrowDown className="w-2.5 h-2.5" />
-                          </button>
-                        </div>
-                      </div>
                     </AdminTableCell>
 
                     <AdminTableCell>

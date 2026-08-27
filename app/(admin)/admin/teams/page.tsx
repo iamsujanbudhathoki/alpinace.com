@@ -204,7 +204,6 @@ export default function AdminTeamsPage() {
         <AdminTable>
           <AdminTableHeader>
             <tr>
-              <AdminTableHead className="w-16 text-center">Order</AdminTableHead>
               <AdminTableHead>Team Member</AdminTableHead>
               <AdminTableHead>Role &amp; Position</AdminTableHead>
               <AdminTableHead>Badge / Experience</AdminTableHead>
@@ -214,39 +213,11 @@ export default function AdminTeamsPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (
-              <AdminTableLoading colSpan={6} rows={5} />
+              <AdminTableLoading colSpan={5} rows={5} />
             ) : members.length > 0 ? (
               members.map((member, idx) => {
                 return (
                   <AdminTableRow key={member.id}>
-                    {/* Reorder / Priority */}
-                    <AdminTableCell className="text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="font-mono text-xs font-bold text-slate-500 w-5">
-                          {member.order || idx + 1}
-                        </span>
-                        <div className="flex flex-col">
-                          <button
-                            type="button"
-                            disabled={idx === 0}
-                            onClick={() => handleMoveOrder(idx, "up")}
-                            className="p-0.5 text-slate-400 hover:text-slate-900 disabled:opacity-30 cursor-pointer"
-                            title="Move up"
-                          >
-                            <ArrowUp className="w-3 h-3" />
-                          </button>
-                          <button
-                            type="button"
-                            disabled={idx === members.length - 1}
-                            onClick={() => handleMoveOrder(idx, "down")}
-                            className="p-0.5 text-slate-400 hover:text-slate-900 disabled:opacity-30 cursor-pointer"
-                            title="Move down"
-                          >
-                            <ArrowDown className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                    </AdminTableCell>
 
                     {/* Member Info */}
                     <AdminTableCell>
@@ -330,7 +301,7 @@ export default function AdminTeamsPage() {
               })
             ) : (
               <AdminTableRow>
-                <AdminTableCell colSpan={6} className="text-center py-12 text-slate-500 text-xs">
+                <AdminTableCell colSpan={5} className="text-center py-12 text-slate-500 text-xs">
                   No team members found. Click &quot;Add Team Member&quot; to create one.
                 </AdminTableCell>
               </AdminTableRow>

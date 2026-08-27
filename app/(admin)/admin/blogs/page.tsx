@@ -174,9 +174,9 @@ export default function AdminBlogsPage() {
         <Link href="/admin/blogs/new">
           <Button
             size="sm"
-            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer shadow-xs"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
           >
-            <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
+            <Plus className="w-4 h-4 mr-1.5" />
             Write New Article
           </Button>
         </Link>
@@ -230,7 +230,7 @@ export default function AdminBlogsPage() {
                                 openSingleImage(art.image!, art.title, e.currentTarget);
                               }
                             }}
-                            className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-amber-400 transition-all"
+                            className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-slate-400 transition-all"
                             title="Click to view image in lightbox"
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -253,13 +253,13 @@ export default function AdminBlogsPage() {
                             href={`/blog/${art.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group/link inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-amber-600 transition-colors"
+                            className="group/link inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-950 transition-colors"
                             title="Open article in public marketing page"
                           >
-                            <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-amber-500 underline-offset-2 transition-all">
+                            <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-slate-400 underline-offset-2 transition-all">
                               {art.title}
                             </span>
-                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
+                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-slate-700 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
                           </Link>
                           <div className="text-xs text-slate-600 font-normal">
                             Read time: {art.readTime}

@@ -229,7 +229,7 @@ export function BlogViewModal({
             href={publicUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-600 hover:text-amber-700 font-bold text-xs inline-flex items-center gap-1 hover:underline cursor-pointer shrink-0"
+            className="text-slate-700 hover:text-slate-900 font-semibold text-xs inline-flex items-center gap-1 hover:underline cursor-pointer shrink-0"
           >
             <span>Open Link</span>
             <ExternalLink className="w-3 h-3" />

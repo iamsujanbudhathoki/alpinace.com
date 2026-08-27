@@ -261,17 +261,17 @@ export default function AdminMediaPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <ImageIcon className="w-5 h-5 text-amber-500" />
+            <ImageIcon className="w-5 h-5 text-slate-700" />
             Media Library &amp; Gallery
           </h1>
-          <p className="text-xs text-slate-600 font-medium mt-0.5">
+          <p className="text-xs text-slate-500 font-medium mt-0.5">
             Upload, categorize, manage, and retrieve photography assets for packages and marketing.
           </p>
         </div>
 
         <Button
           onClick={() => setShowUploader(!showUploader)}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
+          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer transition-colors"
         >
           <UploadCloud className="w-4 h-4 mr-1.5" />
           {showUploader ? "Close Upload Center" : "Upload New Assets"}
@@ -280,10 +280,10 @@ export default function AdminMediaPage() {
 
       {/* Upload Zone */}
       {showUploader && (
-        <div className="bg-white border-2 border-dashed border-slate-300 rounded-3xl p-8 text-center space-y-4 hover:border-amber-500 transition-colors">
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+        <div className="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center space-y-4 hover:border-slate-400 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center mx-auto">
             {isUploading ? (
-              <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
+              <Loader2 className="w-6 h-6 animate-spin text-slate-700" />
             ) : (
               <UploadCloud className="w-6 h-6" />
             )}
@@ -296,7 +296,7 @@ export default function AdminMediaPage() {
               Supports JPEG, PNG, WebP, and AVIF up to 15MB. Files will be saved into the database asset collection.
             </p>
           </div>
-          <label className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer shadow-xs transition-colors">
+          <label className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-colors">
             <span>Browse Files</span>
             <input
               type="file"
@@ -311,12 +311,12 @@ export default function AdminMediaPage() {
 
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold">
-            <ImageIcon className="w-5 h-5" />
+        <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-slate-100/80 border border-slate-200/60 text-slate-600 flex items-center justify-center font-bold">
+            <ImageIcon className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">Total Media Assets</div>
+            <div className="text-xs font-medium text-slate-500">Total Assets</div>
             <div className="text-lg font-bold text-slate-900">{totalItems || allAssetsForStats.length}</div>
           </div>
         </div>
@@ -434,7 +434,7 @@ export default function AdminMediaPage() {
                       title="View Fullscreen Lightbox"
                       className="w-9 h-9 bg-white text-slate-900 hover:bg-slate-100 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
                     >
-                      <Eye className="w-4 h-4 text-amber-600" />
+                      <Eye className="w-4 h-4 text-slate-700" />
                     </button>
 
                     <button
@@ -443,7 +443,7 @@ export default function AdminMediaPage() {
                       title="Edit Asset & Category"
                       className="w-9 h-9 bg-white text-slate-900 hover:bg-slate-100 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
                     >
-                      <Edit className="w-4 h-4 text-emerald-600" />
+                      <Edit className="w-4 h-4 text-slate-700" />
                     </button>
 
                     <button
@@ -452,7 +452,7 @@ export default function AdminMediaPage() {
                       title="Copy Image URL"
                       className="w-9 h-9 bg-white text-slate-900 hover:bg-slate-100 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
                     >
-                      <Copy className="w-4 h-4 text-blue-600" />
+                      <Copy className="w-4 h-4 text-slate-700" />
                     </button>
 
                     <button
@@ -470,11 +470,11 @@ export default function AdminMediaPage() {
                 <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
                   <div>
                     {asset.category && (
-                      <span className="bg-amber-500/10 text-amber-700 font-bold text-xs px-2.5 py-0.5 rounded-full border border-amber-500/20 w-fit block mb-1">
+                      <span className="bg-slate-100 text-slate-700 font-semibold text-xs px-2.5 py-0.5 rounded-md border border-slate-200 w-fit block mb-1">
                         {asset.category}
                       </span>
                     )}
-                    <h3 className="font-bold text-slate-900 text-xs line-clamp-1 group-hover:text-amber-600 transition-colors">
+                    <h3 className="font-bold text-slate-900 text-xs line-clamp-1 group-hover:text-slate-950 transition-colors">
                       {asset.title}
                     </h3>
                     {asset.description && (

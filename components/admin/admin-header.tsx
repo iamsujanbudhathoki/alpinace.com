@@ -167,20 +167,18 @@ export function AdminHeader({
     : "SB";
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-4 sticky top-0 z-30 shadow-xs">
-      {/* Left Area: Mobile & Desktop Toggles */}
+    <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-4 sticky top-0 z-30">
+      {/* Left Area: Mobile Toggle */}
       <div className="flex items-center gap-3">
         {onToggleMobileSidebar && (
           <button
             onClick={onToggleMobileSidebar}
-            className="md:hidden p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100"
+            className="md:hidden p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
             title="Toggle Menu"
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-4 h-4" />
           </button>
         )}
-
-      
       </div>
 
       {/* Center Area: Centered Search Command Trigger */}
@@ -188,13 +186,13 @@ export function AdminHeader({
         <button
           type="button"
           onClick={() => setIsSearchModalOpen(true)}
-          className="w-full bg-slate-50 hover:bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 text-xs rounded-lg pl-3 pr-2.5 py-1.5 flex items-center justify-between transition-all cursor-pointer font-normal shadow-2xs group"
+          className="w-full bg-slate-50 hover:bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 text-xs rounded-lg pl-3 pr-2.5 py-1.5 flex items-center justify-between transition-all cursor-pointer font-medium group"
         >
           <div className="flex items-center gap-2 min-w-0">
             <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
             <span className="truncate">Search packages, bookings, guides (⌘K)...</span>
           </div>
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-500 border border-slate-200 bg-white px-1.5 py-0.5 rounded shadow-2xs shrink-0 select-none">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-400 border border-slate-200 bg-white px-1.5 py-0.5 rounded shrink-0 select-none">
             ⌘K
           </kbd>
         </button>

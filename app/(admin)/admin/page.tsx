@@ -77,14 +77,16 @@ export default function AdminDashboardPage() {
         <Link href="/admin/treks">
           <Button
             variant="outline"
-            className="bg-white text-slate-950 font-bold border-slate-300"
+            size="sm"
+            className="text-xs font-semibold border-slate-200 text-slate-700 hover:bg-slate-50"
           >
             Manage Treks
           </Button>
         </Link>
         <Link href="/admin/bookings">
           <Button
-            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold"
+            size="sm"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs"
           >
             View Bookings
           </Button>
@@ -95,10 +97,10 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading ? (
           [...Array(4)].map((_, i) => (
-            <Card key={i} className="p-5 bg-white border-slate-200 shadow-xs space-y-3 relative overflow-hidden">
+            <Card key={i} className="p-4 bg-white border-slate-200 shadow-none rounded-xl space-y-3 relative overflow-hidden">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-28 bg-slate-200/60" />
-                <Skeleton className="w-9 h-9 rounded-xl bg-slate-200/60 shrink-0" />
+                <Skeleton className="w-8 h-8 rounded-lg bg-slate-200/60 shrink-0" />
               </div>
               <div className="space-y-2 pt-1">
                 <Skeleton className="h-7 w-20 bg-slate-200/60" />
@@ -142,18 +144,18 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Bookings (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="p-6 bg-white border-slate-200 shadow-xs space-y-4">
+          <div className="p-5 bg-white border border-slate-200 rounded-xl space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-slate-900">Recent Bookings</h2>
-                <p className="text-xs text-slate-600 font-normal">Latest guest reservations and inquiries</p>
+                <h2 className="text-sm font-bold text-slate-900">Recent Bookings</h2>
+                <p className="text-xs text-slate-500 font-normal">Latest guest reservations and inquiries</p>
               </div>
               <Link
                 href="/admin/bookings"
-                className="text-xs font-semibold text-slate-900 hover:text-amber-600 flex items-center gap-1 transition-colors"
+                className="text-xs font-semibold text-slate-700 hover:text-slate-900 flex items-center gap-1 transition-colors"
               >
                 View All
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -182,15 +184,15 @@ export default function AdminDashboardPage() {
                           {idx + 1}
                         </AdminTableCell>
                         <AdminTableCell>
-                          <div className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                          <div className="font-semibold text-slate-900 group-hover:text-slate-950 transition-colors">
                             {bkg.guestName}
                           </div>
-                          <div className="text-xs text-slate-600 font-normal">{bkg.reference} • {bkg.country}</div>
+                          <div className="text-[11px] text-slate-500 font-normal">{bkg.reference} • {bkg.country}</div>
                         </AdminTableCell>
-                        <AdminTableCell className="max-w-[180px] truncate">
+                        <AdminTableCell className="max-w-[180px] truncate font-medium text-slate-700">
                           {bkg.packageName}
                         </AdminTableCell>
-                        <AdminTableCell>
+                        <AdminTableCell className="text-slate-600">
                           {bkg.startDate}
                         </AdminTableCell>
                         <AdminTableCell className="font-bold text-slate-900">
@@ -205,52 +207,52 @@ export default function AdminDashboardPage() {
                 </AdminTableBody>
               </AdminTable>
             </div>
-          </Card>
+          </div>
         </div>
 
         {/* Right Column: Active Expeditions Quick View (1 col) */}
         <div className="space-y-6">
-          <Card className="p-6 bg-white border-slate-200 shadow-xs space-y-4">
+          <div className="p-5 bg-white border border-slate-200 rounded-xl space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-base text-slate-900">Top Expeditions</h3>
-                <p className="text-xs text-slate-600 font-normal">Active mountain packages</p>
+                <h3 className="font-bold text-sm text-slate-900">Top Expeditions</h3>
+                <p className="text-xs text-slate-500 font-normal">Active mountain packages</p>
               </div>
-              <Link href="/admin/expeditions" className="text-xs font-semibold text-slate-900 hover:text-amber-600 transition-colors">
+              <Link href="/admin/expeditions" className="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors">
                 View All
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {loading ? (
                 [...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4 animate-pulse"
+                    className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between gap-4 animate-pulse"
                   >
                     <div className="space-y-2 flex-grow">
                       <Skeleton className="h-4 w-32 bg-slate-200" />
                       <Skeleton className="h-3 w-20 bg-slate-200" />
                     </div>
-                    <Skeleton className="h-4 w-12 bg-slate-200 shrink-0 animate-pulse" />
+                    <Skeleton className="h-4 w-12 bg-slate-200 shrink-0" />
                   </div>
                 ))
               ) : (
                 topExpeditions.map((pkg) => (
                   <div
                     key={pkg.id}
-                    className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs"
+                    className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-2 text-xs"
                   >
                     <div>
-                      <div className="font-bold text-slate-900 line-clamp-1">{pkg.title}</div>
-                      <div className="text-xs text-slate-600 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
+                      <div className="font-semibold text-slate-900 line-clamp-1">{pkg.title}</div>
+                      <div className="text-[11px] text-slate-500 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
                     </div>
                     <span className="font-bold text-slate-900 shrink-0">${pkg.priceUSD}</span>
                   </div>
                 ))
               )}
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

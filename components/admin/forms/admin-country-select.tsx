@@ -30,7 +30,7 @@ export function AdminCountrySelect({
       value: c.name,
       label: c.name,
       badge: c.code,
-      badgeColor: "bg-amber-100 text-amber-900 border-amber-200",
+      badgeColor: "bg-slate-100 text-slate-700 border-slate-200",
       icon: <Globe className="w-3.5 h-3.5 text-slate-400" />,
     }));
   }, []);
@@ -52,7 +52,7 @@ export function AdminCountrySelect({
           <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           {selectedOpt ? (
             <>
-              <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold text-[10px] border border-amber-200 shrink-0">
+              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-[10px] border border-slate-200 shrink-0">
                 {selectedOpt.badge}
               </span>
               <span className="text-slate-900 font-semibold truncate">{selectedOpt.label}</span>

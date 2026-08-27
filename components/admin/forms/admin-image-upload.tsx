@@ -317,7 +317,7 @@ export function AdminImageUpload({
         </div>
       ) : (
         /* ── Clean Compact Dropzone Box ── */
-        <div className="border-2 border-dashed border-slate-300 hover:border-amber-400 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-100/50 transition-colors relative flex flex-col items-center justify-center text-center group cursor-pointer">
+        <div className="border-2 border-dashed border-slate-300 hover:border-slate-400 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-100/50 transition-colors relative flex flex-col items-center justify-center text-center group cursor-pointer">
           <input
             type="file"
             accept="image/*"
@@ -325,14 +325,14 @@ export function AdminImageUpload({
             className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
           />
           {isUploading ? (
-            <div className="flex items-center gap-2 text-amber-600 font-bold text-xs py-2">
+            <div className="flex items-center gap-2 text-slate-700 font-semibold text-xs py-2">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>Uploading cover image...</span>
             </div>
           ) : (
             <div className="space-y-1.5 py-1">
-              <div className="w-10 h-10 rounded-full bg-amber-100/80 border border-amber-200/80 flex items-center justify-center mx-auto group-hover:scale-105 transition-transform">
-                <UploadCloud className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto group-hover:scale-105 transition-transform">
+                <UploadCloud className="w-5 h-5 text-slate-600" />
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-800">
@@ -417,7 +417,7 @@ export function AdminImageUpload({
 
             {/* Inline Modal Uploader Box */}
             {showModalUploader && (
-              <div className="border-2 border-dashed border-amber-400 rounded-xl p-4 text-center bg-amber-50/50 relative cursor-pointer animate-in fade-in-0 duration-200">
+              <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-slate-50 relative cursor-pointer animate-in fade-in-0 duration-200">
                 <input
                   type="file"
                   accept="image/*"
@@ -425,13 +425,13 @@ export function AdminImageUpload({
                   className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                 />
                 {isUploading ? (
-                  <div className="flex items-center justify-center gap-2 text-amber-600 font-bold text-xs py-2">
+                  <div className="flex items-center justify-center gap-2 text-slate-700 font-semibold text-xs py-2">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <span>Uploading media file to server...</span>
                   </div>
                 ) : (
                   <>
-                    <UploadCloud className="w-6 h-6 text-amber-600 mx-auto mb-1" />
+                    <UploadCloud className="w-6 h-6 text-slate-500 mx-auto mb-1" />
                     <p className="text-xs font-bold text-slate-900">
                       Drop new image file here or click to upload
                     </p>
@@ -503,9 +503,9 @@ export function AdminImageUpload({
                               e.stopPropagation();
                               openSingleImage(asset.url, asset.title, e.currentTarget);
                             }}
-                            className="w-8 h-8 rounded-full bg-white text-slate-900 hover:bg-amber-50 flex items-center justify-center shadow-md transition-transform hover:scale-110 cursor-pointer"
+                            className="w-8 h-8 rounded-full bg-white text-slate-900 hover:bg-slate-100 flex items-center justify-center shadow-md transition-transform hover:scale-110 cursor-pointer"
                           >
-                            <Eye className="w-3.5 h-3.5 text-amber-600" />
+                            <Eye className="w-3.5 h-3.5 text-slate-700" />
                           </button>
                           <button
                             type="button"
@@ -520,7 +520,7 @@ export function AdminImageUpload({
                           </button>
                         </div>
                         {isSelected && (
-                          <div className="absolute top-1.5 right-1.5 bg-amber-500 text-slate-950 p-0.5 rounded-full shadow z-20">
+                          <div className="absolute top-1.5 right-1.5 bg-slate-900 text-white p-0.5 rounded-full shadow z-20">
                             <Check className="w-3 h-3 stroke-[3]" />
                           </div>
                         )}
@@ -623,7 +623,7 @@ export function AdminImageUpload({
                       setShowModalUploader(false);
                       toast.success("Cover image selected from media library!");
                     }}
-                    className="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs h-8"
+                    className="flex-1 sm:flex-none bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-8 cursor-pointer disabled:opacity-50"
                   >
                     Use Selected Image
                   </Button>

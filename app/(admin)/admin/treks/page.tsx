@@ -227,9 +227,9 @@ export default function AdminTreksPage() {
             setIsEditing(true);
             setIsFormOpen(true);
           }}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer shadow-xs"
+          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
         >
-          <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
+          <Plus className="w-4 h-4 mr-1.5" />
           Add New Trek Itinerary
         </Button>
       </AdminPageHeader>
@@ -241,7 +241,7 @@ export default function AdminTreksPage() {
         searchPlaceholder="Search trek title or region..."
       >
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-700 font-semibold">Difficulty:</span>
+          <span className="text-slate-600 font-semibold">Difficulty:</span>
           <select
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
@@ -303,7 +303,7 @@ export default function AdminTreksPage() {
                                 openSingleImage(trk.image!, trk.title, e.currentTarget);
                               }
                             }}
-                            className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-amber-400 transition-all"
+                            className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 cursor-zoom-in group/thumb shadow-2xs hover:border-slate-400 transition-all"
                             title="Click to view image in lightbox"
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -326,13 +326,13 @@ export default function AdminTreksPage() {
                             href={`/trekking/${trk.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group/link inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-amber-600 transition-colors"
+                            className="group/link inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-950 transition-colors"
                             title="Open trek in public marketing page"
                           >
-                            <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-amber-500 underline-offset-2 transition-all">
+                            <span className="line-clamp-1 underline decoration-transparent group-hover/link:decoration-slate-400 underline-offset-2 transition-all">
                               {trk.title}
                             </span>
-                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
+                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-slate-700 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
                           </Link>
                         </div>
                       </div>
@@ -348,15 +348,15 @@ export default function AdminTreksPage() {
                       />
                     </AdminTableCell>
                     <AdminTableCell>
-                      <div className="font-semibold text-slate-900">{trk.region} Region</div>
-                      <div className="flex items-center gap-1 text-slate-600 text-xs font-medium">
-                        <Clock className="w-3.5 h-3.5 text-slate-600" />
+                      <div className="font-medium text-slate-900">{trk.region} Region</div>
+                      <div className="flex items-center gap-1 text-slate-500 text-xs font-normal">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
                         <span>{trk.durationDays} Days</span>
                       </div>
                     </AdminTableCell>
                     <AdminTableCell className="font-medium text-slate-800">
                       <div className="flex items-center gap-1">
-                        <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
+                        <TrendingUp className="w-3.5 h-3.5 text-slate-500" />
                         <span>{trk.difficulty}</span>
                       </div>
                     </AdminTableCell>

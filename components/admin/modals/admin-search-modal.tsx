@@ -92,16 +92,16 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
       <DialogContent className="sm:max-w-xl p-0 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden [&>button]:hidden">
         <DialogTitle className="sr-only">Search Admin Dashboard</DialogTitle>
 
-        {/* Crisp Header Search Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-slate-200 bg-slate-50/80 gap-3">
-          <Search className="w-4 h-4 text-amber-600 shrink-0" />
+        {/* Header Search Input Bar */}
+        <div className="flex items-center px-4 py-3 border-b border-slate-200 bg-slate-50/50 gap-3">
+          <Search className="w-4 h-4 text-slate-400 shrink-0" />
           <input
             type="text"
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search guest, trip ID, guide, or navigate..."
-            className="w-full bg-transparent text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none"
+            className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
           />
           {query && (
             <button
@@ -111,44 +111,44 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-          <span className="text-[10px] font-bold text-slate-700 border border-slate-300 bg-white px-2 py-0.5 rounded-md shrink-0 select-none shadow-2xs">
+          <span className="text-[10px] font-bold text-slate-500 border border-slate-200 bg-white px-1.5 py-0.5 rounded shrink-0 select-none">
             ESC
           </span>
         </div>
 
-        {/* Vibrant & Sharp Results List */}
+        {/* Results List */}
         <div className="max-h-88 overflow-y-auto p-2">
           {filteredResults.length > 0 ? (
             <div>
-              <div className="px-3 py-1.5 text-[11px] font-extrabold text-slate-900 uppercase tracking-wider">
+              <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 {query.trim() === "" ? "Quick Shortcuts" : "Search Results"}
               </div>
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {filteredResults.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleSelectResult(item.url)}
-                    className="w-full text-left p-2.5 rounded-xl hover:bg-slate-100/90 transition-all flex items-center justify-between group cursor-pointer border border-transparent hover:border-slate-200"
+                    className="w-full text-left p-2.5 rounded-lg hover:bg-slate-100/80 transition-all flex items-center justify-between group cursor-pointer"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-bold ${item.iconBgClass}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.iconBgClass}`}>
                         {item.icon}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-xs font-bold text-slate-900 truncate group-hover:text-amber-600 transition-colors">
+                        <div className="text-xs font-semibold text-slate-900 truncate group-hover:text-slate-950">
                           {item.title}
                         </div>
-                        <div className="text-[11px] text-slate-600 truncate font-semibold">
+                        <div className="text-[11px] text-slate-500 truncate font-medium">
                           {item.subtitle}
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0 pl-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-800">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200/80 text-slate-600">
                         {item.category}
                       </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 transition-colors" />
+                      <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 transition-colors" />
                     </div>
                   </button>
                 ))}

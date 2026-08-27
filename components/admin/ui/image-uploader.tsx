@@ -103,7 +103,7 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-slate-200 hover:border-amber-500 hover:bg-amber-50/30 rounded-xl p-4 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 bg-slate-50/50"
+          className="border-2 border-dashed border-slate-200 hover:border-slate-400 hover:bg-slate-100/50 rounded-xl p-4 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 bg-slate-50/50"
         >
           <input
             ref={fileInputRef}
@@ -115,13 +115,13 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
 
           {isUploading ? (
             <div className="py-3 flex flex-col items-center gap-2 text-slate-900">
-              <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
+              <Loader2 className="w-6 h-6 animate-spin text-slate-700" />
               <span className="text-xs font-bold">Uploading file to local server...</span>
             </div>
           ) : (
             <>
               <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center">
-                <UploadCloud className="w-5 h-5 text-amber-600" />
+                <UploadCloud className="w-5 h-5 text-slate-600" />
               </div>
               <div>
                 <span className="text-xs font-extrabold text-slate-950 block">Click to upload or drag &amp; drop</span>

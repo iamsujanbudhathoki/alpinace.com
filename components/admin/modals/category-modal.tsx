@@ -203,7 +203,7 @@ export function CategoryFormModal({
         onClick={() => setEditingMode(true)}
         className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
       >
-        <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
+        <Edit className="w-3.5 h-3.5 mr-1" />
         Edit Category
       </Button>
     </div>

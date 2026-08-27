@@ -1,6 +1,5 @@
 import React from "react";
 import { Search } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 interface AdminFilterBarProps {
@@ -17,7 +16,7 @@ export function AdminFilterBar({
   children,
 }: AdminFilterBarProps) {
   return (
-    <Card className="p-4 bg-white border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
+    <div className="p-4 bg-white border border-slate-200 rounded-xl flex flex-col md:flex-row items-center justify-between gap-3">
       <div className="relative w-full md:w-80">
         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
         <Input
@@ -25,15 +24,15 @@ export function AdminFilterBar({
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={searchPlaceholder}
-          className="pl-9 text-xs font-medium text-slate-900 placeholder:text-slate-400 bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 rounded-xl"
+          className="pl-9 text-xs font-medium text-slate-900 placeholder:text-slate-400 bg-slate-50/80 border-slate-200 focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-400/10 rounded-lg h-9"
         />
       </div>
 
       {children && (
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
           {children}
         </div>
       )}
-    </Card>
+    </div>
   );
 }

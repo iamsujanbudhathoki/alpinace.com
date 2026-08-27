@@ -421,7 +421,7 @@ export function TourFormModal({
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                         isActive
-                          ? "bg-amber-400 text-slate-950"
+                          ? "bg-slate-900 text-white"
                           : "bg-slate-200 text-slate-800"
                       }`}
                     >

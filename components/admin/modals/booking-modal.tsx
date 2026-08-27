@@ -137,7 +137,7 @@ export function BookingFormModal({
       value: item.title,
       label: item.title,
       badge: `${item.durationDays} Days`,
-      badgeColor: "bg-amber-50 text-amber-900 border-amber-200",
+      badgeColor: "bg-slate-100 text-slate-700 border-slate-200",
       description: `${item.region} • $${(item.priceUSD || 0).toLocaleString()} USD / person`,
     }));
   }, [availableItems]);
@@ -355,7 +355,7 @@ export function BookingFormModal({
       </Button>
       <Button
         onClick={() => setEditingMode(true)}
-        className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs cursor-pointer shadow-xs"
+        className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
       >
         <Edit className="w-3.5 h-3.5 mr-1" />
         Edit Reservation
@@ -594,16 +594,16 @@ export function BookingFormModal({
             <div className="space-y-1">
               <span className="text-slate-500 font-semibold block">Lead Guest</span>
               <div className="font-semibold text-slate-900 text-sm">{initialData?.guestName}</div>
-              <div className="flex items-center gap-1.5 text-slate-700 font-medium">
-                <Mail className="w-3.5 h-3.5 text-amber-600" />
+              <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+                <Mail className="w-3.5 h-3.5 text-slate-400" />
                 <span>{initialData?.guestEmail}</span>
               </div>
-              <div className="flex items-center gap-1.5 text-slate-700 font-medium">
-                <Phone className="w-3.5 h-3.5 text-amber-600" />
+              <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+                <Phone className="w-3.5 h-3.5 text-slate-400" />
                 <span>{initialData?.guestPhone}</span>
               </div>
-              <div className="flex items-center gap-1.5 text-slate-700 font-medium">
-                <Globe className="w-3.5 h-3.5 text-amber-600" />
+              <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+                <Globe className="w-3.5 h-3.5 text-slate-400" />
                 <span>{initialData?.country}</span>
               </div>
             </div>
@@ -613,17 +613,17 @@ export function BookingFormModal({
               <div>
                 <Link
                   href={packageLink}
-                  className="group inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-amber-600 transition-colors"
+                  className="group inline-flex items-center gap-1.5 font-semibold text-slate-900 hover:text-slate-950 transition-colors"
                   title="View package details in management page"
                 >
-                  <span className="underline decoration-slate-300 underline-offset-2 group-hover:decoration-amber-500">
+                  <span className="underline decoration-slate-300 underline-offset-2 group-hover:decoration-slate-500">
                     {initialData?.packageName}
                   </span>
-                  <ExternalLink className="w-3.5 h-3.5 text-amber-600 opacity-80 group-hover:opacity-100 shrink-0" />
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400 opacity-80 group-hover:opacity-100 shrink-0" />
                 </Link>
               </div>
-              <div className="flex items-center gap-1 text-slate-700 font-medium">
-                <Calendar className="w-3.5 h-3.5 text-amber-600" />
+              <div className="flex items-center gap-1 text-slate-600 font-medium">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
                 <span>{initialData?.startDate} → {initialData?.endDate}</span>
               </div>
               <div className="font-medium text-slate-700 mt-1">

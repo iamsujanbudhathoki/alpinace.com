@@ -146,7 +146,7 @@ export function AdminSearchableSelect({
               {selectedOption.badge && (
                 <span
                   className={`px-1.5 py-0.5 rounded text-[10px] font-bold border shrink-0 ${
-                    selectedOption.badgeColor || "bg-amber-100 text-amber-900 border-amber-200"
+                    selectedOption.badgeColor || "bg-slate-100 text-slate-700 border-slate-200"
                   }`}
                 >
                   {selectedOption.badge}
@@ -161,21 +161,20 @@ export function AdminSearchableSelect({
           )}
         </div>
 
-        <div className="flex items-center gap-1 shrink-0 ml-2">
+        <div className="flex items-center gap-1 shrink-0 ml-1">
           {allowClear && value && !disabled && (
-            <span
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
               onClick={handleClear}
-              className="p-0.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200 transition-colors"
+              className="p-0.5 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               title="Clear selection"
             >
               <X className="w-3.5 h-3.5" />
-            </span>
+            </button>
           )}
           <ChevronDown
-            className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
-              isOpen ? "rotate-180 text-amber-600" : ""
+            className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
+              isOpen ? "rotate-180 text-slate-700" : ""
             }`}
           />
         </div>
@@ -183,25 +182,25 @@ export function AdminSearchableSelect({
 
       {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
 
-      {/* Dropdown Popover */}
+      {/* Dropdown Menu Overlay */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-white rounded-xl border border-slate-200 shadow-xl shadow-slate-950/10 p-1.5 space-y-1 animate-in fade-in slide-in-from-top-1 duration-150">
-          {/* Search Box */}
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100">
+          {/* Search Box inside dropdown */}
+          <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={searchPlaceholder}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-7 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-all font-medium"
+              className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                className="text-slate-400 hover:text-slate-600 p-0.5"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -209,7 +208,7 @@ export function AdminSearchableSelect({
           </div>
 
           {/* Options List */}
-          <div className="max-h-56 overflow-y-auto overscroll-contain space-y-0.5 pr-0.5 text-xs">
+          <div className="max-h-56 overflow-y-auto p-1 text-xs">
             {filteredOptions.length === 0 ? (
               <div className="py-4 text-center text-slate-500 text-xs font-medium">
                 {emptyText} {searchQuery ? `for "${searchQuery}"` : ""}
@@ -246,7 +245,7 @@ export function AdminSearchableSelect({
                     onClick={() => handleSelect(opt)}
                     className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition-colors cursor-pointer ${
                       isSelected
-                        ? "bg-amber-50 text-amber-900 font-bold"
+                        ? "bg-slate-100 text-slate-900 font-bold"
                         : "hover:bg-slate-50 text-slate-800"
                     }`}
                   >
@@ -256,7 +255,7 @@ export function AdminSearchableSelect({
                         <span
                           className={`px-1.5 py-0.2 rounded text-[10px] font-bold border shrink-0 ${
                             isSelected
-                              ? "bg-amber-200 text-amber-900 border-amber-300"
+                              ? "bg-slate-200 text-slate-900 border-slate-300"
                               : opt.badgeColor || "bg-slate-100 text-slate-600 border-slate-200"
                           }`}
                         >

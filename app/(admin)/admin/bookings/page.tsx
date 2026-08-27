@@ -301,7 +301,7 @@ export default function AdminBookingsPage() {
           onClick={handleExportCSV}
           className="text-xs font-semibold cursor-pointer border-slate-200"
         >
-          <Download className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
+          <Download className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
           Export CSV
         </Button>
         <Button
@@ -311,9 +311,9 @@ export default function AdminBookingsPage() {
             setIsEditing(true);
             setIsFormOpen(true);
           }}
-          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer shadow-xs"
+          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer"
         >
-          <Plus className="w-4 h-4 mr-1.5 text-amber-400" />
+          <Plus className="w-4 h-4 mr-1.5" />
           New Booking
         </Button>
       </AdminPageHeader>
@@ -325,7 +325,7 @@ export default function AdminBookingsPage() {
         searchPlaceholder="Filter guest, ref, or package..."
       >
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-700 font-semibold">Category:</span>
+          <span className="text-slate-600 font-semibold">Category:</span>
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
@@ -339,7 +339,7 @@ export default function AdminBookingsPage() {
         </div>
 
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-700 font-semibold">Status:</span>
+          <span className="text-slate-600 font-semibold">Status:</span>
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
@@ -383,20 +383,20 @@ export default function AdminBookingsPage() {
                       {serialNumber}
                     </AdminTableCell>
                     <AdminTableCell>
-                      <div className="text-xs font-bold text-amber-600">{bkg.reference}</div>
-                      <div className="font-bold text-slate-900">{bkg.guestName}</div>
-                      <div className="text-xs text-slate-600 font-normal">{bkg.country}</div>
+                      <div className="text-xs font-mono font-bold text-slate-700">{bkg.reference}</div>
+                      <div className="font-semibold text-slate-900">{bkg.guestName}</div>
+                      <div className="text-xs text-slate-500 font-normal">{bkg.country}</div>
                     </AdminTableCell>
                     <AdminTableCell className="max-w-xs">
                       <Link
                         href={getPackageLink(bkg)}
-                        className="group inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-amber-600 transition-colors max-w-full"
+                        className="group inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-slate-950 transition-colors max-w-full"
                         title={`Open "${bkg.packageName}" in package manager`}
                       >
-                        <span className="truncate underline decoration-transparent group-hover:decoration-amber-500 underline-offset-2 transition-all">
+                        <span className="truncate underline decoration-transparent group-hover:decoration-slate-400 underline-offset-2 transition-all">
                           {bkg.packageName}
                         </span>
-                        <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 opacity-0 group-hover:opacity-100 transition-all shrink-0" />
+                        <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 opacity-0 group-hover:opacity-100 transition-all shrink-0" />
                       </Link>
                     </AdminTableCell>
                     <AdminTableCell>

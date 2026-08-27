@@ -17,11 +17,11 @@ interface AdminTableContainerProps {
 
 export function AdminTableContainer({ children, className = "" }: AdminTableContainerProps) {
   return (
-    <Card className={cn("bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden", className)}>
+    <div className={cn("bg-white rounded-xl border border-slate-200 overflow-hidden", className)}>
       <div className="overflow-x-auto">
         {children}
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -349,7 +349,7 @@ export function AdminTablePagination({
             <select
               value={itemsPerPage}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="h-7 px-2 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer shadow-2xs"
+              className="h-7 px-2 bg-white border border-slate-200 rounded-md text-xs font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 cursor-pointer shadow-2xs"
             >
               {pageSizeOptions.map((opt) => (
                 <option key={opt} value={opt}>

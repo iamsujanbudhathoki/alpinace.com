@@ -229,9 +229,9 @@ export function TripItineraryManager({
               variant="outline"
               size="sm"
               onClick={handleAutoGenerateFromDuration}
-              className="bg-white border-amber-300 text-amber-900 hover:bg-amber-50 text-xs font-semibold h-8 cursor-pointer"
+              className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold h-8 cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" />
+              <Sparkles className="w-3.5 h-3.5 mr-1 text-slate-500" />
               Generate {durationDays} Days
             </Button>
           )}
@@ -240,9 +240,9 @@ export function TripItineraryManager({
             type="button"
             size="sm"
             onClick={handleAddDay}
-            className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-8 px-3 rounded-lg cursor-pointer shadow-xs"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-8 px-3 rounded-lg cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5 mr-1 text-amber-400" />
+            <Plus className="w-3.5 h-3.5 mr-1" />
             Add Day
           </Button>
         </div>

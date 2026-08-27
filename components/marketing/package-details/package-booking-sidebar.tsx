@@ -85,38 +85,96 @@ export function PackageBookingSidebar({
 
         {/* Booking Console Body */}
         <div className="p-4.5 sm:p-5 space-y-4">
-          {/* Travelers Stepper */}
-          <div className="space-y-1.5">
+          {/* Travelers Stepper & Presets */}
+          <div className="space-y-3 bg-stone-50/80 border border-stone-200/90 rounded-2xl p-3.5">
             <div className="flex items-center justify-between">
-              <label className="type-caption text-stone-900 font-bold">
-                Travelers
-              </label>
+              <div>
+                <label className="type-caption text-stone-900 font-bold block">
+                  Travelers / Group Size
+                </label>
+                <span className="text-[11px] text-stone-500 font-medium">
+                  Select party count
+                </span>
+              </div>
+              <span className="text-[11px] font-bold text-amber-900 bg-amber-100/90 border border-amber-200/90 px-2.5 py-0.5 rounded-full shadow-2xs">
+                {travelers === 1
+                  ? "1 Solo Traveler"
+                  : travelers === 2
+                  ? "2 Duo / Couple"
+                  : travelers <= 5
+                  ? `${travelers} Small Group`
+                  : `${travelers} Expedition Team`}
+              </span>
             </div>
 
-            <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 p-1.5 rounded-sm">
+            {/* Stepper Bar */}
+            <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-xl p-1.5 shadow-2xs">
               <button
                 type="button"
                 disabled={travelers <= 1}
                 onClick={() => onTravelersChange(Math.max(1, travelers - 1))}
                 aria-label="Decrease traveler count"
-                className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
+                className="w-8 h-8 rounded-lg bg-stone-50 border border-stone-200/80 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all"
               >
-                <Minus className="w-3.5 h-3.5" strokeWidth={2} />
+                <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
               </button>
 
-              <div className="flex-1 text-center type-heading-md text-stone-900">
-                {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
+              <div className="flex-1 flex items-center justify-center gap-1.5 px-2">
+                <input
+                  type="number"
+                  min={1}
+                  max={99}
+                  value={travelers}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    if (!isNaN(val) && val >= 1) {
+                      onTravelersChange(Math.min(99, val));
+                    } else if (e.target.value === "") {
+                      onTravelersChange(1);
+                    }
+                  }}
+                  className="w-10 text-center type-heading-md text-stone-900 font-extrabold focus:outline-none focus:bg-amber-50/50 rounded py-0.5"
+                />
+                <span className="text-xs font-bold text-stone-600">
+                  {travelers === 1 ? "Person" : "People"}
+                </span>
               </div>
 
               <button
                 type="button"
-                disabled={travelers >= 16}
-                onClick={() => onTravelersChange(Math.min(16, travelers + 1))}
+                disabled={travelers >= 99}
+                onClick={() => onTravelersChange(Math.min(99, travelers + 1))}
                 aria-label="Increase traveler count"
-                className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
+                className="w-8 h-8 rounded-lg bg-stone-50 border border-stone-200/80 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all"
               >
-                <Plus className="w-3.5 h-3.5" strokeWidth={2} />
+                <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
               </button>
+            </div>
+
+            {/* Presets Grid */}
+            <div className="grid grid-cols-4 sm:grid-cols-7 gap-1 pt-0.5">
+              {[
+                { count: 1, label: "1 Solo" },
+                { count: 2, label: "2 Duo" },
+                { count: 3, label: "3 Ppl" },
+                { count: 4, label: "4 Ppl" },
+                { count: 5, label: "5 Ppl" },
+                { count: 6, label: "6 Ppl" },
+                { count: 10, label: "10+ Team" },
+              ].map((item) => (
+                <button
+                  key={item.count}
+                  type="button"
+                  onClick={() => onTravelersChange(item.count)}
+                  className={`py-1.5 px-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer text-center ${
+                    (item.count < 10 && travelers === item.count) || (item.count === 10 && travelers >= 10)
+                      ? "bg-stone-900 text-white shadow-xs ring-1 ring-stone-900"
+                      : "bg-white text-stone-700 hover:bg-stone-100 border border-stone-200/80"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
           </div>
 

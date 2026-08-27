@@ -333,10 +333,18 @@ export default function ContactView() {
                       {...register("travelers")}
                       className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-amber-700 transition-colors cursor-pointer font-medium"
                     >
-                      <option value="1">Solo Traveler</option>
-                      <option value="2">2 Travelers (Couple/Friends)</option>
-                      <option value="3">3 to 5 Travelers (Private Group)</option>
-                      <option value="6">6+ Travelers</option>
+                      <option value="1">1 Traveler (Solo)</option>
+                      <option value="2">2 Travelers (Couple / Duo)</option>
+                      <option value="3">3 Travelers (Small Group)</option>
+                      <option value="4">4 Travelers</option>
+                      <option value="5">5 Travelers</option>
+                      <option value="6">6 Travelers</option>
+                      <option value="7">7 Travelers</option>
+                      <option value="8">8 Travelers</option>
+                      <option value="9">9 Travelers</option>
+                      <option value="10">10 Travelers</option>
+                      <option value="12">11 to 15 Travelers (Large Group)</option>
+                      <option value="16">16+ Travelers (Custom Expedition)</option>
                     </select>
                   </div>
                 </div>

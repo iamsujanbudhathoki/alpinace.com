@@ -304,7 +304,7 @@ export default function AdminFaqsPage() {
   );
 
   return (
-    <div className="space-y-6 max-w-6xl pb-16">
+    <div className="space-y-6 pb-16">
       <AdminPageHeader
         title="Pre-Trip Consultations &amp; FAQs"
         description="Manage consultation Q&amp;As, high-altitude advice, and booking FAQs displayed on the marketing homepage."

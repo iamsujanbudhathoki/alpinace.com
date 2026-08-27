@@ -1204,4 +1204,68 @@ export const adminTeamsApi = {
   },
 };
 
+export interface AboutUsValueItem {
+  title: string;
+  desc: string;
+}
+
+export interface AboutUsStatItem {
+  number: string;
+  label: string;
+}
+
+export interface AboutUsData {
+  id?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: string;
+  storyTitle?: string;
+  storyContent?: string;
+  storyImage?: string;
+  mission?: string;
+  vision?: string;
+  values?: AboutUsValueItem[];
+  stats?: AboutUsStatItem[];
+  status?: "published" | "draft";
+
+  // Essential Core Meta SEO Fields
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export const AboutUsService = {
+  async getPublic(): Promise<AboutUsData | null> {
+    try {
+      const res = await apiClient.get<AboutUsData>("/about-us");
+      return res?.data || null;
+    } catch (e) {
+      console.warn("Backend public about-us fetch error:", e);
+      return null;
+    }
+  },
+
+  async getAdmin(): Promise<AboutUsData | null> {
+    try {
+      const res = await apiClient.get<AboutUsData>("/admin/about-us");
+      return res?.data || null;
+    } catch (e) {
+      console.warn("Backend admin about-us fetch error:", e);
+      return null;
+    }
+  },
+
+  async update(data: Partial<AboutUsData>): Promise<ApiResponse<AboutUsData>> {
+    return apiClient.put<AboutUsData>("/admin/about-us", data);
+  },
+
+  async create(data: Partial<AboutUsData>): Promise<ApiResponse<AboutUsData>> {
+    return apiClient.post<AboutUsData>("/admin/about-us", data);
+  },
+};
+
+
 

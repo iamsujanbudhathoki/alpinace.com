@@ -350,3 +350,51 @@ export const faqSchema = z.object({
 });
 
 export type FaqFormValues = z.infer<typeof faqSchema>;
+
+export function isRichTextEmpty(html?: string): boolean {
+  if (!html) return true;
+  const text = html.replace(/<[^>]*>/g, "").trim();
+  return text.length === 0;
+}
+
+export const aboutUsSchema = z.object({
+  heroTitle: z.string().trim().min(3, "Hero heading must be at least 3 characters"),
+  heroSubtitle: z.string().optional(),
+  heroImage: z.string().optional(),
+  storyTitle: z.string().optional(),
+  storyContent: z.string().optional(),
+  storyImage: z.string().optional(),
+  mission: z.string().optional(),
+  vision: z.string().optional(),
+  values: z
+    .array(
+      z.object({
+        title: z.string().trim().min(1, "Commitment title is required"),
+        desc: z.string().trim().min(1, "Commitment description is required"),
+      })
+    )
+    .optional(),
+  stats: z
+    .array(
+      z.object({
+        number: z.string().trim().min(1, "Stat number is required"),
+        label: z.string().trim().min(1, "Stat label is required"),
+      })
+    )
+    .optional(),
+  status: z.enum(["published", "draft"]).default("published"),
+
+  // Essential Core Meta SEO Fields
+  metaTitle: z
+    .string()
+    .max(100, "Meta title must be 100 characters or fewer")
+    .optional(),
+  metaDescription: z
+    .string()
+    .max(300, "Meta description must be 300 characters or fewer")
+    .optional(),
+  metaKeywords: z.string().optional(),
+});
+
+export type AboutUsFormValues = z.infer<typeof aboutUsSchema>;
+

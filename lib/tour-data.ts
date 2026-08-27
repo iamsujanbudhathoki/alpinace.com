@@ -24,7 +24,6 @@ export interface TourItem {
   meals?: string;
   groupSizeRange?: string;
   highlights?: string[];
-  permitsRequired?: string[];
   inclusionsText?: string;
   exclusionsText?: string;
   addonsText?: string;

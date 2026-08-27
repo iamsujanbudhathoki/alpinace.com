@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { TourItem, initialToursData } from "@/lib/tour-data";
 import { FaqService, SettingService, TourService } from "@/lib/services/admin-service";
-import { BookingPackageType, FaqItem, FaqStatus, TripDepartureDate } from "@/lib/admin-data";
+import { BookingPackageType, InquiryType, FaqItem, FaqStatus, TripDepartureDate } from "@/lib/admin-data";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -186,13 +186,19 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       { key: "overview", label: "Overview" },
     ];
     if (tour?.itinerary && tour.itinerary.length > 0) {
-      list.push({ key: "itinerary", label: "Detailed Itinerary" });
+      list.push({ key: "itinerary", label: "Itinerary" });
     }
-    if (costIncludes.length > 0 || costExclusions.length > 0) {
-      list.push({ key: "cost", label: "Inclusions" });
+    if (costIncludes.length > 0 || costExclusions.length > 0 || tour?.inclusionsText || tour?.exclusionsText) {
+      list.push({ key: "cost", label: "Includes/Excludes" });
+    }
+    if (tour?.addonsText && tour.addonsText.trim()) {
+      list.push({ key: "addons", label: "Add-Ons" });
     }
     if (tour?.departureDates && tour.departureDates.length > 0) {
-      list.push({ key: "departures", label: "Dates & Rates" });
+      list.push({ key: "departures", label: "Departure Dates" });
+    }
+    if (tour?.usefulInfoText && tour.usefulInfoText.trim()) {
+      list.push({ key: "useful-info", label: "Useful Info" });
     }
     if (tour?.mapImage) {
       list.push({ key: "map", label: "Route Map" });
@@ -200,11 +206,11 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     if (tour?.packageFiles && tour.packageFiles.length > 0) {
       list.push({ key: "files", label: "Downloads" });
     }
-    if (displayFaqs.length > 0) {
-      list.push({ key: "faqs", label: "FAQs" });
-    }
     if (displayReviews.length > 0) {
       list.push({ key: "reviews", label: "Reviews" });
+    }
+    if (displayFaqs.length > 0) {
+      list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
   }, [tour, costIncludes, costExclusions, displayFaqs, displayReviews]);
@@ -397,11 +403,6 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
                 </div>
               )}
 
-              {/* Add-ons & Options */}
-              <PackageAddons addonsText={tour.addonsText} />
-
-              {/* Useful Info */}
-              <PackageUsefulInfo usefulInfoText={tour.usefulInfoText} />
             </section>
 
             {/* SECTION: ITINERARY */}
@@ -427,6 +428,13 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               </section>
             )}
 
+            {/* SECTION: ADD-ONS */}
+            {tour.addonsText && tour.addonsText.trim() && (
+              <section id="addons" className="scroll-mt-24">
+                <PackageAddons addonsText={tour.addonsText} />
+              </section>
+            )}
+
             {/* SECTION: DEPARTURE DATES */}
             {tour.departureDates && tour.departureDates.length > 0 && (
               <section id="departures" className="scroll-mt-24">
@@ -435,6 +443,13 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
                   defaultPrice={tour.priceUSD}
                   onBookDate={handleBookDeparture}
                 />
+              </section>
+            )}
+
+            {/* SECTION: USEFUL INFO */}
+            {tour.usefulInfoText && tour.usefulInfoText.trim() && (
+              <section id="useful-info" className="scroll-mt-24">
+                <PackageUsefulInfo usefulInfoText={tour.usefulInfoText} />
               </section>
             )}
 
@@ -452,17 +467,17 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               </section>
             )}
 
-            {/* SECTION: FAQS */}
-            {displayFaqs.length > 0 && (
-              <section id="faqs" className="scroll-mt-24">
-                <PackageFaqs faqs={displayFaqs} />
-              </section>
-            )}
-
             {/* SECTION: REVIEWS */}
             {displayReviews.length > 0 && (
               <section id="reviews" className="scroll-mt-24">
                 <PackageReviews reviews={displayReviews} />
+              </section>
+            )}
+
+            {/* SECTION: FAQS */}
+            {displayFaqs.length > 0 && (
+              <section id="faqs" className="scroll-mt-24">
+                <PackageFaqs faqs={displayFaqs} />
               </section>
             )}
           </div>
@@ -477,7 +492,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Reserve Private Tour"
-              packageType={BookingPackageType.TOUR}
+              packageType={InquiryType.TOUR}
               isBooked={isBooked}
             />
           </div>

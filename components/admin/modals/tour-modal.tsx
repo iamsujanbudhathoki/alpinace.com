@@ -121,7 +121,6 @@ export function TourFormModal({
       accommodation: "",
       meals: "",
       groupSizeRange: "",
-      permitsText: "",
       inclusionsText: "",
       exclusionsText: "",
       shortDesc: "",
@@ -192,7 +191,6 @@ export function TourFormModal({
         accommodation: initialData.accommodation || "",
         meals: initialData.meals || "",
         groupSizeRange: initialData.groupSizeRange || "",
-        permitsText: initialData.permitsRequired ? initialData.permitsRequired.join(", ") : "",
         inclusionsText: initialData.inclusionsText || "",
         exclusionsText: initialData.exclusionsText || "",
         shortDesc: initialData.shortDesc || "",
@@ -230,7 +228,6 @@ export function TourFormModal({
         accommodation: "",
         meals: "",
         groupSizeRange: "",
-        permitsText: "",
         inclusionsText: "",
         exclusionsText: "",
         shortDesc: "",
@@ -282,7 +279,6 @@ export function TourFormModal({
         accommodation: values.accommodation,
         meals: values.meals,
         groupSizeRange: values.groupSizeRange,
-        permitsRequired: permitsArray,
         inclusionsText: values.inclusionsText,
         exclusionsText: values.exclusionsText,
         shortDesc: values.shortDesc || "",
@@ -615,13 +611,7 @@ export function TourFormModal({
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <AdminInputField
-                    label="Required Permits (Comma Separated)"
-                    placeholder="e.g. Monument Entry Permits, TIMS (if applicable)"
-                    {...register("permitsText")}
-                  />
-                </div>
+
 
                 <div className="col-span-2 space-y-1.5">
                   <label className="text-xs font-bold text-slate-800 block">

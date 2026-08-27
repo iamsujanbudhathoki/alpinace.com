@@ -16,7 +16,7 @@ import {
   FaqService,
   SettingService,
 } from "@/lib/services/admin-service";
-import { FaqItem, FaqStatus, BookingPackageType, TripDepartureDate, PackageStatus } from "@/lib/admin-data";
+import { FaqItem, FaqStatus, BookingPackageType, InquiryType, TripDepartureDate, PackageStatus } from "@/lib/admin-data";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -200,13 +200,19 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
       { key: "overview", label: "Overview" },
     ];
     if (trek?.itinerary && trek.itinerary.length > 0) {
-      list.push({ key: "itinerary", label: "Detailed Itinerary" });
+      list.push({ key: "itinerary", label: "Itinerary" });
     }
-    if (costIncludes.length > 0 || costExclusions.length > 0) {
-      list.push({ key: "cost", label: "Inclusions" });
+    if (costIncludes.length > 0 || costExclusions.length > 0 || trek?.inclusionsText || trek?.exclusionsText) {
+      list.push({ key: "cost", label: "Includes/Excludes" });
+    }
+    if (trek?.addonsText && trek.addonsText.trim()) {
+      list.push({ key: "addons", label: "Add-Ons" });
     }
     if (trek?.departureDates && trek.departureDates.length > 0) {
-      list.push({ key: "departures", label: "Dates & Rates" });
+      list.push({ key: "departures", label: "Departure Dates" });
+    }
+    if (trek?.usefulInfoText && trek.usefulInfoText.trim()) {
+      list.push({ key: "useful-info", label: "Useful Info" });
     }
     if (trek?.mapImage) {
       list.push({ key: "map", label: "Trek Map" });
@@ -214,11 +220,11 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     if (trek?.packageFiles && trek.packageFiles.length > 0) {
       list.push({ key: "files", label: "Downloads" });
     }
-    if (displayFaqs.length > 0) {
-      list.push({ key: "faqs", label: "FAQs" });
-    }
     if (displayReviews.length > 0) {
       list.push({ key: "reviews", label: "Reviews" });
+    }
+    if (displayFaqs.length > 0) {
+      list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
   }, [trek, costIncludes, costExclusions, displayFaqs, displayReviews]);
@@ -417,31 +423,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
                 </div>
               )} */}
 
-              {/* Permits Section */}
-              {trek.permitsRequired && trek.permitsRequired.length > 0 && (
-                <div className="space-y-2 pt-1">
-                  <h3 className="type-caption text-stone-900 font-bold flex items-center gap-1.5">
-                    <ShieldAlert className="w-3.5 h-3.5 text-emerald-800" strokeWidth={1.75} />
-                    <span>Required Official Permits</span>
-                  </h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {trek.permitsRequired.map((permit, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-amber-50/60 border border-amber-200/80 text-amber-900 text-xs font-medium px-2.5 py-0.5 rounded-md"
-                      >
-                        {permit}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Add-ons & Options */}
-              <PackageAddons addonsText={trek.addonsText} />
-
-              {/* Useful Info */}
-              <PackageUsefulInfo usefulInfoText={trek.usefulInfoText} />
             </section>
 
             {/* SECTION: ITINERARY */}
@@ -467,6 +448,13 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               </section>
             )}
 
+            {/* SECTION: ADD-ONS */}
+            {trek.addonsText && trek.addonsText.trim() && (
+              <section id="addons" className="scroll-mt-24">
+                <PackageAddons addonsText={trek.addonsText} />
+              </section>
+            )}
+
             {/* SECTION: DEPARTURE DATES */}
             {trek.departureDates && trek.departureDates.length > 0 && (
               <section id="departures" className="scroll-mt-24">
@@ -475,6 +463,13 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
                   defaultPrice={trek.priceUSD}
                   onBookDate={handleBookDeparture}
                 />
+              </section>
+            )}
+
+            {/* SECTION: USEFUL INFO */}
+            {trek.usefulInfoText && trek.usefulInfoText.trim() && (
+              <section id="useful-info" className="scroll-mt-24">
+                <PackageUsefulInfo usefulInfoText={trek.usefulInfoText} />
               </section>
             )}
 
@@ -492,17 +487,17 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               </section>
             )}
 
-            {/* SECTION: FAQS */}
-            {displayFaqs.length > 0 && (
-              <section id="faqs" className="scroll-mt-24">
-                <PackageFaqs faqs={displayFaqs} />
-              </section>
-            )}
-
             {/* SECTION: REVIEWS */}
             {displayReviews.length > 0 && (
               <section id="reviews" className="scroll-mt-24">
                 <PackageReviews reviews={displayReviews} />
+              </section>
+            )}
+
+            {/* SECTION: FAQS */}
+            {displayFaqs.length > 0 && (
+              <section id="faqs" className="scroll-mt-24">
+                <PackageFaqs faqs={displayFaqs} />
               </section>
             )}
           </div>
@@ -517,7 +512,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Book Trek"
-              packageType={BookingPackageType.TREKKING}
+              packageType={InquiryType.TREKKING}
               isBooked={isBooked}
             />
           </div>

@@ -46,7 +46,6 @@ export default async function ToursPage() {
     tourType: p.tourType || (p.category as unknown as TourType),
     bestSeason: p.bestSeason || "",
     priceUSD: Number(p.priceUSD),
-    highlights: p.permitsRequired || [],
     status: p.status,
     region: p.region,
   }));

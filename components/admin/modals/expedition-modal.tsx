@@ -121,7 +121,6 @@ export function ExpeditionFormModal({
       accommodation: "",
       meals: "",
       groupSizeRange: "",
-      permitsText: "",
       inclusionsText: "",
       exclusionsText: "",
       shortDesc: "",
@@ -194,7 +193,6 @@ export function ExpeditionFormModal({
         accommodation: initialData.accommodation || "",
         meals: initialData.meals || "",
         groupSizeRange: initialData.groupSizeRange || "",
-        permitsText: initialData.permitsRequired ? initialData.permitsRequired.join(", ") : "",
         inclusionsText: initialData.inclusionsText || "",
         exclusionsText: initialData.exclusionsText || "",
         shortDesc: initialData.shortDesc || "",
@@ -234,7 +232,6 @@ export function ExpeditionFormModal({
         accommodation: "",
         meals: "",
         groupSizeRange: "",
-        permitsText: "",
         inclusionsText: "",
         exclusionsText: "",
         shortDesc: "",
@@ -290,7 +287,6 @@ export function ExpeditionFormModal({
         accommodation: values.accommodation,
         meals: values.meals,
         groupSizeRange: values.groupSizeRange,
-        permitsRequired: permitsArray,
         inclusionsText: values.inclusionsText,
         exclusionsText: values.exclusionsText,
         shortDesc: values.shortDesc || "",
@@ -619,13 +615,7 @@ export function ExpeditionFormModal({
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <AdminInputField
-                    label="Required Summit Permits (Comma Separated)"
-                    placeholder="e.g. Ministry Climbing Permit, Sagarmatha NP Permit, Garbage Deposit"
-                    {...register("permitsText")}
-                  />
-                </div>
+
 
                 <div className="col-span-2 space-y-1.5">
                   <label className="text-xs font-bold text-slate-800 block">

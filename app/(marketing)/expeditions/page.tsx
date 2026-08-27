@@ -47,7 +47,6 @@ export default async function ExpeditionsPage() {
     climbingGrade: p.climbingGrade || (p.difficulty as unknown as ClimbingGrade),
     bestSeason: p.bestSeason || "",
     priceUSD: Number(p.priceUSD),
-    permitsRequired: p.permitsRequired || [],
     status: p.status,
     region: p.region,
   }));

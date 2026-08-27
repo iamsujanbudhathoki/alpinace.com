@@ -36,7 +36,7 @@ export function Hero() {
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
           <Link
             href="/trekking"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-sm bg-white text-stone-900 hover:bg-stone-100 px-8 py-3.5 text-sm font-semibold transition-colors cursor-pointer shadow-lg"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-sm bg-amber-700 hover:bg-amber-800 text-white px-8 py-3.5 text-sm font-semibold transition-colors cursor-pointer"
           >
             <span>Explore Treks</span>
             <ArrowRight className="h-4 w-4" />

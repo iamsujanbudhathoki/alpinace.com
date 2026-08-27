@@ -17,6 +17,7 @@ import {
 } from "@/lib/services/admin-service";
 import {
   BookingPackageType,
+  InquiryType,
   ClimbingGrade,
   FaqItem,
   FaqStatus,
@@ -214,13 +215,19 @@ export function ExpeditionDetailClient({
       { key: "overview", label: "Overview" },
     ];
     if (expedition?.itinerary && expedition.itinerary.length > 0) {
-      list.push({ key: "itinerary", label: "Climbing Itinerary" });
+      list.push({ key: "itinerary", label: "Itinerary" });
     }
-    if (costIncludes.length > 0 || costExclusions.length > 0) {
-      list.push({ key: "cost", label: "Inclusions" });
+    if (costIncludes.length > 0 || costExclusions.length > 0 || expedition?.inclusionsText || expedition?.exclusionsText) {
+      list.push({ key: "cost", label: "Includes/Excludes" });
+    }
+    if (expedition?.addonsText && expedition.addonsText.trim()) {
+      list.push({ key: "addons", label: "Add-Ons" });
     }
     if (expedition?.departureDates && expedition.departureDates.length > 0) {
-      list.push({ key: "departures", label: "Dates & Rates" });
+      list.push({ key: "departures", label: "Departure Dates" });
+    }
+    if (expedition?.usefulInfoText && expedition.usefulInfoText.trim()) {
+      list.push({ key: "useful-info", label: "Useful Info" });
     }
     if (expedition?.mapImage) {
       list.push({ key: "map", label: "Route Map" });
@@ -228,11 +235,11 @@ export function ExpeditionDetailClient({
     if (expedition?.packageFiles && expedition.packageFiles.length > 0) {
       list.push({ key: "files", label: "Downloads" });
     }
-    if (displayFaqs.length > 0) {
-      list.push({ key: "faqs", label: "FAQs" });
-    }
     if (displayReviews.length > 0) {
       list.push({ key: "reviews", label: "Reviews" });
+    }
+    if (displayFaqs.length > 0) {
+      list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
   }, [expedition, costIncludes, costExclusions, displayFaqs, displayReviews]);
@@ -438,11 +445,6 @@ export function ExpeditionDetailClient({
                 </div>
               )}
 
-              {/* Add-ons & Summit Upgrades */}
-              <PackageAddons addonsText={expedition.addonsText} />
-
-              {/* Useful Info & Requirements */}
-              <PackageUsefulInfo usefulInfoText={expedition.usefulInfoText} />
             </section>
 
             {/* SECTION: CLIMBING ITINERARY */}
@@ -468,6 +470,13 @@ export function ExpeditionDetailClient({
               </section>
             )}
 
+            {/* SECTION: ADD-ONS */}
+            {expedition.addonsText && expedition.addonsText.trim() && (
+              <section id="addons" className="scroll-mt-24">
+                <PackageAddons addonsText={expedition.addonsText} />
+              </section>
+            )}
+
             {/* SECTION: DEPARTURE DATES */}
             {expedition.departureDates && expedition.departureDates.length > 0 && (
               <section id="departures" className="scroll-mt-24">
@@ -476,6 +485,13 @@ export function ExpeditionDetailClient({
                   defaultPrice={expedition.priceUSD}
                   onBookDate={handleBookDeparture}
                 />
+              </section>
+            )}
+
+            {/* SECTION: USEFUL INFO */}
+            {expedition.usefulInfoText && expedition.usefulInfoText.trim() && (
+              <section id="useful-info" className="scroll-mt-24">
+                <PackageUsefulInfo usefulInfoText={expedition.usefulInfoText} />
               </section>
             )}
 
@@ -493,17 +509,17 @@ export function ExpeditionDetailClient({
               </section>
             )}
 
-            {/* SECTION: FAQS */}
-            {displayFaqs.length > 0 && (
-              <section id="faqs" className="scroll-mt-24">
-                <PackageFaqs faqs={displayFaqs} />
-              </section>
-            )}
-
             {/* SECTION: REVIEWS */}
             {displayReviews.length > 0 && (
               <section id="reviews" className="scroll-mt-24">
                 <PackageReviews reviews={displayReviews} />
+              </section>
+            )}
+
+            {/* SECTION: FAQS */}
+            {displayFaqs.length > 0 && (
+              <section id="faqs" className="scroll-mt-24">
+                <PackageFaqs faqs={displayFaqs} />
               </section>
             )}
           </div>
@@ -518,7 +534,7 @@ export function ExpeditionDetailClient({
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Apply for Expedition"
-              packageType={BookingPackageType.EXPEDITION}
+              packageType={InquiryType.EXPEDITION}
               isBooked={isBooked}
             />
           </div>

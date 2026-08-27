@@ -60,12 +60,12 @@ export function PackageBookingSidebar({
     <aside className="w-full">
       <div className="bg-white border border-stone-200 rounded-sm shadow-md overflow-hidden">
         {/* Pricing Header */}
-        <div className="bg-stone-900 border-b border-stone-800 p-4.5 sm:p-5 relative overflow-hidden text-white">
+        <div className="bg-amber-50/90 border-b border-amber-200/80 p-4.5 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="type-caption text-stone-300 font-bold uppercase tracking-wider">
+            <span className="type-caption text-amber-800 font-bold uppercase tracking-wider">
               Trip Rate
             </span>
-            <span className="type-caption text-stone-400 font-medium">
+            <span className="type-caption text-stone-600 font-medium">
               {durationDays} Days Total
             </span>
           </div>
@@ -103,7 +103,7 @@ export function PackageBookingSidebar({
               >
                 <Minus className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
-              
+
               <div className="flex-1 text-center type-heading-md text-stone-900">
                 {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
               </div>
@@ -130,11 +130,10 @@ export function PackageBookingSidebar({
                 {addons.map((addon) => (
                   <label
                     key={addon.id}
-                    className={`p-2.5 rounded-sm border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${
-                      addon.checked
+                    className={`p-2.5 rounded-sm border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${addon.checked
                         ? "bg-stone-50 border-stone-400"
                         : "bg-white border-stone-200 hover:border-stone-300"
-                    }`}
+                      }`}
                   >
                     <div className="min-w-0 pr-2">
                       <span className="type-heading-md text-stone-900 block">
@@ -162,7 +161,7 @@ export function PackageBookingSidebar({
               <span>Base Rate ({travelers} × ${perPersonCalculated.toLocaleString()})</span>
               <span className="font-semibold text-stone-900">${totalPrice.toLocaleString()} USD</span>
             </div>
-            
+
             <div className="flex items-baseline justify-between pt-2 border-t border-stone-200">
               <div>
                 <span className="type-caption text-stone-900 font-bold block">
@@ -192,7 +191,7 @@ export function PackageBookingSidebar({
               <button
                 type="button"
                 onClick={onBookClick}
-                className="w-full bg-stone-900 hover:bg-stone-800 active:bg-stone-950 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                className="w-full bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span>{bookButtonLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />

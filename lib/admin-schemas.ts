@@ -11,6 +11,7 @@ import {
   GuideRole,
   GuideStatus,
   InquiryStatus,
+  InquiryType,
   BlogStatus,
   AssociateStatus,
   FaqStatus,
@@ -269,7 +270,7 @@ export const inquirySchema = z.object({
   groupSize: z.preprocess((val) => Number(val), z.number().min(1, "Group size must be at least 1")),
   message: z.string().min(5, "Message must be at least 5 characters"),
   status: z.nativeEnum(InquiryStatus).optional(),
-  type: z.string().optional(),
+  type: z.nativeEnum(InquiryType).optional(),
   notes: z.string().optional(),
 });
 

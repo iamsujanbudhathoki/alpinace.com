@@ -69,6 +69,13 @@ export enum BookingPackageType {
   TOUR = "tour",
 }
 
+export enum InquiryType {
+  TREKKING = "Trekking",
+  TOUR = "Tour",
+  EXPEDITION = "Expedition",
+  GENERAL = "General",
+}
+
 export enum BookingPaymentStatus {
   PAID = "paid",
   DEPOSIT_PAID = "deposit_paid",
@@ -220,7 +227,6 @@ export interface PackageItem {
   accommodation?: string;
   meals?: string;
   groupSizeRange?: string;
-  permitsRequired: string[];
   inclusionsText?: string;
   exclusionsText?: string;
   addonsText?: string;
@@ -287,6 +293,7 @@ export interface Inquiry {
   message: string;
   createdAt: string;
   status: InquiryStatus;
+  type?: InquiryType;
   notes?: string;
 }
 

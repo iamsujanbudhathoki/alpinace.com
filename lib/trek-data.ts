@@ -57,7 +57,6 @@ export interface TrekItem {
   accommodation?: string;
   meals?: string;
   groupSizeRange?: string;
-  permitsRequired: string[];
   inclusionsText?: string;
   exclusionsText?: string;
   addonsText?: string;

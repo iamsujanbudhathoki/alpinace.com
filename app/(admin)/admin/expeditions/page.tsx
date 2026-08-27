@@ -328,9 +328,6 @@ export default function AdminExpeditionsPage() {
                             </span>
                             <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/link:text-amber-600 opacity-0 group-hover/link:opacity-100 transition-all shrink-0" />
                           </Link>
-                          <div className="text-xs text-slate-600 mt-0.5 font-normal">
-                            Permits: {exp.permitsRequired ? exp.permitsRequired.join(", ") : "NMA Summit Permit"}
-                          </div>
                         </div>
                       </div>
                     </AdminTableCell>

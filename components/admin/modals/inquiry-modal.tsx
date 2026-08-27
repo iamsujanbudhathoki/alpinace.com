@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send, Mail, Phone, Globe, Loader2 } from "lucide-react";
-import { Inquiry, InquiryStatus } from "@/lib/admin-data";
+import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
 import { inquirySchema, InquiryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
@@ -39,6 +39,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
       travelDates: "Upcoming Season",
       groupSize: 2,
       message: "",
+      type: InquiryType.TREKKING,
     },
   });
 
@@ -53,6 +54,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         travelDates: "Upcoming Season",
         groupSize: 2,
         message: "",
+        type: InquiryType.TREKKING,
       });
     }
   }, [isOpen, reset]);
@@ -69,6 +71,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         travelDates: values.travelDates.trim(),
         groupSize: Number(values.groupSize) || 1,
         message: values.message.trim(),
+        type: values.type || InquiryType.GENERAL,
       };
 
       const success = await onSave(payload);
@@ -172,6 +175,19 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
             ]}
             error={errors.interestedTrip?.message}
             {...register("interestedTrip")}
+          />
+
+          <AdminSelectField
+            label="Inquiry Type / Category"
+            required
+            options={[
+              { label: "Trekking", value: InquiryType.TREKKING },
+              { label: "Tour", value: InquiryType.TOUR },
+              { label: "Expedition", value: InquiryType.EXPEDITION },
+              { label: "General Inquiry", value: InquiryType.GENERAL },
+            ]}
+            error={errors.type?.message}
+            {...register("type")}
           />
 
           <AdminSelectField
@@ -335,8 +351,14 @@ export function ReplyInquiryModal({
             </div>
           </div>
 
-          <div>
-            <AdminStatusBadge status={selectedStatus} />
+          <div className="space-y-1">
+            <span className="text-slate-700 font-bold block">Type &amp; Status:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200">
+                {inquiry?.type || InquiryType.GENERAL}
+              </span>
+              <AdminStatusBadge status={selectedStatus} />
+            </div>
           </div>
         </div>
 

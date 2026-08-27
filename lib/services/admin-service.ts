@@ -11,6 +11,8 @@ import {
   FaqStatus,
   Guide,
   Inquiry,
+  InquiryStatus,
+  InquiryType,
   NotificationType,
   PackageItem,
 } from "@/lib/admin-data";
@@ -250,19 +252,10 @@ function cleanPackagePayload(data: any) {
     totalBookings,
     createdAt,
     updatedAt,
-    permitsText,
     ...rest
   } = data;
 
   const payload: any = { ...rest };
-
-  if (permitsText !== undefined) {
-    payload.permitsRequired = permitsText
-      ? permitsText.split(",").map((s: string) => s.trim()).filter(Boolean)
-      : [];
-  } else if (Array.isArray(rest.permitsRequired)) {
-    payload.permitsRequired = rest.permitsRequired;
-  }
 
   if (rest.durationDays !== undefined && rest.durationDays !== null && rest.durationDays !== "") {
     payload.durationDays = Number(rest.durationDays);
@@ -389,7 +382,6 @@ export function formatBackendTrek(p: any): TrekItem {
     accommodation: p.accommodation,
     meals: p.meals,
     groupSizeRange: p.groupSizeRange,
-    permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
     inclusionsText: p.inclusionsText,
     exclusionsText: p.exclusionsText,
     addonsText: p.addonsText,
@@ -437,7 +429,6 @@ export function formatBackendPackage(p: any): PackageItem {
     accommodation: p.accommodation,
     meals: p.meals,
     groupSizeRange: p.groupSizeRange,
-    permitsRequired: Array.isArray(p.permitsRequired) ? p.permitsRequired : [],
     inclusionsText: p.inclusionsText,
     exclusionsText: p.exclusionsText,
     addonsText: p.addonsText,
@@ -743,7 +734,8 @@ export const BookingService = {
 
 export const InquiryService = {
   async getAll(params?: {
-    status?: string;
+    status?: InquiryStatus | "All";
+    type?: InquiryType | "All";
     search?: string;
     limit?: number;
     page?: number;
@@ -751,6 +743,7 @@ export const InquiryService = {
     try {
       const query = new URLSearchParams();
       if (params?.status && params.status !== "All") query.set("status", params.status);
+      if (params?.type && params.type !== "All") query.set("type", params.type);
       if (params?.search && params.search.trim()) query.set("search", params.search.trim());
       if (params?.limit) query.set("limit", String(params.limit));
       if (params?.page) query.set("page", String(params.page));

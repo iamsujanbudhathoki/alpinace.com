@@ -98,7 +98,7 @@ export function TeamViewModal({
         {/* Biography & Background */}
         {member.bio ? (
           <div className="space-y-1.5">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-xs font-semibold text-slate-700 block">
               Biography &amp; Background
             </span>
             <p className="text-xs text-slate-700 leading-relaxed font-normal whitespace-pre-line bg-slate-50/70 border border-slate-200/60 rounded-xl p-3.5">

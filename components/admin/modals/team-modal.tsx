@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save } from "lucide-react";
 import { TeamMemberItem, TeamMemberFormValues } from "@/lib/services/admin-service";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
+import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
+import { toast } from "sonner";
 
 interface TeamModalProps {
   isOpen: boolean;
@@ -66,7 +67,7 @@ export function TeamModal({
       return;
     }
     if (!formData.role.trim()) {
-      setError("Role / Position title is required.");
+      setError("Role title is required.");
       return;
     }
 
@@ -78,15 +79,19 @@ export function TeamModal({
 
       if (memberToEdit) {
         await adminTeamsApi.update(memberToEdit.id, formData);
+        toast.success(`Updated "${formData.name}" successfully`);
       } else {
         await adminTeamsApi.create(formData);
+        toast.success(`Added "${formData.name}" to team`);
       }
 
       onSuccess();
       onClose();
     } catch (err: any) {
       console.error("Failed to save team member:", err);
-      setError(err?.message || "Failed to save team member. Please try again.");
+      const msg = err?.message || "Failed to save team member. Please try again.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -135,61 +140,46 @@ export function TeamModal({
       fixedHeight={false}
     >
       {error && (
-        <div className="p-3 mb-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium">
+        <div className="p-3 mb-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
           {error}
         </div>
       )}
 
-      <form id="team-member-form" onSubmit={handleSubmit} className="space-y-5 text-xs">
+      <form id="team-member-form" onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* Member Name */}
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1">
-            Full Name <span className="text-rose-500">*</span>
-          </label>
-          <Input
-            type="text"
-            required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="e.g. Chhewang Sherpa"
-            className="text-xs bg-slate-50/80 border-slate-200 text-slate-900 focus:bg-white rounded-lg h-9"
-          />
-        </div>
+        <AdminInputField
+          label="Full Name"
+          required
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          placeholder="e.g. Chhewang Sherpa"
+        />
 
         {/* Role & Experience */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-slate-700 font-semibold mb-1">
-              Role / Title <span className="text-rose-500">*</span>
-            </label>
-            <Input
-              type="text"
-              required
-              value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-              placeholder="e.g. Lead Expedition Leader"
-              className="text-xs bg-slate-50/80 border-slate-200 text-slate-900 focus:bg-white rounded-lg h-9"
-            />
-          </div>
+          <AdminInputField
+            label="Role / Title"
+            required
+            type="text"
+            value={formData.role}
+            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+            placeholder="e.g. Lead Expedition Leader"
+          />
 
-          <div>
-            <label className="block text-slate-700 font-semibold mb-1">
-              Badge / Experience Tag
-            </label>
-            <Input
-              type="text"
-              value={formData.experience || ""}
-              onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-              placeholder="e.g. IFMGA Guide • 12 yrs"
-              className="text-xs bg-slate-50/80 border-slate-200 text-slate-900 focus:bg-white rounded-lg h-9"
-            />
-          </div>
+          <AdminInputField
+            label="Badge / Experience Tag"
+            type="text"
+            value={formData.experience || ""}
+            onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+            placeholder="e.g. IFMGA Guide • 12 yrs"
+          />
         </div>
 
         {/* Avatar Image Selection */}
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1.5">
-            Avatar Image Photo
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold text-slate-700">
+            Avatar Photo
           </label>
           <AdminImageUpload
             value={formData.avatar || ""}
@@ -199,49 +189,34 @@ export function TeamModal({
 
         {/* Display Order & Status */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-slate-700 font-semibold mb-1">
-              Display Order Priority
-            </label>
-            <Input
-              type="number"
-              min={0}
-              value={formData.order}
-              onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-              placeholder="0"
-              className="text-xs bg-slate-50/80 border-slate-200 text-slate-900 focus:bg-white rounded-lg h-9"
-            />
-            <span className="text-[11px] text-slate-500 mt-1 block">Lower numbers appear first.</span>
-          </div>
+          <AdminInputField
+            label="Display Order Priority"
+            type="number"
+            min={0}
+            value={formData.order}
+            onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+            placeholder="0"
+          />
 
-          <div>
-            <label className="block text-slate-700 font-semibold mb-1">
-              Active Status
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value as "active" | "inactive" })}
-              className="w-full text-xs bg-white border border-slate-200 text-slate-900 font-semibold rounded-lg px-3 py-2 focus:outline-none cursor-pointer h-9"
-            >
-              <option value="active">Active (Visible on Website)</option>
-              <option value="inactive">Inactive (Hidden)</option>
-            </select>
-          </div>
+          <AdminSelectField
+            label="Active Status"
+            value={formData.status}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value as "active" | "inactive" })}
+            options={[
+              { label: "Active (Visible on Website)", value: "active" },
+              { label: "Inactive (Hidden)", value: "inactive" },
+            ]}
+          />
         </div>
 
         {/* Bio / Description */}
-        <div>
-          <label className="block text-slate-700 font-semibold mb-1">
-            Bio & Profile Summary
-          </label>
-          <textarea
-            rows={4}
-            value={formData.bio || ""}
-            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-            placeholder="Enter brief background, achievements, or summit credentials..."
-            className="w-full p-3 text-xs bg-slate-50/80 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none resize-y"
-          />
-        </div>
+        <AdminTextareaField
+          label="Bio & Profile Summary"
+          rows={4}
+          value={formData.bio || ""}
+          onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+          placeholder="Enter brief background, achievements, or summit credentials..."
+        />
       </form>
     </AdminModal>
   );

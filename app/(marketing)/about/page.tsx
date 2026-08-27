@@ -1,6 +1,5 @@
-import type { Metadata } from 'next';
 import { generateStaticMetadata } from '@/lib/seo';
-import { AssociatesSection } from '@/components/marketing/associates-section';
+import type { Metadata } from 'next';
 
 export function generateMetadata(): Metadata {
   return generateStaticMetadata({
@@ -188,8 +187,6 @@ export default async function AboutView() {
         </div>
       </section>
 
-      {/* Official Partners & Affiliations */}
-      <AssociatesSection />
     </div>
   );
 }

@@ -342,8 +342,8 @@ export function ReplyInquiryModal({
           {isSending
             ? "Saving..."
             : replyText.trim()
-            ? "Dispatch Quote Email"
-            : "Save Status Update"}
+              ? "Dispatch Quote Email"
+              : "Save Status Update"}
         </span>
       </Button>
     </div>
@@ -411,11 +411,10 @@ export function ReplyInquiryModal({
                 type="button"
                 size="sm"
                 onClick={() => handleStatusClick(st)}
-                className={`text-xs h-8 px-3 rounded-lg cursor-pointer ${
-                  selectedStatus === st
-                    ? "bg-slate-900 text-white font-bold"
-                    : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-medium"
-                }`}
+                className={`text-xs h-8 px-3 rounded-lg cursor-pointer ${selectedStatus === st
+                  ? "bg-slate-900 text-white font-bold"
+                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-medium"
+                  }`}
               >
                 {st}
               </Button>

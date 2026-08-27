@@ -347,21 +347,6 @@ export default function AdminFaqsPage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-700 font-medium">
-        <div className="flex items-center gap-2">
-          <GripVertical className="w-4 h-4 text-slate-400 shrink-0" />
-          <span>
-            <strong className="font-semibold text-slate-900">Drag and drop rows</strong> using the grip handle or use the arrow buttons to reorder questions on the website.
-          </span>
-        </div>
-        {isReordering && (
-          <div className="flex items-center gap-1.5 text-slate-700 font-semibold text-[11px]">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            <span>Syncing order...</span>
-          </div>
-        )}
-      </div>
-
       <AdminTableContainer>
         <AdminTable>
           <AdminTableHeader>

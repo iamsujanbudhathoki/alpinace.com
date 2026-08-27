@@ -19,11 +19,8 @@ import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Users,
   Plus,
   Search,
-  GripVertical,
-  Loader2,
   ArrowUp,
   ArrowDown,
   User,
@@ -31,6 +28,9 @@ import {
 } from "lucide-react";
 import { adminTeamsApi, TeamMemberItem } from "@/lib/services/admin-service";
 import { TeamModal } from "@/components/admin/modals/team-modal";
+import { TeamViewModal } from "@/components/admin/modals/team-view-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
+import { openSingleImage } from "@/lib/utils/lightbox";
 
 export default function AdminTeamsPage() {
   const [members, setMembers] = useState<TeamMemberItem[]>([]);
@@ -46,7 +46,12 @@ export default function AdminTeamsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMemberItem | null>(null);
 
-  const [isReordering, setIsReordering] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [viewingMember, setViewingMember] = useState<TeamMemberItem | null>(null);
+
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deletingMember, setDeletingMember] = useState<TeamMemberItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchMembers = useCallback(async () => {
     try {
@@ -82,16 +87,29 @@ export default function AdminTeamsPage() {
     setModalOpen(true);
   };
 
-  const handleDeleteMember = async (member: TeamMemberItem) => {
-    if (!confirm(`Are you sure you want to remove "${member.name}" from the team?`)) {
-      return;
-    }
+  const handleOpenViewModal = (member: TeamMemberItem) => {
+    setViewingMember(member);
+    setViewModalOpen(true);
+  };
+
+  const handlePromptDelete = (member: TeamMemberItem) => {
+    setDeletingMember(member);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingMember) return;
     try {
-      await adminTeamsApi.delete(member.id);
+      setIsDeleting(true);
+      await adminTeamsApi.delete(deletingMember.id);
+      setDeleteConfirmOpen(false);
+      setDeletingMember(null);
       fetchMembers();
     } catch (err) {
       console.error("Failed to delete member:", err);
       alert("Failed to delete team member.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -118,13 +136,17 @@ export default function AdminTeamsPage() {
     );
 
     try {
-      setIsReordering(true);
       await adminTeamsApi.reorder(updatedItems);
     } catch (err) {
       console.error("Failed to reorder team members:", err);
       fetchMembers();
-    } finally {
-      setIsReordering(false);
+    }
+  };
+
+  const handleImageClick = (e: React.MouseEvent, avatarUrl: string, name: string) => {
+    e.stopPropagation();
+    if (avatarUrl) {
+      openSingleImage(avatarUrl, `${name} Avatar Photo`, e.currentTarget);
     }
   };
 
@@ -175,22 +197,6 @@ export default function AdminTeamsPage() {
             <option value="inactive">Inactive Only</option>
           </select>
         </div>
-      </div>
-
-      {/* Reorder Tip Banner */}
-      <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-700 font-medium">
-        <div className="flex items-center gap-2">
-          <GripVertical className="w-4 h-4 text-slate-400 shrink-0" />
-          <span>
-            <strong className="font-semibold text-slate-900">Reorder team members</strong> using the arrow buttons to change the order they appear on the public website.
-          </span>
-        </div>
-        {isReordering && (
-          <div className="flex items-center gap-1.5 text-slate-700 font-semibold text-[11px]">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            <span>Syncing order...</span>
-          </div>
-        )}
       </div>
 
       {/* Table Container */}
@@ -249,7 +255,9 @@ export default function AdminTeamsPage() {
                           <img
                             src={member.avatar}
                             alt={member.name}
-                            className="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0"
+                            onClick={(e) => handleImageClick(e, member.avatar!, member.name)}
+                            className="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0 cursor-pointer hover:opacity-85 hover:scale-105 transition-all"
+                            title="Click to view image lightbox"
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
@@ -257,9 +265,13 @@ export default function AdminTeamsPage() {
                           </div>
                         )}
                         <div>
-                          <div className="font-bold text-slate-900 text-xs">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenViewModal(member)}
+                            className="font-bold text-slate-900 text-xs hover:underline text-left cursor-pointer"
+                          >
                             {member.name}
-                          </div>
+                          </button>
                           {member.bio && (
                             <div className="text-[11px] text-slate-500 font-normal line-clamp-1 max-w-xs">
                               {member.bio}
@@ -293,9 +305,14 @@ export default function AdminTeamsPage() {
                       <AdminStatusBadge status={member.status} />
                     </AdminTableCell>
 
-                    {/* Actions */}
+                    {/* Actions: View Profile, Edit, Delete */}
                     <AdminTableCell align="right">
                       <AdminTableActions>
+                        <AdminActionButton
+                          variant="view"
+                          onClick={() => handleOpenViewModal(member)}
+                          title="View Member Profile"
+                        />
                         <AdminActionButton
                           variant="edit"
                           onClick={() => handleOpenEditModal(member)}
@@ -303,7 +320,7 @@ export default function AdminTeamsPage() {
                         />
                         <AdminActionButton
                           variant="delete"
-                          onClick={() => handleDeleteMember(member)}
+                          onClick={() => handlePromptDelete(member)}
                           title="Delete Team Member"
                         />
                       </AdminTableActions>
@@ -333,6 +350,16 @@ export default function AdminTeamsPage() {
         />
       </AdminTableContainer>
 
+      {/* View Profile Modal */}
+      {viewModalOpen && (
+        <TeamViewModal
+          isOpen={viewModalOpen}
+          onClose={() => setViewModalOpen(false)}
+          member={viewingMember}
+          onEdit={handleOpenEditModal}
+        />
+      )}
+
       {/* Create / Edit Modal */}
       {modalOpen && (
         <TeamModal
@@ -340,6 +367,21 @@ export default function AdminTeamsPage() {
           onClose={() => setModalOpen(false)}
           onSuccess={fetchMembers}
           memberToEdit={editingMember}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmOpen && (
+        <AdminConfirmModal
+          isOpen={deleteConfirmOpen}
+          onClose={() => setDeleteConfirmOpen(false)}
+          onConfirm={handleConfirmDelete}
+          title="Delete Team Member"
+          description={`Are you sure you want to remove "${deletingMember?.name}" (${deletingMember?.role}) from the team?`}
+          confirmText="Remove Member"
+          cancelText="Cancel"
+          variant="danger"
+          isLoading={isDeleting}
         />
       )}
     </div>

@@ -6,7 +6,6 @@ import {
   AdminTableContainer,
   AdminTable,
   AdminTableHeader,
-  AdminTableHeaderRow,
   AdminTableHead,
   AdminTableBody,
   AdminTableRow,
@@ -59,7 +58,7 @@ export default function AdminTeamsPage() {
         limit,
       });
 
-      setMembers(res.data);
+      setMembers(res.items);
       setTotalItems(res.total);
       setTotalPages(res.totalPages);
     } catch (err) {
@@ -198,14 +197,14 @@ export default function AdminTeamsPage() {
       <AdminTableContainer>
         <AdminTable>
           <AdminTableHeader>
-            <AdminTableHeaderRow>
+            <tr>
               <AdminTableHead className="w-16 text-center">Order</AdminTableHead>
               <AdminTableHead>Team Member</AdminTableHead>
               <AdminTableHead>Role &amp; Position</AdminTableHead>
               <AdminTableHead>Badge / Experience</AdminTableHead>
               <AdminTableHead>Status</AdminTableHead>
               <AdminTableHead align="right">Actions</AdminTableHead>
-            </AdminTableHeaderRow>
+            </tr>
           </AdminTableHeader>
           <AdminTableBody>
             {loading ? (

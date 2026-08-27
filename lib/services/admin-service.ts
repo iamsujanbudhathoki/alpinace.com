@@ -1147,14 +1147,18 @@ export interface TeamMemberFormValues {
 }
 
 export const adminTeamsApi = {
-  async getAll(statusOrParams?: string | FaqQueryParams): Promise<PaginatedList<TeamMemberItem>> {
+  async getAll(
+    statusOrParams?: string | { status?: string; search?: string; limit?: number; page?: number }
+  ): Promise<PaginatedList<TeamMemberItem>> {
     try {
       const params = new URLSearchParams();
-      if (typeof statusOrParams === "object" && statusOrParams !== null) {
+      if (statusOrParams && typeof statusOrParams === "object") {
         if (statusOrParams.status && statusOrParams.status !== "All") {
           params.append("status", statusOrParams.status);
         }
-        if (statusOrParams.search) params.append("search", statusOrParams.search);
+        if (statusOrParams.search && statusOrParams.search.trim() !== "") {
+          params.append("search", statusOrParams.search.trim());
+        }
         if (statusOrParams.page) params.append("page", String(statusOrParams.page));
         if (statusOrParams.limit) params.append("limit", String(statusOrParams.limit));
       } else if (statusOrParams && statusOrParams !== "All") {

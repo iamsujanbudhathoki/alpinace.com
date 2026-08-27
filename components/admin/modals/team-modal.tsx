@@ -170,7 +170,6 @@ export function TeamModal({
             <AdminImageUpload
               value={formData.avatar || ""}
               onChange={(url) => setFormData({ ...formData, avatar: url })}
-              categoryFilter="Team"
             />
           </div>
 

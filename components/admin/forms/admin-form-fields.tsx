@@ -16,9 +16,9 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
         <input
           ref={ref}
           {...props}
-          className={`w-full bg-slate-50/50 border ${
-            error ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" : "border-slate-200 focus:border-amber-500 focus:ring-amber-500/20"
-          } rounded-xl px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none focus:ring-2 focus:bg-white transition-all placeholder:text-slate-400 ${className}`}
+          className={`w-full bg-white border ${
+            error ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" : "border-slate-200 focus:border-slate-800 focus:ring-2 focus:ring-slate-900/10"
+          } rounded-lg px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none transition-all placeholder:text-slate-400 ${className}`}
         />
         {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
       </div>
@@ -41,9 +41,9 @@ export const AdminSelectField = React.forwardRef<HTMLSelectElement, AdminSelectF
         <select
           ref={ref}
           {...props}
-          className={`w-full bg-slate-50/50 border ${
-            error ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" : "border-slate-200 focus:border-amber-500 focus:ring-amber-500/20"
-          } rounded-xl px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none focus:ring-2 focus:bg-white cursor-pointer transition-all ${className}`}
+          className={`w-full bg-white border ${
+            error ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" : "border-slate-200 focus:border-slate-800 focus:ring-2 focus:ring-slate-900/10"
+          } rounded-lg px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none cursor-pointer transition-all ${className}`}
         >
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -71,9 +71,9 @@ export const AdminTextareaField = React.forwardRef<HTMLTextAreaElement, AdminTex
         <textarea
           ref={ref}
           {...props}
-          className={`w-full bg-slate-50/50 border ${
-            error ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" : "border-slate-200 focus:border-amber-500 focus:ring-amber-500/20"
-          } rounded-xl px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none focus:ring-2 focus:bg-white transition-all placeholder:text-slate-400 resize-y ${className}`}
+          className={`w-full bg-white border ${
+            error ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" : "border-slate-200 focus:border-slate-800 focus:ring-2 focus:ring-slate-900/10"
+          } rounded-lg px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none transition-all placeholder:text-slate-400 resize-y ${className}`}
         />
         {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
       </div>

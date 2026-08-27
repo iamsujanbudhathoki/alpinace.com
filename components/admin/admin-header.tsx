@@ -188,13 +188,13 @@ export function AdminHeader({
         <button
           type="button"
           onClick={() => setIsSearchModalOpen(true)}
-          className="w-full bg-slate-50 hover:bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-700 text-xs rounded-xl pl-3.5 pr-3 py-2 flex items-center justify-between transition-all cursor-pointer font-medium shadow-2xs group"
+          className="w-full bg-slate-50 hover:bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 text-xs rounded-lg pl-3 pr-2.5 py-1.5 flex items-center justify-between transition-all cursor-pointer font-normal shadow-2xs group"
         >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <Search className="w-4 h-4 text-slate-400 group-hover:text-amber-600 transition-colors shrink-0" />
-            <span className="truncate">Search guest, trip ID, guide...</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+            <span className="truncate">Search packages, bookings, guides (⌘K)...</span>
           </div>
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-400 border border-slate-200 bg-white px-1.5 py-0.5 rounded-md shadow-2xs shrink-0 select-none">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-500 border border-slate-200 bg-white px-1.5 py-0.5 rounded shadow-2xs shrink-0 select-none">
             ⌘K
           </kbd>
         </button>
@@ -204,10 +204,10 @@ export function AdminHeader({
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Notifications Popover */}
         <Popover>
-          <PopoverTrigger className="p-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 hover:text-slate-950 hover:border-slate-400 transition-colors relative cursor-pointer focus:outline-none">
-            <Bell className="w-4 h-4" />
+          <PopoverTrigger className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors relative cursor-pointer focus:outline-none">
+            <Bell className="w-4 h-4 text-slate-600" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 leading-none shadow-xs border-2 border-white pointer-events-none animate-in fade-in zoom-in duration-200">
+              <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 leading-none shadow-xs border-2 border-white pointer-events-none">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
@@ -215,24 +215,24 @@ export function AdminHeader({
 
           <PopoverContent align="end" sideOffset={8} className="w-80 sm:w-96 p-0 border border-slate-200 shadow-xl rounded-xl bg-white overflow-hidden">
             {/* Popover Header */}
-            <div className="p-3 px-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+            <div className="p-3 px-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-xs text-slate-900">Notifications</span>
                 {unreadCount > 0 ? (
-                  <span className="text-xs font-bold bg-red-50 text-red-700 px-2 py-0.5 rounded-full border border-red-200">
+                  <span className="text-[10px] font-bold bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full border border-rose-200">
                     {unreadCount} unread
                   </span>
                 ) : (
-                  <span className="text-xs font-medium text-slate-500">All caught up</span>
+                  <span className="text-[11px] font-medium text-slate-500">All caught up</span>
                 )}
               </div>
 
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
-                  className="text-xs font-bold text-slate-800 hover:text-slate-950 flex items-center gap-1 cursor-pointer transition-colors"
+                  className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1 cursor-pointer transition-colors"
                 >
-                  <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Mark all read</span>
                 </button>
               )}
@@ -242,8 +242,8 @@ export function AdminHeader({
             <div className="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-10 text-slate-400">
-                  <Inbox className="w-6 h-6" />
-                  <span className="font-semibold">No notifications yet</span>
+                  <Inbox className="w-6 h-6 text-slate-300" />
+                  <span className="font-medium">No notifications yet</span>
                 </div>
               ) : (
                 notifications.map((notif) => (
@@ -252,7 +252,7 @@ export function AdminHeader({
                     onClick={() => handleNotificationClick(notif)}
                     className={`p-3.5 transition-colors flex gap-3 cursor-pointer relative border-l-2 ${
                       !notif.isRead
-                        ? "bg-amber-50/40 hover:bg-amber-50/70 border-l-amber-500"
+                        ? "bg-slate-50/80 hover:bg-slate-100/80 border-l-slate-900"
                         : "bg-white hover:bg-slate-50/80 border-l-transparent"
                     }`}
                   >
@@ -266,13 +266,13 @@ export function AdminHeader({
                         <span
                           className={`text-xs truncate ${
                             !notif.isRead
-                              ? "font-bold text-slate-950"
+                              ? "font-bold text-slate-900"
                               : "font-medium text-slate-700"
                           }`}
                         >
                           {notif.title}
                         </span>
-                        <span className="text-[11px] text-slate-400 font-medium shrink-0">
+                        <span className="text-[11px] text-slate-400 font-normal shrink-0">
                           {formatDate(notif.createdAt)}
                         </span>
                       </div>
@@ -296,7 +296,7 @@ export function AdminHeader({
               <button
                 onClick={handleLoadMore}
                 disabled={isLoadingMore}
-                className="w-full p-2.5 text-center text-xs font-bold text-slate-800 hover:bg-slate-100/80 bg-slate-50 border-t border-slate-200 cursor-pointer transition-colors disabled:opacity-50"
+                className="w-full p-2.5 text-center text-xs font-semibold text-slate-700 hover:bg-slate-100 bg-slate-50 border-t border-slate-200 cursor-pointer transition-colors disabled:opacity-50"
               >
                 {isLoadingMore ? "Loading..." : `Show more (${totalNotifications - notifications.length} remaining)`}
               </button>
@@ -307,41 +307,41 @@ export function AdminHeader({
         {/* User Profile Dropdown Menu */}
         <div className="pl-1 border-l border-slate-200">
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer">
-              <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-400 font-extrabold text-xs flex items-center justify-center shadow-xs shrink-0">
+            <DropdownMenuTrigger className="flex items-center gap-2 p-1 rounded-lg hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer">
+              <div className="w-7 h-7 rounded-md bg-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-2xs shrink-0">
                 {userInitials}
               </div>
               <div className="hidden md:block text-left">
-                <div className="text-xs font-bold text-slate-950 truncate leading-none">
+                <div className="text-xs font-bold text-slate-900 truncate leading-none">
                   {user?.name}
                 </div>
-                <div className="text-xs text-slate-800 truncate font-bold mt-0.5">
+                <div className="text-[10px] text-slate-500 truncate font-semibold mt-0.5">
                   {user?.role}
                 </div>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-900 hidden md:block" />
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden md:block" />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200 shadow-xl rounded-xl p-1 z-50">
               <DropdownMenuLabel className="font-semibold text-xs px-3 py-2">
                 <div className="font-bold text-slate-900">{user?.name || "Sujan Budhathoki"}</div>
-                <div className="text-xs text-slate-700 font-semibold truncate">{user?.email}</div>
+                <div className="text-[11px] text-slate-500 font-normal truncate">{user?.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-100" />
 
               <DropdownMenuItem
                 onClick={() => router.push("/admin/settings")}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-800 hover:text-slate-950 hover:bg-slate-100 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
               >
-                <Settings className="w-3.5 h-3.5 text-amber-600" />
+                <Settings className="w-3.5 h-3.5 text-slate-500" />
                 <span>Account Settings</span>
               </DropdownMenuItem>
 
               <DropdownMenuItem
                 onClick={() => window.open("/", "_blank")}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-800 hover:text-slate-950 hover:bg-slate-100 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
               >
-                <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
+                <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
                 <span>Visit Marketing Site</span>
               </DropdownMenuItem>
 

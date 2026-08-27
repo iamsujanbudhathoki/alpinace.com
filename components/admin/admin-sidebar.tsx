@@ -3,24 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Footprints,
+  LayoutGrid,
+  MapPin,
   Compass,
   Mountain,
-  CalendarCheck,
+  FolderTree,
+  Images,
   FileText,
-  MessageSquare,
-  Settings,
+  Calendar,
+  Inbox,
   HelpCircle,
-  X,
-  Layers,
-  Image as ImageIcon,
-  ChevronLeft,
-  ChevronRight,
+  Sliders,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-import { mockDashboardMetrics } from "@/lib/admin-data";
 
 interface NavItem {
   title: string;
@@ -29,72 +25,91 @@ interface NavItem {
   badge?: string | number | null;
 }
 
-const navItems: NavItem[] = [
+interface NavSection {
+  label?: string;
+  items: NavItem[];
+}
+
+const navSections: NavSection[] = [
   {
-    title: "Overview",
-    href: "/admin",
-    icon: LayoutDashboard,
-    badge: null,
+    label: "Core",
+    items: [
+      {
+        title: "Overview",
+        href: "/admin",
+        icon: LayoutGrid,
+      },
+    ],
   },
   {
-    title: "Treks",
-    href: "/admin/treks",
-    icon: Footprints,
-    badge: null,
+    label: "Catalog",
+    items: [
+      {
+        title: "Treks",
+        href: "/admin/treks",
+        icon: MapPin,
+      },
+      {
+        title: "Tours",
+        href: "/admin/tours",
+        icon: Compass,
+      },
+      {
+        title: "Expeditions",
+        href: "/admin/expeditions",
+        icon: Mountain,
+      },
+      {
+        title: "Categories",
+        href: "/admin/categories",
+        icon: FolderTree,
+      },
+    ],
   },
   {
-    title: "Tours",
-    href: "/admin/tours",
-    icon: Compass,
-    badge: null,
+    label: "Content & Media",
+    items: [
+      {
+        title: "Media Library",
+        href: "/admin/media",
+        icon: Images,
+      },
+      {
+        title: "Blogs & Articles",
+        href: "/admin/blogs",
+        icon: FileText,
+      },
+    ],
   },
   {
-    title: "Expeditions",
-    href: "/admin/expeditions",
-    icon: Mountain,
-    badge: null,
+    label: "Operations",
+    items: [
+      {
+        title: "Bookings",
+        href: "/admin/bookings",
+        icon: Calendar,
+      },
+      {
+        title: "Inquiries",
+        href: "/admin/inquiries",
+        icon: Inbox,
+      },
+      {
+        title: "FAQs & Guides",
+        href: "/admin/faqs",
+        icon: HelpCircle,
+      },
+    ],
   },
   {
-    title: "Categories",
-    href: "/admin/categories",
-    icon: Layers,
-    badge: null,
-  },
-  {
-    title: "Media Library",
-    href: "/admin/media",
-    icon: ImageIcon,
-    badge: null,
-  },
-  {
-    title: "Bookings",
-    href: "/admin/bookings",
-    icon: CalendarCheck,
-    // badge: mockDashboardMetrics.pendingBookings,
-  },
-  {
-    title: "Blogs & Articles",
-    href: "/admin/blogs",
-    icon: FileText,
-    badge: null,
-  },
-  {
-    title: "Inquiries",
-    href: "/admin/inquiries",
-    icon: MessageSquare,
-    // badge: mockDashboardMetrics.pendingInquiries,
-  },
-  {
-    title: "FAQs & Consultations",
-    href: "/admin/faqs",
-    icon: HelpCircle,
-    badge: null,
-  },
-  {
-    title: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
-    badge: null,
+    label: "Preferences",
+    items: [
+      {
+        title: "Settings",
+        href: "/admin/settings",
+        icon: Sliders,
+      },
+    ],
   },
 ];
 
@@ -116,7 +131,7 @@ export function AdminSidebar({
   };
 
   return (
-    <aside className="w-full bg-white text-slate-900 flex flex-col shrink-0 h-full select-none">
+    <aside className="w-full bg-white text-slate-900 flex flex-col shrink-0 h-full select-none border-r border-slate-200">
       {/* Brand Header */}
       <div
         className={`h-16 flex items-center border-b border-slate-200 shrink-0 transition-all ${
@@ -129,113 +144,121 @@ export function AdminSidebar({
           className="flex items-center gap-2.5 min-w-0"
           title="AlpineAce Admin"
         >
-          <div className="w-9 h-9 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold shadow-xs shrink-0">
-            <Mountain className="w-5 h-5" />
+          <div className="w-8 h-8 rounded-lg bg-slate-900 text-amber-400 flex items-center justify-center font-bold shadow-2xs shrink-0">
+            <Mountain className="w-4 h-4" />
           </div>
           {!isCollapsed && (
-            <span className="font-bold text-base tracking-tight text-slate-900 truncate">
+            <span className="font-bold text-sm tracking-tight text-slate-900 truncate">
               Alpine<span className="text-amber-600">Ace</span>
+              <span className="text-[10px] font-semibold text-slate-600 ml-1.5 px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">
+                Admin
+              </span>
             </span>
           )}
         </Link>
       </div>
 
-      {/* Navigation Links */}
+      {/* Navigation Groups */}
       <div
-        className={`flex-1 py-4 px-2.5 space-y-1.5 ${
+        className={`flex-1 py-3 px-3 space-y-4 ${
           isCollapsed ? "overflow-y-auto hover:overflow-visible" : "overflow-y-auto"
         }`}
       >
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            pathname === item.href ||
-            (item.href !== "/admin" && pathname?.startsWith(item.href));
+        {navSections.map((section, idx) => (
+          <div key={section.label || idx} className="space-y-1">
+            {!isCollapsed && section.label && (
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2.5 mb-1.5">
+                {section.label}
+              </p>
+            )}
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/admin" && pathname?.startsWith(item.href));
 
-          if (isCollapsed) {
-            return (
-              <div key={item.href} className="relative group flex justify-center">
+              if (isCollapsed) {
+                return (
+                  <div key={item.href} className="relative group flex justify-center">
+                    <Link
+                      href={item.href}
+                      onClick={handleNavClick}
+                      title={item.title}
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
+                        isActive
+                          ? "bg-slate-900 text-amber-400 font-semibold shadow-2xs"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Icon
+                        className={`w-4 h-4 ${
+                          isActive ? "text-amber-400" : "text-slate-500 group-hover:text-slate-900"
+                        }`}
+                      />
+                    </Link>
+
+                    {/* Hover Tooltip when Collapsed */}
+                    <div className="absolute left-full ml-2.5 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 flex items-center gap-2 top-1/2 -translate-y-1/2 -translate-x-1 group-hover:translate-x-0">
+                      <span>{item.title}</span>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
                 <Link
+                  key={item.href}
                   href={item.href}
                   onClick={handleNavClick}
-                  title={item.title}
-                  className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
+                  className={`group flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                     isActive
-                      ? "bg-slate-950 text-amber-400 font-extrabold shadow-sm"
-                      : "text-slate-700 hover:text-slate-950 hover:bg-slate-100"
+                      ? "bg-slate-900 text-white shadow-2xs"
+                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80"
                   }`}
                 >
-                  <Icon
-                    className={`w-5 h-5 ${
-                      isActive ? "text-amber-400" : "text-amber-600"
-                    }`}
-                  />
-                </Link>
-
-                {/* Sleek Floating Hover Tooltip with Caret Arrow when Collapsed */}
-                <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-50 flex items-center gap-2 top-1/2 -translate-y-1/2 -translate-x-2 group-hover:translate-x-0">
-                  <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900" />
-                  <span>{item.title}</span>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Icon
+                      className={`w-4 h-4 shrink-0 transition-colors ${
+                        isActive
+                          ? "text-amber-400"
+                          : "text-slate-500 group-hover:text-slate-900"
+                      }`}
+                    />
+                    <span className="truncate">{item.title}</span>
+                  </div>
                   {item.badge ? (
-                    <span className="bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.5 rounded-full font-extrabold">
+                    <span
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
+                        isActive
+                          ? "bg-amber-400 text-slate-950"
+                          : "bg-slate-100 text-slate-700 border border-slate-200"
+                      }`}
+                    >
                       {item.badge}
                     </span>
                   ) : null}
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={handleNavClick}
-              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                isActive
-                  ? "bg-slate-950 text-white font-extrabold shadow-sm"
-                  : "text-slate-900 hover:text-slate-950 hover:bg-slate-100/90"
-              }`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Icon
-                  className={`w-4 h-4 shrink-0 ${
-                    isActive ? "text-amber-400" : "text-amber-600"
-                  }`}
-                />
-                <span className="truncate">{item.title}</span>
-              </div>
-              {item.badge ? (
-                <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                    isActive
-                      ? "bg-amber-400 text-slate-950"
-                      : "bg-slate-100 text-slate-800 border border-slate-200"
-                  }`}
-                >
-                  {item.badge}
-                </span>
-              ) : null}
-            </Link>
-          );
-        })}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
-      {/* Bottom Footer Collapse Action */}
+      {/* Bottom Collapse Trigger */}
       {onToggleCollapse && (
-        <div className="p-2 border-t border-slate-200 shrink-0 hidden md:block">
+        <div className="p-2.5 border-t border-slate-200 shrink-0 hidden md:block">
           <button
             onClick={onToggleCollapse}
-            className={`w-full py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center ${
-              isCollapsed ? "justify-center px-0" : "px-3 justify-between"
+            className={`w-full py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center ${
+              isCollapsed ? "justify-center px-0" : "px-2.5 justify-between"
             }`}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {!isCollapsed && <span className="text-slate-500 font-semibold">Collapse sidebar</span>}
+            {!isCollapsed && <span>Collapse sidebar</span>}
             {isCollapsed ? (
-              <PanelLeftOpen className="w-5 h-5 text-amber-600" />
+              <PanelLeftOpen className="w-4 h-4 text-slate-600" />
             ) : (
-              <PanelLeftClose className="w-4 h-4 text-slate-500" />
+              <PanelLeftClose className="w-4 h-4 text-slate-400" />
             )}
           </button>
         </div>

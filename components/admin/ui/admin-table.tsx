@@ -258,17 +258,17 @@ export function AdminActionButton({
   variant = "default",
   className = "",
 }: AdminActionButtonProps) {
-  let styleClass = "text-slate-900 hover:text-slate-950 hover:bg-slate-100 font-bold";
+  let styleClass = "text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold";
   let defaultIcon = icon;
 
   if (variant === "view") {
-    styleClass = "text-slate-900 hover:text-slate-950 hover:bg-slate-100 font-bold";
+    styleClass = "text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold";
     if (!defaultIcon) defaultIcon = <Eye className="w-3.5 h-3.5" />;
   } else if (variant === "edit") {
-    styleClass = "text-amber-600 hover:text-amber-700 hover:bg-amber-50";
+    styleClass = "text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold";
     if (!defaultIcon) defaultIcon = <Edit className="w-3.5 h-3.5" />;
   } else if (variant === "delete") {
-    styleClass = "text-rose-600 hover:text-rose-700 hover:bg-rose-50";
+    styleClass = "text-rose-600 hover:text-rose-700 hover:bg-rose-50 font-semibold";
     if (!defaultIcon) defaultIcon = <Trash2 className="w-3.5 h-3.5" />;
   }
 
@@ -278,7 +278,7 @@ export function AdminActionButton({
       size="sm"
       onClick={onClick}
       title={title || label}
-      className={cn("h-7 w-7 p-0 cursor-pointer transition-colors", styleClass, className)}
+      className={cn("h-7 w-7 p-0 cursor-pointer transition-colors rounded-md", styleClass, className)}
     >
       {defaultIcon}
       {label && <span className="ml-1">{label}</span>}

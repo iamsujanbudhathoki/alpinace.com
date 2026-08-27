@@ -5,17 +5,17 @@ import { useRouter } from "next/navigation";
 import {
   Search,
   X,
-  Footprints,
+  MapPin,
   Mountain,
   Compass,
   Calendar,
   User,
-  FolderOpen,
+  FolderTree,
   FileText,
-  ImageIcon,
-  Settings,
+  Images,
+  Sliders,
   ArrowRight,
-  Sparkles,
+  LayoutGrid,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
@@ -31,31 +31,31 @@ interface SearchResultItem {
 
 const SEARCH_ITEMS: SearchResultItem[] = [
   // Navigation
-  { id: "nav-1", title: "Dashboard Overview", subtitle: "Main metrics & recent activity", category: "Navigation", icon: <Sparkles className="w-4 h-4" />, iconBgClass: "bg-amber-500/10 text-amber-600", url: "/admin" },
-  { id: "nav-2", title: "Bookings & Reservations", subtitle: "Guest reservations and permits", category: "Bookings", icon: <Calendar className="w-4 h-4" />, iconBgClass: "bg-emerald-500/10 text-emerald-600", url: "/admin/bookings" },
-  { id: "nav-3", title: "Treks Management", subtitle: "Trekking packages catalog", category: "Trekking", icon: <Footprints className="w-4 h-4" />, iconBgClass: "bg-amber-500/10 text-amber-600", url: "/admin/treks" },
-  { id: "nav-4", title: "Expeditions List", subtitle: "Himalayan peak climbing", category: "Expeditions", icon: <Mountain className="w-4 h-4" />, iconBgClass: "bg-rose-500/10 text-rose-600", url: "/admin/expeditions" },
-  { id: "nav-5", title: "Tours & Sightseeing", subtitle: "Cultural sightseeing packages", category: "Tours", icon: <Compass className="w-4 h-4" />, iconBgClass: "bg-blue-500/10 text-blue-600", url: "/admin/tours" },
-  { id: "nav-6", title: "Categories Taxonomy", subtitle: "Package taxonomy & domains", category: "Navigation", icon: <FolderOpen className="w-4 h-4" />, iconBgClass: "bg-purple-500/10 text-purple-600", url: "/admin/categories" },
-  { id: "nav-7", title: "Blog Articles", subtitle: "Published stories & news", category: "Blogs", icon: <FileText className="w-4 h-4" />, iconBgClass: "bg-purple-500/10 text-purple-600", url: "/admin/blogs" },
-  { id: "nav-8", title: "Media Library", subtitle: "Cover photos and photo gallery", category: "Media", icon: <ImageIcon className="w-4 h-4" />, iconBgClass: "bg-teal-500/10 text-teal-600", url: "/admin/media" },
-  { id: "nav-9", title: "Agency Settings", subtitle: "Business details and profile", category: "Navigation", icon: <Settings className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/settings" },
+  { id: "nav-1", title: "Dashboard Overview", subtitle: "Main metrics & recent activity", category: "Navigation", icon: <LayoutGrid className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin" },
+  { id: "nav-2", title: "Bookings & Reservations", subtitle: "Guest reservations and permits", category: "Bookings", icon: <Calendar className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/bookings" },
+  { id: "nav-3", title: "Treks Management", subtitle: "Trekking packages catalog", category: "Trekking", icon: <MapPin className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/treks" },
+  { id: "nav-4", title: "Expeditions List", subtitle: "Himalayan peak climbing", category: "Expeditions", icon: <Mountain className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/expeditions" },
+  { id: "nav-5", title: "Tours & Sightseeing", subtitle: "Cultural sightseeing packages", category: "Tours", icon: <Compass className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/tours" },
+  { id: "nav-6", title: "Categories Taxonomy", subtitle: "Package taxonomy & domains", category: "Navigation", icon: <FolderTree className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/categories" },
+  { id: "nav-7", title: "Blog Articles", subtitle: "Published stories & news", category: "Blogs", icon: <FileText className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/blogs" },
+  { id: "nav-8", title: "Media Library", subtitle: "Cover photos and photo gallery", category: "Media", icon: <Images className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/media" },
+  { id: "nav-9", title: "Agency Settings", subtitle: "Business details and profile", category: "Navigation", icon: <Sliders className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/settings" },
 
   // Packages
-  { id: "pkg-1", title: "Everest Base Camp Luxury Helicopter Trek", subtitle: "14 Days • Everest Region • $2,450", category: "Trekking", icon: <Footprints className="w-4 h-4" />, iconBgClass: "bg-amber-500/10 text-amber-600", url: "/admin/treks" },
-  { id: "pkg-2", title: "Annapurna Sanctuary Luxury Lodge Trek", subtitle: "10 Days • Annapurna Region • $1,850", category: "Trekking", icon: <Footprints className="w-4 h-4" />, iconBgClass: "bg-amber-500/10 text-amber-600", url: "/admin/treks" },
-  { id: "pkg-3", title: "Ama Dablam 6812m Climbing Expedition", subtitle: "28 Days • Everest Region • $6,800", category: "Expeditions", icon: <Mountain className="w-4 h-4" />, iconBgClass: "bg-rose-500/10 text-rose-600", url: "/admin/expeditions" },
-  { id: "pkg-4", title: "Everest South Col Summit Expedition", subtitle: "60 Days • Khumbu Region • $45,000", category: "Expeditions", icon: <Mountain className="w-4 h-4" />, iconBgClass: "bg-rose-500/10 text-rose-600", url: "/admin/expeditions" },
-  { id: "pkg-5", title: "Kathmandu Valley & Pokhara Resort Tour", subtitle: "7 Days • Cultural Heritage • $1,250", category: "Tours", icon: <Compass className="w-4 h-4" />, iconBgClass: "bg-blue-500/10 text-blue-600", url: "/admin/tours" },
+  { id: "pkg-1", title: "Everest Base Camp Luxury Helicopter Trek", subtitle: "14 Days • Everest Region • $2,450", category: "Trekking", icon: <MapPin className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/treks" },
+  { id: "pkg-2", title: "Annapurna Sanctuary Luxury Lodge Trek", subtitle: "10 Days • Annapurna Region • $1,850", category: "Trekking", icon: <MapPin className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/treks" },
+  { id: "pkg-3", title: "Ama Dablam 6812m Climbing Expedition", subtitle: "28 Days • Everest Region • $6,800", category: "Expeditions", icon: <Mountain className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/expeditions" },
+  { id: "pkg-4", title: "Everest South Col Summit Expedition", subtitle: "60 Days • Khumbu Region • $45,000", category: "Expeditions", icon: <Mountain className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/expeditions" },
+  { id: "pkg-5", title: "Kathmandu Valley & Pokhara Resort Tour", subtitle: "7 Days • Cultural Heritage • $1,250", category: "Tours", icon: <Compass className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/tours" },
 
   // Bookings & Guests
-  { id: "bkg-1", title: "Marcus Vance", subtitle: "Ref: BKG-8842 • Everest Base Camp Trek", category: "Bookings", icon: <User className="w-4 h-4" />, iconBgClass: "bg-emerald-500/10 text-emerald-600", url: "/admin/bookings" },
-  { id: "bkg-2", title: "Sarah Jenkins", subtitle: "Ref: BKG-9102 • Annapurna Circuit", category: "Bookings", icon: <User className="w-4 h-4" />, iconBgClass: "bg-emerald-500/10 text-emerald-600", url: "/admin/bookings" },
-  { id: "bkg-3", title: "David Thorne", subtitle: "Ref: BKG-7719 • Ama Dablam Expedition", category: "Bookings", icon: <User className="w-4 h-4" />, iconBgClass: "bg-emerald-500/10 text-emerald-600", url: "/admin/bookings" },
+  { id: "bkg-1", title: "Marcus Vance", subtitle: "Ref: BKG-8842 • Everest Base Camp Trek", category: "Bookings", icon: <User className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/bookings" },
+  { id: "bkg-2", title: "Sarah Jenkins", subtitle: "Ref: BKG-9102 • Annapurna Circuit", category: "Bookings", icon: <User className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/bookings" },
+  { id: "bkg-3", title: "David Thorne", subtitle: "Ref: BKG-7719 • Ama Dablam Expedition", category: "Bookings", icon: <User className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/bookings" },
 
   // Articles
-  { id: "art-1", title: "Ultimate Preparation Guide for Everest Base Camp Trek", subtitle: "Blog Article • Published Aug 2026", category: "Blogs", icon: <FileText className="w-4 h-4" />, iconBgClass: "bg-purple-500/10 text-purple-600", url: "/admin/blogs" },
-  { id: "art-2", title: "Acclimatization Tips for 6000m Himalayan Expeditions", subtitle: "Blog Article • Published Jul 2026", category: "Blogs", icon: <FileText className="w-4 h-4" />, iconBgClass: "bg-purple-500/10 text-purple-600", url: "/admin/blogs" },
+  { id: "art-1", title: "Ultimate Preparation Guide for Everest Base Camp Trek", subtitle: "Blog Article • Published Aug 2026", category: "Blogs", icon: <FileText className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/blogs" },
+  { id: "art-2", title: "Acclimatization Tips for 6000m Himalayan Expeditions", subtitle: "Blog Article • Published Jul 2026", category: "Blogs", icon: <FileText className="w-4 h-4" />, iconBgClass: "bg-slate-100 text-slate-700", url: "/admin/blogs" },
 ];
 
 interface AdminSearchModalProps {

@@ -7,7 +7,8 @@ interface AdminStatusBadgeProps {
 }
 
 export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgeProps) {
-  let styleClass = "bg-slate-100 text-slate-950 border-slate-300 font-extrabold";
+  let styleClass = "bg-slate-100 text-slate-700 border-slate-200 font-medium";
+  let dotClass = "bg-slate-400";
 
   const raw = status || "";
   const normalized = raw.toLowerCase().replace(/_/g, " ");
@@ -20,7 +21,8 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     case "booked":
     case "published":
     case "easy":
-      styleClass = "bg-emerald-50 text-emerald-950 border-emerald-300 font-extrabold";
+      styleClass = "bg-emerald-50 text-emerald-800 border-emerald-200/80 font-semibold";
+      dotClass = "bg-emerald-500";
       break;
     case "deposit paid":
     case "active trek":
@@ -29,7 +31,8 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     case "on mountain":
     case "new":
     case "moderate":
-      styleClass = "bg-amber-50 text-amber-950 border-amber-300 font-extrabold";
+      styleClass = "bg-amber-50 text-amber-800 border-amber-200/80 font-semibold";
+      dotClass = "bg-amber-500";
       break;
     case "in review":
     case "quote sent":
@@ -37,7 +40,8 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     case "pending":
     case "archived":
     case "challenging":
-      styleClass = "bg-purple-50 text-purple-950 border-purple-300 font-extrabold";
+      styleClass = "bg-slate-100 text-slate-700 border-slate-200 font-medium";
+      dotClass = "bg-slate-400";
       break;
     case "cancelled":
     case "closed":
@@ -45,7 +49,8 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     case "pending document":
     case "strenuous":
     case "extreme":
-      styleClass = "bg-rose-50 text-rose-950 border-rose-300 font-extrabold";
+      styleClass = "bg-rose-50 text-rose-800 border-rose-200/80 font-semibold";
+      dotClass = "bg-rose-500";
       break;
   }
 
@@ -58,8 +63,9 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     : raw.charAt(0).toUpperCase() + raw.slice(1);
 
   return (
-    <Badge variant="outline" className={`text-xs px-2.5 py-0.5 capitalize ${styleClass} ${className}`}>
-      {displayLabel}
+    <Badge variant="outline" className={`text-[11px] px-2 py-0.5 inline-flex items-center gap-1.5 capitalize rounded-md border shadow-2xs ${styleClass} ${className}`}>
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotClass}`} />
+      <span>{displayLabel}</span>
     </Badge>
   );
 }

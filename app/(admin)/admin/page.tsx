@@ -114,7 +114,6 @@ export default function AdminDashboardPage() {
               trendText={`+${metrics.revenueChangePercent}% vs last season`}
               trendType="positive"
               icon={DollarSign}
-              iconColorClass="bg-emerald-50 border-emerald-200 text-emerald-600"
             />
 
             <AdminStatsCard
@@ -122,7 +121,6 @@ export default function AdminDashboardPage() {
               value={`${metrics.activeExpeditions}`}
               subtext={`${metrics.climbersOnMountain} climbers on peak`}
               icon={Mountain}
-              iconColorClass="bg-amber-50 border-amber-200 text-amber-600"
             />
 
             <AdminStatsCard
@@ -131,7 +129,6 @@ export default function AdminDashboardPage() {
               trendText="Requires guide assignment"
               trendType="warning"
               icon={Clock}
-              iconColorClass="bg-sky-50 border-sky-200 text-sky-600"
             />
 
             <AdminStatsCard
@@ -139,7 +136,6 @@ export default function AdminDashboardPage() {
               value={`${metrics.timsPermitsProcessing}`}
               subtext="TIMS & Sagarmatha clearances"
               icon={FileCheck}
-              iconColorClass="bg-purple-50 border-purple-200 text-purple-600"
             />
           </>
         )}

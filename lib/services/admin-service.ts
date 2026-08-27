@@ -1070,22 +1070,39 @@ export const AssociateService = {
   },
 };
 
+export interface BaseQueryParams {
+  status?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "ASC" | "DESC" | "asc" | "desc";
+}
+
+export interface FaqQueryParams extends BaseQueryParams {
+  category?: string;
+}
+
+export interface TeamQueryParams extends BaseQueryParams {}
+
+export function buildQueryParams(params?: string | BaseQueryParams | Record<string, any>): string {
+  if (!params) return "";
+  if (typeof params === "string") {
+    return params !== "All" ? `status=${encodeURIComponent(params)}` : "";
+  }
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "" && value !== "All") {
+      query.append(key, String(value).trim());
+    }
+  });
+  return query.toString();
+}
+
 export const FaqService = {
-  async getAll(
-    statusOrParams?: FaqStatus | string | { status?: FaqStatus | string; category?: string; search?: string; limit?: number; page?: number }
-  ): Promise<PaginatedList<FaqItem>> {
+  async getAll(statusOrParams?: FaqStatus | string | FaqQueryParams): Promise<PaginatedList<FaqItem>> {
     try {
-      const params = new URLSearchParams();
-      if (statusOrParams && typeof statusOrParams === "object") {
-        if (statusOrParams.status && statusOrParams.status !== "All") params.append("status", statusOrParams.status);
-        if (statusOrParams.category && statusOrParams.category !== "All") params.append("category", statusOrParams.category);
-        if (statusOrParams.search && statusOrParams.search.trim() !== "") params.append("search", statusOrParams.search.trim());
-        if (statusOrParams.limit) params.append("limit", String(statusOrParams.limit));
-        if (statusOrParams.page) params.append("page", String(statusOrParams.page));
-      } else if (statusOrParams && statusOrParams !== "All") {
-        params.append("status", statusOrParams);
-      }
-      const query = params.toString();
+      const query = buildQueryParams(statusOrParams);
       const endpoint = query ? `/faqs?${query}` : "/faqs";
       const res = await apiClient.get<FaqItem[]>(endpoint);
       const items = Array.isArray(res?.data) ? res.data : [];
@@ -1147,24 +1164,9 @@ export interface TeamMemberFormValues {
 }
 
 export const adminTeamsApi = {
-  async getAll(
-    statusOrParams?: string | { status?: string; search?: string; limit?: number; page?: number }
-  ): Promise<PaginatedList<TeamMemberItem>> {
+  async getAll(statusOrParams?: string | TeamQueryParams): Promise<PaginatedList<TeamMemberItem>> {
     try {
-      const params = new URLSearchParams();
-      if (statusOrParams && typeof statusOrParams === "object") {
-        if (statusOrParams.status && statusOrParams.status !== "All") {
-          params.append("status", statusOrParams.status);
-        }
-        if (statusOrParams.search && statusOrParams.search.trim() !== "") {
-          params.append("search", statusOrParams.search.trim());
-        }
-        if (statusOrParams.page) params.append("page", String(statusOrParams.page));
-        if (statusOrParams.limit) params.append("limit", String(statusOrParams.limit));
-      } else if (statusOrParams && statusOrParams !== "All") {
-        params.append("status", statusOrParams);
-      }
-      const query = params.toString();
+      const query = buildQueryParams(statusOrParams);
       const endpoint = query ? `/teams?${query}` : "/teams";
       const res = await apiClient.get<TeamMemberItem[]>(endpoint);
       const items = Array.isArray(res?.data) ? res.data : [];

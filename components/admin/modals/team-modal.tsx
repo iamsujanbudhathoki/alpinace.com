@@ -36,6 +36,8 @@ export function TeamModal({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setError(null);
+    setSaving(false);
     if (memberToEdit) {
       setFormData({
         name: memberToEdit.name || "",
@@ -57,8 +59,13 @@ export function TeamModal({
         order: 0,
       });
     }
-    setError(null);
   }, [memberToEdit, isOpen]);
+
+  const handleClose = () => {
+    setError(null);
+    setSaving(false);
+    onClose();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,16 +84,19 @@ export function TeamModal({
 
       const { adminTeamsApi } = await import("@/lib/services/admin-service");
 
-      if (memberToEdit) {
-        await adminTeamsApi.update(memberToEdit.id, formData);
-        toast.success(`Updated "${formData.name}" successfully`);
-      } else {
-        await adminTeamsApi.create(formData);
-        toast.success(`Added "${formData.name}" to team`);
-      }
+      const res = memberToEdit
+        ? await adminTeamsApi.update(memberToEdit.id, formData)
+        : await adminTeamsApi.create(formData);
 
-      onSuccess();
-      onClose();
+      if (res.success) {
+        toast.success(res.message || (memberToEdit ? `Updated "${formData.name}" successfully` : `Added "${formData.name}" to team`));
+        onSuccess();
+        onClose();
+      } else {
+        const msg = res.message || "Failed to save team member. Please try again.";
+        setError(msg);
+        toast.error(msg);
+      }
     } catch (err: any) {
       console.error("Failed to save team member:", err);
       const msg = err?.message || "Failed to save team member. Please try again.";
@@ -102,7 +112,7 @@ export function TeamModal({
       <Button
         type="button"
         variant="outline"
-        onClick={onClose}
+        onClick={handleClose}
         disabled={saving}
         className="text-xs font-semibold h-9 px-4 rounded-lg cursor-pointer"
       >
@@ -132,7 +142,7 @@ export function TeamModal({
   return (
     <AdminModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={memberToEdit ? "Edit Team Member" : "Create New Team Member"}
       description="Manage Sherpa guide credentials, role titles, and avatar photos."
       footer={footer}
@@ -183,7 +193,7 @@ export function TeamModal({
           </label>
           <AdminImageUpload
             value={formData.avatar || ""}
-            onChange={(url) => setFormData({ ...formData, avatar: url })}
+            onChange={(url, mediaId) => setFormData({ ...formData, avatar: url, avatarMediaId: mediaId })}
           />
         </div>
 

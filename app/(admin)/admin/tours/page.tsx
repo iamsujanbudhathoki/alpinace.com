@@ -157,18 +157,40 @@ export default function AdminToursPage() {
     }
   };
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handlePromptDelete = (tour: PackageItem) => {
+    setDeletingTour(tour);
+    setDeleteError(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setDeletingTour(null);
+  };
+
   const handleDeleteTour = async (id: string) => {
     try {
+      setIsDeleting(true);
+      setDeleteError(null);
       const res = await TourService.delete(id);
       if (res.success) {
         toast.success(res.message || "Tour package deleted successfully");
-        setDeletingTour(null);
+        handleCloseDeleteModal();
         await loadTours();
       } else {
-        toast.error(res.message || "Failed to delete tour");
+        const msg = res.message || "Failed to delete tour";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete tour");
+      const msg = err.message || "Failed to delete tour";
+      setDeleteError(msg);
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -427,9 +449,11 @@ export default function AdminToursPage() {
 
       <DeleteTourModal
         isOpen={deletingTour !== null}
-        onClose={() => setDeletingTour(null)}
+        onClose={handleCloseDeleteModal}
         onConfirm={() => deletingTour && handleDeleteTour(deletingTour.id)}
         tourTitle={deletingTour?.title}
+        isDeleting={isDeleting}
+        error={deleteError}
       />
     </div>
   );

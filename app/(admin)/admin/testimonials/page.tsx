@@ -24,16 +24,18 @@ import {
   Search,
   GripVertical,
   User,
-  Award,
+  Star,
+  Quote,
+  Compass,
 } from "lucide-react";
-import { adminTeamsApi, TeamMemberItem } from "@/lib/services/admin-service";
-import { TeamModal } from "@/components/admin/modals/team-modal";
-import { TeamViewModal } from "@/components/admin/modals/team-view-modal";
+import { adminTestimonialsApi, TestimonialItem } from "@/lib/services/admin-service";
+import { TestimonialModal } from "@/components/admin/modals/testimonial-modal";
+import { TestimonialViewModal } from "@/components/admin/modals/testimonial-view-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { openSingleImage } from "@/lib/utils/lightbox";
 
-export default function AdminTeamsPage() {
-  const [members, setMembers] = useState<TeamMemberItem[]>([]);
+export default function AdminTestimonialsPage() {
+  const [items, setItems] = useState<TestimonialItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -44,13 +46,13 @@ export default function AdminTeamsPage() {
   const [totalItems, setTotalItems] = useState(0);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<TeamMemberItem | null>(null);
+  const [editingItem, setEditingItem] = useState<TestimonialItem | null>(null);
 
   const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [viewingMember, setViewingMember] = useState<TeamMemberItem | null>(null);
+  const [viewingItem, setViewingItem] = useState<TestimonialItem | null>(null);
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [deletingMember, setDeletingMember] = useState<TeamMemberItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<TestimonialItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -65,49 +67,49 @@ export default function AdminTeamsPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const fetchMembers = useCallback(async () => {
+  const fetchTestimonials = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await adminTeamsApi.getAll({
+      const res = await adminTestimonialsApi.getAll({
         search: debouncedSearchQuery.trim() ? debouncedSearchQuery.trim() : undefined,
         status: statusFilter !== "All" ? statusFilter : undefined,
         page,
         limit,
       });
 
-      setMembers(res);
+      setItems(res);
       setTotalItems(res.pagination?.count || res.length);
       setTotalPages(res.pagination?.lastPage || 1);
     } catch (err) {
-      console.error("Failed to fetch team members:", err);
+      console.error("Failed to fetch testimonials:", err);
     } finally {
       setLoading(false);
     }
   }, [debouncedSearchQuery, statusFilter, page, limit]);
 
   useEffect(() => {
-    fetchMembers();
-  }, [fetchMembers]);
+    fetchTestimonials();
+  }, [fetchTestimonials]);
 
   const handleOpenCreateModal = () => {
-    setEditingMember(null);
+    setEditingItem(null);
     setModalOpen(true);
   };
 
-  const handleOpenEditModal = (member: TeamMemberItem) => {
-    setEditingMember(member);
+  const handleOpenEditModal = (item: TestimonialItem) => {
+    setEditingItem(item);
     setModalOpen(true);
   };
 
-  const handleOpenViewModal = (member: TeamMemberItem) => {
-    setViewingMember(member);
+  const handleOpenViewModal = (item: TestimonialItem) => {
+    setViewingItem(item);
     setViewModalOpen(true);
   };
 
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const handlePromptDelete = (member: TeamMemberItem) => {
-    setDeletingMember(member);
+  const handlePromptDelete = (item: TestimonialItem) => {
+    setDeletingItem(item);
     setDeleteError(null);
     setDeleteConfirmOpen(true);
   };
@@ -119,24 +121,24 @@ export default function AdminTeamsPage() {
   };
 
   const handleConfirmDelete = async () => {
-    if (!deletingMember) return;
+    if (!deletingItem) return;
     try {
       setIsDeleting(true);
       setDeleteError(null);
-      const res = await adminTeamsApi.delete(deletingMember.id);
+      const res = await adminTestimonialsApi.delete(deletingItem.id);
       if (res.success) {
-        toast.success(res.message || "Team member deleted successfully");
+        toast.success(res.message || "Testimonial deleted successfully");
         handleCloseDeleteModal();
-        setDeletingMember(null);
-        fetchMembers();
+        setDeletingItem(null);
+        fetchTestimonials();
       } else {
-        const msg = res.message || "Failed to delete team member";
+        const msg = res.message || "Failed to delete testimonial";
         setDeleteError(msg);
         toast.error(msg);
       }
     } catch (err: any) {
-      console.error("Failed to delete member:", err);
-      const msg = err?.message || "Failed to delete team member.";
+      console.error("Failed to delete testimonial:", err);
+      const msg = err?.message || "Failed to delete testimonial.";
       setDeleteError(msg);
       toast.error(msg);
     } finally {
@@ -164,35 +166,35 @@ export default function AdminTeamsPage() {
       return;
     }
 
-    const previousMembers = [...members];
-    const reordered = [...members];
+    const previousItems = [...items];
+    const reordered = [...items];
     const [movedItem] = reordered.splice(draggedIndex, 1);
     reordered.splice(targetIndex, 0, movedItem);
 
     const updated = reordered.map((item, idx) => ({ ...item, order: idx + 1 }));
-    setMembers(updated);
+    setItems(updated);
     setDraggedIndex(null);
     setDragOverIndex(null);
 
     try {
-      const res = await adminTeamsApi.reorder(updated.map((item) => ({ id: item.id, order: item.order })));
+      const res = await adminTestimonialsApi.reorder(updated.map((item) => ({ id: item.id, order: item.order })));
       if (res.success) {
-        toast.success(res.message || "Team members reordered successfully");
+        toast.success(res.message || "Testimonials reordered successfully");
       } else {
-        toast.error(res.message || "Failed to reorder team members");
-        setMembers(previousMembers);
+        toast.error(res.message || "Failed to reorder testimonials");
+        setItems(previousItems);
       }
     } catch (err: any) {
-      console.error("Failed to reorder team members:", err);
-      toast.error(err?.message || "Failed to reorder team members");
-      setMembers(previousMembers);
+      console.error("Failed to reorder testimonials:", err);
+      toast.error(err?.message || "Failed to reorder testimonials");
+      setItems(previousItems);
     }
   };
 
   const handleImageClick = (e: React.MouseEvent, avatarUrl: string, name: string) => {
     e.stopPropagation();
     if (avatarUrl) {
-      openSingleImage(avatarUrl, `${name} Avatar Photo`, e.currentTarget);
+      openSingleImage(avatarUrl, `${name} Photo`, e.currentTarget);
     }
   };
 
@@ -200,15 +202,15 @@ export default function AdminTeamsPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <AdminPageHeader
-        title="Team Members & Leadership"
-        description="Manage Sherpa guides, expedition leaders, and executive staff displayed on the marketing website."
+        title="Testimonials & Reviews"
+        description="Manage trekker testimonials, ratings, and customer stories displayed on the marketing website."
       >
         <Button
           onClick={handleOpenCreateModal}
           className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Team Member</span>
+          <span>Add Testimonial</span>
         </Button>
       </AdminPageHeader>
 
@@ -223,7 +225,7 @@ export default function AdminTeamsPage() {
               setSearchQuery(e.target.value);
               setPage(1);
             }}
-            placeholder="Search team member name, role, or bio..."
+            placeholder="Search author, trip, or testimonial content..."
             className="pl-9 text-xs bg-slate-50/80 border-slate-200 text-slate-900 focus:bg-white rounded-lg h-9"
           />
         </div>
@@ -238,7 +240,7 @@ export default function AdminTeamsPage() {
             }}
             className="text-xs bg-white border border-slate-200 text-slate-900 font-semibold rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-400/10 cursor-pointer"
           >
-            <option value="All">All Members ({totalItems})</option>
+            <option value="All">All Testimonials ({totalItems})</option>
             <option value="active">Active Only</option>
             <option value="inactive">Inactive Only</option>
           </select>
@@ -250,9 +252,9 @@ export default function AdminTeamsPage() {
         <AdminTable>
           <AdminTableHeader>
             <tr>
-              <AdminTableHead>Team Member</AdminTableHead>
-              <AdminTableHead>Role &amp; Position</AdminTableHead>
-              <AdminTableHead>Badge / Experience</AdminTableHead>
+              <AdminTableHead>Customer / Author</AdminTableHead>
+              <AdminTableHead>Trip &amp; Role</AdminTableHead>
+              <AdminTableHead>Rating &amp; Content</AdminTableHead>
               <AdminTableHead>Status</AdminTableHead>
               <AdminTableHead align="right">Actions</AdminTableHead>
             </tr>
@@ -260,14 +262,14 @@ export default function AdminTeamsPage() {
           <AdminTableBody>
             {loading ? (
               <AdminTableLoading colSpan={5} rows={5} />
-            ) : members.length > 0 ? (
-              members.map((member, idx) => {
+            ) : items.length > 0 ? (
+              items.map((item, idx) => {
                 const isDragging = draggedIndex === idx;
                 const isOver = dragOverIndex === idx;
 
                 return (
                   <AdminTableRow
-                    key={member.id}
+                    key={item.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, idx)}
                     onDragOver={(e) => handleDragOver(e, idx)}
@@ -280,62 +282,76 @@ export default function AdminTeamsPage() {
                       isDragging ? "opacity-40 bg-slate-100/50" : ""
                     } ${isOver ? "border-t-2 border-slate-900 bg-slate-100/40" : ""}`}
                   >
-                    {/* Member Info */}
+                    {/* Customer Info */}
                     <AdminTableCell>
                       <div className="flex items-center gap-3">
                         <GripVertical className="w-4 h-4 text-slate-300 hover:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing" />
-                        {member.avatar ? (
+                        {item.avatar ? (
                           <img
-                            src={member.avatar}
-                            alt={member.name}
-                            onClick={(e) => handleImageClick(e, member.avatar!, member.name)}
+                            src={item.avatar}
+                            alt={item.author}
+                            onClick={(e) => handleImageClick(e, item.avatar!, item.author)}
                             className="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0 cursor-pointer hover:opacity-85 hover:scale-105 transition-all"
                             title="Click to view image lightbox"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
-                            <User className="w-5 h-5" />
+                          <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400 font-bold text-xs">
+                            {item.author ? item.author.charAt(0).toUpperCase() : <User className="w-5 h-5" />}
                           </div>
                         )}
                         <div>
                           <button
                             type="button"
-                            onClick={() => handleOpenViewModal(member)}
+                            onClick={() => handleOpenViewModal(item)}
                             className="font-bold text-slate-900 text-xs hover:underline text-left cursor-pointer"
                           >
-                            {member.name}
+                            {item.author}
                           </button>
-                          {member.bio && (
-                            <div className="text-[11px] text-slate-500 font-normal line-clamp-1 max-w-xs">
-                              {member.bio}
+                          {item.country && (
+                            <div className="text-[11px] text-slate-500 font-normal">
+                              {item.country}
                             </div>
                           )}
                         </div>
                       </div>
                     </AdminTableCell>
 
-                    {/* Role */}
+                    {/* Role & Trip */}
                     <AdminTableCell>
-                      <span className="font-semibold text-slate-900 text-xs">
-                        {member.role}
-                      </span>
+                      <div className="space-y-0.5">
+                        {item.tripName ? (
+                          <span className="font-semibold text-slate-900 text-xs flex items-center gap-1">
+                            <Compass className="w-3 h-3 text-slate-400 shrink-0" />
+                            <span>{item.tripName}</span>
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs">—</span>
+                        )}
+                        {item.role && (
+                          <div className="text-[11px] text-slate-500 font-medium">
+                            {item.role}
+                          </div>
+                        )}
+                      </div>
                     </AdminTableCell>
 
-                    {/* Badge / Experience */}
+                    {/* Rating & Content */}
                     <AdminTableCell>
-                      {member.experience ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
-                          <Award className="w-3 h-3 text-slate-500 shrink-0" />
-                          <span>{member.experience}</span>
-                        </span>
-                      ) : (
-                        <span className="text-slate-400 text-xs">—</span>
-                      )}
+                      <div className="space-y-1 max-w-sm">
+                        <div className="flex items-center gap-0.5">
+                          {[...Array(item.rating || 5)].map((_, i) => (
+                            <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          ))}
+                        </div>
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                          &ldquo;{item.content}&rdquo;
+                        </p>
+                      </div>
                     </AdminTableCell>
 
                     {/* Status */}
                     <AdminTableCell>
-                      <AdminStatusBadge status={member.status} />
+                      <AdminStatusBadge status={item.status} />
                     </AdminTableCell>
 
                     {/* Actions */}
@@ -343,18 +359,18 @@ export default function AdminTeamsPage() {
                       <AdminTableActions>
                         <AdminActionButton
                           variant="view"
-                          onClick={() => handleOpenViewModal(member)}
-                          title="View Member Profile"
+                          onClick={() => handleOpenViewModal(item)}
+                          title="View Testimonial Details"
                         />
                         <AdminActionButton
                           variant="edit"
-                          onClick={() => handleOpenEditModal(member)}
-                          title="Edit Team Member"
+                          onClick={() => handleOpenEditModal(item)}
+                          title="Edit Testimonial"
                         />
                         <AdminActionButton
                           variant="delete"
-                          onClick={() => handlePromptDelete(member)}
-                          title="Delete Team Member"
+                          onClick={() => handlePromptDelete(item)}
+                          title="Delete Testimonial"
                         />
                       </AdminTableActions>
                     </AdminTableCell>
@@ -364,7 +380,7 @@ export default function AdminTeamsPage() {
             ) : (
               <AdminTableRow>
                 <AdminTableCell colSpan={5} className="text-center py-12 text-slate-500 text-xs">
-                  No team members found. Click &quot;Add Team Member&quot; to create one.
+                  No testimonials found. Click &quot;Add Testimonial&quot; to create one.
                 </AdminTableCell>
               </AdminTableRow>
             )}
@@ -383,23 +399,23 @@ export default function AdminTeamsPage() {
         />
       </AdminTableContainer>
 
-      {/* View Profile Modal */}
+      {/* View Modal */}
       {viewModalOpen && (
-        <TeamViewModal
+        <TestimonialViewModal
           isOpen={viewModalOpen}
           onClose={() => setViewModalOpen(false)}
-          member={viewingMember}
+          testimonial={viewingItem}
           onEdit={handleOpenEditModal}
         />
       )}
 
       {/* Create / Edit Modal */}
       {modalOpen && (
-        <TeamModal
+        <TestimonialModal
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
-          onSuccess={fetchMembers}
-          memberToEdit={editingMember}
+          onSuccess={fetchTestimonials}
+          testimonialToEdit={editingItem}
         />
       )}
 
@@ -409,9 +425,9 @@ export default function AdminTeamsPage() {
           isOpen={deleteConfirmOpen}
           onClose={handleCloseDeleteModal}
           onConfirm={handleConfirmDelete}
-          title="Delete Team Member"
-          description={`Are you sure you want to remove "${deletingMember?.name}" (${deletingMember?.role}) from the team?`}
-          confirmText="Remove Member"
+          title="Delete Testimonial"
+          description={`Are you sure you want to delete the testimonial by "${deletingItem?.author}"?`}
+          confirmText="Delete Testimonial"
           cancelText="Cancel"
           variant="danger"
           isLoading={isDeleting}

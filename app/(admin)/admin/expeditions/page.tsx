@@ -197,18 +197,40 @@ export default function AdminExpeditionsPage() {
     }
   };
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handlePromptDelete = (exp: PackageItem) => {
+    setDeletingExp(exp);
+    setDeleteError(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setDeletingExp(null);
+  };
+
   const handleDeleteExpedition = async (id: string) => {
     try {
+      setIsDeleting(true);
+      setDeleteError(null);
       const res = await ExpeditionService.delete(id);
       if (res.success) {
         toast.success(res.message || "Expedition itinerary deleted successfully");
-        setDeletingExp(null);
+        handleCloseDeleteModal();
         await loadExpeditions();
       } else {
-        toast.error(res.message || "Failed to delete expedition");
+        const msg = res.message || "Failed to delete expedition";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete expedition");
+      const msg = err.message || "Failed to delete expedition";
+      setDeleteError(msg);
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -426,9 +448,11 @@ export default function AdminExpeditionsPage() {
 
       <DeleteExpeditionModal
         isOpen={deletingExp !== null}
-        onClose={() => setDeletingExp(null)}
+        onClose={handleCloseDeleteModal}
         onConfirm={() => deletingExp && handleDeleteExpedition(deletingExp.id)}
         expeditionTitle={deletingExp?.title}
+        isDeleting={isDeleting}
+        error={deleteError}
       />
     </div>
   );

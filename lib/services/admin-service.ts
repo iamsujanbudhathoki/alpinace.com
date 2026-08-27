@@ -1,6 +1,4 @@
 import {
-  AssociateItem,
-  AssociateStatus,
   BlogArticle,
   BlogStatus,
   Booking,
@@ -9,7 +7,6 @@ import {
   CategoryType,
   FaqItem,
   FaqStatus,
-  Guide,
   Inquiry,
   InquiryStatus,
   InquiryType,
@@ -17,7 +14,6 @@ import {
   PackageItem,
 } from "@/lib/admin-data";
 import {
-  AssociateFormValues,
   BlogFormValues,
   BookingFormValues,
   CategoryFormValues,
@@ -27,7 +23,7 @@ import {
   TourFormValues,
   TrekFormValues,
 } from "@/lib/admin-schemas";
-import { ApiResponse, PaginationMeta, apiClient, axiosInstance } from "@/lib/services/api-client";
+import { ApiResponse, PaginationMeta, apiClient, axiosInstance, responseFormatter } from "@/lib/services/api-client";
 import { TrekItem } from "@/lib/trek-data";
 
 export type PaginatedList<T> = T[] & { pagination?: PaginationMeta };
@@ -65,17 +61,20 @@ export const MediaService = {
     formData.append("file", file);
 
     const q = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : "";
-    const response = await axiosInstance.post<ApiResponse<any>>(
-      `/media/upload${q}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    return response.data;
+    try {
+      const response = await axiosInstance.post<ApiResponse<any>>(
+        `/media/upload${q}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return responseFormatter(response);
+    } catch (error: any) {
+      return responseFormatter(error);
+    }
   },
 
   async update(id: string, data: { title?: string; categoryId?: string; description?: string; altText?: string }): Promise<ApiResponse<any>> {
@@ -126,7 +125,7 @@ export const CategoryService = {
   },
 
   async create(data: Partial<CategoryFormValues> | Record<string, any>): Promise<ApiResponse<CategoryItem>> {
-    const payload = {
+    const payload: any = {
       name: String(data.name || "").trim(),
       slug: data.slug
         ? String(data.slug).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
@@ -134,10 +133,11 @@ export const CategoryService = {
       type: data.type,
       description: String(data.description || "").trim(),
       status: data.status || CategoryStatus.ACTIVE,
-      image: data.image || null,
-      mediaId: data.mediaId || null,
       parentId: data.parentId || null,
     };
+    if (data.mediaId && typeof data.mediaId === "string" && data.mediaId.trim()) {
+      payload.mediaId = data.mediaId.trim();
+    }
     return apiClient.post<CategoryItem>("/categories", payload);
   },
 
@@ -148,8 +148,10 @@ export const CategoryService = {
     if (data.type !== undefined) payload.type = data.type;
     if (data.description !== undefined) payload.description = String(data.description).trim();
     if (data.status !== undefined) payload.status = data.status;
-    if (data.image !== undefined) payload.image = data.image || null;
-    if (data.mediaId !== undefined) payload.mediaId = data.mediaId || null;
+    if (data.mediaId !== undefined) {
+      if (typeof data.mediaId === "string" && data.mediaId.trim()) payload.mediaId = data.mediaId.trim();
+      else delete payload.mediaId;
+    }
     if (data.parentId !== undefined) payload.parentId = data.parentId || null;
 
     return apiClient.put<CategoryItem>(`/categories/${id}`, payload);
@@ -252,6 +254,9 @@ function cleanPackagePayload(data: any) {
     totalBookings,
     createdAt,
     updatedAt,
+    image,
+    mapImage,
+    galleryImages,
     ...rest
   } = data;
 
@@ -338,13 +343,27 @@ function cleanPackagePayload(data: any) {
   if (rest.addonsText !== undefined) payload.addonsText = rest.addonsText;
   if (rest.usefulInfoText !== undefined) payload.usefulInfoText = rest.usefulInfoText;
   if (Array.isArray(rest.departureDates)) payload.departureDates = rest.departureDates;
-  if (Array.isArray(rest.galleryImages)) payload.galleryImages = rest.galleryImages;
-  if (Array.isArray(rest.galleryMediaIds)) payload.galleryMediaIds = rest.galleryMediaIds.filter(Boolean);
 
-  if (rest.mapImage !== undefined) payload.mapImage = rest.mapImage || null;
-  if (rest.mapMediaId !== undefined) payload.mapMediaId = rest.mapMediaId || null;
+  // Strict Media IDs handling (omits empty strings to avoid null type errors)
+  if (Array.isArray(rest.galleryMediaIds)) {
+    const validIds = rest.galleryMediaIds.filter((id: any) => typeof id === "string" && id.trim() !== "");
+    if (validIds.length > 0) payload.galleryMediaIds = validIds;
+    else delete payload.galleryMediaIds;
+  } else {
+    delete payload.galleryMediaIds;
+  }
 
-  if (rest.coverMediaId !== undefined) payload.coverMediaId = rest.coverMediaId || null;
+  if (rest.coverMediaId !== undefined && typeof rest.coverMediaId === "string" && rest.coverMediaId.trim()) {
+    payload.coverMediaId = rest.coverMediaId.trim();
+  } else {
+    delete payload.coverMediaId;
+  }
+
+  if (rest.mapMediaId !== undefined && typeof rest.mapMediaId === "string" && rest.mapMediaId.trim()) {
+    payload.mapMediaId = rest.mapMediaId.trim();
+  } else {
+    delete payload.mapMediaId;
+  }
 
   if (Array.isArray(rest.packageFiles)) payload.packageFiles = rest.packageFiles;
 
@@ -354,6 +373,11 @@ function cleanPackagePayload(data: any) {
   delete payload.category;
   delete payload.categoryType;
   delete payload.permitsText;
+
+  // Never submit display-only URL fields in write API requests
+  delete payload.image;
+  delete payload.mapImage;
+  delete payload.galleryImages;
 
   return payload;
 }
@@ -788,30 +812,6 @@ export const InquiryService = {
   },
 };
 
-export const GuideService = {
-  async getAll(): Promise<Guide[]> {
-    try {
-      const res = await apiClient.get<Guide[]>("/guides");
-      return Array.isArray(res?.data) ? res.data : [];
-    } catch (e) {
-      console.warn("Backend guides fetch error:", e);
-      return [];
-    }
-  },
-
-  async create(data: any): Promise<ApiResponse<Guide>> {
-    return apiClient.post<Guide>("/guides", data);
-  },
-
-  async update(id: string, data: any): Promise<ApiResponse<Guide>> {
-    return apiClient.put<Guide>(`/guides/${id}`, data);
-  },
-
-  async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/guides/${id}`);
-  },
-};
-
 export const BlogService = {
   async getPublicAll(
     statusOrParams?: BlogStatus | string | { status?: BlogStatus | string; categoryId?: string; category?: string; search?: string; limit?: number; page?: number },
@@ -902,7 +902,7 @@ export const BlogService = {
   },
 
   async create(data: Partial<BlogFormValues> | Record<string, any>): Promise<ApiResponse<BlogArticle>> {
-    const payload = {
+    const payload: any = {
       title: String(data.title || "").trim(),
       category: String(data.category || "").trim(),
       ...(data.categoryId ? { categoryId: data.categoryId } : {}),
@@ -911,8 +911,7 @@ export const BlogService = {
       publishedDate: data.publishedDate || new Date().toISOString().split("T")[0],
       excerpt: data.excerpt || "",
       content: data.content || "",
-      image: data.image || "",
-      ...(data.coverMediaId ? { coverMediaId: data.coverMediaId } : {}),
+      ...(data.coverMediaId && typeof data.coverMediaId === "string" && data.coverMediaId.trim() ? { coverMediaId: data.coverMediaId.trim() } : {}),
       ...(data.metaTitle ? { metaTitle: String(data.metaTitle).trim() } : {}),
       ...(data.metaDescription ? { metaDescription: String(data.metaDescription).trim() } : {}),
       ...(data.keywords ? { keywords: String(data.keywords).trim() } : {}),
@@ -930,8 +929,10 @@ export const BlogService = {
     if (data.publishedDate !== undefined) payload.publishedDate = data.publishedDate;
     if (data.excerpt !== undefined) payload.excerpt = data.excerpt;
     if (data.content !== undefined) payload.content = data.content;
-    if (data.image !== undefined) payload.image = data.image;
-    if (data.coverMediaId !== undefined) payload.coverMediaId = data.coverMediaId;
+    if (data.coverMediaId !== undefined) {
+      if (typeof data.coverMediaId === "string" && data.coverMediaId.trim()) payload.coverMediaId = data.coverMediaId.trim();
+      else delete payload.coverMediaId;
+    }
     if (data.metaTitle !== undefined) payload.metaTitle = String(data.metaTitle).trim();
     if (data.metaDescription !== undefined) payload.metaDescription = String(data.metaDescription).trim();
     if (data.keywords !== undefined) payload.keywords = String(data.keywords).trim();
@@ -1035,41 +1036,6 @@ export const NotificationService = {
   },
 };
 
-export const AssociateService = {
-  async getAll(status?: AssociateStatus): Promise<AssociateItem[]> {
-    try {
-      const endpoint = status ? `/associates?status=${status}` : "/associates";
-      const res = await apiClient.get<AssociateItem[]>(endpoint);
-      return Array.isArray(res?.data) ? res.data : [];
-    } catch (e) {
-      console.warn("Backend associates fetch error:", e);
-      return [];
-    }
-  },
-
-  async getById(id: string): Promise<AssociateItem | null> {
-    try {
-      const res = await apiClient.get<AssociateItem>(`/associates/${id}`);
-      return res?.data || null;
-    } catch (e) {
-      console.warn("Backend associate by id fetch error:", e);
-      return null;
-    }
-  },
-
-  async create(data: AssociateFormValues): Promise<ApiResponse<AssociateItem>> {
-    return apiClient.post<AssociateItem>("/associates", data);
-  },
-
-  async update(id: string, data: Partial<AssociateFormValues>): Promise<ApiResponse<AssociateItem>> {
-    return apiClient.put<AssociateItem>(`/associates/${id}`, data);
-  },
-
-  async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/associates/${id}`);
-  },
-};
-
 export interface BaseQueryParams {
   status?: string;
   search?: string;
@@ -1083,7 +1049,7 @@ export interface FaqQueryParams extends BaseQueryParams {
   category?: string;
 }
 
-export interface TeamQueryParams extends BaseQueryParams {}
+export interface TeamQueryParams extends BaseQueryParams { }
 
 export function buildQueryParams(params?: string | BaseQueryParams | Record<string, any>): string {
   if (!params) return "";
@@ -1146,6 +1112,7 @@ export interface TeamMemberItem {
   role: string;
   bio?: string;
   avatar?: string;
+  avatarMediaId?: string;
   experience?: string;
   status: "active" | "inactive";
   order: number;
@@ -1158,6 +1125,7 @@ export interface TeamMemberFormValues {
   role: string;
   bio?: string;
   avatar?: string;
+  avatarMediaId?: string;
   experience?: string;
   status?: "active" | "inactive";
   order?: number;
@@ -1188,19 +1156,117 @@ export const adminTeamsApi = {
   },
 
   async create(data: TeamMemberFormValues): Promise<ApiResponse<TeamMemberItem>> {
-    return apiClient.post<TeamMemberItem>("/teams", data);
+    const { avatar, ...payload } = data as any;
+    if (payload.avatarMediaId && typeof payload.avatarMediaId === "string" && payload.avatarMediaId.trim()) {
+      payload.avatarMediaId = payload.avatarMediaId.trim();
+    } else {
+      delete payload.avatarMediaId;
+    }
+    return apiClient.post<TeamMemberItem>("/teams", payload);
   },
 
   async update(id: string, data: Partial<TeamMemberFormValues>): Promise<ApiResponse<TeamMemberItem>> {
-    return apiClient.put<TeamMemberItem>(`/teams/${id}`, data);
+    const { avatar, ...payload } = data as any;
+    if (payload.avatarMediaId && typeof payload.avatarMediaId === "string" && payload.avatarMediaId.trim()) {
+      payload.avatarMediaId = payload.avatarMediaId.trim();
+    } else {
+      delete payload.avatarMediaId;
+    }
+    return apiClient.put<TeamMemberItem>(`/teams/${id}`, payload);
   },
-
   async delete(id: string): Promise<ApiResponse<boolean>> {
     return apiClient.delete<boolean>(`/teams/${id}`);
   },
 
   async reorder(items: { id: string; order: number }[]): Promise<ApiResponse<boolean>> {
     return apiClient.put<boolean>("/teams/reorder", { items });
+  },
+};
+
+export interface TestimonialItem {
+  id: string;
+  author: string;
+  role?: string;
+  country?: string;
+  tripName?: string;
+  content: string;
+  avatar?: string;
+  avatarMediaId?: string;
+  rating: number;
+  status: "active" | "inactive";
+  order: number;
+}
+
+export interface TestimonialFormValues {
+  author: string;
+  role?: string;
+  country?: string;
+  tripName?: string;
+  content: string;
+  avatar?: string;
+  avatarMediaId?: string;
+  rating?: number;
+  status?: "active" | "inactive";
+  order?: number;
+}
+
+export interface TestimonialQueryParams {
+  search?: string;
+  status?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const adminTestimonialsApi = {
+  async getAll(statusOrParams?: string | TestimonialQueryParams): Promise<PaginatedList<TestimonialItem>> {
+    try {
+      const query = buildQueryParams(statusOrParams);
+      const endpoint = query ? `/testimonials?${query}` : "/testimonials";
+      const res = await apiClient.get<TestimonialItem[]>(endpoint);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend testimonials fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getById(id: string): Promise<TestimonialItem | null> {
+    try {
+      const res = await apiClient.get<TestimonialItem>(`/testimonials/${id}`);
+      return res?.data || null;
+    } catch (e) {
+      console.warn("Backend testimonial by id fetch error:", e);
+      return null;
+    }
+  },
+
+  async create(data: TestimonialFormValues): Promise<ApiResponse<TestimonialItem>> {
+    const { avatar, ...payload } = data as any;
+    if (payload.avatarMediaId && typeof payload.avatarMediaId === "string" && payload.avatarMediaId.trim()) {
+      payload.avatarMediaId = payload.avatarMediaId.trim();
+    } else {
+      delete payload.avatarMediaId;
+    }
+    return apiClient.post<TestimonialItem>("/testimonials", payload);
+  },
+
+  async update(id: string, data: Partial<TestimonialFormValues>): Promise<ApiResponse<TestimonialItem>> {
+    const { avatar, ...payload } = data as any;
+    if (payload.avatarMediaId && typeof payload.avatarMediaId === "string" && payload.avatarMediaId.trim()) {
+      payload.avatarMediaId = payload.avatarMediaId.trim();
+    } else {
+      delete payload.avatarMediaId;
+    }
+    return apiClient.put<TestimonialItem>(`/testimonials/${id}`, payload);
+  },
+
+  async delete(id: string): Promise<ApiResponse<boolean>> {
+    return apiClient.delete<boolean>(`/testimonials/${id}`);
+  },
+
+  async reorder(items: { id: string; order: number }[]): Promise<ApiResponse<boolean>> {
+    return apiClient.put<boolean>("/testimonials/reorder", { items });
   },
 };
 
@@ -1219,9 +1285,11 @@ export interface AboutUsData {
   heroTitle?: string;
   heroSubtitle?: string;
   heroImage?: string;
+  heroMediaId?: string;
   storyTitle?: string;
   storyContent?: string;
   storyImage?: string;
+  storyMediaId?: string;
   mission?: string;
   vision?: string;
   values?: AboutUsValueItem[];
@@ -1259,11 +1327,33 @@ export const AboutUsService = {
   },
 
   async update(data: Partial<AboutUsData>): Promise<ApiResponse<AboutUsData>> {
-    return apiClient.put<AboutUsData>("/admin/about-us", data);
+    const { heroImage, storyImage, ...payload } = data as any;
+    if (payload.heroMediaId && typeof payload.heroMediaId === "string" && payload.heroMediaId.trim()) {
+      payload.heroMediaId = payload.heroMediaId.trim();
+    } else {
+      delete payload.heroMediaId;
+    }
+    if (payload.storyMediaId && typeof payload.storyMediaId === "string" && payload.storyMediaId.trim()) {
+      payload.storyMediaId = payload.storyMediaId.trim();
+    } else {
+      delete payload.storyMediaId;
+    }
+    return apiClient.put<AboutUsData>("/admin/about-us", payload);
   },
 
   async create(data: Partial<AboutUsData>): Promise<ApiResponse<AboutUsData>> {
-    return apiClient.post<AboutUsData>("/admin/about-us", data);
+    const { heroImage, storyImage, ...payload } = data as any;
+    if (payload.heroMediaId && typeof payload.heroMediaId === "string" && payload.heroMediaId.trim()) {
+      payload.heroMediaId = payload.heroMediaId.trim();
+    } else {
+      delete payload.heroMediaId;
+    }
+    if (payload.storyMediaId && typeof payload.storyMediaId === "string" && payload.storyMediaId.trim()) {
+      payload.storyMediaId = payload.storyMediaId.trim();
+    } else {
+      delete payload.storyMediaId;
+    }
+    return apiClient.post<AboutUsData>("/admin/about-us", payload);
   },
 };
 

@@ -18,6 +18,7 @@ import {
   Sliders,
   PanelLeftClose,
   PanelLeftOpen,
+  MessageSquareQuote,
 } from "lucide-react";
 
 interface NavItem {
@@ -97,6 +98,11 @@ const navGroups: { items: NavItem[] }[] = [
         title: "Team Members",
         href: "/admin/teams",
         icon: Users,
+      },
+      {
+        title: "Testimonials",
+        href: "/admin/testimonials",
+        icon: MessageSquareQuote,
       },
       {
         title: "About Us",

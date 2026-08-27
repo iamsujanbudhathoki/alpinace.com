@@ -8,6 +8,7 @@ import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
 import { inquirySchema, InquiryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -43,8 +44,24 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
     },
   });
 
+  const [formError, setFormError] = useState<string | null>(null);
+
   useEffect(() => {
+    setFormError(null);
+    setIsSubmitting(false);
     if (isOpen) {
+      reset({
+        guestName: "",
+        email: "",
+        phone: "",
+        country: "",
+        interestedTrip: "Everest Region (Khumbu)",
+        travelDates: "Upcoming Season",
+        groupSize: 2,
+        message: "",
+        type: InquiryType.TREKKING,
+      });
+    } else {
       reset({
         guestName: "",
         email: "",
@@ -59,8 +76,15 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
     }
   }, [isOpen, reset]);
 
+  const handleClose = () => {
+    setFormError(null);
+    setIsSubmitting(false);
+    onClose();
+  };
+
   const onSubmit = async (values: InquiryFormValues) => {
     setIsSubmitting(true);
+    setFormError(null);
     try {
       const payload: InquiryFormValues = {
         guestName: values.guestName.trim(),
@@ -77,10 +101,14 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
       const success = await onSave(payload);
       if (success !== false) {
         onClose();
+      } else {
+        setFormError("Failed to log inquiry lead. Please check form inputs.");
       }
     } catch (err: any) {
       console.error("Inquiry form submission error:", err);
-      toast.error(err?.message || "Failed to log inquiry lead. Please try again.");
+      const msg = err?.message || "Failed to log inquiry lead. Please try again.";
+      setFormError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -91,7 +119,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
       <Button
         type="button"
         variant="outline"
-        onClick={onClose}
+        onClick={handleClose}
         disabled={isSubmitting}
         className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
       >
@@ -101,15 +129,15 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         type="submit"
         form="inquiry-form"
         disabled={isSubmitting}
-        className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-xl shadow-2xs cursor-pointer inline-flex items-center gap-1.5 transition-colors"
+        className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-9 px-4 rounded-xl cursor-pointer transition-colors"
       >
         {isSubmitting ? (
-          <>
+          <span className="flex items-center gap-1.5">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            <span>Logging Inquiry...</span>
-          </>
+            Saving Lead...
+          </span>
         ) : (
-          <span>Log Inquiry Lead</span>
+          "Save Inquiry Lead"
         )}
       </Button>
     </div>
@@ -118,13 +146,18 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
   return (
     <AdminModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title="Log Manual Customer Inquiry"
       description="Record a phone, WhatsApp, or trade show lead into the CRM."
       maxWidth="lg"
       footer={modalFooter}
     >
       <form id="inquiry-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2 text-xs">
+        {formError && (
+          <div className="p-3 mb-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
+            {formError}
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <AdminInputField
             label="Guest Name"
@@ -417,38 +450,30 @@ interface DeleteInquiryModalProps {
   onClose: () => void;
   onConfirm: () => void;
   guestName?: string;
+  isDeleting?: boolean;
+  error?: string | null;
 }
 
-export function DeleteInquiryModal({ isOpen, onClose, onConfirm, guestName }: DeleteInquiryModalProps) {
-  const deleteFooter = (
-    <div className="flex items-center justify-end gap-2 w-full">
-      <Button variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
-        Cancel
-      </Button>
-      <Button
-        onClick={() => {
-          onConfirm();
-          onClose();
-        }}
-        className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
-      >
-        Delete Inquiry
-      </Button>
-    </div>
-  );
-
+export function DeleteInquiryModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  guestName,
+  isDeleting = false,
+  error = null,
+}: DeleteInquiryModalProps) {
   return (
-    <AdminModal
+    <AdminConfirmModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Delete Inquiry"
-      description={`Are you sure you want to remove the inquiry from "${guestName}"?`}
-      maxWidth="md"
-      footer={deleteFooter}
-    >
-      <div className="text-sm text-slate-700 py-2">
-        This will remove the inquiry record from your active CRM inbox.
-      </div>
-    </AdminModal>
+      onConfirm={onConfirm}
+      title="Delete Inquiry Record"
+      description={`Are you sure you want to delete inquiry lead for ${guestName || "this guest"}?`}
+      confirmText="Delete Inquiry"
+      cancelText="Cancel"
+      variant="danger"
+      isLoading={isDeleting}
+      error={error}
+    />
   );
 }

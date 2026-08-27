@@ -98,6 +98,8 @@ export function BlogArticleForm({
   }, []);
 
   useEffect(() => {
+    setErrors({});
+    setLocalSubmitting(false);
     if (initialData) {
       setFormData({
         title: initialData.title || "",
@@ -113,6 +115,21 @@ export function BlogArticleForm({
         metaTitle: (initialData as any)?.metaTitle || "",
         metaDescription: (initialData as any)?.metaDescription || "",
         keywords: (initialData as any)?.keywords || "",
+      });
+    } else {
+      setFormData({
+        title: "",
+        category: "",
+        readTime: "5 min read",
+        status: BlogStatus.PUBLISHED,
+        publishedDate: new Date().toISOString().split("T")[0],
+        excerpt: "",
+        content: "",
+        image: "",
+        coverMediaId: "",
+        metaTitle: "",
+        metaDescription: "",
+        keywords: "",
       });
     }
   }, [initialData]);

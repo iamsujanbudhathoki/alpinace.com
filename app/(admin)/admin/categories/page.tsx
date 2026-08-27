@@ -121,26 +121,44 @@ export default function AdminCategoriesPage() {
     setIsFormModalOpen(true);
   };
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleDeletePrompt = (category: CategoryItem) => {
     setActiveCategory(category);
+    setDeleteError(null);
     setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setIsDeleteModalOpen(false);
   };
 
   const handleConfirmDelete = async () => {
     if (!activeCategory) return;
     try {
+      setIsDeleting(true);
+      setDeleteError(null);
       const res = await CategoryService.delete(activeCategory.id);
       if (res.success) {
         toast.success(res.message || "Category deleted successfully");
         categoryCache.clear();
+        handleCloseDeleteModal();
+        setActiveCategory(null);
         await Promise.all([loadCategories(), loadStats()]);
       } else {
-        toast.error(res.message || "Failed to delete category");
+        const msg = res.message || "Failed to delete category";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete category");
+      const msg = err?.message || "Failed to delete category";
+      setDeleteError(msg);
+      toast.error(msg);
     } finally {
-      setIsDeleteModalOpen(false);
+      setIsDeleting(false);
     }
   };
 
@@ -487,9 +505,11 @@ export default function AdminCategoriesPage() {
       {/* Delete Confirmation Modal */}
       <DeleteCategoryModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={handleCloseDeleteModal}
         onConfirm={handleConfirmDelete}
         categoryName={activeCategory?.name}
+        isDeleting={isDeleting}
+        error={deleteError}
       />
     </div>
   );

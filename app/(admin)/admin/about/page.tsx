@@ -318,7 +318,9 @@ export default function AdminAboutUsPage() {
                 <AdminImageUpload
                   label="Hero Background Image"
                   value={formData.heroImage || ""}
-                  onChange={(url) => handleChange("heroImage", url)}
+                  onChange={(url, mediaId) =>
+                    setFormData((prev) => ({ ...prev, heroImage: url, heroMediaId: mediaId }))
+                  }
                   error={errors.heroImage}
                 />
               </div>
@@ -348,7 +350,9 @@ export default function AdminAboutUsPage() {
                   <AdminImageUpload
                     label="Story Image (Optional)"
                     value={formData.storyImage || ""}
-                    onChange={(url) => handleChange("storyImage", url)}
+                    onChange={(url, mediaId) =>
+                      setFormData((prev) => ({ ...prev, storyImage: url, storyMediaId: mediaId }))
+                    }
                     error={errors.storyImage}
                   />
                 </div>

@@ -110,11 +110,6 @@ export enum CategoryStatus {
   DRAFT = "draft",
 }
 
-export enum AssociateStatus {
-  ACTIVE = "active",
-  DRAFT = "draft",
-}
-
 export enum FaqStatus {
   ACTIVE = "active",
   DRAFT = "draft",
@@ -124,19 +119,6 @@ export enum BlogStatus {
   PUBLISHED = "published",
   DRAFT = "draft",
   ARCHIVED = "archived",
-}
-
-export enum GuideRole {
-  LEAD_EXPEDITION_LEADER = "Lead Expedition Leader",
-  SENIOR_TREKKING_GUIDE = "Senior Trekking Guide",
-  HIGH_ALTITUDE_SHERPA = "High Altitude Sherpa",
-  CULTURAL_TOUR_GUIDE = "Cultural Tour Guide",
-}
-
-export enum GuideStatus {
-  AVAILABLE = "Available",
-  ON_MOUNTAIN = "On Mountain",
-  ON_LEAVE = "On Leave",
 }
 
 export enum InquiryStatus {
@@ -268,18 +250,6 @@ export interface PackageItem {
   }>;
 }
 
-export interface Guide {
-  id: string;
-  name: string;
-  role: GuideRole;
-  summitStats: string;
-  certifications: string[];
-  status: GuideStatus;
-  phone: string;
-  email: string;
-  currentAssignment?: string;
-  avatarUrl: string;
-}
 
 export interface Inquiry {
   id: string;
@@ -329,18 +299,6 @@ export interface CategoryItem {
   children?: CategoryItem[];
 }
 
-export interface AssociateItem {
-  id: string;
-  name: string;
-  role?: string;
-  company?: string;
-  image?: string;
-  websiteUrl?: string;
-  description?: string;
-  category: string;
-  status: AssociateStatus;
-  order: number;
-}
 
 export interface FaqItem {
   id: string;
@@ -363,7 +321,6 @@ export const mockDashboardMetrics = {
 
 export const mockBookings: Booking[] = [];
 export const mockPackages: PackageItem[] = [];
-export const mockGuides: Guide[] = [];
 export const mockInquiries: Inquiry[] = [];
 export const mockBlogArticles: BlogArticle[] = [];
 export const mockCategories: CategoryItem[] = [];

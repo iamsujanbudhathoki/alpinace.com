@@ -158,18 +158,40 @@ export default function AdminTreksPage() {
     }
   };
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handlePromptDelete = (trek: TrekItem) => {
+    setDeletingTrek(trek);
+    setDeleteError(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setDeletingTrek(null);
+  };
+
   const handleDeleteTrek = async (id: string) => {
     try {
+      setIsDeleting(true);
+      setDeleteError(null);
       const res = await TrekService.delete(id);
       if (res.success) {
         toast.success(res.message || "Trek itinerary deleted successfully");
-        setDeletingTrek(null);
+        handleCloseDeleteModal();
         await loadTreks();
       } else {
-        toast.error(res.message || "Failed to delete trek");
+        const msg = res.message || "Failed to delete trek";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete trek");
+      const msg = err.message || "Failed to delete trek";
+      setDeleteError(msg);
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -442,9 +464,11 @@ export default function AdminTreksPage() {
 
       <DeleteTrekModal
         isOpen={deletingTrek !== null}
-        onClose={() => setDeletingTrek(null)}
+        onClose={handleCloseDeleteModal}
         onConfirm={() => deletingTrek && handleDeleteTrek(deletingTrek.id)}
         trekTitle={deletingTrek?.title}
+        isDeleting={isDeleting}
+        error={deleteError}
       />
     </div>
   );

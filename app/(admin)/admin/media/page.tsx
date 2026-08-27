@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Search, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, FolderOpen, Tag, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminTablePagination } from "@/components/admin/ui/admin-table";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
@@ -203,18 +204,29 @@ export default function AdminMediaPage() {
     });
   };
 
+  const [editError, setEditError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleOpenEdit = (asset: MediaAsset) => {
     setActiveAsset(asset);
     setEditTitle(asset.title);
     setEditCategoryId(asset.categoryId || "");
     setEditDescription(asset.description || "");
     setEditAltText(asset.altText || "");
+    setEditError(null);
     setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditError(null);
+    setIsEditModalOpen(false);
   };
 
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeAsset) return;
+    setEditError(null);
     try {
       const res = await MediaService.update(activeAsset.id, {
         title: editTitle.trim(),
@@ -224,34 +236,53 @@ export default function AdminMediaPage() {
       });
       if (res.success) {
         toast.success(res.message || "Media asset metadata updated successfully.");
-        setIsEditModalOpen(false);
+        handleCloseEditModal();
         await Promise.all([loadMedia(), loadStats()]);
       } else {
-        toast.error(res.message || "Failed to update media asset.");
+        const msg = res.message || "Failed to update media asset.";
+        setEditError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to update asset metadata.");
+      const msg = err.message || "Failed to update asset metadata.";
+      setEditError(msg);
+      toast.error(msg);
     }
   };
 
   const handleDeletePrompt = (asset: MediaAsset) => {
     setActiveAsset(asset);
+    setDeleteError(null);
     setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setIsDeleteModalOpen(false);
   };
 
   const handleConfirmDelete = async () => {
     if (!activeAsset) return;
     try {
+      setIsDeleting(true);
+      setDeleteError(null);
       const res = await MediaService.delete(activeAsset.id);
       if (res.success) {
         toast.success(res.message || "Asset deleted successfully.");
-        setIsDeleteModalOpen(false);
+        handleCloseDeleteModal();
         await Promise.all([loadMedia(), loadStats()]);
       } else {
-        toast.error(res.message || "Failed to delete asset.");
+        const msg = res.message || "Failed to delete asset.";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete asset from server.");
+      const msg = err.message || "Failed to delete asset from server.";
+      setDeleteError(msg);
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -519,12 +550,17 @@ export default function AdminMediaPage() {
       {/* EDIT MEDIA ASSET & CATEGORY MODAL */}
       <AdminModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={handleCloseEditModal}
         title="Edit Image Metadata & Category"
         description="Update photo title, category assignment, and alt text."
         maxWidth="lg"
       >
         <form onSubmit={handleSaveEdit} className="space-y-4 py-2 text-xs">
+          {editError && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 font-semibold">
+              {editError}
+            </div>
+          )}
           <div className="space-y-1">
             <label className="font-bold text-slate-800 block text-xs">Asset Title</label>
             <input
@@ -576,7 +612,7 @@ export default function AdminMediaPage() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setIsEditModalOpen(false)}
+              onClick={handleCloseEditModal}
               className="text-xs font-semibold cursor-pointer"
             >
               Cancel
@@ -591,34 +627,21 @@ export default function AdminMediaPage() {
         </form>
       </AdminModal>
 
-
-
       {/* DELETE CONFIRMATION MODAL */}
-      <AdminModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Delete Media Asset"
-        description={`Are you sure you want to delete "${activeAsset?.title}"? This photo will be removed from your catalog.`}
-        maxWidth="md"
-      >
-        <DialogFooter className="pt-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setIsDeleteModalOpen(false)}
-            className="text-xs font-semibold cursor-pointer"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={handleConfirmDelete}
-            className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
-          >
-            Delete Asset
-          </Button>
-        </DialogFooter>
-      </AdminModal>
+      {isDeleteModalOpen && activeAsset && (
+        <AdminConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={handleCloseDeleteModal}
+          onConfirm={handleConfirmDelete}
+          title="Delete Media Asset"
+          description={`Are you sure you want to delete "${activeAsset.title}"? This photo will be removed from your catalog.`}
+          confirmText="Delete Asset"
+          cancelText="Cancel"
+          variant="danger"
+          isLoading={isDeleting}
+          error={deleteError}
+        />
+      )}
     </div>
   );
 }

@@ -20,6 +20,7 @@ import { TripMapManager } from "@/components/admin/forms/trip-map-manager";
 import { TripFilesManager } from "@/components/admin/forms/trip-files-manager";
 import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -171,7 +172,11 @@ export function TourFormModal({
     }
   }, [isOpen, initialData, getValues, setValue]);
 
+  const [formError, setFormError] = useState<string | null>(null);
+
   useEffect(() => {
+    setFormError(null);
+    setIsSubmitting(false);
     if (initialData) {
       reset({
         title: initialData.title,
@@ -252,8 +257,15 @@ export function TourFormModal({
     setEditingMode(isEditing || !initialData);
   }, [initialData, isEditing, isOpen, reset, tourCategories]);
 
+  const handleClose = () => {
+    setFormError(null);
+    setIsSubmitting(false);
+    onClose();
+  };
+
   const onSubmit = async (values: TourFormValues) => {
     setIsSubmitting(true);
+    setFormError(null);
     try {
       const permitsArray = (values.permitsText || "")
         .split(",")
@@ -305,7 +317,11 @@ export function TourFormModal({
       const success = await onSave(tourToSave);
       if (success !== false) {
         onClose();
+      } else {
+        setFormError("Failed to save tour package. Please check form inputs.");
       }
+    } catch (err: any) {
+      setFormError(err?.message || "Failed to save tour package.");
     } finally {
       setIsSubmitting(false);
     }
@@ -343,7 +359,7 @@ export function TourFormModal({
         <Button
           type="button"
           variant="outline"
-          onClick={onClose}
+          onClick={handleClose}
           disabled={isSubmitting}
           className="text-xs font-semibold cursor-pointer"
         >
@@ -372,7 +388,7 @@ export function TourFormModal({
     <div className="flex justify-end gap-2">
       <Button
         variant="outline"
-        onClick={onClose}
+        onClick={handleClose}
         className="text-xs font-semibold cursor-pointer"
       >
         Close
@@ -390,7 +406,7 @@ export function TourFormModal({
   return (
     <AdminModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={modalTitle}
       description={modalDescription}
       maxWidth="4xl"
@@ -399,6 +415,11 @@ export function TourFormModal({
     >
       {editingMode ? (
         <div className="space-y-4 py-2">
+          {formError && (
+            <div className="p-3 mb-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
+              {formError}
+            </div>
+          )}
           {/* Navigation Tabs */}
           <div className="flex items-center gap-1 border-b border-slate-200 pb-2 overflow-x-auto">
             {tabs.map((tab) => {
@@ -982,6 +1003,8 @@ interface DeleteTourModalProps {
   onClose: () => void;
   onConfirm: () => void;
   tourTitle?: string;
+  isDeleting?: boolean;
+  error?: string | null;
 }
 
 export function DeleteTourModal({
@@ -989,28 +1012,21 @@ export function DeleteTourModal({
   onClose,
   onConfirm,
   tourTitle,
+  isDeleting = false,
+  error = null,
 }: DeleteTourModalProps) {
   return (
-    <AdminModal
+    <AdminConfirmModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Confirm Deletion"
+      onConfirm={onConfirm}
+      title="Delete Tour Package"
       description={`Are you sure you want to delete "${tourTitle}"? This action cannot be undone.`}
-      maxWidth="md"
-      footer={
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
-            Cancel
-          </Button>
-          <Button onClick={() => { onConfirm(); onClose(); }} className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer">
-            Delete Tour
-          </Button>
-        </div>
-      }
-    >
-      <div className="text-sm text-slate-700 py-2">
-        This will permanently remove the tour package from the active catalogue.
-      </div>
-    </AdminModal>
+      confirmText="Delete Tour"
+      cancelText="Cancel"
+      variant="danger"
+      isLoading={isDeleting}
+      error={error}
+    />
   );
 }

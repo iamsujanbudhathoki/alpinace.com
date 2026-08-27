@@ -77,17 +77,17 @@ export default function ContactView() {
         cfTurnstileToken: turnstileToken,
       });
 
-      if (res?.success !== false) {
+      if (res?.success) {
         setSubmitted(true);
         reset();
         setTurnstileToken('');
-        toast.success("Your inquiry has been submitted! Our team will reach out shortly.");
+        toast.success(res.message || "Your inquiry has been submitted! Our team will reach out shortly.");
       } else {
-        toast.error(res.message || "Failed to submit inquiry. Please try again.");
+        toast.error(res?.message || "Failed to submit inquiry. Please try again.");
       }
     } catch (err: any) {
       console.error("Failed to submit inquiry:", err);
-      toast.error(err.message || "Failed to submit inquiry. Please try again or message via WhatsApp.");
+      toast.error(err?.message || "Failed to submit inquiry. Please try again or message via WhatsApp.");
     }
   };
 

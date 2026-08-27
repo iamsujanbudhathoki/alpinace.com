@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import {
@@ -145,6 +146,23 @@ export default function AdminFaqsPage() {
     }
   };
 
+  const [formError, setFormError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleCloseFormModal = () => {
+    setFormError(null);
+    setIsSubmitting(false);
+    setModalOpen(false);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setDeleteModalOpen(false);
+    setDeletingFaq(null);
+  };
+
   const openCreateModal = () => {
     setEditingFaq(null);
     setQuestion("");
@@ -152,6 +170,7 @@ export default function AdminFaqsPage() {
     setCategory("General");
     setStatus(FaqStatus.ACTIVE);
     setOrder(totalItems + 1);
+    setFormError(null);
     setModalOpen(true);
   };
 
@@ -162,22 +181,26 @@ export default function AdminFaqsPage() {
     setCategory(faq.category || "General");
     setStatus(faq.status);
     setOrder(faq.order || 0);
+    setFormError(null);
     setModalOpen(true);
   };
 
   const openDeleteModal = (faq: FaqItem) => {
     setDeletingFaq(faq);
+    setDeleteError(null);
     setDeleteModalOpen(true);
   };
 
   const handleSaveFaq = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!question.trim() || !answer.trim()) {
+      setFormError("Question and Answer are required.");
       toast.error("Question and Answer are required.");
       return;
     }
 
     setIsSubmitting(true);
+    setFormError(null);
     try {
       if (editingFaq) {
         const res = await FaqService.update(editingFaq.id, {
@@ -189,10 +212,12 @@ export default function AdminFaqsPage() {
         });
         if (res.success) {
           toast.success("FAQ updated successfully!");
-          setModalOpen(false);
+          handleCloseFormModal();
           await Promise.all([loadFaqs(), loadCategoryOptions()]);
         } else {
-          toast.error(res.message || "Failed to update FAQ");
+          const msg = res.message || "Failed to update FAQ";
+          setFormError(msg);
+          toast.error(msg);
         }
       } else {
         const res = await FaqService.create({
@@ -204,14 +229,18 @@ export default function AdminFaqsPage() {
         });
         if (res.success) {
           toast.success("FAQ created successfully!");
-          setModalOpen(false);
+          handleCloseFormModal();
           await Promise.all([loadFaqs(), loadCategoryOptions()]);
         } else {
-          toast.error(res.message || "Failed to create FAQ");
+          const msg = res.message || "Failed to create FAQ";
+          setFormError(msg);
+          toast.error(msg);
         }
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save FAQ");
+      const msg = err.message || "Failed to save FAQ";
+      setFormError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -219,21 +248,25 @@ export default function AdminFaqsPage() {
 
   const handleDeleteConfirm = async () => {
     if (!deletingFaq) return;
-    setIsSubmitting(true);
+    setIsDeleting(true);
+    setDeleteError(null);
     try {
       const res = await FaqService.delete(deletingFaq.id);
       if (res.success) {
         toast.success("FAQ deleted successfully!");
-        setDeleteModalOpen(false);
-        setDeletingFaq(null);
+        handleCloseDeleteModal();
         await Promise.all([loadFaqs(), loadCategoryOptions()]);
       } else {
-        toast.error(res.message || "Failed to delete FAQ");
+        const msg = res.message || "Failed to delete FAQ";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete FAQ");
+      const msg = err.message || "Failed to delete FAQ";
+      setDeleteError(msg);
+      toast.error(msg);
     } finally {
-      setIsSubmitting(false);
+      setIsDeleting(false);
     }
   };
 
@@ -478,6 +511,11 @@ export default function AdminFaqsPage() {
             </div>
 
             <form onSubmit={handleSaveFaq} className="space-y-4 text-xs">
+              {formError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 font-semibold">
+                  {formError}
+                </div>
+              )}
               <div>
                 <label className="block text-slate-700 font-bold mb-1.5">
                   Consultation Question *
@@ -551,7 +589,7 @@ export default function AdminFaqsPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setModalOpen(false)}
+                  onClick={handleCloseFormModal}
                   className="text-xs font-semibold rounded-xl cursor-pointer"
                 >
                   Cancel
@@ -578,35 +616,18 @@ export default function AdminFaqsPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && deletingFaq && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="font-heading text-base font-bold text-slate-900 text-rose-600 flex items-center gap-2">
-              <Trash2 className="w-5 h-5" />
-              <span>Delete FAQ?</span>
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to delete this FAQ: &quot;
-              <strong className="text-slate-900">{deletingFaq.question}</strong>&quot;? This action cannot be undone.
-            </p>
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDeleteModalOpen(false)}
-                className="text-xs font-semibold rounded-xl cursor-pointer"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDeleteConfirm}
-                disabled={isSubmitting}
-                className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-5 rounded-xl cursor-pointer shadow-xs"
-              >
-                {isSubmitting ? "Deleting..." : "Confirm Delete"}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <AdminConfirmModal
+          isOpen={deleteModalOpen}
+          onClose={handleCloseDeleteModal}
+          onConfirm={handleDeleteConfirm}
+          title="Delete FAQ"
+          description={`Are you sure you want to delete this FAQ: "${deletingFaq.question}"?`}
+          confirmText="Delete FAQ"
+          cancelText="Cancel"
+          variant="danger"
+          isLoading={isDeleting}
+          error={deleteError}
+        />
       )}
     </div>
   );

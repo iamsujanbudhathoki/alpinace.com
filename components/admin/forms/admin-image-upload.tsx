@@ -180,35 +180,30 @@ export function AdminImageUpload({
     setIsUploading(true);
     try {
       const res = await MediaService.uploadFile(file);
-      const url = res?.data?.url || URL.createObjectURL(file);
-      const mediaId = res?.data?.id;
+      if (res.success && res.data?.url) {
+        const url = res.data.url;
+        const mediaId = res.data.id;
 
-      if (fromModal) {
-        const newAsset: MediaAsset = {
-          id: mediaId || `media-upload-${Date.now()}`,
-          title: file.name.replace(/\.[^/.]+$/, ""),
-          category: "General",
-          url: url,
-        };
-        setAssets((prev) => deduplicateAssets([newAsset, ...prev]));
-        setTempSelectedUrl(url);
-        setShowModalUploader(false);
-        if (res.success) {
-          toast.success(res.message || `Photo "${file.name}" uploaded to server!`);
+        if (fromModal) {
+          const newAsset: MediaAsset = {
+            id: mediaId ,
+            title: file.name.replace(/\.[^/.]+$/, ""),
+            category: "General",
+            url: url,
+          };
+          setAssets((prev) => deduplicateAssets([newAsset, ...prev]));
+          setTempSelectedUrl(url);
+          setShowModalUploader(false);
         } else {
-          toast.error(res.message || "Failed to upload image to server.");
+          onChange(url, mediaId);
         }
+        toast.success(res.message || `Photo "${file.name}" uploaded successfully!`);
       } else {
-        onChange(url, mediaId);
-        if (res.success) {
-          toast.success(res.message || "Cover image uploaded successfully!");
-        } else {
-          toast.error(res.message || "Failed to upload cover image.");
-        }
+        toast.error(res?.message || "Failed to upload image.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Upload error:", err);
-      toast.error("Failed to upload image.");
+      toast.error(err?.message || "Failed to upload image.");
     } finally {
       setIsUploading(false);
     }
@@ -220,17 +215,17 @@ export function AdminImageUpload({
     try {
       const res = await MediaService.delete(deleteConfirmAsset.id);
       if (res.success) {
-        toast.success("Media asset deleted.");
+        toast.success(res.message || "Media asset deleted.");
         setAssets((prev) => prev.filter((a) => a.id !== deleteConfirmAsset.id));
         if (tempSelectedUrl === deleteConfirmAsset.url) setTempSelectedUrl("");
+        setDeleteConfirmAsset(null);
       } else {
         toast.error(res.message || "Failed to delete asset.");
       }
-    } catch {
-      toast.error("Failed to delete asset.");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to delete asset.");
     } finally {
       setIsDeleting(false);
-      setDeleteConfirmAsset(null);
     }
   };
 

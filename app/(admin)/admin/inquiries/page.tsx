@@ -154,21 +154,43 @@ export default function AdminInquiriesPage() {
     }
   };
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handlePromptDelete = (inq: Inquiry) => {
+    setDeletingInquiry(inq);
+    setDeleteError(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setDeletingInquiry(null);
+  };
+
   const handleDeleteInquiry = async (id: string): Promise<boolean> => {
     try {
+      setIsDeleting(true);
+      setDeleteError(null);
       const res = await InquiryService.delete(id);
       if (res.success) {
         setInquiries((prev) => prev.filter((inq) => inq.id !== id));
-        setDeletingInquiry(null);
+        handleCloseDeleteModal();
         toast.success(res.message || "Inquiry record deleted successfully");
         return true;
       } else {
-        toast.error(res.message || "Failed to delete inquiry");
+        const msg = res.message || "Failed to delete inquiry";
+        setDeleteError(msg);
+        toast.error(msg);
         return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete inquiry");
+      const msg = err.message || "Failed to delete inquiry";
+      setDeleteError(msg);
+      toast.error(msg);
       return false;
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -366,9 +388,11 @@ export default function AdminInquiriesPage() {
 
       <DeleteInquiryModal
         isOpen={deletingInquiry !== null}
-        onClose={() => setDeletingInquiry(null)}
+        onClose={handleCloseDeleteModal}
         onConfirm={() => deletingInquiry && handleDeleteInquiry(deletingInquiry.id)}
         guestName={deletingInquiry?.guestName}
+        isDeleting={isDeleting}
+        error={deleteError}
       />
     </div>
   );

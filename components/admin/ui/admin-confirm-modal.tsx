@@ -14,6 +14,7 @@ interface AdminConfirmModalProps {
   cancelText?: string;
   variant?: "danger" | "warning" | "info";
   isLoading?: boolean;
+  error?: string | null;
 }
 
 export function AdminConfirmModal({
@@ -26,6 +27,7 @@ export function AdminConfirmModal({
   cancelText = "Cancel",
   variant = "danger",
   isLoading = false,
+  error = null,
 }: AdminConfirmModalProps) {
   const handleConfirm = async () => {
     await onConfirm();
@@ -77,6 +79,11 @@ export function AdminConfirmModal({
       maxWidth="md"
       fixedHeight={false}
     >
+      {error && (
+        <div className="p-3 mb-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
+          {error}
+        </div>
+      )}
       <div className="py-2 flex items-start gap-4">
         <div
           className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${

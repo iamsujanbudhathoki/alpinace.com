@@ -2,16 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { Star } from "lucide-react";
-import { SettingService } from "@/lib/services/admin-service";
+import { adminTestimonialsApi, SettingService, TestimonialItem } from "@/lib/services/admin-service";
 import { Testimonial } from "@/lib/home-data";
 
 export function TestimonialsSection() {
-  const [items, setItems] = useState<Testimonial[]>([]);
+  const [items, setItems] = useState<(Testimonial | TestimonialItem)[]>([]);
 
   useEffect(() => {
     let isMounted = true;
     async function loadTestimonials() {
       try {
+        const fetched = await adminTestimonialsApi.getAll({ status: "active" });
+        if (fetched && fetched.length > 0) {
+          if (isMounted) setItems(fetched);
+          return;
+        }
+
         const settings = await SettingService.getAll();
         if (settings && settings.testimonials) {
           const parsed = JSON.parse(settings.testimonials);
@@ -20,7 +26,7 @@ export function TestimonialsSection() {
           }
         }
       } catch (e) {
-        console.warn("Failed to load testimonials from backend settings:", e);
+        console.warn("Failed to load testimonials from backend:", e);
       }
     }
     loadTestimonials();

@@ -20,6 +20,7 @@ import { TripMapManager } from "@/components/admin/forms/trip-map-manager";
 import { TripFilesManager } from "@/components/admin/forms/trip-files-manager";
 import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import { CategoryType, PackageStatus, TripDifficulty, TripActivity, PACKAGE_COUNTRIES } from "@/lib/admin-data";
@@ -144,6 +145,7 @@ export function TrekFormModal({
   const watchReviews = watch("reviews") || [];
 
   const [trekCategories, setTrekCategories] = useState<{ label: string; value: string }[]>([]);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -162,6 +164,8 @@ export function TrekFormModal({
   }, [isOpen, initialData, getValues, setValue]);
 
   useEffect(() => {
+    setFormError(null);
+    setIsSubmitting(false);
     if (initialData) {
       reset({
         title: initialData.title,
@@ -238,6 +242,12 @@ export function TrekFormModal({
     setEditingMode(isEditing || !initialData);
   }, [initialData, isEditing, isOpen, reset, trekCategories]);
 
+  const handleClose = () => {
+    setFormError(null);
+    setIsSubmitting(false);
+    onClose();
+  };
+
   const onSubmit = async (values: TrekFormValues) => {
     setIsSubmitting(true);
     try {
@@ -289,7 +299,11 @@ export function TrekFormModal({
       const success = await onSave(trekToSave);
       if (success !== false) {
         onClose();
+      } else {
+        setFormError("Failed to save trek package. Please check form inputs.");
       }
+    } catch (err: any) {
+      setFormError(err?.message || "Failed to save trek package.");
     } finally {
       setIsSubmitting(false);
     }
@@ -346,7 +360,7 @@ export function TrekFormModal({
         <Button
           type="button"
           variant="outline"
-          onClick={onClose}
+          onClick={handleClose}
           disabled={isSubmitting}
           className="text-xs font-semibold cursor-pointer"
         >
@@ -375,7 +389,7 @@ export function TrekFormModal({
     <div className="flex justify-end gap-2">
       <Button
         variant="outline"
-        onClick={onClose}
+        onClick={handleClose}
         className="text-xs font-semibold cursor-pointer"
       >
         Close
@@ -393,7 +407,7 @@ export function TrekFormModal({
   return (
     <AdminModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={modalTitle}
       description={modalDescription}
       maxWidth="4xl"
@@ -442,6 +456,11 @@ export function TrekFormModal({
             })}
           </div>
 
+          {formError && (
+            <div className="p-3 mb-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
+              {formError}
+            </div>
+          )}
           <form id="trek-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
             {/* 1. OVERVIEW & SPECS TAB */}
             {activeTab === "general" && (
@@ -1122,6 +1141,8 @@ interface DeleteTrekModalProps {
   onClose: () => void;
   onConfirm: () => void;
   trekTitle?: string;
+  isDeleting?: boolean;
+  error?: string | null;
 }
 
 export function DeleteTrekModal({
@@ -1129,38 +1150,21 @@ export function DeleteTrekModal({
   onClose,
   onConfirm,
   trekTitle,
+  isDeleting = false,
+  error = null,
 }: DeleteTrekModalProps) {
   return (
-    <AdminModal
+    <AdminConfirmModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Confirm Deletion"
+      onConfirm={onConfirm}
+      title="Delete Trek Itinerary"
       description={`Are you sure you want to delete "${trekTitle}"? This action cannot be undone.`}
-      maxWidth="md"
-      footer={
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="text-xs font-semibold cursor-pointer"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
-            className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
-          >
-            Delete Trek
-          </Button>
-        </div>
-      }
-    >
-      <div className="text-sm text-slate-700 py-2">
-        This will permanently remove the trek package from the active catalogue.
-      </div>
-    </AdminModal>
+      confirmText="Delete Trek"
+      cancelText="Cancel"
+      variant="danger"
+      isLoading={isDeleting}
+      error={error}
+    />
   );
 }

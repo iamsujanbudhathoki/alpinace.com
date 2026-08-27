@@ -173,18 +173,40 @@ export default function AdminBookingsPage() {
     }
   };
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handlePromptDelete = (booking: Booking) => {
+    setDeletingBooking(booking);
+    setDeleteError(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setDeletingBooking(null);
+  };
+
   const handleDeleteBooking = async (id: string) => {
     try {
+      setIsDeleting(true);
+      setDeleteError(null);
       const res = await BookingService.delete(id);
       if (res.success) {
         toast.success(res.message || "Booking deleted successfully");
-        setDeletingBooking(null);
+        handleCloseDeleteModal();
         await loadBookings();
       } else {
-        toast.error(res.message || "Failed to delete booking");
+        const msg = res.message || "Failed to delete booking";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete booking");
+      const msg = err.message || "Failed to delete booking";
+      setDeleteError(msg);
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -496,10 +518,12 @@ export default function AdminBookingsPage() {
 
       <DeleteBookingModal
         isOpen={deletingBooking !== null}
-        onClose={() => setDeletingBooking(null)}
+        onClose={handleCloseDeleteModal}
         onConfirm={() => deletingBooking && handleDeleteBooking(deletingBooking.id)}
         bookingRef={deletingBooking?.reference}
         guestName={deletingBooking?.guestName}
+        isDeleting={isDeleting}
+        error={deleteError}
       />
     </div>
   );

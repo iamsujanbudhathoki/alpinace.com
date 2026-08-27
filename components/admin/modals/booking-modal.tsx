@@ -21,6 +21,7 @@ import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/compone
 import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
 import { AdminSearchableSelect, SearchableSelectOption } from "@/components/admin/forms/admin-searchable-select";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 
@@ -142,8 +143,12 @@ export function BookingFormModal({
     }));
   }, [availableItems]);
 
+  const [formError, setFormError] = useState<string | null>(null);
+
   // Reset or Populate form on opening / initialData change
   useEffect(() => {
+    setFormError(null);
+    setIsSubmitting(false);
     if (initialData) {
       reset({
         guestName: initialData.guestName,
@@ -183,6 +188,12 @@ export function BookingFormModal({
     }
     setEditingMode(isEditing || !initialData);
   }, [initialData, isEditing, isOpen, reset]);
+
+  const handleClose = () => {
+    setFormError(null);
+    setIsSubmitting(false);
+    onClose();
+  };
 
   // Handle Type Change (resets dependent item selection)
   const handleTypeChange = (newType: BookingPackageType) => {
@@ -243,6 +254,7 @@ export function BookingFormModal({
 
   const onSubmit = async (values: BookingFormValues) => {
     setIsSubmitting(true);
+    setFormError(null);
     try {
       const bookingToSave: Booking = {
         id: initialData?.id || `bkg-${Date.now()}`,
@@ -267,7 +279,11 @@ export function BookingFormModal({
       const success = await onSave(bookingToSave);
       if (success !== false) {
         onClose();
+      } else {
+        setFormError("Failed to save booking. Please check form inputs.");
       }
+    } catch (err: any) {
+      setFormError(err?.message || "Failed to save booking.");
     } finally {
       setIsSubmitting(false);
     }
@@ -318,7 +334,7 @@ export function BookingFormModal({
         <Button
           type="button"
           variant="outline"
-          onClick={onClose}
+          onClick={handleClose}
           disabled={isSubmitting}
           className="text-xs font-semibold cursor-pointer"
         >
@@ -348,7 +364,7 @@ export function BookingFormModal({
       <Button
         type="button"
         variant="outline"
-        onClick={onClose}
+        onClick={handleClose}
         className="text-xs font-semibold cursor-pointer"
       >
         Close
@@ -366,7 +382,7 @@ export function BookingFormModal({
   return (
     <AdminModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={modalTitle}
       description={modalDescription}
       maxWidth="2xl"
@@ -374,6 +390,11 @@ export function BookingFormModal({
     >
       {editingMode ? (
         <form id="booking-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-1 text-xs">
+          {formError && (
+            <div className="p-3 mb-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
+              {formError}
+            </div>
+          )}
           {/* Guest Information Section */}
           <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 space-y-3">
             <div className="font-semibold text-slate-800 flex items-center gap-1.5 pb-1 border-b border-slate-200">
@@ -671,36 +692,31 @@ interface DeleteBookingModalProps {
   onConfirm: () => void;
   bookingRef?: string;
   guestName?: string;
+  isDeleting?: boolean;
+  error?: string | null;
 }
 
-export function DeleteBookingModal({ isOpen, onClose, onConfirm, bookingRef, guestName }: DeleteBookingModalProps) {
+export function DeleteBookingModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  bookingRef,
+  guestName,
+  isDeleting = false,
+  error = null,
+}: DeleteBookingModalProps) {
   return (
-    <AdminModal
+    <AdminConfirmModal
       isOpen={isOpen}
       onClose={onClose}
+      onConfirm={onConfirm}
       title="Delete Reservation"
       description={`Are you sure you want to delete reservation "${bookingRef}" for ${guestName}?`}
-      maxWidth="md"
-      footer={
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
-            className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
-          >
-            Delete Reservation
-          </Button>
-        </div>
-      }
-    >
-      <div className="text-xs text-slate-700 py-2">
-        This action cannot be undone. The reservation record will be permanently deleted.
-      </div>
-    </AdminModal>
+      confirmText="Delete Reservation"
+      cancelText="Cancel"
+      variant="danger"
+      isLoading={isDeleting}
+      error={error}
+    />
   );
 }

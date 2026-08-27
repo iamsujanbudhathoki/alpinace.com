@@ -10,6 +10,7 @@ import { categorySchema, CategoryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminSearchableSelect } from "@/components/admin/forms/admin-searchable-select";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import { MediaService } from "@/lib/services/admin-service";
@@ -36,6 +37,7 @@ export function CategoryFormModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
+  const [formError, setFormError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -44,6 +46,7 @@ export function CategoryFormModal({
     watch,
     formState: { errors },
   } = useForm<CategoryFormValues>({
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(categorySchema) as any,
     defaultValues: {
@@ -69,7 +72,10 @@ export function CategoryFormModal({
       !c.parentId
   );
 
+
   useEffect(() => {
+    setFormError(null);
+    setIsSubmitting(false);
     if (initialData) {
       reset({
         name: initialData.name,
@@ -95,6 +101,12 @@ export function CategoryFormModal({
     }
     setEditingMode(isEditing || !initialData);
   }, [initialData, isEditing, isOpen, reset]);
+
+  const handleClose = () => {
+    setFormError(null);
+    setIsSubmitting(false);
+    onClose();
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -127,6 +139,7 @@ export function CategoryFormModal({
 
   const onSubmit = async (values: CategoryFormValues) => {
     setIsSubmitting(true);
+    setFormError(null);
     try {
       const formattedSlug = values.slug
         .toLowerCase()
@@ -150,6 +163,8 @@ export function CategoryFormModal({
       if (success !== false) {
         onClose();
       }
+    } catch (err: any) {
+      setFormError(err?.message || "Failed to save category.");
     } finally {
       setIsSubmitting(false);
     }
@@ -173,7 +188,7 @@ export function CategoryFormModal({
 
   const editFooter = (
     <div className="flex items-center justify-end gap-2 w-full">
-      <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
+      <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
         Cancel
       </Button>
       <Button
@@ -196,7 +211,7 @@ export function CategoryFormModal({
 
   const viewFooter = (
     <div className="flex items-center justify-between gap-2 w-full">
-      <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
+      <Button type="button" variant="outline" onClick={handleClose} className="text-xs font-semibold cursor-pointer">
         Close
       </Button>
       <Button
@@ -212,7 +227,7 @@ export function CategoryFormModal({
   return (
     <AdminModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={modalTitle}
       description={modalDescription}
       maxWidth="lg"
@@ -220,6 +235,11 @@ export function CategoryFormModal({
     >
       {editingMode ? (
         <form id="category-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2 text-xs">
+          {formError && (
+            <div className="p-3 mb-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
+              {formError}
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2 sm:col-span-1">
               <AdminInputField
@@ -428,6 +448,8 @@ interface DeleteCategoryModalProps {
   onClose: () => void;
   onConfirm: () => void;
   categoryName?: string;
+  isDeleting?: boolean;
+  error?: string | null;
 }
 
 export function DeleteCategoryModal({
@@ -435,35 +457,21 @@ export function DeleteCategoryModal({
   onClose,
   onConfirm,
   categoryName = "this category",
+  isDeleting = false,
+  error = null,
 }: DeleteCategoryModalProps) {
   return (
-    <AdminModal
+    <AdminConfirmModal
       isOpen={isOpen}
       onClose={onClose}
+      onConfirm={onConfirm}
       title="Delete Category"
-      description={`Are you sure you want to delete "${categoryName}"? Packages currently assigned to this category will be updated.`}
-      maxWidth="sm"
-      footer={
-        <div className="flex items-center justify-end gap-2 w-full">
-          <Button type="button" variant="outline" onClick={onClose} className="text-xs font-semibold cursor-pointer">
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs cursor-pointer transition-colors"
-          >
-            Confirm Delete
-          </Button>
-        </div>
-      }
-    >
-      <div className="p-3 bg-red-50 text-red-700 rounded-lg text-xs font-medium border border-red-200">
-        Warning: This action cannot be undone.
-      </div>
-    </AdminModal>
+      description={`Are you sure you want to delete "${categoryName}"? Packages assigned to this category will be unlinked.`}
+      confirmText="Delete Category"
+      cancelText="Cancel"
+      variant="danger"
+      isLoading={isDeleting}
+      error={error}
+    />
   );
 }

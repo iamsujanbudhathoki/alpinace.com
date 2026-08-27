@@ -1,6 +1,7 @@
 "use client";
 
 import { BlogViewModal } from "@/components/admin/modals/blog-view-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
@@ -150,18 +151,45 @@ export default function AdminBlogsPage() {
     }
   };
 
-  const handleDeleteArticle = async (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+  const [deletingArticle, setDeletingArticle] = useState<{ id: string; title: string } | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handlePromptDelete = (id: string, title: string) => {
+    setDeletingArticle({ id, title });
+    setDeleteError(null);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteError(null);
+    setIsDeleting(false);
+    setIsDeleteModalOpen(false);
+    setDeletingArticle(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingArticle) return;
     try {
-      const res = await BlogService.delete(id);
+      setIsDeleting(true);
+      setDeleteError(null);
+      const res = await BlogService.delete(deletingArticle.id);
       if (res.success) {
         toast.success(res.message || "Article deleted successfully.");
+        handleCloseDeleteModal();
         await loadArticles();
       } else {
-        toast.error(res.message || "Failed to delete article.");
+        const msg = res.message || "Failed to delete article.";
+        setDeleteError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete blog article");
+      const msg = err.message || "Failed to delete blog article";
+      setDeleteError(msg);
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -317,7 +345,7 @@ export default function AdminBlogsPage() {
                         </Link>
                         <AdminActionButton
                           variant="delete"
-                          onClick={() => handleDeleteArticle(art.id, art.title)}
+                          onClick={() => handlePromptDelete(art.id, art.title)}
                           title="Delete Article"
                         />
                       </AdminTableActions>
@@ -353,6 +381,22 @@ export default function AdminBlogsPage() {
         onClose={() => setIsViewModalOpen(false)}
         article={activeArticle}
       />
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <AdminConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={handleCloseDeleteModal}
+          onConfirm={handleConfirmDelete}
+          title="Delete Blog Article"
+          description={`Are you sure you want to delete "${deletingArticle?.title}"?`}
+          confirmText="Delete Article"
+          cancelText="Cancel"
+          variant="danger"
+          isLoading={isDeleting}
+          error={deleteError}
+        />
+      )}
     </div>
   );
 }

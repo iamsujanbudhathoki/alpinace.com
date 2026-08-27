@@ -61,6 +61,7 @@ export function BlogArticleForm({
     excerpt: initialData?.excerpt || "",
     content: initialData?.content || "",
     image: initialData?.image || "",
+    coverMediaId: (initialData as any)?.coverMediaId || "",
     metaTitle: (initialData as any)?.metaTitle || "",
     metaDescription: (initialData as any)?.metaDescription || "",
     keywords: (initialData as any)?.keywords || "",
@@ -108,6 +109,7 @@ export function BlogArticleForm({
         excerpt: initialData.excerpt || "",
         content: initialData.content || "",
         image: initialData.image || "",
+        coverMediaId: (initialData as any)?.coverMediaId || "",
         metaTitle: (initialData as any)?.metaTitle || "",
         metaDescription: (initialData as any)?.metaDescription || "",
         keywords: (initialData as any)?.keywords || "",
@@ -317,7 +319,10 @@ export function BlogArticleForm({
             <AdminImageUpload
               label="Article Cover"
               value={formData.image || ""}
-              onChange={(url) => handleChange("image", url)}
+              onChange={(url, mediaId) => {
+                handleChange("image", url);
+                handleChange("coverMediaId", mediaId || "");
+              }}
               error={errors.image}
             />
           </div>

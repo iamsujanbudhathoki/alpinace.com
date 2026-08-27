@@ -33,6 +33,25 @@ const STATUS_OPTIONS: InlineSelectOption[] = [
   { value: BlogStatus.ARCHIVED, label: "Archived" },
 ];
 
+const DEFAULT_BLOG_CATEGORIES: InlineSelectOption[] = [
+  { value: "Trekking Guides", label: "Trekking Guides" },
+  { value: "Expedition Prep", label: "Expedition Prep" },
+  { value: "Sherpa Culture", label: "Sherpa Culture" },
+  { value: "Travel Tips", label: "Travel Tips" },
+  { value: "Gear & Equipment", label: "Gear & Equipment" },
+  { value: "Safety & Acclimatization", label: "Safety & Acclimatization" },
+  { value: "General", label: "General" },
+];
+
+const getCategoryOptions = (currentCat?: string): InlineSelectOption[] => {
+  if (!currentCat) return DEFAULT_BLOG_CATEGORIES;
+  const exists = DEFAULT_BLOG_CATEGORIES.some(
+    (opt) => opt.value.toLowerCase() === currentCat.toLowerCase()
+  );
+  if (exists) return DEFAULT_BLOG_CATEGORIES;
+  return [{ value: currentCat, label: currentCat }, ...DEFAULT_BLOG_CATEGORIES];
+};
+
 export default function AdminBlogsPage() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,6 +127,25 @@ export default function AdminBlogsPage() {
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to update article status");
+      return false;
+    }
+  };
+
+  const handleInlineCategoryChange = async (art: BlogArticle, newCategory: string): Promise<boolean> => {
+    try {
+      const res = await BlogService.update(art.id, { category: newCategory });
+      if (res.success) {
+        setArticles((prev) =>
+          prev.map((a) => (a.id === art.id ? { ...a, category: newCategory } : a))
+        );
+        toast.success(`Article "${art.title}" category updated`);
+        return true;
+      } else {
+        toast.error(res.message || "Failed to update article category");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update article category");
       return false;
     }
   };
@@ -230,10 +268,14 @@ export default function AdminBlogsPage() {
                       </div>
                     </AdminTableCell>
 
-                    <AdminTableCell className="font-medium text-slate-800">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700">
-                        {art.category}
-                      </span>
+                    <AdminTableCell>
+                      <AdminInlineSelect
+                        value={art.category}
+                        options={getCategoryOptions(art.category)}
+                        onChange={(newVal) => handleInlineCategoryChange(art, newVal)}
+                        variant="category"
+                        title="Click to change article category"
+                      />
                     </AdminTableCell>
 
                     <AdminTableCell className="font-medium text-slate-800">

@@ -47,10 +47,10 @@ export function BlogViewModal({
       <Link href={publicUrl} target="_blank" rel="noopener noreferrer">
         <Button
           type="button"
-          className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs h-9 px-4 rounded-xl shadow-xs cursor-pointer inline-flex items-center gap-1.5 transition-colors"
+          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-lg shadow-2xs cursor-pointer inline-flex items-center gap-1.5 transition-colors"
         >
           <span>View on Website</span>
-          <ExternalLink className="w-3.5 h-3.5" />
+          <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
         </Button>
       </Link>
     </div>
@@ -79,8 +79,8 @@ export function BlogViewModal({
 
             <div className="absolute bottom-4 left-4 right-4 text-white">
               <div className="flex items-center gap-2 mb-2">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-slate-950 shadow-xs">
-                  <Tag className="w-3 h-3" />
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-900/80 text-white border border-slate-700/50 shadow-xs">
+                  <Tag className="w-3 h-3 text-slate-300" />
                   {article.category}
                 </span>
                 <AdminStatusBadge status={article.status} />
@@ -93,8 +93,8 @@ export function BlogViewModal({
         ) : (
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
             <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
-                <Tag className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                <Tag className="w-3 h-3 text-slate-500" />
                 {article.category}
               </span>
               <AdminStatusBadge status={article.status} />
@@ -112,7 +112,7 @@ export function BlogViewModal({
               Category
             </span>
             <span className="font-bold text-slate-900 flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5 text-amber-500" />
+              <BookOpen className="w-3.5 h-3.5 text-slate-500" />
               <span className="truncate">{article.category}</span>
             </span>
           </div>
@@ -154,7 +154,7 @@ export function BlogViewModal({
             <span className="font-bold text-slate-900 block text-[11px] uppercase tracking-wider">
               Article Excerpt
             </span>
-            <div className="bg-amber-50/50 border border-amber-200/70 p-3.5 rounded-xl text-slate-800 font-medium leading-relaxed italic">
+            <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl text-slate-700 font-medium leading-relaxed italic">
               &ldquo;{article.excerpt}&rdquo;
             </div>
           </div>

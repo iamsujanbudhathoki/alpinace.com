@@ -35,7 +35,7 @@ export function getStatusBadgeStyle(status?: string): string {
     case "booked":
     case "published":
     case "easy":
-      return "bg-emerald-50 text-emerald-950 border-emerald-300 hover:bg-emerald-100/80 hover:border-emerald-400";
+      return "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100/80 hover:border-emerald-300 font-semibold";
     case "deposit paid":
     case "deposit_paid":
     case "active trek":
@@ -45,7 +45,7 @@ export function getStatusBadgeStyle(status?: string): string {
     case "on mountain":
     case "new":
     case "moderate":
-      return "bg-amber-50 text-amber-950 border-amber-300 hover:bg-amber-100/80 hover:border-amber-400";
+      return "bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200/60 hover:border-slate-300 font-semibold";
     case "in review":
     case "in_review":
     case "quote sent":
@@ -54,7 +54,7 @@ export function getStatusBadgeStyle(status?: string): string {
     case "pending":
     case "archived":
     case "challenging":
-      return "bg-purple-50 text-purple-950 border-purple-300 hover:bg-purple-100/80 hover:border-purple-400";
+      return "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/60 hover:border-slate-300 font-medium";
     case "cancelled":
     case "closed":
     case "refunded":
@@ -62,24 +62,14 @@ export function getStatusBadgeStyle(status?: string): string {
     case "pending_document":
     case "strenuous":
     case "extreme":
-      return "bg-rose-50 text-rose-950 border-rose-300 hover:bg-rose-100/80 hover:border-rose-400";
+      return "bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100/80 hover:border-rose-300 font-semibold";
     default:
-      return "bg-slate-50 text-slate-900 border-slate-200 hover:bg-slate-100 hover:border-slate-300";
+      return "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/60 hover:border-slate-300 font-medium";
   }
 }
 
 export function getCategoryBadgeStyle(category?: string): string {
-  const raw = (category || "").toLowerCase();
-  if (raw.includes("trek")) {
-    return "bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100/80 hover:border-amber-300";
-  }
-  if (raw.includes("expedition") || raw.includes("peak") || raw.includes("climb")) {
-    return "bg-rose-50 text-rose-900 border-rose-200 hover:bg-rose-100/80 hover:border-rose-300";
-  }
-  if (raw.includes("tour") || raw.includes("sightseeing") || raw.includes("cultural")) {
-    return "bg-blue-50 text-blue-900 border-blue-200 hover:bg-blue-100/80 hover:border-blue-300";
-  }
-  return "bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100 hover:border-slate-300";
+  return "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/70 hover:border-slate-300 font-semibold";
 }
 
 export function AdminInlineSelect({

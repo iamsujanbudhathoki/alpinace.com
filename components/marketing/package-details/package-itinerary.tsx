@@ -18,8 +18,8 @@ export function PackageItinerary({
   title = "Detailed Itinerary",
   subtitle,
 }: PackageItineraryProps) {
-  // -1 indicates all open, 0 indicates all closed, or specific day number open (defaulting to all open for easy reading flow)
-  const [openDay, setOpenDay] = useState<number>(-1);
+  // 0 indicates all closed by default, -1 indicates all open, or specific day number open
+  const [openDay, setOpenDay] = useState<number>(0);
 
   if (!days || days.length === 0) return null;
 

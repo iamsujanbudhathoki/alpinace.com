@@ -123,12 +123,34 @@ export const CategoryService = {
     }
   },
 
-  async getByType(type: CategoryType | string): Promise<CategoryItem[]> {
+  async getByType(type: CategoryType | string, parentsOnly = true): Promise<CategoryItem[]> {
     try {
-      const res = await apiClient.get<CategoryItem[]>(`/categories?type=${type}`);
+      const q = parentsOnly ? `?type=${type}&parentsOnly=true` : `?type=${type}`;
+      const res = await apiClient.get<CategoryItem[]>(`/categories${q}`);
       return Array.isArray(res?.data) ? res.data : [];
     } catch (e) {
       console.warn("Backend categories by type error:", e);
+      return [];
+    }
+  },
+
+  async getAdminParents(type: CategoryType | string): Promise<CategoryItem[]> {
+    try {
+      const res = await apiClient.get<CategoryItem[]>(`/admin/categories?type=${type}&parentsOnly=true&limit=100`);
+      return Array.isArray(res?.data) ? res.data : [];
+    } catch (e) {
+      console.warn("Backend admin parent categories fetch error:", e);
+      return [];
+    }
+  },
+
+  async getAdminSubcategories(parentId: string): Promise<CategoryItem[]> {
+    if (!parentId) return [];
+    try {
+      const res = await apiClient.get<CategoryItem[]>(`/admin/categories?parentId=${parentId}&limit=100`);
+      return Array.isArray(res?.data) ? res.data : [];
+    } catch (e) {
+      console.warn("Backend admin subcategories fetch error:", e);
       return [];
     }
   },
@@ -314,6 +336,14 @@ function cleanPackagePayload(data: any) {
     }
   }
 
+  if (rest.subcategoryId !== undefined) {
+    if (typeof rest.subcategoryId === "string" && rest.subcategoryId.trim() !== "" && rest.subcategoryId !== "All") {
+      payload.subcategoryId = rest.subcategoryId.trim();
+    } else {
+      payload.subcategoryId = null;
+    }
+  }
+
   if (rest.maxAltitudeMeters !== undefined && rest.maxAltitudeMeters !== null && rest.maxAltitudeMeters !== "") {
     payload.maxAltitudeMeters = Number(rest.maxAltitudeMeters);
   } else if (rest.maxAltitudeMeters !== undefined) {
@@ -426,6 +456,7 @@ export function formatBackendTrek(p: any): TrekItem {
     slug: p.slug,
     category: p.categoryType || p.category,
     categoryId: p.categoryId,
+    subcategoryId: p.subcategoryId,
     rating: Number(p.rating),
     reviewsCount: Number(p.reviewsCount),
     image: p.image,
@@ -471,6 +502,7 @@ export function formatBackendPackage(p: any): PackageItem {
     slug: p.slug,
     category: p.categoryType || p.category,
     categoryId: p.categoryId,
+    subcategoryId: p.subcategoryId,
     rating: Number(p.rating),
     reviewsCount: Number(p.reviewsCount),
     image: p.image,

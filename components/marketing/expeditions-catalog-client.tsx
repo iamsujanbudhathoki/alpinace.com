@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Mountain } from "lucide-react";
 import { ExpeditionItem } from "@/lib/expedition-data";
 import { ExpeditionService, PackageFilterService, PackageFilterOptions, CategoryService } from "@/lib/services/admin-service";
@@ -31,8 +31,6 @@ export function ExpeditionsCatalogClient({
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedGrade, setSelectedGrade] = useState<string>("All");
-  const [minPeakHeight, setMinPeakHeight] = useState<number>(initialFilterOptions?.minAltitude || 5500);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
@@ -52,7 +50,6 @@ export function ExpeditionsCatalogClient({
         ]);
         if (opts) {
           setFilterOptions(opts);
-          if (!initialFilterOptions && opts.minAltitude) setMinPeakHeight(opts.minAltitude);
         }
         if (cats && cats.length > 0) {
           setCategoryList(cats.map((c) => ({ id: c.id, name: c.name, slug: c.slug })));
@@ -75,8 +72,6 @@ export function ExpeditionsCatalogClient({
   const isDefaultFilter =
     !debouncedSearch &&
     selectedCategory === "All" &&
-    selectedGrade === "All" &&
-    minPeakHeight <= (filterOptions?.minAltitude || 5500) &&
     sortBy === "rating";
 
   useEffect(() => {
@@ -89,7 +84,6 @@ export function ExpeditionsCatalogClient({
         const raw = await ExpeditionService.getPublicAll({
           search: debouncedSearch,
           category: selectedCategory === "All" ? undefined : selectedCategory,
-          difficulty: selectedGrade === "All" ? undefined : selectedGrade,
           sortBy,
           status: PackageStatus.ACTIVE,
         });
@@ -98,6 +92,11 @@ export function ExpeditionsCatalogClient({
           title: p.title,
           slug: p.slug,
           category: p.category,
+          categorySlug: p.categorySlug,
+          categoryId: p.categoryId,
+          subcategory: p.subcategory,
+          subcategorySlug: p.subcategorySlug,
+          subcategoryId: p.subcategoryId,
           region: p.region,
           durationDays: Number(p.durationDays || 0),
           maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
@@ -122,24 +121,27 @@ export function ExpeditionsCatalogClient({
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedCategory, selectedGrade, sortBy, isDefaultFilter, initialExpeditions]);
+  }, [debouncedSearch, selectedCategory, sortBy, isDefaultFilter, initialExpeditions]);
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
-    setSelectedGrade("All");
-    setMinPeakHeight(filterOptions?.minAltitude || 5500);
     setSortBy("rating");
+    if (typeof window !== "undefined" && window.location.search) {
+      window.history.pushState({}, "", window.location.pathname);
+      router.replace(pathname, { scroll: false });
+    }
   };
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (selectedCategory !== "All") count++;
-    if (selectedGrade !== "All") count++;
-    if (minPeakHeight > (filterOptions?.minAltitude || 5500)) count++;
     if (searchQuery.trim() !== "") count++;
     return count;
-  }, [selectedCategory, selectedGrade, minPeakHeight, searchQuery, filterOptions?.minAltitude]);
+  }, [selectedCategory, searchQuery]);
 
   // Filtered Expeditions list
   const filteredExpeditions = useMemo(() => {
@@ -159,18 +161,15 @@ export function ExpeditionsCatalogClient({
       const selected = selectedCategory.toLowerCase();
       list = list.filter(
         (e: any) =>
+          (e.categorySlug && String(e.categorySlug).toLowerCase() === selected) ||
           (e.categoryId && String(e.categoryId).toLowerCase() === selected) ||
           (e.category && String(e.category).toLowerCase() === selected) ||
-          (e.region && String(e.region).toLowerCase().includes(selected))
+          (e.subcategorySlug && String(e.subcategorySlug).toLowerCase() === selected) ||
+          (e.subcategoryId && String(e.subcategoryId).toLowerCase() === selected) ||
+          (e.subcategory && String(e.subcategory).toLowerCase() === selected) ||
+          (e.region && String(e.region).toLowerCase().includes(selected)) ||
+          !isDefaultFilter
       );
-    }
-
-    if (selectedGrade !== "All") {
-      list = list.filter((e) => e.climbingGrade === selectedGrade || e.difficulty === selectedGrade);
-    }
-
-    if (minPeakHeight > (filterOptions?.minAltitude || 5500)) {
-      list = list.filter((e) => (e.maxAltitudeMeters || e.peakHeightM || 0) >= minPeakHeight);
     }
 
     // Sort list
@@ -182,7 +181,7 @@ export function ExpeditionsCatalogClient({
     });
 
     return list;
-  }, [expeditions, debouncedSearch, selectedCategory, selectedGrade, minPeakHeight, sortBy, filterOptions?.minAltitude]);
+  }, [expeditions, debouncedSearch, selectedCategory, sortBy, isDefaultFilter]);
 
   const normalizedCategories = useMemo(() => {
     if (categoryList.length > 0) {
@@ -240,48 +239,6 @@ export function ExpeditionsCatalogClient({
             </option>
           ))}
         </select>
-      </div>
-
-      {/* Climbing Grade Dropdown Filter */}
-      <div>
-        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
-          Climbing Grade
-        </label>
-        <select
-          value={selectedGrade}
-          onChange={(e) => setSelectedGrade(e.target.value)}
-          className="w-full text-xs px-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 cursor-pointer"
-        >
-          <option value="All">All Climbing Grades</option>
-          <option value="6000m Peak">6000m Climbing Peak</option>
-          <option value="7000m Peak">7000m Technical Peak</option>
-          <option value="8000m Extreme">8000m Extreme Expedition</option>
-        </select>
-      </div>
-
-      {/* Peak Altitude Slider */}
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-            Min Peak Altitude
-          </label>
-          <span className="text-xs font-bold text-amber-700">
-            {minPeakHeight.toLocaleString()}m+
-          </span>
-        </div>
-        <input
-          type="range"
-          min={5500}
-          max={8848}
-          step={100}
-          value={minPeakHeight}
-          onChange={(e) => setMinPeakHeight(Number(e.target.value))}
-          className="w-full accent-slate-900 cursor-pointer"
-        />
-        <div className="flex justify-between text-[10px] font-medium text-slate-600 mt-1">
-          <span>5,500m</span>
-          <span>8,848m</span>
-        </div>
       </div>
 
       {/* Sort Options */}

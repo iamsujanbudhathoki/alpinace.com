@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Compass } from "lucide-react";
 import { TourItem } from "@/lib/tour-data";
 import { TourService, PackageFilterService, PackageFilterOptions, CategoryService } from "@/lib/services/admin-service";
@@ -31,7 +31,6 @@ export function ToursCatalogClient({
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedType, setSelectedType] = useState<string>("All");
   const [maxDuration, setMaxDuration] = useState<number>(initialFilterOptions?.maxDuration || 14);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -75,7 +74,6 @@ export function ToursCatalogClient({
   const isDefaultFilter =
     !debouncedSearch &&
     selectedCategory === "All" &&
-    selectedType === "All" &&
     maxDuration >= (filterOptions?.maxDuration || 14) &&
     sortBy === "rating";
 
@@ -89,7 +87,6 @@ export function ToursCatalogClient({
         const raw = await TourService.getPublicAll({
           search: debouncedSearch,
           category: selectedCategory === "All" ? undefined : selectedCategory,
-          region: selectedType === "All" ? undefined : selectedType,
           maxDuration: maxDuration < (filterOptions?.maxDuration || 14) ? maxDuration : undefined,
           sortBy,
           status: PackageStatus.ACTIVE,
@@ -99,6 +96,11 @@ export function ToursCatalogClient({
           title: p.title,
           slug: p.slug,
           category: p.category,
+          categorySlug: p.categorySlug,
+          categoryId: p.categoryId,
+          subcategory: p.subcategory,
+          subcategorySlug: p.subcategorySlug,
+          subcategoryId: p.subcategoryId,
           region: p.region,
           durationDays: Number(p.durationDays || 0),
           tourType: p.tourType || p.category || "Cultural",
@@ -122,24 +124,29 @@ export function ToursCatalogClient({
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedCategory, selectedType, maxDuration, sortBy, filterOptions?.maxDuration, isDefaultFilter, initialTours]);
+  }, [debouncedSearch, selectedCategory, maxDuration, sortBy, filterOptions?.maxDuration, isDefaultFilter, initialTours]);
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
-    setSelectedType("All");
     setMaxDuration(filterOptions?.maxDuration || 14);
     setSortBy("rating");
+    if (typeof window !== "undefined" && window.location.search) {
+      window.history.pushState({}, "", window.location.pathname);
+      router.replace(pathname, { scroll: false });
+    }
   };
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (selectedCategory !== "All") count++;
-    if (selectedType !== "All") count++;
     if (maxDuration < (filterOptions?.maxDuration || 14)) count++;
     if (searchQuery.trim() !== "") count++;
     return count;
-  }, [selectedCategory, selectedType, maxDuration, searchQuery, filterOptions?.maxDuration]);
+  }, [selectedCategory, maxDuration, searchQuery, filterOptions?.maxDuration]);
 
   // Filtered Tours list
   const filteredTours = useMemo(() => {
@@ -159,14 +166,15 @@ export function ToursCatalogClient({
       const selected = selectedCategory.toLowerCase();
       list = list.filter(
         (t: any) =>
+          (t.categorySlug && String(t.categorySlug).toLowerCase() === selected) ||
           (t.categoryId && String(t.categoryId).toLowerCase() === selected) ||
           (t.category && String(t.category).toLowerCase() === selected) ||
-          (t.region && String(t.region).toLowerCase().includes(selected))
+          (t.subcategorySlug && String(t.subcategorySlug).toLowerCase() === selected) ||
+          (t.subcategoryId && String(t.subcategoryId).toLowerCase() === selected) ||
+          (t.subcategory && String(t.subcategory).toLowerCase() === selected) ||
+          (t.region && String(t.region).toLowerCase().includes(selected)) ||
+          !isDefaultFilter
       );
-    }
-
-    if (selectedType !== "All") {
-      list = list.filter((t) => t.region === selectedType || t.tourType === selectedType);
     }
 
     if (maxDuration < (filterOptions?.maxDuration || 14)) {
@@ -182,7 +190,7 @@ export function ToursCatalogClient({
     });
 
     return list;
-  }, [tours, debouncedSearch, selectedCategory, selectedType, maxDuration, sortBy, filterOptions?.maxDuration]);
+  }, [tours, debouncedSearch, selectedCategory, maxDuration, sortBy, filterOptions?.maxDuration, isDefaultFilter]);
 
   const normalizedCategories = useMemo(() => {
     if (categoryList.length > 0) {
@@ -240,25 +248,6 @@ export function ToursCatalogClient({
               {cat.label}
             </option>
           ))}
-        </select>
-      </div>
-
-      {/* Destination Region Dropdown Filter */}
-      <div>
-        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
-          Destination Region
-        </label>
-        <select
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
-          className="w-full text-xs px-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 cursor-pointer"
-        >
-          <option value="All">All Regions</option>
-          <option value="Kathmandu Valley">Kathmandu Valley</option>
-          <option value="Pokhara">Pokhara</option>
-          <option value="Chitwan">Chitwan</option>
-          <option value="Lumbini">Lumbini</option>
-          <option value="Nagarkot">Nagarkot &amp; Dhulikhel</option>
         </select>
       </div>
 

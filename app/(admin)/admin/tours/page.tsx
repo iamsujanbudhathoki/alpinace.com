@@ -351,14 +351,10 @@ export default function AdminToursPage() {
                       </div>
                     </AdminTableCell>
                     <AdminTableCell>
-                      <AdminInlineSelect
-                        value={currentCatId}
-                        options={categoryOptions}
-                        onChange={(newVal) => handleInlineCategoryChange(tur, newVal)}
-                        variant="category"
-                        placeholder={tur.category || "Select category"}
-                        title="Click to change tour category"
-                      />
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 border border-slate-200/80 rounded-lg text-xs font-semibold text-slate-700">
+                        <Tag className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{(tur as any).subcategory ? `${tur.category} → ${(tur as any).subcategory}` : (tur.category || "Unassigned")}</span>
+                      </div>
                     </AdminTableCell>
                     <AdminTableCell>
                       <div className="font-semibold text-slate-900">{tur.region}</div>

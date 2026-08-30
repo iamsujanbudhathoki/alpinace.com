@@ -198,6 +198,7 @@ export interface PackageItem {
   slug: string;
   category: string;
   categoryId?: string;
+  subcategoryId?: string;
   categorySlug?: string;
   region: PackageRegion;
   durationDays: number;

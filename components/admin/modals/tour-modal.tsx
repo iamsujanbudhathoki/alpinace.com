@@ -155,24 +155,44 @@ export function TourFormModal({
   const watchReviews = watch("reviews") || [];
 
   const [tourCategories, setTourCategories] = useState<{ label: string; value: string }[]>([]);
+  const [subcategories, setSubcategories] = useState<{ label: string; value: string }[]>([]);
+  const [isLoadingSubcats, setIsLoadingSubcats] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
+  const selectedCategoryId = watch("categoryId");
+
+  // Fetch Tour domain parent categories
   useEffect(() => {
     if (isOpen) {
-      CategoryService.getByType(CategoryType.TOURS).then((cats) => {
+      CategoryService.getAdminParents(CategoryType.TOURS).then((cats) => {
         if (cats && cats.length > 0) {
           const opts = cats.map((c) => ({ label: c.name, value: c.id }));
           setTourCategories(opts);
-          if (!initialData && !getValues("categoryId")) {
-            setValue("categoryId", cats[0].id);
-          }
         } else {
           setTourCategories([]);
         }
       });
     }
-  }, [isOpen, initialData, getValues, setValue]);
+  }, [isOpen]);
 
-  const [formError, setFormError] = useState<string | null>(null);
+  // Dynamically load subcategories for selected parent category
+  useEffect(() => {
+    if (selectedCategoryId) {
+      setIsLoadingSubcats(true);
+      CategoryService.getAdminSubcategories(selectedCategoryId).then((subs) => {
+        if (subs && subs.length > 0) {
+          const opts = subs.map((s) => ({ label: s.name, value: s.id }));
+          setSubcategories(opts);
+        } else {
+          setSubcategories([]);
+        }
+        setIsLoadingSubcats(false);
+      });
+    } else {
+      setSubcategories([]);
+      setIsLoadingSubcats(false);
+    }
+  }, [selectedCategoryId]);
 
   useEffect(() => {
     setFormError(null);
@@ -181,6 +201,7 @@ export function TourFormModal({
       reset({
         title: initialData.title,
         categoryId: initialData.categoryId || "",
+        subcategoryId: initialData.subcategoryId || "",
         region: initialData.region,
         country: initialData.country || "",
         activity: initialData.activity || "",
@@ -219,7 +240,8 @@ export function TourFormModal({
     } else {
       reset({
         title: "",
-        categoryId: tourCategories[0]?.value || "",
+        categoryId: "",
+        subcategoryId: "",
         region: "Kathmandu & Pokhara",
         tourType: TourType.CULTURAL_HERITAGE,
         transportation: "",
@@ -278,6 +300,7 @@ export function TourFormModal({
         slug: initialData?.slug || "",
         category: initialData?.category || "Tours",
         categoryId: values.categoryId && values.categoryId.trim() !== "" ? values.categoryId : undefined,
+        subcategoryId: values.subcategoryId && values.subcategoryId.trim() !== "" ? values.subcategoryId : undefined,
         region: (values.region as any) || "Kathmandu & Pokhara",
         tourType: values.tourType || TourType.CULTURAL_HERITAGE,
         transportation: values.transportation,
@@ -473,11 +496,33 @@ export function TourFormModal({
                     label="Category"
                     required
                     value={watch("categoryId") || ""}
-                    onChange={(val) => setValue("categoryId", val, { shouldValidate: true })}
+                    onChange={(val) => {
+                      setValue("categoryId", val, { shouldValidate: true });
+                      setValue("subcategoryId", "", { shouldValidate: true });
+                    }}
                     error={errors.categoryId?.message}
                     placeholder="Select category..."
                     searchPlaceholder="Search categories..."
                     options={tourCategories}
+                  />
+                </div>
+
+                <div className="sm:col-span-1">
+                  <AdminSearchableSelect
+                    label="Subcategory (Optional)"
+                    value={watch("subcategoryId") || ""}
+                    onChange={(val) => setValue("subcategoryId", val, { shouldValidate: true })}
+                    error={errors.subcategoryId?.message}
+                    placeholder={
+                      isLoadingSubcats
+                        ? "Loading subcategories..."
+                        : subcategories.length > 0
+                        ? "Select subcategory (Optional)..."
+                        : "No subcategories available"
+                    }
+                    searchPlaceholder="Search subcategories..."
+                    options={subcategories}
+                    disabled={isLoadingSubcats || subcategories.length === 0}
                   />
                 </div>
 

@@ -520,19 +520,20 @@ export function SiteHeader() {
                                                   key={subCat.id}
                                                   href={getCategoryLink(link.href, subCat)}
                                                   onClick={() => setActiveDropdown(null)}
-                                                  className="group/tile relative h-32 sm:h-36 w-full rounded-md overflow-hidden block cursor-pointer"
+                                                  className="group/tile relative h-32 sm:h-36 w-full rounded-md overflow-hidden block cursor-pointer bg-slate-900"
                                                 >
                                                   {/* Landscape Background Image */}
                                                   <Image
                                                     src={subCat.image!}
                                                     alt={subCat.name}
                                                     fill
+                                                    unoptimized
                                                     className="object-cover group-hover/tile:scale-103 transition-transform duration-300 ease-out"
                                                     sizes="320px"
                                                   />
 
                                                   {/* Natural Overlay & Centered Subcategory Name INSIDE Image */}
-                                                  <div className="absolute inset-0 bg-slate-950/30 group-hover/tile:bg-slate-950/20 transition-colors duration-300 flex items-center justify-center p-3 text-center">
+                                                  <div className="absolute inset-0 bg-slate-950/35 group-hover/tile:bg-slate-950/20 transition-colors duration-300 flex items-center justify-center p-3 text-center">
                                                     <span className="text-sm sm:text-base font-semibold text-white tracking-wide leading-snug drop-shadow-md">
                                                       {subCat.name}
                                                     </span>

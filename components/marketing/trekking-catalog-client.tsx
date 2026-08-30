@@ -2,12 +2,12 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Compass } from "lucide-react";
 import { TrekItem } from "@/lib/trek-data";
 import { TrekService, PackageFilterService, PackageFilterOptions, CategoryService } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
-import { CategoryType, PackageStatus, PackageSortOption, FILTER_ALL } from "@/lib/admin-data";
+import { CategoryType, PackageStatus, PackageSortOption, FILTER_ALL, TripDifficulty } from "@/lib/admin-data";
 
 interface TrekkingCatalogClientProps {
   initialTreks: TrekItem[];
@@ -99,6 +99,11 @@ export function TrekkingCatalogClient({
           title: p.title,
           slug: p.slug,
           category: p.category,
+          categorySlug: p.categorySlug,
+          categoryId: p.categoryId,
+          subcategory: p.subcategory,
+          subcategorySlug: p.subcategorySlug,
+          subcategoryId: p.subcategoryId,
           region: p.region,
           durationDays: Number(p.durationDays || 0),
           maxAltitudeMeters: Number(p.maxAltitudeMeters || 0),
@@ -125,12 +130,19 @@ export function TrekkingCatalogClient({
     };
   }, [debouncedSearch, selectedCategory, selectedDifficulty, maxDuration, sortBy, filterOptions?.maxDuration, isDefaultFilter, initialTreks]);
 
+  const router = useRouter();
+  const pathname = usePathname();
+
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
     setSelectedDifficulty("All");
     setMaxDuration(filterOptions?.maxDuration || 30);
     setSortBy("rating");
+    if (typeof window !== "undefined" && window.location.search) {
+      window.history.pushState({}, "", window.location.pathname);
+      router.replace(pathname, { scroll: false });
+    }
   };
 
   const activeFilterCount = useMemo(() => {
@@ -160,14 +172,20 @@ export function TrekkingCatalogClient({
       const selected = selectedCategory.toLowerCase();
       list = list.filter(
         (t: any) =>
+          (t.categorySlug && String(t.categorySlug).toLowerCase() === selected) ||
           (t.categoryId && String(t.categoryId).toLowerCase() === selected) ||
           (t.category && String(t.category).toLowerCase() === selected) ||
-          (t.region && String(t.region).toLowerCase().includes(selected))
+          (t.subcategorySlug && String(t.subcategorySlug).toLowerCase() === selected) ||
+          (t.subcategoryId && String(t.subcategoryId).toLowerCase() === selected) ||
+          (t.subcategory && String(t.subcategory).toLowerCase() === selected) ||
+          (t.region && String(t.region).toLowerCase().includes(selected)) ||
+          !isDefaultFilter
       );
     }
 
     if (selectedDifficulty !== "All") {
-      list = list.filter((t) => t.difficulty === selectedDifficulty);
+      const targetDiff = selectedDifficulty.toLowerCase();
+      list = list.filter((t) => t.difficulty && String(t.difficulty).toLowerCase() === targetDiff);
     }
 
     if (maxDuration < (filterOptions?.maxDuration || 30)) {
@@ -255,9 +273,11 @@ export function TrekkingCatalogClient({
           className="w-full text-xs px-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 cursor-pointer"
         >
           <option value="All">All Difficulties</option>
-          <option value="Moderate">Moderate</option>
-          <option value="Challenging">Challenging</option>
-          <option value="Strenuous">Strenuous</option>
+          <option value={TripDifficulty.EASY}>Easy</option>
+          <option value={TripDifficulty.MODERATE}>Moderate</option>
+          <option value={TripDifficulty.CHALLENGING}>Challenging</option>
+          <option value={TripDifficulty.STRENUOUS}>Strenuous</option>
+          <option value={TripDifficulty.EXTREME}>Extreme</option>
         </select>
       </div>
 

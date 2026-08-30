@@ -57,6 +57,7 @@ export const packageFileSchema = z.object({
 export const trekSchema = z.object({
   title: z.string().min(1, "Trek title is required"),
   categoryId: z.string().trim().min(1, "Category is required"),
+  subcategoryId: z.string().optional(),
   region: z.string().optional(),
   country: z.string().optional(),
   activity: z.string().optional(),
@@ -116,6 +117,7 @@ export type TrekFormValues = z.infer<typeof trekSchema>;
 export const tourSchema = z.object({
   title: z.string().min(1, "Tour title is required"),
   categoryId: z.string().trim().min(1, "Category is required"),
+  subcategoryId: z.string().optional(),
   region: z.string().optional(),
   country: z.string().optional(),
   activity: z.string().optional(),
@@ -177,6 +179,7 @@ export type TourFormValues = z.infer<typeof tourSchema>;
 export const expeditionSchema = z.object({
   title: z.string().min(1, "Expedition title is required"),
   categoryId: z.string().trim().min(1, "Category is required"),
+  subcategoryId: z.string().optional(),
   region: z.string().optional(),
   country: z.string().optional(),
   activity: z.string().optional(),

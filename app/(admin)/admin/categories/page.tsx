@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon, GitMerge, Maximize2, Check, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon, GitMerge, Maximize2, Check, X, ChevronRight, ChevronDown, CornerDownRight } from "lucide-react";
 import { toast } from "sonner";
 import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
@@ -38,9 +38,12 @@ export default function AdminCategoriesPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedType, setSelectedType] = useState<string>("All");
 
+  // Collapsible Rows State
+  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
+
   // Pagination states
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(100);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -49,6 +52,11 @@ export default function AdminCategoriesPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<CategoryItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  const toggleExpand = (catId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setExpandedIds((prev) => ({ ...prev, [catId]: !prev[catId] }));
+  };
 
   // Load all categories once for stats summary cards & parent dropdown list
   const loadStats = async () => {
@@ -94,6 +102,17 @@ export default function AdminCategoriesPage() {
       } else {
         setTotalItems(data.length);
         setTotalPages(Math.max(1, Math.ceil(data.length / limit)));
+      }
+
+      // Auto expand parents if search query matches subcategories
+      if (debouncedSearch && data.length > 0) {
+        const autoExpand: Record<string, boolean> = {};
+        data.forEach((item) => {
+          if (item.parentId) {
+            autoExpand[item.parentId] = true;
+          }
+        });
+        setExpandedIds((prev) => ({ ...prev, ...autoExpand }));
       }
     } catch (err) {
       console.error("Failed to load categories:", err);
@@ -377,11 +396,12 @@ export default function AdminCategoriesPage() {
         </div>
       </div>
 
-      {/* Category Table */}
+      {/* Category Collapsible Table */}
       <AdminTableContainer>
         <AdminTable>
           <AdminTableHeader>
             <tr>
+              <AdminTableHead className="w-10 text-center"></AdminTableHead>
               <AdminTableHead className="w-14 text-center">S.N.</AdminTableHead>
               <AdminTableHead>Category Name</AdminTableHead>
               <AdminTableHead>Level / Hierarchy</AdminTableHead>
@@ -394,143 +414,307 @@ export default function AdminCategoriesPage() {
           </AdminTableHeader>
           <AdminTableBody>
             {isLoading ? (
-              <AdminTableLoading colSpan={8} rows={limit > 10 ? 10 : limit} message="Loading category taxonomy..." />
-            ) : categories.length > 0 ? (
-              categories.map((cat, idx) => {
-                const serialNumber = (page - 1) * limit + idx + 1;
-                const parentCat = cat.parentId
-                  ? allCategoriesForStats.find((c) => c.id === cat.parentId)
-                  : null;
+              <AdminTableLoading colSpan={9} rows={10} message="Loading category taxonomy..." />
+            ) : (() => {
+                const parentIdsOfMatchingSubcats = new Set(
+                  categories.filter((c) => c.parentId).map((c) => c.parentId!)
+                );
 
-                return (
-                  <AdminTableRow key={cat.id}>
-                    <AdminTableCell className="text-center font-semibold text-slate-500">
-                      {serialNumber}
-                    </AdminTableCell>
-                    <AdminTableCell>
-                      <div className="flex items-center gap-3">
-                        {cat.image ? (
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openSingleImage(cat.image!, cat.name, e.currentTarget);
-                            }}
-                            className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-950 shrink-0 group cursor-pointer shadow-2xs"
-                            title="Click to view full image in Lightbox"
-                          >
-                            <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                            <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <Maximize2 className="w-3.5 h-3.5 text-white drop-shadow-xs" />
+                const parentCategories = allCategoriesForStats.filter(
+                  (c) =>
+                    !c.parentId &&
+                    (selectedType === "All" || c.type === selectedType) &&
+                    (!debouncedSearch ||
+                      categories.some((matched) => matched.id === c.id) ||
+                      parentIdsOfMatchingSubcats.has(c.id))
+                );
+
+                if (parentCategories.length === 0) {
+                  return (
+                    <AdminTableEmpty
+                      colSpan={9}
+                      title="No categories found"
+                      description="No categories matching your search or module filter query."
+                    />
+                  );
+                }
+
+                return parentCategories.map((parentCat, idx) => {
+                  const serialNumber = (page - 1) * limit + idx + 1;
+                  
+                  // Find subcategories belonging to this parent category
+                  const subCategories = allCategoriesForStats.filter((c) => c.parentId === parentCat.id);
+                  const hasChildren = subCategories.length > 0;
+                  const isExpanded = Boolean(expandedIds[parentCat.id]);
+
+                  return (
+                    <React.Fragment key={parentCat.id}>
+                      {/* Parent Category Row */}
+                      <AdminTableRow
+                        onClick={() => {
+                          if (hasChildren) toggleExpand(parentCat.id);
+                        }}
+                        className={hasChildren ? "cursor-pointer hover:bg-slate-50/80 transition-colors" : ""}
+                      >
+                        {/* Expand Chevron / Spacer Column */}
+                        <AdminTableCell className="text-center p-2" onClick={(e) => e.stopPropagation()}>
+                          {hasChildren ? (
+                            <button
+                              type="button"
+                              onClick={(e) => toggleExpand(parentCat.id, e)}
+                              className="w-7 h-7 rounded-md border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors cursor-pointer"
+                              title={isExpanded ? "Collapse subcategories" : "Expand subcategories"}
+                            >
+                              {isExpanded ? (
+                                <ChevronDown className="w-4 h-4 text-slate-800" />
+                              ) : (
+                                <ChevronRight className="w-4 h-4 text-slate-600" />
+                              )}
+                            </button>
+                          ) : (
+                            <div className="w-7 h-7" />
+                          )}
+                        </AdminTableCell>
+
+                        <AdminTableCell className="text-center font-semibold text-slate-500">
+                          {serialNumber}
+                        </AdminTableCell>
+
+                        <AdminTableCell>
+                          <div className="flex items-center gap-3">
+                            {parentCat.image ? (
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openSingleImage(parentCat.image!, parentCat.name, e.currentTarget);
+                                }}
+                                className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-950 shrink-0 group cursor-pointer shadow-2xs"
+                                title="Click to view full image in Lightbox"
+                              >
+                                <img src={parentCat.image} alt={parentCat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <Maximize2 className="w-3.5 h-3.5 text-white drop-shadow-xs" />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                                <ImageIcon className="w-4 h-4 text-slate-400" />
+                              </div>
+                            )}
+
+                            <div className="min-w-0">
+                              <div className="font-bold text-slate-900 group-hover:text-slate-950 transition-colors truncate flex items-center gap-2">
+                                <span>{parentCat.name}</span>
+                                {hasChildren && (
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                    {subCategories.length} subcategories
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-slate-500 line-clamp-1 max-w-md font-normal">{parentCat.description}</div>
                             </div>
                           </div>
-                        ) : (
-                          <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
-                            <ImageIcon className="w-4 h-4 text-slate-400" />
-                          </div>
-                        )}
+                        </AdminTableCell>
 
-                        <div className="min-w-0">
-                          <div className="font-semibold text-slate-900 group-hover:text-slate-950 transition-colors truncate">
-                            {cat.name}
+                        <AdminTableCell>
+                          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-50 text-slate-600 text-[11px] font-medium border border-slate-200/80">
+                            <span>Top-Level Category</span>
                           </div>
-                          <div className="text-xs text-slate-500 line-clamp-1 max-w-md font-normal">{cat.description}</div>
-                        </div>
-                      </div>
-                    </AdminTableCell>
-                    <AdminTableCell>
-                      {parentCat ? (
-                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
-                          <GitMerge className="w-3 h-3 text-slate-500 shrink-0" />
-                          <span>Under: {parentCat.name}</span>
-                        </div>
-                      ) : (
-                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-50 text-slate-600 text-[11px] font-medium border border-slate-200/80">
-                          <span>Top-Level Region</span>
-                        </div>
-                      )}
-                    </AdminTableCell>
-                    <AdminTableCell>
-                      <AdminInlineSelect
-                        value={cat.type}
-                        options={[
-                          { label: "Trekking", value: CategoryType.TREKKING, icon: getTypeIcon(CategoryType.TREKKING) },
-                          { label: "Tours", value: CategoryType.TOURS, icon: getTypeIcon(CategoryType.TOURS) },
-                          { label: "Expeditions", value: CategoryType.EXPEDITIONS, icon: getTypeIcon(CategoryType.EXPEDITIONS) },
-                          { label: "Blogs", value: CategoryType.BLOGS, icon: getTypeIcon(CategoryType.BLOGS) },
-                          { label: "Media", value: CategoryType.MEDIA, icon: getTypeIcon(CategoryType.MEDIA) },
-                        ]}
-                        onChange={(newVal) => handleInlineTypeChange(cat, newVal)}
-                        variant="category"
-                        placeholder={cat.type}
-                        title="Click to change category type"
-                      />
-                    </AdminTableCell>
-                    <AdminTableCell className="text-slate-600 text-xs font-normal">/{cat.slug}</AdminTableCell>
-                    <AdminTableCell>
-                      <AdminInlineSelect
-                        value={cat.status}
-                        options={[
-                          { label: "Active", value: CategoryStatus.ACTIVE },
-                          { label: "Draft", value: CategoryStatus.DRAFT },
-                        ]}
-                        onChange={(newVal) => handleInlineStatusChange(cat, newVal)}
-                        variant="badge"
-                        title="Click to change category status"
-                      />
-                    </AdminTableCell>
-                    <AdminTableCell>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleMenuVisibility(cat)}
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
-                          cat.showInMenu !== false
-                            ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
-                            : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
-                        }`}
-                        title="Click to toggle marketing navbar visibility"
-                      >
-                        {cat.showInMenu !== false ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span>On</span>
-                          </>
-                        ) : (
-                          <>
-                            <X className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                            <span>Off</span>
-                          </>
-                        )}
-                      </button>
-                    </AdminTableCell>
-                    <AdminTableCell align="right">
-                      <AdminTableActions>
-                        <AdminActionButton
-                          variant="view"
-                          onClick={() => handleView(cat)}
-                          title="View Details"
-                        />
-                        <AdminActionButton
-                          variant="edit"
-                          onClick={() => handleEdit(cat)}
-                          title="Edit Category"
-                        />
-                        <AdminActionButton
-                          variant="delete"
-                          onClick={() => handleDeletePrompt(cat)}
-                          title="Delete Category"
-                        />
-                      </AdminTableActions>
-                    </AdminTableCell>
-                  </AdminTableRow>
-                );
-              })
-            ) : (
-              <AdminTableEmpty
-                colSpan={7}
-                title="No categories found"
-                description="No categories matching your search or module filter query."
-              />
-            )}
+                        </AdminTableCell>
+
+                        <AdminTableCell onClick={(e) => e.stopPropagation()}>
+                          <AdminInlineSelect
+                            value={parentCat.type}
+                            options={[
+                              { label: "Trekking", value: CategoryType.TREKKING, icon: getTypeIcon(CategoryType.TREKKING) },
+                              { label: "Tours", value: CategoryType.TOURS, icon: getTypeIcon(CategoryType.TOURS) },
+                              { label: "Expeditions", value: CategoryType.EXPEDITIONS, icon: getTypeIcon(CategoryType.EXPEDITIONS) },
+                              { label: "Blogs", value: CategoryType.BLOGS, icon: getTypeIcon(CategoryType.BLOGS) },
+                              { label: "Media", value: CategoryType.MEDIA, icon: getTypeIcon(CategoryType.MEDIA) },
+                            ]}
+                            onChange={(newVal) => handleInlineTypeChange(parentCat, newVal)}
+                            variant="category"
+                            placeholder={parentCat.type}
+                            title="Click to change category type"
+                          />
+                        </AdminTableCell>
+
+                        <AdminTableCell className="text-slate-600 text-xs font-normal">/{parentCat.slug}</AdminTableCell>
+
+                        <AdminTableCell onClick={(e) => e.stopPropagation()}>
+                          <AdminInlineSelect
+                            value={parentCat.status}
+                            options={[
+                              { label: "Active", value: CategoryStatus.ACTIVE },
+                              { label: "Draft", value: CategoryStatus.DRAFT },
+                            ]}
+                            onChange={(newVal) => handleInlineStatusChange(parentCat, newVal)}
+                            variant="badge"
+                            title="Click to change category status"
+                          />
+                        </AdminTableCell>
+
+                        <AdminTableCell onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleMenuVisibility(parentCat)}
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
+                              parentCat.showInMenu !== false
+                                ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                                : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
+                            }`}
+                            title="Click to toggle marketing navbar visibility"
+                          >
+                            {parentCat.showInMenu !== false ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <span>ON</span>
+                              </>
+                            ) : (
+                              <>
+                                <X className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                                <span>OFF</span>
+                              </>
+                            )}
+                          </button>
+                        </AdminTableCell>
+
+                        <AdminTableCell align="right" onClick={(e) => e.stopPropagation()}>
+                          <AdminTableActions>
+                            <AdminActionButton
+                              variant="view"
+                              onClick={() => handleView(parentCat)}
+                              title="View Details"
+                            />
+                            <AdminActionButton
+                              variant="edit"
+                              onClick={() => handleEdit(parentCat)}
+                              title="Edit Category"
+                            />
+                            <AdminActionButton
+                              variant="delete"
+                              onClick={() => handleDeletePrompt(parentCat)}
+                              title="Delete Category"
+                            />
+                          </AdminTableActions>
+                        </AdminTableCell>
+                      </AdminTableRow>
+
+                      {/* Subcategory Expandable Rows */}
+                      {isExpanded &&
+                        subCategories.map((subCat, subIdx) => (
+                          <AdminTableRow
+                            key={subCat.id}
+                            className="bg-slate-50/70 hover:bg-slate-100/90 transition-colors border-l-4 border-l-slate-300"
+                          >
+                            <AdminTableCell className="text-center p-2"></AdminTableCell>
+                            <AdminTableCell className="text-center font-semibold text-slate-400 text-xs">
+                              ↳ {serialNumber}.{subIdx + 1}
+                            </AdminTableCell>
+
+                            {/* Indented Subcategory Name & Image */}
+                            <AdminTableCell>
+                              <div className="pl-4 flex items-center gap-3">
+                                <CornerDownRight className="w-4 h-4 text-slate-400 shrink-0" />
+                                {subCat.image ? (
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openSingleImage(subCat.image!, subCat.name, e.currentTarget);
+                                    }}
+                                    className="relative w-8 h-8 rounded-md overflow-hidden border border-slate-200 bg-slate-950 shrink-0 group cursor-pointer shadow-2xs"
+                                    title="Click to view full image in Lightbox"
+                                  >
+                                    <img src={subCat.image} alt={subCat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                      <Maximize2 className="w-3 h-3 text-white drop-shadow-xs" />
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="w-8 h-8 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                                    <ImageIcon className="w-3.5 h-3.5 text-slate-400" />
+                                  </div>
+                                )}
+
+                                <div className="min-w-0">
+                                  <div className="font-semibold text-slate-900 truncate text-xs">
+                                    {subCat.name}
+                                  </div>
+                                  <div className="text-[11px] text-slate-500 line-clamp-1 max-w-md font-normal">
+                                    {subCat.description}
+                                  </div>
+                                </div>
+                              </div>
+                            </AdminTableCell>
+
+                            <AdminTableCell>
+                              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
+                                <GitMerge className="w-3 h-3 text-slate-500 shrink-0" />
+                                <span>Under: {parentCat.name}</span>
+                              </div>
+                            </AdminTableCell>
+
+                            <AdminTableCell onClick={(e) => e.stopPropagation()}>
+                              <AdminInlineSelect
+                                value={subCat.type}
+                                options={[
+                                  { label: "Trekking", value: CategoryType.TREKKING, icon: getTypeIcon(CategoryType.TREKKING) },
+                                  { label: "Tours", value: CategoryType.TOURS, icon: getTypeIcon(CategoryType.TOURS) },
+                                  { label: "Expeditions", value: CategoryType.EXPEDITIONS, icon: getTypeIcon(CategoryType.EXPEDITIONS) },
+                                  { label: "Blogs", value: CategoryType.BLOGS, icon: getTypeIcon(CategoryType.BLOGS) },
+                                  { label: "Media", value: CategoryType.MEDIA, icon: getTypeIcon(CategoryType.MEDIA) },
+                                ]}
+                                onChange={(newVal) => handleInlineTypeChange(subCat, newVal)}
+                                variant="category"
+                                placeholder={subCat.type}
+                                title="Click to change category type"
+                              />
+                            </AdminTableCell>
+
+                            <AdminTableCell className="text-slate-600 text-xs font-normal">/{subCat.slug}</AdminTableCell>
+
+                            <AdminTableCell onClick={(e) => e.stopPropagation()}>
+                              <AdminInlineSelect
+                                value={subCat.status}
+                                options={[
+                                  { label: "Active", value: CategoryStatus.ACTIVE },
+                                  { label: "Draft", value: CategoryStatus.DRAFT },
+                                ]}
+                                onChange={(newVal) => handleInlineStatusChange(subCat, newVal)}
+                                variant="badge"
+                                title="Click to change category status"
+                              />
+                            </AdminTableCell>
+
+                            <AdminTableCell>
+                              <span className="text-slate-400 text-xs font-semibold pl-3">—</span>
+                            </AdminTableCell>
+
+                            <AdminTableCell align="right" onClick={(e) => e.stopPropagation()}>
+                              <AdminTableActions>
+                                <AdminActionButton
+                                  variant="view"
+                                  onClick={() => handleView(subCat)}
+                                  title="View Details"
+                                />
+                                <AdminActionButton
+                                  variant="edit"
+                                  onClick={() => handleEdit(subCat)}
+                                  title="Edit Category"
+                                />
+                                <AdminActionButton
+                                  variant="delete"
+                                  onClick={() => handleDeletePrompt(subCat)}
+                                  title="Delete Category"
+                                />
+                              </AdminTableActions>
+                            </AdminTableCell>
+                          </AdminTableRow>
+                        ))}
+                    </React.Fragment>
+                  );
+                });
+              })()}
           </AdminTableBody>
         </AdminTable>
         <AdminTablePagination

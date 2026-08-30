@@ -11,467 +11,6 @@ import { useDetailNav } from "@/lib/detail-nav-context";
 import { categoryCache } from "@/lib/services/category-cache";
 import { CategoryItem, CategoryType, CategoryStatus } from "@/lib/admin-data";
 
-const FALLBACK_CATEGORIES: Record<string, CategoryItem[]> = {
-  [CategoryType.TREKKING]: [
-    {
-      id: "cat-everest",
-      name: "Everest Region",
-      slug: "everest-region",
-      type: CategoryType.TREKKING,
-      description: "",
-      itemCount: 4,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-ebc",
-          name: "Everest Base Camp",
-          slug: "everest-base-camp-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-gokyo",
-          name: "Gokyo Lakes & Cho La",
-          slug: "gokyo-lakes-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
-        },
-        {
-          id: "sub-3passes",
-          name: "Everest Three Passes",
-          slug: "everest-three-passes-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
-        },
-        {
-          id: "sub-panorama",
-          name: "Everest Panorama",
-          slug: "everest-panorama-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-annapurna",
-      name: "Annapurna Region",
-      slug: "annapurna-region",
-      type: CategoryType.TREKKING,
-      description: "",
-      itemCount: 4,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-ann-circuit",
-          name: "Annapurna Circuit",
-          slug: "annapurna-circuit-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
-        },
-        {
-          id: "sub-abc",
-          name: "Annapurna Base Camp",
-          slug: "annapurna-base-camp-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-poonhill",
-          name: "Ghorepani Poon Hill",
-          slug: "ghorepani-poon-hill-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
-        },
-        {
-          id: "sub-mardi",
-          name: "Mardi Himal",
-          slug: "mardi-himal-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-langtang",
-      name: "Langtang Region",
-      slug: "langtang-region",
-      type: CategoryType.TREKKING,
-      description: "",
-      itemCount: 3,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-lang-valley",
-          name: "Langtang Valley",
-          slug: "langtang-valley-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-gosainkunda",
-          name: "Gosainkunda Lakes",
-          slug: "gosainkunda-lake-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
-        },
-        {
-          id: "sub-tamang",
-          name: "Tamang Heritage Trail",
-          slug: "tamang-heritage-trail",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-manaslu",
-      name: "Manaslu Region",
-      slug: "manaslu-region",
-      type: CategoryType.TREKKING,
-      description: "",
-      itemCount: 2,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-manaslu-circuit",
-          name: "Manaslu Circuit",
-          slug: "manaslu-circuit-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-tsum",
-          name: "Tsum Valley",
-          slug: "tsum-valley-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-restricted",
-      name: "Mustang & Restricted",
-      slug: "mustang-restricted",
-      type: CategoryType.TREKKING,
-      description: "",
-      itemCount: 2,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-upper-mustang",
-          name: "Upper Mustang",
-          slug: "upper-mustang-trek",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
-        },
-        {
-          id: "sub-upper-dolpo",
-          name: "Upper Dolpo Circuit",
-          slug: "upper-dolpo-circuit",
-          type: CategoryType.TREKKING,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
-        },
-      ],
-    },
-  ],
-  [CategoryType.TOURS]: [
-    {
-      id: "cat-cultural",
-      name: "Cultural & Heritage",
-      slug: "cultural-heritage",
-      type: CategoryType.TOURS,
-      description: "",
-      itemCount: 3,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-ktm-sightseeing",
-          name: "Kathmandu Valley",
-          slug: "kathmandu-valley-tour",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-bhaktapur",
-          name: "Bhaktapur & Patan",
-          slug: "bhaktapur-patan-tour",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
-        },
-        {
-          id: "sub-nagarkot",
-          name: "Nagarkot Sunrise",
-          slug: "nagarkot-sunrise-tour",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-pokhara",
-      name: "Scenic Lakes & Pokhara",
-      slug: "pokhara-tours",
-      type: CategoryType.TOURS,
-      description: "",
-      itemCount: 2,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-pokhara-highlights",
-          name: "Pokhara City & Lakes",
-          slug: "pokhara-highlights-tour",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
-        },
-        {
-          id: "sub-sarangkot",
-          name: "Sarangkot Sunrise",
-          slug: "sarangkot-sunrise-tour",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-safari",
-      name: "Chitwan Wildlife Safari",
-      slug: "chitwan-safari",
-      type: CategoryType.TOURS,
-      description: "",
-      itemCount: 2,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-chitwan-3d",
-          name: "Chitwan Jungle Safari",
-          slug: "chitwan-jungle-safari-3d",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-bardia",
-          name: "Bardia Tiger Safari",
-          slug: "bardia-tiger-safari",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-lumbini",
-      name: "Lumbini Pilgrimage",
-      slug: "lumbini-tours",
-      type: CategoryType.TOURS,
-      description: "",
-      itemCount: 2,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-buddha-birthplace",
-          name: "Lumbini Sacred Garden",
-          slug: "lumbini-sacred-garden-tour",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-buddhist-circuit",
-          name: "Buddhist Heritage Circuit",
-          slug: "buddhist-heritage-circuit",
-          type: CategoryType.TOURS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
-        },
-      ],
-    },
-  ],
-  [CategoryType.EXPEDITIONS]: [
-    {
-      id: "cat-8000m",
-      name: "8000m Peak Summits",
-      slug: "8000m-peaks",
-      type: CategoryType.EXPEDITIONS,
-      description: "",
-      itemCount: 3,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-everest-exp",
-          name: "Mt. Everest (8,848m)",
-          slug: "everest-expedition",
-          type: CategoryType.EXPEDITIONS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=800",
-        },
-        {
-          id: "sub-lhotse-exp",
-          name: "Mt. Lhotse (8,516m)",
-          slug: "lhotse-expedition",
-          type: CategoryType.EXPEDITIONS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-manaslu-exp",
-          name: "Mt. Manaslu (8,163m)",
-          slug: "manaslu-expedition",
-          type: CategoryType.EXPEDITIONS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-7000m",
-      name: "7000m Technical Peaks",
-      slug: "7000m-peaks",
-      type: CategoryType.EXPEDITIONS,
-      description: "",
-      itemCount: 2,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-baruntse",
-          name: "Mt. Baruntse (7,129m)",
-          slug: "baruntse-expedition",
-          type: CategoryType.EXPEDITIONS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=800",
-        },
-        {
-          id: "sub-himlung",
-          name: "Mt. Himlung Himal (7,126m)",
-          slug: "himlung-himal-expedition",
-          type: CategoryType.EXPEDITIONS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
-        },
-      ],
-    },
-    {
-      id: "cat-6000m",
-      name: "6000m Trekking Peaks",
-      slug: "6000m-peaks",
-      type: CategoryType.EXPEDITIONS,
-      description: "",
-      itemCount: 3,
-      status: CategoryStatus.ACTIVE,
-      children: [
-        {
-          id: "sub-island-peak",
-          name: "Island Peak (6,189m)",
-          slug: "island-peak-climbing",
-          type: CategoryType.EXPEDITIONS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=800",
-        },
-        {
-          id: "sub-mera-peak",
-          name: "Mera Peak (6,476m)",
-          slug: "mera-peak-climbing",
-          type: CategoryType.EXPEDITIONS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
-        },
-        {
-          id: "sub-lobuche",
-          name: "Lobuche East (6,119m)",
-          slug: "lobuche-east-climbing",
-          type: CategoryType.EXPEDITIONS,
-          description: "",
-          itemCount: 1,
-          status: CategoryStatus.ACTIVE,
-          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
-        },
-      ],
-    },
-  ],
-};
-
 export function SiteHeader() {
   const { settings } = useSettings();
   const { detailNav } = useDetailNav();
@@ -544,7 +83,6 @@ export function SiteHeader() {
     }
   }, [showDetailNav, detailNav?.activeTab]);
 
-  // Pre-fetch all Trekking, Tours, and Expeditions categories immediately on page load
   useEffect(() => {
     async function loadAllNavbarCategories() {
       const types = [CategoryType.TREKKING, CategoryType.TOURS, CategoryType.EXPEDITIONS];
@@ -599,6 +137,47 @@ export function SiteHeader() {
     setActiveDropdown(null);
   }, [pathname]);
 
+  // Set default hovered parent category for a dropdown menu tab
+  const handleMouseEnter = (link: NavLink) => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+
+    const catType = link.categoryType || "";
+    if (catType && categoriesMap[catType] && categoriesMap[catType].length > 0) {
+      if (!hoveredCategoryMap[catType]) {
+        const firstParent = categoriesMap[catType][0];
+        setHoveredCategoryMap((prev) => ({
+          ...prev,
+          [catType]: firstParent.id,
+        }));
+      }
+    }
+
+    if (activeDropdown !== link.label) {
+      if (hoverIntentTimerRef.current) clearTimeout(hoverIntentTimerRef.current);
+      hoverIntentTimerRef.current = setTimeout(() => {
+        setActiveDropdown(link.label);
+      }, 50);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverIntentTimerRef.current) {
+      clearTimeout(hoverIntentTimerRef.current);
+      hoverIntentTimerRef.current = null;
+    }
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 150);
+  };
+
+  const toggleMobileExpanded = (label: string) => {
+    setMobileExpanded((prev) => ({ ...prev, [label]: !prev[label] }));
+  };
+
   // Prevent background scroll when mobile navigation is open
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -625,44 +204,6 @@ export function SiteHeader() {
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     };
   }, []);
-
-  // Desktop Hover Handlers
-  const handleMouseEnter = (link: NavLink) => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-
-    const hasDropdown = Boolean(link.categoryType || (link.items && link.items.length > 0));
-
-    if (!hasDropdown) {
-      if (hoverIntentTimerRef.current) {
-        clearTimeout(hoverIntentTimerRef.current);
-        hoverIntentTimerRef.current = null;
-      }
-      setActiveDropdown(null);
-      return;
-    }
-
-    if (hoverIntentTimerRef.current) {
-      clearTimeout(hoverIntentTimerRef.current);
-    }
-
-    hoverIntentTimerRef.current = setTimeout(() => {
-      setActiveDropdown(link.label);
-    }, 40);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverIntentTimerRef.current) {
-      clearTimeout(hoverIntentTimerRef.current);
-      hoverIntentTimerRef.current = null;
-    }
-
-    closeTimerRef.current = setTimeout(() => {
-      setActiveDropdown(null);
-    }, 200);
-  };
 
   const handleDropdownMouseEnter = () => {
     if (closeTimerRef.current) {
@@ -823,7 +364,7 @@ export function SiteHeader() {
                 const isDropdownOpen = activeDropdown === link.label && hasDropdown;
                 const catType = link.categoryType || "";
                 const fetched = categoriesMap[catType];
-                const categories = (fetched && fetched.length > 0) ? fetched : (FALLBACK_CATEGORIES[catType] || []);
+                const categories = fetched || [];
                 const isLoading = !!loadingMap[catType] && categories.length === 0;
 
                 return (
@@ -1090,10 +631,7 @@ export function SiteHeader() {
                   const isExpanded = !!mobileExpanded[link.label];
                   const catType = link.categoryType || "";
                   const fetched = categoriesMap[catType];
-                  const categories =
-                    fetched && fetched.length > 0
-                      ? fetched
-                      : FALLBACK_CATEGORIES[catType] || [];
+                  const categories = fetched || [];
                   const isLoading = !!loadingMap[catType] && categories.length === 0;
 
                   return (

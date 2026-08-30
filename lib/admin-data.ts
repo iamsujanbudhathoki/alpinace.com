@@ -16,17 +16,13 @@ export enum PackageSortOption {
   DURATION = "duration",
 }
 
+import { COUNTRY_LIST } from "./country-list";
+
 export const FILTER_ALL = "All";
 
-export const PACKAGE_COUNTRIES = [
-  "Nepal",
-  "Tibet",
-  "Bhutan",
-  "India",
-  "Pakistan",
-] as const;
+export const PACKAGE_COUNTRIES = COUNTRY_LIST.map((c) => c.name);
 
-export type PackageCountry = (typeof PACKAGE_COUNTRIES)[number] | string;
+export type PackageCountry = string;
 
 export enum TripDifficulty {
   EASY = "easy",

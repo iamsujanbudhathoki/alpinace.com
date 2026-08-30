@@ -105,13 +105,24 @@ export const CategoryService = {
     }
   },
 
-  async getAll(params?: { type?: CategoryType | string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<CategoryItem>> {
+  async getAll(params?: {
+    status?: CategoryStatus | string;
+    showInMenu?: boolean;
+    type?: CategoryType | string;
+    search?: string;
+    limit?: number;
+    page?: number;
+    parentsOnly?: boolean;
+  }): Promise<PaginatedList<CategoryItem>> {
     try {
       const query = new URLSearchParams();
+      if (params?.status && params.status !== "All") query.set("status", params.status);
+      if (params?.showInMenu !== undefined) query.set("showInMenu", String(params.showInMenu));
       if (params?.type && params.type !== "All") query.set("type", params.type);
       if (params?.search && params.search.trim()) query.set("search", params.search.trim());
       if (params?.limit) query.set("limit", String(params.limit));
       if (params?.page) query.set("page", String(params.page));
+      if (params?.parentsOnly) query.set("parentsOnly", "true");
       const q = query.toString() ? `?${query.toString()}` : "";
 
       const res = await apiClient.get<CategoryItem[]>(`/admin/categories${q}`);

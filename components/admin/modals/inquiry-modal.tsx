@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send, Mail, Phone, Globe, Loader2 } from "lucide-react";
 import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
 import { inquirySchema, InquiryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
+import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
@@ -27,6 +28,7 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<InquiryFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -184,15 +186,19 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
             {...register("phone")}
           />
 
-          <AdminSelectField
-            label="Country of Residence"
-            required
-            options={[
-              { label: "Select Country...", value: "" },
-              ...COUNTRY_OPTIONS,
-            ]}
-            error={errors.country?.message}
-            {...register("country")}
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+              <AdminCountrySelect
+                label="Country of Residence"
+                required
+                value={field.value}
+                onChange={field.onChange}
+                error={errors.country?.message}
+                placeholder="Select or search country..."
+              />
+            )}
           />
 
           <AdminSelectField

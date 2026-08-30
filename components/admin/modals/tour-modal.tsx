@@ -6,6 +6,7 @@ import {
   AdminTextareaField,
 } from "@/components/admin/forms/admin-form-fields";
 import { AdminSearchableSelect } from "@/components/admin/forms/admin-searchable-select";
+import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import {
   TripFaqItem,
@@ -558,12 +559,12 @@ export function TourFormModal({
                 </div>
 
                 <div className="sm:col-span-1">
-                  <AdminSelectField
+                  <AdminCountrySelect
                     label="Country"
                     required
+                    value={watch("country") || ""}
+                    onChange={(val) => setValue("country", val, { shouldValidate: true })}
                     error={errors.country?.message}
-                    options={PACKAGE_COUNTRIES.map((c) => ({ label: c, value: c }))}
-                    {...register("country")}
                   />
                 </div>
 

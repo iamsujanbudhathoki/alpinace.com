@@ -56,13 +56,13 @@ export default function CategoryMenuOrderingPage() {
   const loadCategoryMenuStructure = async () => {
     setLoading(true);
     try {
-      const res = await CategoryService.getAll({ limit: 100 });
-      const allCategories = Array.isArray(res) ? res : [];
-
-      // Filter ONLY categories where showInMenu !== false and status === ACTIVE
-      const activeMenuCategories = allCategories.filter(
-        (c) => c.status === CategoryStatus.ACTIVE && c.showInMenu !== false
-      );
+      // Backend handles ACTIVE status and showInMenu filtering safely
+      const res = await CategoryService.getAll({
+        status: CategoryStatus.ACTIVE,
+        showInMenu: true,
+        limit: 100,
+      });
+      const activeMenuCategories = Array.isArray(res) ? res : [];
 
       // Separate into parents and subcategories
       const parents = activeMenuCategories

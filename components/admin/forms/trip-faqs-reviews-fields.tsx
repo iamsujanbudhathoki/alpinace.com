@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MediaService } from "@/lib/services/admin-service";
+import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
 import { toast } from "sonner";
 
 export interface TripFaqItem {
@@ -463,15 +464,11 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    Guest Country / City
-                  </label>
-                  <Input
-                    type="text"
-                    value={rev.country}
-                    onChange={(e) => handleUpdateReview(index, "country", e.target.value)}
-                    placeholder="e.g. United States"
-                    className="text-xs bg-slate-50 border-slate-200 focus:bg-white rounded-lg h-8"
+                  <AdminCountrySelect
+                    label="Guest Country"
+                    value={rev.country || ""}
+                    onChange={(val) => handleUpdateReview(index, "country", val)}
+                    placeholder="Select guest country..."
                   />
                 </div>
 

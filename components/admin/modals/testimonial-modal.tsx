@@ -7,6 +7,7 @@ import { Loader2, Save, Star } from "lucide-react";
 import { TestimonialItem, TestimonialFormValues, adminTestimonialsApi } from "@/lib/services/admin-service";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
+import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
 import { toast } from "sonner";
 
 interface TestimonialModalProps {
@@ -180,12 +181,11 @@ export function TestimonialModal({
             placeholder="e.g. Expedition Member"
           />
 
-          <AdminInputField
+          <AdminCountrySelect
             label="Country / Origin"
-            type="text"
             value={formData.country || ""}
-            onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-            placeholder="e.g. United States"
+            onChange={(val) => setFormData({ ...formData, country: val })}
+            placeholder="Select or search country..."
           />
         </div>
 

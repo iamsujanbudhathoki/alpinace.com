@@ -264,11 +264,19 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const isMenuVisible = (val: any) => val === true || val === 1 || val === "true" || val === undefined;
+
   const handleToggleMenuVisibility = async (cat: CategoryItem) => {
-    const newShowInMenu = cat.showInMenu === false ? true : false;
+    const currentVisible = isMenuVisible(cat.showInMenu);
+    const newShowInMenu = !currentVisible;
+
     setCategories((prev) =>
       prev.map((c) => (c.id === cat.id ? { ...c, showInMenu: newShowInMenu } : c))
     );
+    setAllCategoriesForStats((prev) =>
+      prev.map((c) => (c.id === cat.id ? { ...c, showInMenu: newShowInMenu } : c))
+    );
+
     try {
       const res = await CategoryService.update(cat.id, { showInMenu: newShowInMenu });
       if (res.success) {
@@ -276,13 +284,14 @@ export default function AdminCategoriesPage() {
         toast.success(
           `"${cat.name}" menu visibility set to ${newShowInMenu ? "ON" : "OFF"}.`
         );
+        await Promise.all([loadCategories(), loadStats()]);
       } else {
         toast.error(res.message || "Failed to update menu visibility");
-        loadCategories();
+        await Promise.all([loadCategories(), loadStats()]);
       }
     } catch (err: any) {
       toast.error("Failed to update menu visibility");
-      loadCategories();
+      await Promise.all([loadCategories(), loadStats()]);
     }
   };
 
@@ -579,13 +588,13 @@ export default function AdminCategoriesPage() {
                             type="button"
                             onClick={() => handleToggleMenuVisibility(parentCat)}
                             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
-                              parentCat.showInMenu !== false
+                              isMenuVisible(parentCat.showInMenu)
                                 ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
                                 : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
                             }`}
                             title="Click to toggle marketing navbar visibility"
                           >
-                            {parentCat.showInMenu !== false ? (
+                            {isMenuVisible(parentCat.showInMenu) ? (
                               <>
                                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                                 <span>ON</span>

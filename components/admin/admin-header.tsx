@@ -186,13 +186,13 @@ export function AdminHeader({
         <button
           type="button"
           onClick={() => setIsSearchModalOpen(true)}
-          className="w-full bg-slate-50 hover:bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 text-xs rounded-lg pl-3 pr-2.5 py-1.5 flex items-center justify-between transition-all cursor-pointer font-medium group"
+          className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-950 text-xs rounded-lg pl-3 pr-2.5 py-1.5 flex items-center justify-between transition-all cursor-pointer font-medium group"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
-            <span className="truncate">Search packages, bookings, guides (⌘K)...</span>
+            <Search className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-800 transition-colors shrink-0" />
+            <span className="truncate text-slate-700 font-medium">Search packages, bookings, guides (⌘K)...</span>
           </div>
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-400 border border-slate-200 bg-white px-1.5 py-0.5 rounded shrink-0 select-none">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-600 border border-slate-300 bg-white px-1.5 py-0.5 rounded shrink-0 select-none">
             ⌘K
           </kbd>
         </button>

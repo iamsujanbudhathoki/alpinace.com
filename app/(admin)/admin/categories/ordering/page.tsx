@@ -15,9 +15,6 @@ import {
   Mountain,
   Compass,
   MapPin,
-  BookOpen,
-  Image as ImageIcon,
-  Layers,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
@@ -30,13 +27,10 @@ interface ExtendedCategoryItem extends CategoryItem {
   subItems?: ExtendedCategoryItem[];
 }
 
-const DOMAIN_TABS = [
-  { label: "All Domains", value: "All", icon: Layers },
+const MARKETING_DOMAINS = [
   { label: "Trekking", value: CategoryType.TREKKING, icon: Mountain },
   { label: "Tours", value: CategoryType.TOURS, icon: Compass },
   { label: "Expeditions", value: CategoryType.EXPEDITIONS, icon: MapPin },
-  { label: "Blogs", value: CategoryType.BLOGS, icon: BookOpen },
-  { label: "Media", value: CategoryType.MEDIA, icon: ImageIcon },
 ];
 
 export default function CategoryMenuOrderingPage() {
@@ -45,7 +39,7 @@ export default function CategoryMenuOrderingPage() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [parentCategories, setParentCategories] = useState<ExtendedCategoryItem[]>([]);
   const [expandedParentId, setExpandedParentId] = useState<string | null>(null);
-  const [selectedDomain, setSelectedDomain] = useState<string>("All");
+  const [selectedDomain, setSelectedDomain] = useState<CategoryType>(CategoryType.TREKKING);
 
   // Drag & Drop State for Top-Level Parent Categories (FAQ-style)
   const [draggedParentIndex, setDraggedParentIndex] = useState<number | null>(null);
@@ -92,7 +86,10 @@ export default function CategoryMenuOrderingPage() {
       }));
 
       setParentCategories(structured);
-      if (structured.length > 0 && !expandedParentId) {
+      const defaultTrek = structured.find((p) => p.type === CategoryType.TREKKING);
+      if (defaultTrek) {
+        setExpandedParentId(defaultTrek.id);
+      } else if (structured.length > 0) {
         setExpandedParentId(structured[0].id);
       }
     } catch (err) {
@@ -103,10 +100,8 @@ export default function CategoryMenuOrderingPage() {
     }
   };
 
-  // Filter top-level parents by selected domain
-  const filteredParents = parentCategories.filter(
-    (p) => selectedDomain === "All" || p.type === selectedDomain
-  );
+  // Filter top-level parents by active target domain
+  const filteredParents = parentCategories.filter((p) => p.type === selectedDomain);
 
   // Helper to swap parents by ID within main array
   const swapParentsById = (sourceId: string, targetId: string) => {
@@ -232,20 +227,25 @@ export default function CategoryMenuOrderingPage() {
     setDragOverSubIndex(null);
   };
 
-  // Save Configured Menu Order to Backend
+  // Save Configured Menu Order per Target Domain to Backend
   const handleSaveMenuOrder = async () => {
     setSaving(true);
     try {
       const itemsToUpdate: { id: string; menuOrder: number }[] = [];
+      const domainTypes = [CategoryType.TREKKING, CategoryType.TOURS, CategoryType.EXPEDITIONS];
 
-      parentCategories.forEach((parent, parentIdx) => {
-        itemsToUpdate.push({ id: parent.id, menuOrder: parentIdx + 1 });
+      // Assign 1-indexed menuOrder within each domain tab independently
+      domainTypes.forEach((domain) => {
+        const domainParents = parentCategories.filter((p) => p.type === domain);
+        domainParents.forEach((parent, parentIdx) => {
+          itemsToUpdate.push({ id: parent.id, menuOrder: parentIdx + 1 });
 
-        if (parent.subItems && parent.subItems.length > 0) {
-          parent.subItems.forEach((sub, subIdx) => {
-            itemsToUpdate.push({ id: sub.id, menuOrder: subIdx + 1 });
-          });
-        }
+          if (parent.subItems && parent.subItems.length > 0) {
+            parent.subItems.forEach((sub, subIdx) => {
+              itemsToUpdate.push({ id: sub.id, menuOrder: subIdx + 1 });
+            });
+          }
+        });
       });
 
       const res = await CategoryService.reorder(itemsToUpdate);
@@ -253,7 +253,7 @@ export default function CategoryMenuOrderingPage() {
         categoryCache.clear();
         setSavedSuccess(true);
         setTimeout(() => setSavedSuccess(false), 4000);
-        toast.success("Marketing menu order saved and updated successfully!");
+        toast.success("Marketing navbar menu order saved successfully!");
       } else {
         toast.error(res.message || "Failed to save menu order.");
       }
@@ -279,7 +279,7 @@ export default function CategoryMenuOrderingPage() {
       {/* Page Header */}
       <AdminPageHeader
         title="Marketing Menu Ordering"
-        description="Organize the exact display sequence of menu-visible categories and subcategories using drag-and-drop."
+        description="Organize the display sequence of Trekking, Tours, and Expeditions categories for the website header."
       >
         <Link href="/admin/categories">
           <Button variant="outline" size="sm" className="text-slate-700 border-slate-300 font-semibold text-xs">
@@ -305,7 +305,7 @@ export default function CategoryMenuOrderingPage() {
         <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center gap-2.5">
           <Check className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>
-            Marketing menu category order saved successfully! The marketing navbar is now updated.
+            Marketing menu category order saved successfully! The website header navigation is updated.
           </span>
         </div>
       )}
@@ -315,27 +315,23 @@ export default function CategoryMenuOrderingPage() {
         <Info className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <p className="font-bold text-slate-900">
-            Drag &amp; Drop Category Sequence &amp; Visibility Rule
+            Target Domain Menu Sequence Rule
           </p>
           <p className="text-slate-700 leading-relaxed font-normal">
-            Only categories with <span className="font-semibold text-emerald-700">Show on Menu = ON</span> appear in this menu builder. Use target domain tabs below to isolate categories by category type. Drag the handle <GripVertical className="w-3.5 h-3.5 inline text-slate-400" /> or use up/down arrows to arrange sequence. Click <strong>Save Menu Order</strong> to publish changes.
+            Select a target domain tab (<strong>Trekking</strong>, <strong>Tours</strong>, or <strong>Expeditions</strong>) to configure its dropdown menu sequence. Category ordering starts from #1 for each domain independently. Drag the handle <GripVertical className="w-3.5 h-3.5 inline text-slate-400" /> or use up/down arrows, then click <strong>Save Menu Order</strong>.
           </p>
         </div>
       </div>
 
-      {/* Target Domain Filter Tabs */}
-      <div className="bg-white p-3 rounded-lg border border-slate-200 flex flex-wrap items-center gap-2">
-        <span className="text-xs font-bold text-slate-900 mr-2 flex items-center gap-1.5">
-          <Layers className="w-4 h-4 text-slate-700" />
-          <span>Target Domain Filter:</span>
+      {/* Target Domain Navigation Tabs (Trekking, Tours, Expeditions) */}
+      <div className="bg-white p-3 rounded-lg border border-slate-200 flex flex-wrap items-center gap-2.5">
+        <span className="text-xs font-bold text-slate-900 mr-2 uppercase tracking-wider text-[11px]">
+          Target Domain:
         </span>
-        {DOMAIN_TABS.map((tab) => {
+        {MARKETING_DOMAINS.map((tab) => {
           const isActive = selectedDomain === tab.value;
           const Icon = tab.icon;
-          const count =
-            tab.value === "All"
-              ? parentCategories.length
-              : parentCategories.filter((p) => p.type === tab.value).length;
+          const count = parentCategories.filter((p) => p.type === tab.value).length;
 
           return (
             <button
@@ -343,21 +339,19 @@ export default function CategoryMenuOrderingPage() {
               type="button"
               onClick={() => {
                 setSelectedDomain(tab.value);
-                const firstMatch = parentCategories.find(
-                  (p) => tab.value === "All" || p.type === tab.value
-                );
+                const firstMatch = parentCategories.find((p) => p.type === tab.value);
                 if (firstMatch) setExpandedParentId(firstMatch.id);
               }}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
+              className={`px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2 cursor-pointer border ${
                 isActive
-                  ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                  ? "bg-slate-900 text-white border-slate-900 shadow-sm"
                   : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : "text-slate-500"}`} />
+              <Icon className={`w-4 h-4 ${isActive ? "text-amber-400" : "text-slate-500"}`} />
               <span>{tab.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
                   isActive ? "bg-white/20 text-white" : "bg-slate-200 text-slate-800"
                 }`}
               >
@@ -368,26 +362,26 @@ export default function CategoryMenuOrderingPage() {
         })}
       </div>
 
-      {/* Main Grid: Left = Parent Category Sequence, Right = Selected Parent Subcategories */}
+      {/* Main Grid: Left = Parent Category Sequence for Selected Domain, Right = Selected Parent Subcategories */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Top-Level Menu Categories (7 cols) */}
+        {/* Left Column: Top-Level Menu Categories for Selected Domain (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
           <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                   <FolderTree className="w-4 h-4 text-slate-700" />
-                  <span>
-                    {selectedDomain === "All" ? "Main Navbar Categories" : `${selectedDomain.toUpperCase()} Categories`} ({filteredParents.length})
-                  </span>
+                  <span className="capitalize">{selectedDomain} Categories ({filteredParents.length})</span>
                 </h2>
-                <p className="text-xs text-slate-700 font-normal">Top-level navbar items</p>
+                <p className="text-xs text-slate-700 font-normal">
+                  Ordered display sequence in the {selectedDomain} dropdown menu
+                </p>
               </div>
             </div>
 
             {filteredParents.length === 0 ? (
               <div className="text-center py-10 text-xs text-slate-500 font-medium border border-dashed border-slate-200 rounded-md">
-                No active categories found under target domain <span className="font-bold">"{selectedDomain}"</span> with <span className="font-bold">Show on Menu = ON</span>.
+                No active categories found under <span className="font-bold uppercase">"{selectedDomain}"</span> with <span className="font-bold">Show on Menu = ON</span>. Go to <Link href="/admin/categories" className="text-slate-900 underline font-semibold">All Categories</Link> to toggle menu visibility ON.
               </div>
             ) : (
               <div className="space-y-2">
@@ -442,7 +436,7 @@ export default function CategoryMenuOrderingPage() {
                               </span>
                             </div>
                             <div className={`text-[11px] font-normal truncate ${isExpanded ? "text-slate-300" : "text-slate-600"}`}>
-                              /{parent.slug} • Domain: <span className="font-semibold uppercase">{parent.type}</span>
+                              /{parent.slug}
                             </div>
                           </div>
                         </div>

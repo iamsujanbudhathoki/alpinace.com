@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import {
   AdminTableContainer,
@@ -91,6 +92,23 @@ export default function AdminTestimonialsPage() {
   useEffect(() => {
     fetchTestimonials();
   }, [fetchTestimonials]);
+
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
+
+  // Auto-open modal when targetId is in query params & remove targetId from URL
+  useEffect(() => {
+    if (targetId && items.length > 0) {
+      const match = items.find((t) => t.id === targetId);
+      if (match) {
+        setViewingItem(match);
+        setViewModalOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [targetId, items]);
 
   const handleOpenCreateModal = () => {
     setEditingItem(null);

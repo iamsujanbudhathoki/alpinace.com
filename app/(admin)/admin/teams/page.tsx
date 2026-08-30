@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import {
   AdminTableContainer,
@@ -89,6 +90,23 @@ export default function AdminTeamsPage() {
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
+
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
+
+  // Auto-open modal when targetId is in query params & remove targetId from URL
+  useEffect(() => {
+    if (targetId && members.length > 0) {
+      const match = members.find((m) => m.id === targetId);
+      if (match) {
+        setViewingMember(match);
+        setViewModalOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [targetId, members]);
 
   const handleOpenCreateModal = () => {
     setEditingMember(null);

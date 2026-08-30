@@ -1475,5 +1475,37 @@ export const AboutUsService = {
   },
 };
 
+export interface AdminSearchResultItem {
+  id: string;
+  type: 'trek' | 'tour' | 'expedition' | 'category' | 'booking' | 'inquiry' | 'blog' | 'testimonial' | 'team' | 'faq' | 'media';
+  typeLabel: string;
+  title: string;
+  subtitle: string;
+  route: string;
+}
+
+export interface AdminSearchResponse {
+  query: string;
+  totalResults: number;
+  results: AdminSearchResultItem[];
+}
+
+export const AdminSearchService = {
+  async globalSearch(query: string): Promise<AdminSearchResponse> {
+    if (!query || query.trim().length < 2) {
+      return { query: "", totalResults: 0, results: [] };
+    }
+    try {
+      const res = await apiClient.get<AdminSearchResponse>(
+        `/admin/search?q=${encodeURIComponent(query.trim())}`
+      );
+      return res?.data || { query: query.trim(), totalResults: 0, results: [] };
+    } catch (e) {
+      console.warn("Global search error:", e);
+      return { query: query.trim(), totalResults: 0, results: [] };
+    }
+  },
+};
+
 
 

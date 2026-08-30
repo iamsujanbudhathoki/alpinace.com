@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Download, Plus, Tag, ExternalLink } from "lucide-react";
 import { Booking, BookingStatus, BookingPackageType, BookingPaymentStatus, PackageItem } from "@/lib/admin-data";
@@ -131,9 +132,23 @@ export default function AdminBookingsPage() {
     }
   };
 
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
+
+  // Auto-open modal when targetId is in query params & remove targetId from URL
   useEffect(() => {
-    loadBookings();
-  }, [debouncedSearch, selectedStatus, selectedType, page, limit]);
+    if (targetId && bookings.length > 0) {
+      const match = bookings.find((b) => b.id === targetId || b.reference === targetId);
+      if (match) {
+        setActiveBooking(match);
+        setIsEditing(false);
+        setIsFormOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [targetId, bookings]);
 
   const getPackageLink = (bkg: Booking) => {
     if (bkg.packageType === BookingPackageType.TREKKING) {

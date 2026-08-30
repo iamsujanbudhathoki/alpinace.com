@@ -35,6 +35,7 @@ import {
   X
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 const STATUS_OPTIONS: InlineSelectOption[] = [
@@ -127,6 +128,29 @@ export default function AdminFaqsPage() {
   useEffect(() => {
     loadFaqs();
   }, [debouncedSearch, categoryFilter, page, limit]);
+
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
+
+  // Auto-open modal when targetId is in query params & remove targetId from URL
+  useEffect(() => {
+    if (targetId && (faqs.length > 0 || allFaqsForCategories.length > 0)) {
+      const list = faqs.length > 0 ? faqs : allFaqsForCategories;
+      const match = list.find((f) => f.id === targetId);
+      if (match) {
+        setEditingFaq(match);
+        setQuestion(match.question);
+        setAnswer(match.answer);
+        setCategory(match.category || "General");
+        setStatus(match.status);
+        setOrder(match.order || 0);
+        setModalOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [targetId, faqs, allFaqsForCategories]);
 
   const handleInlineStatusChange = async (faq: FaqItem, newStatus: string): Promise<boolean> => {
     try {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Plus, Trash2, Eye, Mail, MessageSquare } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
@@ -78,9 +79,22 @@ export default function AdminInquiriesPage() {
     }
   };
 
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
+
+  // Auto-open modal when targetId is in query params & remove targetId from URL
   useEffect(() => {
-    loadInquiries();
-  }, [debouncedSearch, statusFilter, typeFilter, page, limit]);
+    if (targetId && inquiries.length > 0) {
+      const match = inquiries.find((i) => i.id === targetId);
+      if (match) {
+        setActiveInquiry(match);
+        setIsFormOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [targetId, inquiries]);
 
   const handleUpdateStatus = async (id: string, newStatus: InquiryStatus): Promise<boolean> => {
     try {

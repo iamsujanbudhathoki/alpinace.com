@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon, GitMerge, Maximize2, Check, X, ChevronRight, ChevronDown, CornerDownRight } from "lucide-react";
 import { toast } from "sonner";
 import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
@@ -120,6 +121,25 @@ export default function AdminCategoriesPage() {
       setIsLoading(false);
     }
   };
+
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
+
+  // Auto-open modal when targetId is in query params & remove targetId from URL
+  useEffect(() => {
+    if (targetId && (categories.length > 0 || allCategoriesForStats.length > 0)) {
+      const list = categories.length > 0 ? categories : allCategoriesForStats;
+      const match = list.find((c) => c.id === targetId || c.slug === targetId);
+      if (match) {
+        setActiveCategory(match);
+        setIsEditing(false);
+        setIsFormModalOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [targetId, categories, allCategoriesForStats]);
 
   useEffect(() => {
     loadCategories();

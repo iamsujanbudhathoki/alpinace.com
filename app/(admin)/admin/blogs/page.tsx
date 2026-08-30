@@ -26,6 +26,7 @@ import { openSingleImage } from "@/lib/utils/lightbox";
 import { Calendar, Eye, Image as ImageIcon, Plus, ExternalLink, Maximize2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 const STATUS_OPTIONS: InlineSelectOption[] = [
@@ -104,9 +105,22 @@ export default function AdminBlogsPage() {
     }
   };
 
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
+
+  // Auto-open modal when targetId is in query params & remove targetId from URL
   useEffect(() => {
-    loadArticles();
-  }, [debouncedSearch, page, limit]);
+    if (targetId && articles.length > 0) {
+      const match = articles.find((a) => a.id === targetId || a.slug === targetId);
+      if (match) {
+        setActiveArticle(match);
+        setIsViewModalOpen(true);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [targetId, articles]);
 
   const handleViewArticle = (article: BlogArticle) => {
     setActiveArticle(article);

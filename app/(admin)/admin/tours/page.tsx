@@ -38,7 +38,7 @@ const STATUS_OPTIONS: InlineSelectOption[] = [
 
 export default function AdminToursPage() {
   const searchParams = useSearchParams();
-  const viewId = searchParams?.get("viewId");
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
 
   const [tours, setTours] = useState<PackageItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -114,10 +114,10 @@ export default function AdminToursPage() {
     loadTours();
   }, [debouncedSearch, statusFilter, page, limit]);
 
-  // Auto-open view modal when viewId is in query params & remove viewId from URL
+  // Auto-open modal when targetId is in query params & remove targetId from URL
   useEffect(() => {
-    if (viewId && tours.length > 0) {
-      const match = tours.find((t) => t.id === viewId || t.slug === viewId);
+    if (targetId && tours.length > 0) {
+      const match = tours.find((t) => t.id === targetId || t.slug === targetId);
       if (match) {
         setActiveTour(match);
         setIsEditing(false);
@@ -127,7 +127,7 @@ export default function AdminToursPage() {
         }
       }
     }
-  }, [viewId, tours]);
+  }, [targetId, tours]);
 
   const categoryOptions: InlineSelectOption[] = categories.map((c) => ({
     value: c.id,

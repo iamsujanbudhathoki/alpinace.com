@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, FolderOpen, Tag, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
-import { openLightbox } from "@/lib/utils/lightbox";
+import { openLightbox, openSingleImage } from "@/lib/utils/lightbox";
 
 interface MediaAsset {
   id: string;
@@ -121,6 +122,28 @@ export default function AdminMediaPage() {
     loadCategories();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
+
+  // Auto-open modal when targetId is in query params & remove targetId from URL
+  useEffect(() => {
+    if (targetId && (assets.length > 0 || allAssetsForStats.length > 0)) {
+      const list = assets.length > 0 ? assets : allAssetsForStats;
+      const match = list.find((a) => a.id === targetId);
+      if (match) {
+        if (match.url) {
+          openSingleImage(match.url, match.title);
+        } else {
+          setActiveAsset(match);
+          setIsEditModalOpen(true);
+        }
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+  }, [targetId, assets, allAssetsForStats]);
 
   // Debounce search query
   useEffect(() => {

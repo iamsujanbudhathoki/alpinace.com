@@ -39,7 +39,7 @@ const STATUS_OPTIONS: InlineSelectOption[] = [
 
 export default function AdminTreksPage() {
   const searchParams = useSearchParams();
-  const viewId = searchParams?.get("viewId");
+  const targetId = searchParams?.get("id") || searchParams?.get("viewId");
 
   const [treks, setTreks] = useState<TrekItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -115,10 +115,10 @@ export default function AdminTreksPage() {
     loadTreks();
   }, [debouncedSearch, selectedDifficulty, page, limit]);
 
-  // Auto-open view modal when viewId is in query params & remove viewId from URL
+  // Auto-open modal when targetId is in query params & remove targetId from URL
   useEffect(() => {
-    if (viewId && treks.length > 0) {
-      const match = treks.find((t) => t.id === viewId || t.slug === viewId);
+    if (targetId && treks.length > 0) {
+      const match = treks.find((t) => t.id === targetId || t.slug === targetId);
       if (match) {
         setActiveTrek(match);
         setIsEditing(false);
@@ -128,7 +128,7 @@ export default function AdminTreksPage() {
         }
       }
     }
-  }, [viewId, treks]);
+  }, [targetId, treks]);
 
   const categoryOptions: InlineSelectOption[] = categories.map((c) => ({
     value: c.id,

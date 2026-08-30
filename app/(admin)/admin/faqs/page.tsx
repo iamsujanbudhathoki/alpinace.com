@@ -64,8 +64,10 @@ export default function AdminFaqsPage() {
 
   // Modal States
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState<FaqItem | null>(null);
+  const [viewingFaq, setViewingFaq] = useState<FaqItem | null>(null);
   const [deletingFaq, setDeletingFaq] = useState<FaqItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -138,13 +140,8 @@ export default function AdminFaqsPage() {
       const list = faqs.length > 0 ? faqs : allFaqsForCategories;
       const match = list.find((f) => f.id === targetId);
       if (match) {
-        setEditingFaq(match);
-        setQuestion(match.question);
-        setAnswer(match.answer);
-        setCategory(match.category || "General");
-        setStatus(match.status);
-        setOrder(match.order || 0);
-        setModalOpen(true);
+        setViewingFaq(match);
+        setViewModalOpen(true);
         if (typeof window !== "undefined") {
           window.history.replaceState(null, "", window.location.pathname);
         }
@@ -482,6 +479,14 @@ export default function AdminFaqsPage() {
                     <AdminTableCell className="text-right">
                       <AdminTableActions>
                         <AdminActionButton
+                          variant="view"
+                          onClick={() => {
+                            setViewingFaq(faq);
+                            setViewModalOpen(true);
+                          }}
+                          title="View FAQ Details"
+                        />
+                        <AdminActionButton
                           variant="edit"
                           onClick={() => openEditModal(faq)}
                           title="Edit FAQ"
@@ -628,6 +633,85 @@ export default function AdminFaqsPage() {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* FAQ Detail View Modal */}
+      {viewModalOpen && viewingFaq && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 max-w-xl w-full shadow-2xl space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <h3 className="font-heading text-base font-bold text-slate-900 flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-amber-500" />
+                <span>FAQ Details</span>
+              </h3>
+              <button
+                onClick={() => { setViewModalOpen(false); setViewingFaq(null); }}
+                className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div>
+                <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Question
+                </span>
+                <p className="text-slate-900 font-bold text-sm leading-snug">
+                  {viewingFaq.question}
+                </p>
+              </div>
+
+              <div>
+                <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Answer
+                </span>
+                <p className="text-slate-700 font-normal leading-relaxed whitespace-pre-wrap bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  {viewingFaq.answer}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+                    Category
+                  </span>
+                  <span className="font-semibold text-slate-900">{viewingFaq.category || "General"}</span>
+                </div>
+
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+                    Status
+                  </span>
+                  <span className="font-semibold text-slate-900 capitalize">{viewingFaq.status}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+              <Button
+                type="button"
+                onClick={() => {
+                  const faqToEdit = viewingFaq;
+                  setViewModalOpen(false);
+                  setViewingFaq(null);
+                  openEditModal(faqToEdit);
+                }}
+                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 rounded-xl cursor-pointer shadow-xs"
+              >
+                Edit FAQ
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => { setViewModalOpen(false); setViewingFaq(null); }}
+                className="text-xs font-semibold rounded-xl cursor-pointer"
+              >
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       )}

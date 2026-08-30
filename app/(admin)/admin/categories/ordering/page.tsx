@@ -12,9 +12,15 @@ import {
   FolderTree,
   Info,
   GitMerge,
+  Mountain,
+  Compass,
+  MapPin,
+  BookOpen,
+  Image as ImageIcon,
+  Layers,
 } from "lucide-react";
 import { toast } from "sonner";
-import { CategoryItem, CategoryStatus } from "@/lib/admin-data";
+import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
 import { categoryCache } from "@/lib/services/category-cache";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
@@ -24,12 +30,22 @@ interface ExtendedCategoryItem extends CategoryItem {
   subItems?: ExtendedCategoryItem[];
 }
 
+const DOMAIN_TABS = [
+  { label: "All Domains", value: "All", icon: Layers },
+  { label: "Trekking", value: CategoryType.TREKKING, icon: Mountain },
+  { label: "Tours", value: CategoryType.TOURS, icon: Compass },
+  { label: "Expeditions", value: CategoryType.EXPEDITIONS, icon: MapPin },
+  { label: "Blogs", value: CategoryType.BLOGS, icon: BookOpen },
+  { label: "Media", value: CategoryType.MEDIA, icon: ImageIcon },
+];
+
 export default function CategoryMenuOrderingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [parentCategories, setParentCategories] = useState<ExtendedCategoryItem[]>([]);
   const [expandedParentId, setExpandedParentId] = useState<string | null>(null);
+  const [selectedDomain, setSelectedDomain] = useState<string>("All");
 
   // Drag & Drop State for Top-Level Parent Categories (FAQ-style)
   const [draggedParentIndex, setDraggedParentIndex] = useState<number | null>(null);
@@ -87,17 +103,36 @@ export default function CategoryMenuOrderingPage() {
     }
   };
 
+  // Filter top-level parents by selected domain
+  const filteredParents = parentCategories.filter(
+    (p) => selectedDomain === "All" || p.type === selectedDomain
+  );
+
+  // Helper to swap parents by ID within main array
+  const swapParentsById = (sourceId: string, targetId: string) => {
+    setParentCategories((prev) => {
+      const sourceIdx = prev.findIndex((p) => p.id === sourceId);
+      const targetIdx = prev.findIndex((p) => p.id === targetId);
+      if (sourceIdx === -1 || targetIdx === -1) return prev;
+
+      const newParents = [...prev];
+      const temp = newParents[sourceIdx];
+      newParents[sourceIdx] = newParents[targetIdx];
+      newParents[targetIdx] = temp;
+      return newParents;
+    });
+  };
+
   // Reorder Top-Level Parent Categories (Arrow Buttons)
-  const moveParent = (index: number, direction: "up" | "down") => {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= parentCategories.length) return;
+  const moveParent = (filteredIdx: number, direction: "up" | "down") => {
+    const targetFilteredIdx = direction === "up" ? filteredIdx - 1 : filteredIdx + 1;
+    if (targetFilteredIdx < 0 || targetFilteredIdx >= filteredParents.length) return;
 
-    const newParents = [...parentCategories];
-    const temp = newParents[index];
-    newParents[index] = newParents[targetIndex];
-    newParents[targetIndex] = temp;
-
-    setParentCategories(newParents);
+    const sourceItem = filteredParents[filteredIdx];
+    const targetItem = filteredParents[targetFilteredIdx];
+    if (sourceItem && targetItem) {
+      swapParentsById(sourceItem.id, targetItem.id);
+    }
   };
 
   // Reorder Subcategories within a Parent (Arrow Buttons)
@@ -120,31 +155,32 @@ export default function CategoryMenuOrderingPage() {
   };
 
   // HTML5 Drag & Drop Handlers for Parent Categories (FAQ-style)
-  const handleParentDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedParentIndex(index);
+  const handleParentDragStart = (e: React.DragEvent, filteredIndex: number) => {
+    setDraggedParentIndex(filteredIndex);
     e.dataTransfer.effectAllowed = "move";
   };
 
-  const handleParentDragOver = (e: React.DragEvent, index: number) => {
+  const handleParentDragOver = (e: React.DragEvent, filteredIndex: number) => {
     e.preventDefault();
-    if (draggedParentIndex !== null && draggedParentIndex !== index) {
-      setDragOverParentIndex(index);
+    if (draggedParentIndex !== null && draggedParentIndex !== filteredIndex) {
+      setDragOverParentIndex(filteredIndex);
     }
   };
 
-  const handleParentDrop = (e: React.DragEvent, targetIndex: number) => {
+  const handleParentDrop = (e: React.DragEvent, targetFilteredIndex: number) => {
     e.preventDefault();
-    if (draggedParentIndex === null || draggedParentIndex === targetIndex) {
+    if (draggedParentIndex === null || draggedParentIndex === targetFilteredIndex) {
       setDraggedParentIndex(null);
       setDragOverParentIndex(null);
       return;
     }
 
-    const reordered = [...parentCategories];
-    const [movedItem] = reordered.splice(draggedParentIndex, 1);
-    reordered.splice(targetIndex, 0, movedItem);
+    const sourceItem = filteredParents[draggedParentIndex];
+    const targetItem = filteredParents[targetFilteredIndex];
+    if (sourceItem && targetItem) {
+      swapParentsById(sourceItem.id, targetItem.id);
+    }
 
-    setParentCategories(reordered);
     setDraggedParentIndex(null);
     setDragOverParentIndex(null);
   };
@@ -282,9 +318,54 @@ export default function CategoryMenuOrderingPage() {
             Drag &amp; Drop Category Sequence &amp; Visibility Rule
           </p>
           <p className="text-slate-700 leading-relaxed font-normal">
-            Only categories with <span className="font-semibold text-emerald-700">Show on Menu = ON</span> appear in this menu builder. Drag the handle <GripVertical className="w-3.5 h-3.5 inline text-slate-400" /> or use the up/down arrows to arrange parent categories and subcategories. Click <strong>Save Menu Order</strong> to publish changes to the website header.
+            Only categories with <span className="font-semibold text-emerald-700">Show on Menu = ON</span> appear in this menu builder. Use target domain tabs below to isolate categories by category type. Drag the handle <GripVertical className="w-3.5 h-3.5 inline text-slate-400" /> or use up/down arrows to arrange sequence. Click <strong>Save Menu Order</strong> to publish changes.
           </p>
         </div>
+      </div>
+
+      {/* Target Domain Filter Tabs */}
+      <div className="bg-white p-3 rounded-lg border border-slate-200 flex flex-wrap items-center gap-2">
+        <span className="text-xs font-bold text-slate-900 mr-2 flex items-center gap-1.5">
+          <Layers className="w-4 h-4 text-slate-700" />
+          <span>Target Domain Filter:</span>
+        </span>
+        {DOMAIN_TABS.map((tab) => {
+          const isActive = selectedDomain === tab.value;
+          const Icon = tab.icon;
+          const count =
+            tab.value === "All"
+              ? parentCategories.length
+              : parentCategories.filter((p) => p.type === tab.value).length;
+
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => {
+                setSelectedDomain(tab.value);
+                const firstMatch = parentCategories.find(
+                  (p) => tab.value === "All" || p.type === tab.value
+                );
+                if (firstMatch) setExpandedParentId(firstMatch.id);
+              }}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                isActive
+                  ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : "text-slate-500"}`} />
+              <span>{tab.label}</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  isActive ? "bg-white/20 text-white" : "bg-slate-200 text-slate-800"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Main Grid: Left = Parent Category Sequence, Right = Selected Parent Subcategories */}
@@ -296,31 +377,33 @@ export default function CategoryMenuOrderingPage() {
               <div>
                 <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                   <FolderTree className="w-4 h-4 text-slate-700" />
-                  <span>Main Navbar Categories ({parentCategories.length})</span>
+                  <span>
+                    {selectedDomain === "All" ? "Main Navbar Categories" : `${selectedDomain.toUpperCase()} Categories`} ({filteredParents.length})
+                  </span>
                 </h2>
                 <p className="text-xs text-slate-700 font-normal">Top-level navbar items</p>
               </div>
             </div>
 
-            {parentCategories.length === 0 ? (
+            {filteredParents.length === 0 ? (
               <div className="text-center py-10 text-xs text-slate-500 font-medium border border-dashed border-slate-200 rounded-md">
-                No active categories are set to <span className="font-bold">Show on Menu</span>. Go to <Link href="/admin/categories" className="text-slate-900 underline font-semibold">All Categories</Link> to toggle menu visibility ON.
+                No active categories found under target domain <span className="font-bold">"{selectedDomain}"</span> with <span className="font-bold">Show on Menu = ON</span>.
               </div>
             ) : (
               <div className="space-y-2">
-                {parentCategories.map((parent, pIdx) => {
+                {filteredParents.map((parent, fIdx) => {
                   const isExpanded = expandedParentId === parent.id;
                   const subCount = parent.subItems?.length || 0;
-                  const isDragging = draggedParentIndex === pIdx;
-                  const isDragOver = dragOverParentIndex === pIdx;
+                  const isDragging = draggedParentIndex === fIdx;
+                  const isDragOver = dragOverParentIndex === fIdx;
 
                   return (
                     <div
                       key={parent.id}
                       draggable
-                      onDragStart={(e) => handleParentDragStart(e, pIdx)}
-                      onDragOver={(e) => handleParentDragOver(e, pIdx)}
-                      onDrop={(e) => handleParentDrop(e, pIdx)}
+                      onDragStart={(e) => handleParentDragStart(e, fIdx)}
+                      onDragOver={(e) => handleParentDragOver(e, fIdx)}
+                      onDrop={(e) => handleParentDrop(e, fIdx)}
                       onDragEnd={handleParentDragEnd}
                       onClick={() => setExpandedParentId(parent.id)}
                       className={`p-3 rounded-md border transition-all cursor-pointer select-none ${
@@ -340,7 +423,7 @@ export default function CategoryMenuOrderingPage() {
                               isExpanded ? "bg-slate-800 text-amber-400" : "bg-slate-100 text-slate-700 border border-slate-200"
                             }`}
                           >
-                            {pIdx + 1}
+                            {fIdx + 1}
                           </span>
                           <GripVertical
                             className={`w-4 h-4 shrink-0 cursor-grab active:cursor-grabbing ${
@@ -359,7 +442,7 @@ export default function CategoryMenuOrderingPage() {
                               </span>
                             </div>
                             <div className={`text-[11px] font-normal truncate ${isExpanded ? "text-slate-300" : "text-slate-600"}`}>
-                              /{parent.slug} • Type: {parent.type}
+                              /{parent.slug} • Domain: <span className="font-semibold uppercase">{parent.type}</span>
                             </div>
                           </div>
                         </div>
@@ -368,8 +451,8 @@ export default function CategoryMenuOrderingPage() {
                         <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                           <button
                             type="button"
-                            onClick={() => moveParent(pIdx, "up")}
-                            disabled={pIdx === 0}
+                            onClick={() => moveParent(fIdx, "up")}
+                            disabled={fIdx === 0}
                             className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors border ${
                               isExpanded
                                 ? "bg-slate-800 border-slate-700 text-white hover:bg-slate-700 disabled:opacity-30"
@@ -381,8 +464,8 @@ export default function CategoryMenuOrderingPage() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => moveParent(pIdx, "down")}
-                            disabled={pIdx === parentCategories.length - 1}
+                            onClick={() => moveParent(fIdx, "down")}
+                            disabled={fIdx === filteredParents.length - 1}
                             className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors border ${
                               isExpanded
                                 ? "bg-slate-800 border-slate-700 text-white hover:bg-slate-700 disabled:opacity-30"

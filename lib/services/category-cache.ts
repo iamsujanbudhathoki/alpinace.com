@@ -100,6 +100,39 @@ class CategoryCacheService {
   }
 
   /**
+   * Fetch menu-visible ordered category navigation tree for public navbar.
+   */
+  async getNavMenu(): Promise<CategoryItem[]> {
+    const cacheKey = "PUBLIC_NAV_MENU";
+    const cached = this.getCached(cacheKey);
+    if (cached) return cached;
+
+    if (this.inFlight.has(cacheKey)) {
+      return this.inFlight.get(cacheKey)!;
+    }
+
+    const fetchPromise = (async () => {
+      try {
+        const data = await CategoryService.getNavMenu();
+        const activeMenuTree = buildCategoryTree(data || []);
+        this.cache.set(cacheKey, {
+          data: activeMenuTree,
+          timestamp: Date.now(),
+        });
+        return activeMenuTree;
+      } catch (err) {
+        console.warn("[CategoryCache] Failed to fetch nav menu:", err);
+        return [];
+      } finally {
+        this.inFlight.delete(cacheKey);
+      }
+    })();
+
+    this.inFlight.set(cacheKey, fetchPromise);
+    return fetchPromise;
+  }
+
+  /**
    * Clear cache for testing or on mutation
    */
   clear(type?: CategoryType | string) {

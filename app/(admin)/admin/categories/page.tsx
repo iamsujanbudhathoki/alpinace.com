@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon, GitMerge, Maximize2 } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon, GitMerge, Maximize2, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
@@ -225,6 +225,28 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const handleToggleMenuVisibility = async (cat: CategoryItem) => {
+    const newShowInMenu = cat.showInMenu === false ? true : false;
+    setCategories((prev) =>
+      prev.map((c) => (c.id === cat.id ? { ...c, showInMenu: newShowInMenu } : c))
+    );
+    try {
+      const res = await CategoryService.update(cat.id, { showInMenu: newShowInMenu });
+      if (res.success) {
+        categoryCache.clear();
+        toast.success(
+          `"${cat.name}" menu visibility set to ${newShowInMenu ? "ON" : "OFF"}.`
+        );
+      } else {
+        toast.error(res.message || "Failed to update menu visibility");
+        loadCategories();
+      }
+    } catch (err: any) {
+      toast.error("Failed to update menu visibility");
+      loadCategories();
+    }
+  };
+
   const getTypeIcon = (type: CategoryType) => {
     switch (type) {
       case CategoryType.TREKKING:
@@ -366,12 +388,13 @@ export default function AdminCategoriesPage() {
               <AdminTableHead>Target Domain</AdminTableHead>
               <AdminTableHead>Slug</AdminTableHead>
               <AdminTableHead>Status</AdminTableHead>
+              <AdminTableHead>Show on Menu</AdminTableHead>
               <AdminTableHead align="right">Actions</AdminTableHead>
             </tr>
           </AdminTableHeader>
           <AdminTableBody>
             {isLoading ? (
-              <AdminTableLoading colSpan={7} rows={limit > 10 ? 10 : limit} message="Loading category taxonomy..." />
+              <AdminTableLoading colSpan={8} rows={limit > 10 ? 10 : limit} message="Loading category taxonomy..." />
             ) : categories.length > 0 ? (
               categories.map((cat, idx) => {
                 const serialNumber = (page - 1) * limit + idx + 1;
@@ -454,6 +477,30 @@ export default function AdminCategoriesPage() {
                         variant="badge"
                         title="Click to change category status"
                       />
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleMenuVisibility(cat)}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer border ${
+                          cat.showInMenu !== false
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                            : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
+                        }`}
+                        title="Click to toggle marketing navbar visibility"
+                      >
+                        {cat.showInMenu !== false ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>On</span>
+                          </>
+                        ) : (
+                          <>
+                            <X className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            <span>Off</span>
+                          </>
+                        )}
+                      </button>
                     </AdminTableCell>
                     <AdminTableCell align="right">
                       <AdminTableActions>

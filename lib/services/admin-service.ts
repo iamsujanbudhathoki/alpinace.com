@@ -133,6 +133,20 @@ export const CategoryService = {
     }
   },
 
+  async getNavMenu(): Promise<CategoryItem[]> {
+    try {
+      const res = await apiClient.get<CategoryItem[]>("/categories/nav");
+      return Array.isArray(res?.data) ? res.data : [];
+    } catch (e) {
+      console.warn("Backend categories getNavMenu error:", e);
+      return [];
+    }
+  },
+
+  async reorder(items: { id: string; menuOrder: number }[]): Promise<ApiResponse<boolean>> {
+    return apiClient.put<boolean>("/admin/categories/reorder", { items });
+  },
+
   async getById(id: string): Promise<CategoryItem | null> {
     try {
       const res = await apiClient.get<CategoryItem>(`/admin/categories/${id}`);
@@ -151,6 +165,8 @@ export const CategoryService = {
       type: data.type,
       description: String(data.description || "").trim(),
       status: data.status || CategoryStatus.ACTIVE,
+      showInMenu: data.showInMenu !== undefined ? Boolean(data.showInMenu) : true,
+      menuOrder: data.menuOrder !== undefined ? Number(data.menuOrder) : 0,
       parentId: data.parentId || null,
     };
     if (data.mediaId && typeof data.mediaId === "string" && data.mediaId.trim()) {
@@ -166,6 +182,8 @@ export const CategoryService = {
     if (data.type !== undefined) payload.type = data.type;
     if (data.description !== undefined) payload.description = String(data.description).trim();
     if (data.status !== undefined) payload.status = data.status;
+    if (data.showInMenu !== undefined) payload.showInMenu = Boolean(data.showInMenu);
+    if (data.menuOrder !== undefined) payload.menuOrder = Number(data.menuOrder);
     if (data.mediaId !== undefined) {
       if (typeof data.mediaId === "string" && data.mediaId.trim()) payload.mediaId = data.mediaId.trim();
       else delete payload.mediaId;

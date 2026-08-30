@@ -302,6 +302,8 @@ export interface CategoryItem {
   description: string;
   itemCount: number;
   status: CategoryStatus;
+  showInMenu?: boolean;
+  menuOrder?: number;
   image?: string | null;
   mediaId?: string | null;
   parentId?: string | null;

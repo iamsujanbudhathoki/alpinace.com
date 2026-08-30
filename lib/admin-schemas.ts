@@ -286,6 +286,8 @@ export const categorySchema = z.object({
   type: z.nativeEnum(CategoryType),
   description: z.string().min(5, "Description must be at least 5 characters"),
   status: z.nativeEnum(CategoryStatus).default(CategoryStatus.ACTIVE),
+  showInMenu: z.boolean().default(true),
+  menuOrder: z.number().optional(),
   image: z.string().optional(),
   mediaId: z.string().optional(),
   parentId: z.string().optional(),

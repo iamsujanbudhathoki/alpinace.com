@@ -549,32 +549,41 @@ export function SiteHeader() {
     async function loadAllNavbarCategories() {
       const types = [CategoryType.TREKKING, CategoryType.TOURS, CategoryType.EXPEDITIONS];
 
-      // Populate from existing cache if available
-      const initialMap: Record<string, CategoryItem[]> = {};
-      types.forEach((type) => {
-        const cached = categoryCache.getCached(type);
-        if (cached && cached.length > 0) initialMap[type] = cached;
-      });
-      if (Object.keys(initialMap).length > 0) {
-        setCategoriesMap((prev) => ({ ...prev, ...initialMap }));
-      }
-
-      // Fetch all concurrently on mount
       try {
-        const results = await Promise.all(
-          types.map(async (type) => {
-            const data = await categoryCache.prefetch(type);
-            return { type, data };
-          })
-        );
-        const newMap: Record<string, CategoryItem[]> = {};
-        results.forEach(({ type, data }) => {
-          if (data && data.length > 0) {
-            newMap[type] = data;
+        const navTree = await categoryCache.getNavMenu();
+
+        if (navTree && navTree.length > 0) {
+          const newMap: Record<string, CategoryItem[]> = {};
+
+          navTree.forEach((cat) => {
+            const catType = cat.type;
+            if (!newMap[catType]) newMap[catType] = [];
+            newMap[catType].push(cat);
+          });
+
+          // Ensure types present
+          types.forEach((type) => {
+            if (!newMap[type]) newMap[type] = [];
+          });
+
+          setCategoriesMap(newMap);
+        } else {
+          // Fallback to per-type prefetch
+          const results = await Promise.all(
+            types.map(async (type) => {
+              const data = await categoryCache.prefetch(type);
+              return { type, data };
+            })
+          );
+          const newMap: Record<string, CategoryItem[]> = {};
+          results.forEach(({ type, data }) => {
+            if (data && data.length > 0) {
+              newMap[type] = data;
+            }
+          });
+          if (Object.keys(newMap).length > 0) {
+            setCategoriesMap((prev) => ({ ...prev, ...newMap }));
           }
-        });
-        if (Object.keys(newMap).length > 0) {
-          setCategoriesMap((prev) => ({ ...prev, ...newMap }));
         }
       } catch (err) {
         console.error("Failed to load navbar categories on page load:", err);

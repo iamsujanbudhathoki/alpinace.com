@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -8,6 +9,7 @@ import {
   Compass,
   Mountain,
   FolderTree,
+  ChevronDown,
   Images,
   FileText,
   Calendar,
@@ -134,6 +136,15 @@ export function AdminSidebar({
   onToggleCollapse,
 }: AdminSidebarProps) {
   const pathname = usePathname();
+  const [categoriesOpen, setCategoriesOpen] = useState(
+    pathname?.startsWith("/admin/categories") || false
+  );
+
+  useEffect(() => {
+    if (pathname?.startsWith("/admin/categories")) {
+      setCategoriesOpen(true);
+    }
+  }, [pathname]);
 
   const handleNavClick = () => {
     if (onCloseMobile) onCloseMobile();
@@ -183,9 +194,11 @@ export function AdminSidebar({
           >
             {group.items.map((item) => {
               const Icon = item.icon;
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/admin" && pathname?.startsWith(item.href));
+              const isCategories = item.href === "/admin/categories";
+              const isActive = isCategories
+                ? pathname?.startsWith("/admin/categories")
+                : pathname === item.href ||
+                  (item.href !== "/admin" && pathname?.startsWith(item.href));
 
               if (isCollapsed) {
                 return (
@@ -209,6 +222,65 @@ export function AdminSidebar({
                     <div className="absolute left-full ml-2.5 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 flex items-center gap-2 top-1/2 -translate-y-1/2 -translate-x-1 group-hover:translate-x-0">
                       <span>{item.title}</span>
                     </div>
+                  </div>
+                );
+              }
+
+              if (isCategories) {
+                return (
+                  <div key="categories-group" className="space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => setCategoriesOpen((prev) => !prev)}
+                      className={`w-full group flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                        isActive
+                          ? "bg-slate-900 text-white shadow-xs"
+                          : "text-slate-800 hover:text-slate-900 hover:bg-slate-100"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <Icon
+                          className={`w-4 h-4 shrink-0 transition-colors ${
+                            isActive
+                              ? "text-amber-400"
+                              : "text-slate-600 group-hover:text-slate-900"
+                          }`}
+                        />
+                        <span className="truncate">Categories</span>
+                      </div>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                          categoriesOpen ? "rotate-180" : ""
+                        } ${isActive ? "text-white" : "text-slate-500"}`}
+                      />
+                    </button>
+
+                    {categoriesOpen && (
+                      <div className="pl-6 space-y-1 pt-0.5">
+                        <Link
+                          href="/admin/categories"
+                          onClick={handleNavClick}
+                          className={`block px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-colors ${
+                            pathname === "/admin/categories"
+                              ? "bg-slate-800 text-amber-400"
+                              : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                          }`}
+                        >
+                          All Categories
+                        </Link>
+                        <Link
+                          href="/admin/categories/ordering"
+                          onClick={handleNavClick}
+                          className={`block px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-colors ${
+                            pathname === "/admin/categories/ordering"
+                              ? "bg-slate-800 text-amber-400"
+                              : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                          }`}
+                        >
+                          Menu Ordering
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 );
               }

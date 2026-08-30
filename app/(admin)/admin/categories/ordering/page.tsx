@@ -1,0 +1,388 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
+  Save,
+  Check,
+  Loader2,
+  ChevronRight,
+  ChevronDown,
+  FolderTree,
+  Eye,
+  Info,
+  GitMerge,
+  ExternalLink,
+} from "lucide-react";
+import { toast } from "sonner";
+import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
+import { CategoryService } from "@/lib/services/admin-service";
+import { categoryCache } from "@/lib/services/category-cache";
+import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
+import { Button } from "@/components/ui/button";
+
+interface ExtendedCategoryItem extends CategoryItem {
+  subItems?: ExtendedCategoryItem[];
+}
+
+export default function CategoryMenuOrderingPage() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [parentCategories, setParentCategories] = useState<ExtendedCategoryItem[]>([]);
+  const [expandedParentId, setExpandedParentId] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadCategoryMenuStructure();
+  }, []);
+
+  const loadCategoryMenuStructure = async () => {
+    setLoading(true);
+    try {
+      const res = await CategoryService.getAll({ limit: 100 });
+      const allCategories = Array.isArray(res) ? res : [];
+
+      // Filter ONLY categories where showInMenu !== false and status === ACTIVE
+      const activeMenuCategories = allCategories.filter(
+        (c) => c.status === CategoryStatus.ACTIVE && c.showInMenu !== false
+      );
+
+      // Separate into parents and subcategories
+      const parents = activeMenuCategories
+        .filter((c) => !c.parentId)
+        .sort((a, b) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0));
+
+      const childrenMap = new Map<string, ExtendedCategoryItem[]>();
+      activeMenuCategories.forEach((c) => {
+        if (c.parentId) {
+          const list = childrenMap.get(c.parentId) || [];
+          list.push(c);
+          childrenMap.set(c.parentId, list);
+        }
+      });
+
+      const structured: ExtendedCategoryItem[] = parents.map((p) => ({
+        ...p,
+        subItems: (childrenMap.get(p.id) || []).sort(
+          (a, b) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0)
+        ),
+      }));
+
+      setParentCategories(structured);
+      if (structured.length > 0 && !expandedParentId) {
+        setExpandedParentId(structured[0].id);
+      }
+    } catch (err) {
+      console.error("Failed to load category menu structure:", err);
+      toast.error("Failed to load menu categories from server");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Reorder Top-Level Parent Categories
+  const moveParent = (index: number, direction: "up" | "down") => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= parentCategories.length) return;
+
+    const newParents = [...parentCategories];
+    const temp = newParents[index];
+    newParents[index] = newParents[targetIndex];
+    newParents[targetIndex] = temp;
+
+    setParentCategories(newParents);
+  };
+
+  // Reorder Subcategories within a Parent
+  const moveSubcategory = (parentId: string, subIndex: number, direction: "up" | "down") => {
+    setParentCategories((prev) =>
+      prev.map((parent) => {
+        if (parent.id !== parentId || !parent.subItems) return parent;
+
+        const targetIndex = direction === "up" ? subIndex - 1 : subIndex + 1;
+        if (targetIndex < 0 || targetIndex >= parent.subItems.length) return parent;
+
+        const newSubItems = [...parent.subItems];
+        const temp = newSubItems[subIndex];
+        newSubItems[subIndex] = newSubItems[targetIndex];
+        newSubItems[targetIndex] = temp;
+
+        return { ...parent, subItems: newSubItems };
+      })
+    );
+  };
+
+  // Save Configured Menu Order to Backend
+  const handleSaveMenuOrder = async () => {
+    setSaving(true);
+    try {
+      const itemsToUpdate: { id: string; menuOrder: number }[] = [];
+
+      parentCategories.forEach((parent, parentIdx) => {
+        itemsToUpdate.push({ id: parent.id, menuOrder: parentIdx + 1 });
+
+        if (parent.subItems && parent.subItems.length > 0) {
+          parent.subItems.forEach((sub, subIdx) => {
+            itemsToUpdate.push({ id: sub.id, menuOrder: subIdx + 1 });
+          });
+        }
+      });
+
+      const res = await CategoryService.reorder(itemsToUpdate);
+      if (res.success) {
+        categoryCache.clear();
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 4000);
+        toast.success("Marketing menu order saved and updated successfully!");
+      } else {
+        toast.error(res.message || "Failed to save menu order.");
+      }
+    } catch (err: any) {
+      console.error("Failed to save menu order:", err);
+      toast.error(err.message || "Failed to save menu order to server.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+        <p className="text-xs font-semibold text-slate-700">Loading menu navigation layout...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 pb-16">
+      {/* Page Header */}
+      <AdminPageHeader
+        title="Marketing Menu Ordering"
+        description="Organize the exact display sequence of menu-visible categories and subcategories in the website header."
+      >
+        <Link href="/admin/categories">
+          <Button variant="outline" size="sm" className="text-slate-700 border-slate-300 font-semibold text-xs">
+            Manage All Categories
+          </Button>
+        </Link>
+        <Button onClick={handleSaveMenuOrder} disabled={saving}>
+          {saving ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Saving Order...</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4" />
+              <span>Save Menu Order</span>
+            </>
+          )}
+        </Button>
+      </AdminPageHeader>
+
+      {savedSuccess && (
+        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center gap-2.5">
+          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>
+            Marketing menu category order saved successfully! The marketing navbar is now updated.
+          </span>
+        </div>
+      )}
+
+      {/* Instructional Info Banner */}
+      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 flex items-start gap-3 text-xs text-slate-700">
+        <Info className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <p className="font-bold text-slate-900">
+            Navigation Sequence &amp; Visibility Rule
+          </p>
+          <p className="text-slate-700 leading-relaxed font-normal">
+            Only categories with <span className="font-semibold text-emerald-700">Show on Menu = ON</span> appear in this menu builder. Use the up/down controls or drag handles to arrange parent categories and their nested subcategories. Changes apply immediately to the website header after clicking <strong>Save Menu Order</strong>.
+          </p>
+        </div>
+      </div>
+
+      {/* Main Grid: Left = Parent Category Sequence, Right = Selected Parent Subcategories */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Top-Level Menu Categories (7 cols) */}
+        <div className="lg:col-span-7 space-y-4">
+          <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <FolderTree className="w-4 h-4 text-slate-700" />
+                  <span>Main Navbar Categories ({parentCategories.length})</span>
+                </h2>
+                <p className="text-xs text-slate-700 font-normal">Top-level navbar items</p>
+              </div>
+            </div>
+
+            {parentCategories.length === 0 ? (
+              <div className="text-center py-10 text-xs text-slate-500 font-medium border border-dashed border-slate-200 rounded-md">
+                No active categories are set to <span className="font-bold">Show on Menu</span>. Go to <Link href="/admin/categories" className="text-slate-900 underline font-semibold">All Categories</Link> to toggle menu visibility ON.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {parentCategories.map((parent, pIdx) => {
+                  const isExpanded = expandedParentId === parent.id;
+                  const subCount = parent.subItems?.length || 0;
+
+                  return (
+                    <div
+                      key={parent.id}
+                      onClick={() => setExpandedParentId(parent.id)}
+                      className={`p-3 rounded-md border transition-all cursor-pointer ${
+                        isExpanded
+                          ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                          : "bg-white text-slate-900 border-slate-200 hover:border-slate-300 hover:bg-slate-50/70"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span
+                            className={`w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0 ${
+                              isExpanded ? "bg-slate-800 text-amber-400" : "bg-slate-100 text-slate-700 border border-slate-200"
+                            }`}
+                          >
+                            {pIdx + 1}
+                          </span>
+                          <GripVertical className={`w-4 h-4 shrink-0 ${isExpanded ? "text-slate-400" : "text-slate-400"}`} />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-xs truncate flex items-center gap-2">
+                              <span>{parent.name}</span>
+                              <span
+                                className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                                  isExpanded ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"
+                                }`}
+                              >
+                                {subCount} subcategories
+                              </span>
+                            </div>
+                            <div className={`text-[11px] font-normal truncate ${isExpanded ? "text-slate-300" : "text-slate-600"}`}>
+                              /{parent.slug} • Type: {parent.type}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Reordering Controls */}
+                        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            onClick={() => moveParent(pIdx, "up")}
+                            disabled={pIdx === 0}
+                            className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors border ${
+                              isExpanded
+                                ? "bg-slate-800 border-slate-700 text-white hover:bg-slate-700 disabled:opacity-30"
+                                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-30"
+                            }`}
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveParent(pIdx, "down")}
+                            disabled={pIdx === parentCategories.length - 1}
+                            className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors border ${
+                              isExpanded
+                                ? "bg-slate-800 border-slate-700 text-white hover:bg-slate-700 disabled:opacity-30"
+                                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-30"
+                            }`}
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column: Nested Subcategory Ordering for Selected Parent (5 cols) */}
+        <div className="lg:col-span-5 space-y-4">
+          {(() => {
+            const selectedParent = parentCategories.find((p) => p.id === expandedParentId);
+            if (!selectedParent) {
+              return (
+                <div className="bg-white border border-slate-200 rounded-lg p-6 text-center text-xs text-slate-500 font-medium">
+                  Select a parent category on the left to view and order its subcategories.
+                </div>
+              );
+            }
+
+            const subItems = selectedParent.subItems || [];
+
+            return (
+              <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <GitMerge className="w-4 h-4 text-slate-700" />
+                    <span>{selectedParent.name} Subcategories</span>
+                  </h3>
+                  <p className="text-xs text-slate-700 font-normal">
+                    Nested subcategories shown in navbar dropdown menu ({subItems.length})
+                  </p>
+                </div>
+
+                {subItems.length === 0 ? (
+                  <div className="text-center py-8 text-xs text-slate-500 font-medium border border-dashed border-slate-200 rounded-md">
+                    No subcategories under "{selectedParent.name}".
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {subItems.map((sub, sIdx) => (
+                      <div
+                        key={sub.id}
+                        className="p-3 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 text-xs"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-700 text-[10px] font-bold flex items-center justify-center shrink-0">
+                            {sIdx + 1}
+                          </span>
+                          <GripVertical className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-slate-900 truncate">{sub.name}</div>
+                            <div className="text-[11px] text-slate-600 font-normal truncate">/{sub.slug}</div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => moveSubcategory(selectedParent.id, sIdx, "up")}
+                            disabled={sIdx === 0}
+                            className="w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-slate-100 disabled:opacity-30 transition-colors"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveSubcategory(selectedParent.id, sIdx, "down")}
+                            disabled={sIdx === subItems.length - 1}
+                            className="w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-slate-100 disabled:opacity-30 transition-colors"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+    </div>
+  );
+}

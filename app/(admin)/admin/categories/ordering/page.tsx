@@ -9,16 +9,12 @@ import {
   Save,
   Check,
   Loader2,
-  ChevronRight,
-  ChevronDown,
   FolderTree,
-  Eye,
   Info,
   GitMerge,
-  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
-import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
+import { CategoryItem, CategoryStatus } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
 import { categoryCache } from "@/lib/services/category-cache";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
@@ -34,6 +30,14 @@ export default function CategoryMenuOrderingPage() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [parentCategories, setParentCategories] = useState<ExtendedCategoryItem[]>([]);
   const [expandedParentId, setExpandedParentId] = useState<string | null>(null);
+
+  // Drag & Drop State for Top-Level Parent Categories (FAQ-style)
+  const [draggedParentIndex, setDraggedParentIndex] = useState<number | null>(null);
+  const [dragOverParentIndex, setDragOverParentIndex] = useState<number | null>(null);
+
+  // Drag & Drop State for Subcategories within Selected Parent (FAQ-style)
+  const [draggedSubIndex, setDraggedSubIndex] = useState<number | null>(null);
+  const [dragOverSubIndex, setDragOverSubIndex] = useState<number | null>(null);
 
   useEffect(() => {
     loadCategoryMenuStructure();
@@ -83,7 +87,7 @@ export default function CategoryMenuOrderingPage() {
     }
   };
 
-  // Reorder Top-Level Parent Categories
+  // Reorder Top-Level Parent Categories (Arrow Buttons)
   const moveParent = (index: number, direction: "up" | "down") => {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= parentCategories.length) return;
@@ -96,7 +100,7 @@ export default function CategoryMenuOrderingPage() {
     setParentCategories(newParents);
   };
 
-  // Reorder Subcategories within a Parent
+  // Reorder Subcategories within a Parent (Arrow Buttons)
   const moveSubcategory = (parentId: string, subIndex: number, direction: "up" | "down") => {
     setParentCategories((prev) =>
       prev.map((parent) => {
@@ -113,6 +117,83 @@ export default function CategoryMenuOrderingPage() {
         return { ...parent, subItems: newSubItems };
       })
     );
+  };
+
+  // HTML5 Drag & Drop Handlers for Parent Categories (FAQ-style)
+  const handleParentDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedParentIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleParentDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedParentIndex !== null && draggedParentIndex !== index) {
+      setDragOverParentIndex(index);
+    }
+  };
+
+  const handleParentDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedParentIndex === null || draggedParentIndex === targetIndex) {
+      setDraggedParentIndex(null);
+      setDragOverParentIndex(null);
+      return;
+    }
+
+    const reordered = [...parentCategories];
+    const [movedItem] = reordered.splice(draggedParentIndex, 1);
+    reordered.splice(targetIndex, 0, movedItem);
+
+    setParentCategories(reordered);
+    setDraggedParentIndex(null);
+    setDragOverParentIndex(null);
+  };
+
+  const handleParentDragEnd = () => {
+    setDraggedParentIndex(null);
+    setDragOverParentIndex(null);
+  };
+
+  // HTML5 Drag & Drop Handlers for Subcategories (FAQ-style)
+  const handleSubDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedSubIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleSubDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedSubIndex !== null && draggedSubIndex !== index) {
+      setDragOverSubIndex(index);
+    }
+  };
+
+  const handleSubDrop = (e: React.DragEvent, parentId: string, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedSubIndex === null || draggedSubIndex === targetIndex) {
+      setDraggedSubIndex(null);
+      setDragOverSubIndex(null);
+      return;
+    }
+
+    setParentCategories((prev) =>
+      prev.map((parent) => {
+        if (parent.id !== parentId || !parent.subItems) return parent;
+
+        const reordered = [...parent.subItems];
+        const [movedItem] = reordered.splice(draggedSubIndex, 1);
+        reordered.splice(targetIndex, 0, movedItem);
+
+        return { ...parent, subItems: reordered };
+      })
+    );
+
+    setDraggedSubIndex(null);
+    setDragOverSubIndex(null);
+  };
+
+  const handleSubDragEnd = () => {
+    setDraggedSubIndex(null);
+    setDragOverSubIndex(null);
   };
 
   // Save Configured Menu Order to Backend
@@ -162,7 +243,7 @@ export default function CategoryMenuOrderingPage() {
       {/* Page Header */}
       <AdminPageHeader
         title="Marketing Menu Ordering"
-        description="Organize the exact display sequence of menu-visible categories and subcategories in the website header."
+        description="Organize the exact display sequence of menu-visible categories and subcategories using drag-and-drop."
       >
         <Link href="/admin/categories">
           <Button variant="outline" size="sm" className="text-slate-700 border-slate-300 font-semibold text-xs">
@@ -198,10 +279,10 @@ export default function CategoryMenuOrderingPage() {
         <Info className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <p className="font-bold text-slate-900">
-            Navigation Sequence &amp; Visibility Rule
+            Drag &amp; Drop Category Sequence &amp; Visibility Rule
           </p>
           <p className="text-slate-700 leading-relaxed font-normal">
-            Only categories with <span className="font-semibold text-emerald-700">Show on Menu = ON</span> appear in this menu builder. Use the up/down controls or drag handles to arrange parent categories and their nested subcategories. Changes apply immediately to the website header after clicking <strong>Save Menu Order</strong>.
+            Only categories with <span className="font-semibold text-emerald-700">Show on Menu = ON</span> appear in this menu builder. Drag the handle <GripVertical className="w-3.5 h-3.5 inline text-slate-400" /> or use the up/down arrows to arrange parent categories and subcategories. Click <strong>Save Menu Order</strong> to publish changes to the website header.
           </p>
         </div>
       </div>
@@ -230,13 +311,24 @@ export default function CategoryMenuOrderingPage() {
                 {parentCategories.map((parent, pIdx) => {
                   const isExpanded = expandedParentId === parent.id;
                   const subCount = parent.subItems?.length || 0;
+                  const isDragging = draggedParentIndex === pIdx;
+                  const isDragOver = dragOverParentIndex === pIdx;
 
                   return (
                     <div
                       key={parent.id}
+                      draggable
+                      onDragStart={(e) => handleParentDragStart(e, pIdx)}
+                      onDragOver={(e) => handleParentDragOver(e, pIdx)}
+                      onDrop={(e) => handleParentDrop(e, pIdx)}
+                      onDragEnd={handleParentDragEnd}
                       onClick={() => setExpandedParentId(parent.id)}
-                      className={`p-3 rounded-md border transition-all cursor-pointer ${
-                        isExpanded
+                      className={`p-3 rounded-md border transition-all cursor-pointer select-none ${
+                        isDragging
+                          ? "opacity-40 bg-slate-100 border-slate-300 shadow-inner"
+                          : isDragOver
+                          ? "border-amber-400 bg-amber-50/60 ring-1 ring-amber-400/50"
+                          : isExpanded
                           ? "bg-slate-900 text-white border-slate-900 shadow-xs"
                           : "bg-white text-slate-900 border-slate-200 hover:border-slate-300 hover:bg-slate-50/70"
                       }`}
@@ -250,7 +342,11 @@ export default function CategoryMenuOrderingPage() {
                           >
                             {pIdx + 1}
                           </span>
-                          <GripVertical className={`w-4 h-4 shrink-0 ${isExpanded ? "text-slate-400" : "text-slate-400"}`} />
+                          <GripVertical
+                            className={`w-4 h-4 shrink-0 cursor-grab active:cursor-grabbing ${
+                              isExpanded ? "text-slate-400" : "text-slate-400 hover:text-slate-600"
+                            }`}
+                          />
                           <div className="min-w-0">
                             <div className="font-semibold text-xs truncate flex items-center gap-2">
                               <span>{parent.name}</span>
@@ -338,44 +434,62 @@ export default function CategoryMenuOrderingPage() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {subItems.map((sub, sIdx) => (
-                      <div
-                        key={sub.id}
-                        className="p-3 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 text-xs"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <span className="w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-700 text-[10px] font-bold flex items-center justify-center shrink-0">
-                            {sIdx + 1}
-                          </span>
-                          <GripVertical className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <div className="min-w-0">
-                            <div className="font-semibold text-slate-900 truncate">{sub.name}</div>
-                            <div className="text-[11px] text-slate-600 font-normal truncate">/{sub.slug}</div>
+                    {subItems.map((sub, sIdx) => {
+                      const isSubDragging = draggedSubIndex === sIdx;
+                      const isSubDragOver = dragOverSubIndex === sIdx;
+
+                      return (
+                        <div
+                          key={sub.id}
+                          draggable
+                          onDragStart={(e) => handleSubDragStart(e, sIdx)}
+                          onDragOver={(e) => handleSubDragOver(e, sIdx)}
+                          onDrop={(e) => handleSubDrop(e, selectedParent.id, sIdx)}
+                          onDragEnd={handleSubDragEnd}
+                          className={`p-3 rounded-md border flex items-center justify-between gap-3 text-xs transition-all select-none ${
+                            isSubDragging
+                              ? "opacity-40 bg-slate-100 border-slate-300 shadow-inner"
+                              : isSubDragOver
+                              ? "border-amber-400 bg-amber-50/60 ring-1 ring-amber-400/50"
+                              : "bg-slate-50 border-slate-200 hover:border-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className="w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-700 text-[10px] font-bold flex items-center justify-center shrink-0">
+                              {sIdx + 1}
+                            </span>
+                            <GripVertical
+                              className="w-3.5 h-3.5 text-slate-400 cursor-grab active:cursor-grabbing hover:text-slate-600 shrink-0"
+                            />
+                            <div className="min-w-0">
+                              <div className="font-semibold text-slate-900 truncate">{sub.name}</div>
+                              <div className="text-[11px] text-slate-600 font-normal truncate">/{sub.slug}</div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => moveSubcategory(selectedParent.id, sIdx, "up")}
+                              disabled={sIdx === 0}
+                              className="w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-slate-100 disabled:opacity-30 transition-colors"
+                              title="Move Up"
+                            >
+                              <ArrowUp className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveSubcategory(selectedParent.id, sIdx, "down")}
+                              disabled={sIdx === subItems.length - 1}
+                              className="w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-slate-100 disabled:opacity-30 transition-colors"
+                              title="Move Down"
+                            >
+                              <ArrowDown className="w-3 h-3" />
+                            </button>
                           </div>
                         </div>
-
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => moveSubcategory(selectedParent.id, sIdx, "up")}
-                            disabled={sIdx === 0}
-                            className="w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-slate-100 disabled:opacity-30 transition-colors"
-                            title="Move Up"
-                          >
-                            <ArrowUp className="w-3 h-3" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => moveSubcategory(selectedParent.id, sIdx, "down")}
-                            disabled={sIdx === subItems.length - 1}
-                            className="w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-slate-100 disabled:opacity-30 transition-colors"
-                            title="Move Down"
-                          >
-                            <ArrowDown className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

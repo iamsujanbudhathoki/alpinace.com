@@ -64,6 +64,13 @@ export function CategoryFormModal({
   const selectedType = watch("type");
   const currentImage = watch("image");
 
+  // Check if category already has child subcategories
+  const hasChildren = Boolean(
+    initialData?.id &&
+      ((initialData.children && initialData.children.length > 0) ||
+        categoriesList.some((c) => c.parentId === initialData.id))
+  );
+
   // Filter available top-level categories of the active type for parent selection
   const potentialParents = categoriesList.filter(
     (c) =>
@@ -289,21 +296,30 @@ export function CategoryFormModal({
             </div>
 
             <div className="col-span-2 sm:col-span-1">
-              <AdminSearchableSelect
-                label="Parent Category (Optional Subcategory)"
-                value={watch("parentId") || ""}
-                onChange={(val) => setValue("parentId", val, { shouldValidate: true })}
-                error={errors.parentId?.message}
-                placeholder="-- None (Top-Level Category) --"
-                searchPlaceholder="Search parent category..."
-                options={[
-                  { label: "-- None (Top-Level Category) --", value: "" },
-                  ...potentialParents.map((parent) => ({
-                    label: `Under: ${parent.name}`,
-                    value: parent.id,
-                  })),
-                ]}
-              />
+              {hasChildren ? (
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Parent Category</label>
+                  <div className="p-2.5 rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold">
+                    This category has subcategories and must remain a Top-Level Category (Max depth = 2).
+                  </div>
+                </div>
+              ) : (
+                <AdminSearchableSelect
+                  label="Parent Category (Optional Subcategory)"
+                  value={watch("parentId") || ""}
+                  onChange={(val) => setValue("parentId", val, { shouldValidate: true })}
+                  error={errors.parentId?.message}
+                  placeholder="-- None (Top-Level Category) --"
+                  searchPlaceholder="Search parent category..."
+                  options={[
+                    { label: "-- None (Top-Level Category) --", value: "" },
+                    ...potentialParents.map((parent) => ({
+                      label: `Under: ${parent.name}`,
+                      value: parent.id,
+                    })),
+                  ]}
+                />
+              )}
             </div>
 
             <div className="col-span-2 sm:col-span-1">

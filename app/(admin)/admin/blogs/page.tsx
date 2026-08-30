@@ -200,12 +200,9 @@ export default function AdminBlogsPage() {
         description="Publish expedition preparation guides, packing lists, and Sherpa stories."
       >
         <Link href="/admin/blogs/new">
-          <Button
-            size="sm"
-            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
-          >
-            <Plus className="w-4 h-4 mr-1.5" />
-            Write New Article
+          <Button>
+            <Plus className="w-4 h-4" />
+            <span>Write New Article</span>
           </Button>
         </Link>
       </AdminPageHeader>

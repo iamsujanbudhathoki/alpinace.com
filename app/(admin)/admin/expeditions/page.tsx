@@ -13,6 +13,7 @@ import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { ExpeditionFormModal, DeleteExpeditionModal } from "@/components/admin/modals/expedition-modal";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import {
   AdminTableContainer,
@@ -241,13 +242,11 @@ export default function AdminExpeditionsPage() {
         description="Manage 8000m peaks, 7000m training climbs, climbing permits, and logistical services."
       >
         <Button
-          size="sm"
           onClick={() => {
             setActiveExp(null);
             setIsEditing(true);
             setIsFormOpen(true);
           }}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1.5" />
           Add New Expedition
@@ -259,19 +258,16 @@ export default function AdminExpeditionsPage() {
         onSearchChange={setSearchQuery}
         searchPlaceholder="Search peak name or region..."
       >
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-600 font-semibold">Status:</span>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
-          >
-            <option value="All">All Statuses</option>
-            <option value={PackageStatus.ACTIVE}>Active</option>
-            <option value={PackageStatus.FEATURED}>Featured</option>
-            <option value={PackageStatus.DRAFT}>Draft</option>
-          </select>
-        </div>
+        <AdminFilterSelect
+          label="Status:"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="All">All Statuses</option>
+          <option value={PackageStatus.ACTIVE}>Active</option>
+          <option value={PackageStatus.FEATURED}>Featured</option>
+          <option value={PackageStatus.DRAFT}>Draft</option>
+        </AdminFilterSelect>
       </AdminFilterBar>
 
       {/* Expeditions Table */}

@@ -17,6 +17,7 @@ import {
   AdminTablePagination,
   AdminTableRow,
 } from "@/components/admin/ui/admin-table";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FaqItem, FaqStatus } from "@/lib/admin-data";
@@ -342,42 +343,36 @@ export default function AdminFaqsPage() {
         title="Pre-Trip Consultations &amp; FAQs"
         description="Manage consultation Q&amp;As, high-altitude advice, and booking FAQs displayed on the marketing homepage."
       >
-        <Button
-          onClick={openCreateModal}
-          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer flex items-center gap-2"
-        >
+        <Button onClick={openCreateModal}>
           <Plus className="w-4 h-4" />
           <span>New Consultation FAQ</span>
         </Button>
       </AdminPageHeader>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-white p-4 rounded-xl border border-slate-200">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-white p-4 rounded-lg border border-slate-200">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search questions or answers..."
-            className="pl-9 text-xs bg-slate-50/80 border-slate-200 text-slate-900 focus:bg-white rounded-lg h-9"
+            className="pl-9 h-9"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 font-medium">Category:</span>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="text-xs bg-white border border-slate-200 text-slate-900 font-semibold rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-400/10 cursor-pointer"
-          >
-            <option value="All">All Categories ({totalItems})</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
+        <AdminFilterSelect
+          label="Category:"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+          <option value="All">All Categories ({totalItems})</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </AdminFilterSelect>
       </div>
 
       <AdminTableContainer>
@@ -554,18 +549,17 @@ export default function AdminFaqsPage() {
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     placeholder="e.g. Safety & Altitude"
-                    className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1.5">
+                  <label className="block text-slate-900 font-bold mb-1.5 text-xs">
                     Status
                   </label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as FaqStatus)}
-                    className="w-full text-xs bg-slate-50 border border-slate-200 text-slate-900 font-semibold focus:bg-white rounded-xl px-3 py-2.5 focus:outline-none"
+                    className="w-full text-xs bg-white border border-slate-300 text-slate-900 font-semibold rounded-md px-3 py-2 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 cursor-pointer"
                   >
                     <option value={FaqStatus.ACTIVE}>Active (Visible)</option>
                     <option value={FaqStatus.DRAFT}>Draft (Hidden)</option>

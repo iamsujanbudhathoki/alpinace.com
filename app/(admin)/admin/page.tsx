@@ -46,7 +46,7 @@ export default function AdminDashboardPage() {
         const [dashData, bookingsData, expeditionsData] = await Promise.all([
           DashboardService.getMetrics(),
           BookingService.getAll(),
-          ExpeditionService.getAll(),
+          ExpeditionService.getAdminAll(),
         ]);
 
         if (dashData) {
@@ -147,11 +147,11 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Bookings (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="p-5 bg-white border border-slate-200 rounded-xl space-y-4">
+          <div className="p-5 bg-white border border-slate-200 rounded-lg space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-bold text-slate-900">Recent Bookings</h2>
-                <p className="text-xs text-slate-500 font-normal">Latest guest reservations and inquiries</p>
+                <p className="text-xs text-slate-700 font-normal">Latest guest reservations and inquiries</p>
               </div>
               <Link
                 href="/admin/bookings"
@@ -180,19 +180,19 @@ export default function AdminDashboardPage() {
                   ) : (
                     recentBookings.map((bkg, idx) => (
                       <AdminTableRow key={bkg.id}>
-                        <AdminTableCell className="text-center font-semibold text-slate-500">
+                        <AdminTableCell className="text-center font-semibold text-slate-700">
                           {idx + 1}
                         </AdminTableCell>
                         <AdminTableCell>
                           <div className="font-semibold text-slate-900 group-hover:text-slate-950 transition-colors">
                             {bkg.guestName}
                           </div>
-                          <div className="text-[11px] text-slate-500 font-normal">{bkg.reference} • {bkg.country}</div>
+                          <div className="text-[11px] text-slate-700 font-normal">{bkg.reference} • {bkg.country}</div>
                         </AdminTableCell>
                         <AdminTableCell className="max-w-[180px] truncate font-medium text-slate-700">
                           {bkg.packageName}
                         </AdminTableCell>
-                        <AdminTableCell className="text-slate-600">
+                        <AdminTableCell className="text-slate-700">
                           {bkg.startDate}
                         </AdminTableCell>
                         <AdminTableCell className="font-bold text-slate-900">
@@ -212,11 +212,11 @@ export default function AdminDashboardPage() {
 
         {/* Right Column: Active Expeditions Quick View (1 col) */}
         <div className="space-y-6">
-          <div className="p-5 bg-white border border-slate-200 rounded-xl space-y-4">
+          <div className="p-5 bg-white border border-slate-200 rounded-lg space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-sm text-slate-900">Top Expeditions</h3>
-                <p className="text-xs text-slate-500 font-normal">Active mountain packages</p>
+                <p className="text-xs text-slate-700 font-normal">Active mountain packages</p>
               </div>
               <Link href="/admin/expeditions" className="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors">
                 View All
@@ -228,7 +228,7 @@ export default function AdminDashboardPage() {
                 [...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between gap-4 animate-pulse"
+                    className="p-3 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between gap-4 animate-pulse"
                   >
                     <div className="space-y-2 flex-grow">
                       <Skeleton className="h-4 w-32 bg-slate-200" />
@@ -241,11 +241,11 @@ export default function AdminDashboardPage() {
                 topExpeditions.map((pkg) => (
                   <div
                     key={pkg.id}
-                    className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-2 text-xs"
+                    className="p-3 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs"
                   >
                     <div>
                       <div className="font-semibold text-slate-900 line-clamp-1">{pkg.title}</div>
-                      <div className="text-[11px] text-slate-500 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
+                      <div className="text-[11px] text-slate-700 font-medium">{pkg.durationDays} Days • {pkg.maxAltitudeMeters || 6000}m</div>
                     </div>
                     <span className="font-bold text-slate-900 shrink-0">${pkg.priceUSD}</span>
                   </div>

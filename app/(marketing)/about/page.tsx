@@ -103,7 +103,7 @@ export default async function AboutView() {
 
   let team = DEFAULT_TEAM;
   try {
-    const res = await adminTeamsApi.getAll({ status: "active" });
+    const res = await adminTeamsApi.getPublicAll({ status: "active" });
     if (Array.isArray(res) && res.length > 0) {
       team = res.map((m) => ({
         name: m.name,

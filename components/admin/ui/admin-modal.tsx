@@ -97,25 +97,25 @@ export function AdminModal({
             : "h-auto"
         } ${
           isDark
-            ? "bg-slate-950 text-white border-slate-800 shadow-2xl rounded-2xl p-0"
-            : "bg-white text-slate-900 border-slate-200 shadow-xl rounded-2xl p-0"
+            ? "bg-slate-950 text-white border-slate-800 shadow-2xl rounded-xl p-0"
+            : "bg-white text-slate-900 border-slate-200 shadow-lg rounded-xl p-0"
         } ${contentClassName}`}
       >
         {/* ── Sticky Header ─────────────────────────────── */}
         {hasHeader && (
           <div
-            className={`flex-none px-6 pt-5 pb-3 border-b ${
-              isDark ? "border-slate-800" : "border-slate-100"
+            className={`flex-none px-6 pt-4 pb-3 border-b ${
+              isDark ? "border-slate-800" : "border-slate-200"
             }`}
           >
             <DialogHeader className="space-y-0.5 text-left pr-8">
               {title && (
-                <DialogTitle className="font-heading text-lg font-extrabold text-slate-950 leading-tight">
+                <DialogTitle className="text-base font-bold text-slate-900 leading-tight">
                   {title}
                 </DialogTitle>
               )}
               {description && (
-                <DialogDescription className="text-xs text-slate-800 font-semibold leading-normal">
+                <DialogDescription className="text-xs text-slate-700 font-normal leading-normal">
                   {description}
                 </DialogDescription>
               )}
@@ -138,9 +138,9 @@ export function AdminModal({
           <div
             className={`flex-none border-t ${
               isDark
-                ? "border-slate-800 px-4 py-3 bg-slate-950/95"
-                : "border-slate-200/80 px-6 py-3.5 bg-white/95"
-            } backdrop-blur-md shadow-[0_-4px_16px_rgba(0,0,0,0.03)] z-10`}
+                ? "border-slate-800 px-4 py-3 bg-slate-950"
+                : "border-slate-200 px-6 py-3 bg-slate-50/50"
+            } z-10`}
           >
             {footer}
           </div>

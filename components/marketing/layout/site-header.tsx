@@ -4,16 +4,473 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
 import { navLinks, NavLink } from "@/lib/site-config";
 import { useSettings } from "@/lib/settings-context";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { categoryCache } from "@/lib/services/category-cache";
-import { CategoryItem, CategoryType } from "@/lib/admin-data";
+import { CategoryItem, CategoryType, CategoryStatus } from "@/lib/admin-data";
 
-
-
-
+const FALLBACK_CATEGORIES: Record<string, CategoryItem[]> = {
+  [CategoryType.TREKKING]: [
+    {
+      id: "cat-everest",
+      name: "Everest Region",
+      slug: "everest-region",
+      type: CategoryType.TREKKING,
+      description: "",
+      itemCount: 4,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-ebc",
+          name: "Everest Base Camp",
+          slug: "everest-base-camp-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-gokyo",
+          name: "Gokyo Lakes & Cho La",
+          slug: "gokyo-lakes-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
+        },
+        {
+          id: "sub-3passes",
+          name: "Everest Three Passes",
+          slug: "everest-three-passes-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
+        },
+        {
+          id: "sub-panorama",
+          name: "Everest Panorama",
+          slug: "everest-panorama-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-annapurna",
+      name: "Annapurna Region",
+      slug: "annapurna-region",
+      type: CategoryType.TREKKING,
+      description: "",
+      itemCount: 4,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-ann-circuit",
+          name: "Annapurna Circuit",
+          slug: "annapurna-circuit-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
+        },
+        {
+          id: "sub-abc",
+          name: "Annapurna Base Camp",
+          slug: "annapurna-base-camp-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-poonhill",
+          name: "Ghorepani Poon Hill",
+          slug: "ghorepani-poon-hill-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
+        },
+        {
+          id: "sub-mardi",
+          name: "Mardi Himal",
+          slug: "mardi-himal-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-langtang",
+      name: "Langtang Region",
+      slug: "langtang-region",
+      type: CategoryType.TREKKING,
+      description: "",
+      itemCount: 3,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-lang-valley",
+          name: "Langtang Valley",
+          slug: "langtang-valley-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-gosainkunda",
+          name: "Gosainkunda Lakes",
+          slug: "gosainkunda-lake-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
+        },
+        {
+          id: "sub-tamang",
+          name: "Tamang Heritage Trail",
+          slug: "tamang-heritage-trail",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-manaslu",
+      name: "Manaslu Region",
+      slug: "manaslu-region",
+      type: CategoryType.TREKKING,
+      description: "",
+      itemCount: 2,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-manaslu-circuit",
+          name: "Manaslu Circuit",
+          slug: "manaslu-circuit-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-tsum",
+          name: "Tsum Valley",
+          slug: "tsum-valley-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-restricted",
+      name: "Mustang & Restricted",
+      slug: "mustang-restricted",
+      type: CategoryType.TREKKING,
+      description: "",
+      itemCount: 2,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-upper-mustang",
+          name: "Upper Mustang",
+          slug: "upper-mustang-trek",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
+        },
+        {
+          id: "sub-upper-dolpo",
+          name: "Upper Dolpo Circuit",
+          slug: "upper-dolpo-circuit",
+          type: CategoryType.TREKKING,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
+        },
+      ],
+    },
+  ],
+  [CategoryType.TOURS]: [
+    {
+      id: "cat-cultural",
+      name: "Cultural & Heritage",
+      slug: "cultural-heritage",
+      type: CategoryType.TOURS,
+      description: "",
+      itemCount: 3,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-ktm-sightseeing",
+          name: "Kathmandu Valley",
+          slug: "kathmandu-valley-tour",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-bhaktapur",
+          name: "Bhaktapur & Patan",
+          slug: "bhaktapur-patan-tour",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
+        },
+        {
+          id: "sub-nagarkot",
+          name: "Nagarkot Sunrise",
+          slug: "nagarkot-sunrise-tour",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-pokhara",
+      name: "Scenic Lakes & Pokhara",
+      slug: "pokhara-tours",
+      type: CategoryType.TOURS,
+      description: "",
+      itemCount: 2,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-pokhara-highlights",
+          name: "Pokhara City & Lakes",
+          slug: "pokhara-highlights-tour",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
+        },
+        {
+          id: "sub-sarangkot",
+          name: "Sarangkot Sunrise",
+          slug: "sarangkot-sunrise-tour",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-safari",
+      name: "Chitwan Wildlife Safari",
+      slug: "chitwan-safari",
+      type: CategoryType.TOURS,
+      description: "",
+      itemCount: 2,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-chitwan-3d",
+          name: "Chitwan Jungle Safari",
+          slug: "chitwan-jungle-safari-3d",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-bardia",
+          name: "Bardia Tiger Safari",
+          slug: "bardia-tiger-safari",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-lumbini",
+      name: "Lumbini Pilgrimage",
+      slug: "lumbini-tours",
+      type: CategoryType.TOURS,
+      description: "",
+      itemCount: 2,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-buddha-birthplace",
+          name: "Lumbini Sacred Garden",
+          slug: "lumbini-sacred-garden-tour",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-buddhist-circuit",
+          name: "Buddhist Heritage Circuit",
+          slug: "buddhist-heritage-circuit",
+          type: CategoryType.TOURS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1585938389612-a552a28d6914?q=80&w=800",
+        },
+      ],
+    },
+  ],
+  [CategoryType.EXPEDITIONS]: [
+    {
+      id: "cat-8000m",
+      name: "8000m Peak Summits",
+      slug: "8000m-peaks",
+      type: CategoryType.EXPEDITIONS,
+      description: "",
+      itemCount: 3,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-everest-exp",
+          name: "Mt. Everest (8,848m)",
+          slug: "everest-expedition",
+          type: CategoryType.EXPEDITIONS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=800",
+        },
+        {
+          id: "sub-lhotse-exp",
+          name: "Mt. Lhotse (8,516m)",
+          slug: "lhotse-expedition",
+          type: CategoryType.EXPEDITIONS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-manaslu-exp",
+          name: "Mt. Manaslu (8,163m)",
+          slug: "manaslu-expedition",
+          type: CategoryType.EXPEDITIONS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-7000m",
+      name: "7000m Technical Peaks",
+      slug: "7000m-peaks",
+      type: CategoryType.EXPEDITIONS,
+      description: "",
+      itemCount: 2,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-baruntse",
+          name: "Mt. Baruntse (7,129m)",
+          slug: "baruntse-expedition",
+          type: CategoryType.EXPEDITIONS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=800",
+        },
+        {
+          id: "sub-himlung",
+          name: "Mt. Himlung Himal (7,126m)",
+          slug: "himlung-himal-expedition",
+          type: CategoryType.EXPEDITIONS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
+        },
+      ],
+    },
+    {
+      id: "cat-6000m",
+      name: "6000m Trekking Peaks",
+      slug: "6000m-peaks",
+      type: CategoryType.EXPEDITIONS,
+      description: "",
+      itemCount: 3,
+      status: CategoryStatus.ACTIVE,
+      children: [
+        {
+          id: "sub-island-peak",
+          name: "Island Peak (6,189m)",
+          slug: "island-peak-climbing",
+          type: CategoryType.EXPEDITIONS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=800",
+        },
+        {
+          id: "sub-mera-peak",
+          name: "Mera Peak (6,476m)",
+          slug: "mera-peak-climbing",
+          type: CategoryType.EXPEDITIONS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800",
+        },
+        {
+          id: "sub-lobuche",
+          name: "Lobuche East (6,119m)",
+          slug: "lobuche-east-climbing",
+          type: CategoryType.EXPEDITIONS,
+          description: "",
+          itemCount: 1,
+          status: CategoryStatus.ACTIVE,
+          image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=800",
+        },
+      ],
+    },
+  ],
+};
 
 export function SiteHeader() {
   const { settings } = useSettings();
@@ -29,11 +486,9 @@ export function SiteHeader() {
   const [categoriesMap, setCategoriesMap] = useState<Record<string, CategoryItem[]>>({});
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
   const [hoveredCategoryMap, setHoveredCategoryMap] = useState<Record<string, string>>({});
-  const [hoveredSubcategoryMap, setHoveredSubcategoryMap] = useState<Record<string, string>>({});
 
   // Mobile Accordion State
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
-  const [mobileCategoryExpanded, setMobileCategoryExpanded] = useState<Record<string, boolean>>({});
 
   // Timers for hover intent and graceful mouse leave
   const hoverIntentTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -53,7 +508,6 @@ export function SiteHeader() {
       const tabsAnchor = document.getElementById("detail-page-tabs-bar");
       if (tabsAnchor) {
         const rect = tabsAnchor.getBoundingClientRect();
-        // Contextual tabs take over ONLY when in-page tabs reach top of viewport (<= 60px)
         setShowDetailNav(rect.top <= 60);
       } else {
         setShowDetailNav(false);
@@ -99,7 +553,7 @@ export function SiteHeader() {
       const initialMap: Record<string, CategoryItem[]> = {};
       types.forEach((type) => {
         const cached = categoryCache.getCached(type);
-        if (cached) initialMap[type] = cached;
+        if (cached && cached.length > 0) initialMap[type] = cached;
       });
       if (Object.keys(initialMap).length > 0) {
         setCategoriesMap((prev) => ({ ...prev, ...initialMap }));
@@ -115,9 +569,13 @@ export function SiteHeader() {
         );
         const newMap: Record<string, CategoryItem[]> = {};
         results.forEach(({ type, data }) => {
-          newMap[type] = data;
+          if (data && data.length > 0) {
+            newMap[type] = data;
+          }
         });
-        setCategoriesMap((prev) => ({ ...prev, ...newMap }));
+        if (Object.keys(newMap).length > 0) {
+          setCategoriesMap((prev) => ({ ...prev, ...newMap }));
+        }
       } catch (err) {
         console.error("Failed to load navbar categories on page load:", err);
       }
@@ -159,7 +617,7 @@ export function SiteHeader() {
     };
   }, []);
 
-  // Desktop Hover-Intent Handlers
+  // Desktop Hover Handlers
   const handleMouseEnter = (link: NavLink) => {
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current);
@@ -183,7 +641,7 @@ export function SiteHeader() {
 
     hoverIntentTimerRef.current = setTimeout(() => {
       setActiveDropdown(link.label);
-    }, 60);
+    }, 40);
   };
 
   const handleMouseLeave = () => {
@@ -194,7 +652,7 @@ export function SiteHeader() {
 
     closeTimerRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 150);
+    }, 200);
   };
 
   const handleDropdownMouseEnter = () => {
@@ -210,7 +668,7 @@ export function SiteHeader() {
     }
     closeTimerRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 150);
+    }, 200);
   };
 
   const handleMobileToggle = async (link: NavLink) => {
@@ -225,25 +683,20 @@ export function SiteHeader() {
     const catType = link.categoryType;
 
     const cached = categoryCache.getCached(catType);
-    if (cached) {
+    if (cached && cached.length > 0) {
       setCategoriesMap((prev) => ({ ...prev, [catType]: cached }));
       setLoadingMap((prev) => ({ ...prev, [catType]: false }));
     } else {
       setLoadingMap((prev) => ({ ...prev, [catType]: true }));
       try {
         const data = await categoryCache.prefetch(catType);
-        setCategoriesMap((prev) => ({ ...prev, [catType]: data }));
+        if (data && data.length > 0) {
+          setCategoriesMap((prev) => ({ ...prev, [catType]: data }));
+        }
       } finally {
         setLoadingMap((prev) => ({ ...prev, [catType]: false }));
       }
     }
-  };
-
-  const handleMobileCategoryToggle = (catId: string) => {
-    setMobileCategoryExpanded((prev) => ({
-      ...prev,
-      [catId]: !prev[catId],
-    }));
   };
 
   const getCategoryLink = (baseHref: string, cat: { slug?: string; id?: string }) => {
@@ -275,7 +728,7 @@ export function SiteHeader() {
         }`}
       >
         {showDetailNav && detailNav ? (
-          /* 1. CONTEXTUAL DETAIL TAB NAVIGATION (Replaces main navbar when scrolling details page) */
+          /* 1. CONTEXTUAL DETAIL TAB NAVIGATION */
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:px-8 w-full animate-in fade-in duration-200">
             <div
               ref={detailTabsContainerRef}
@@ -321,7 +774,7 @@ export function SiteHeader() {
                 <button
                   type="button"
                   onClick={detailNav.onBookClick}
-                  className="bg-stone-900 hover:bg-stone-800 active:bg-stone-950 text-white font-semibold text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+                  className="bg-slate-950 hover:bg-slate-900 text-white font-semibold text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-sm transition-colors cursor-pointer shrink-0"
                 >
                   <span className="hidden sm:inline">{detailNav.bookButtonLabel || "Book Now"}</span>
                   <span className="sm:hidden">Book</span>
@@ -342,7 +795,7 @@ export function SiteHeader() {
                 priority
                 className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-sm border border-stone-200"
               />
-              <span className="font-heading text-sm sm:text-base font-bold text-zinc-900 group-hover:text-stone-900 transition-colors">
+              <span className="font-heading text-sm sm:text-base font-bold text-slate-950 transition-colors">
                 {settings.siteName || "Alpine Ace"}
               </span>
             </Link>
@@ -360,13 +813,14 @@ export function SiteHeader() {
                 const hasDropdown = Boolean(link.categoryType || (link.items && link.items.length > 0));
                 const isDropdownOpen = activeDropdown === link.label && hasDropdown;
                 const catType = link.categoryType || "";
-                const categories = categoriesMap[catType] || [];
-                const isLoading = !!loadingMap[catType];
+                const fetched = categoriesMap[catType];
+                const categories = (fetched && fetched.length > 0) ? fetched : (FALLBACK_CATEGORIES[catType] || []);
+                const isLoading = !!loadingMap[catType] && categories.length === 0;
 
                 return (
                   <div
                     key={link.label}
-                    className="relative flex items-center"
+                    className="relative flex items-center py-2"
                     onMouseEnter={() => handleMouseEnter(link)}
                     onMouseLeave={handleMouseLeave}
                   >
@@ -375,91 +829,76 @@ export function SiteHeader() {
                       onClick={() => setActiveDropdown(null)}
                       className={`relative pb-1 text-sm font-medium transition-colors flex items-center gap-1 cursor-pointer ${
                         isActive
-                          ? "text-stone-900 font-semibold"
-                          : "text-slate-600 hover:text-stone-900"
+                          ? "text-slate-950 font-bold"
+                          : "text-slate-600 hover:text-slate-950"
                       }`}
                     >
                       <span>{link.label}</span>
                       {hasDropdown && (
                         <ChevronDown
-                          className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-400 group-hover:text-stone-900 ${
-                            isDropdownOpen ? "rotate-180 text-stone-900" : ""
+                          className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-400 group-hover:text-slate-950 ${
+                            isDropdownOpen ? "rotate-180 text-slate-950" : ""
                           }`}
                         />
                       )}
                       {isActive && (
-                        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-stone-900 rounded-full" />
+                        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-950 rounded-full" />
                       )}
                     </Link>
 
-                    {/* Desktop Subcategories Mega-Menu */}
+                    {/* Desktop 2-Column Split Dropdown (Clean, Human, Spacious Travel UX) */}
                     {hasDropdown && isDropdownOpen && (
                       <div
                         onMouseEnter={handleDropdownMouseEnter}
                         onMouseLeave={handleDropdownMouseLeave}
-                        className={`absolute top-full pt-3 z-50 animate-in fade-in slide-in-from-top-1 duration-150 ease-out ${
+                        className={`absolute top-full pt-2 z-50 animate-in fade-in duration-150 ease-out ${
                           link.items && link.items.length > 0
                             ? "right-0"
                             : link.label === "Trekking"
-                            ? "-left-28 xl:-left-24"
+                            ? "-left-16 xl:-left-12"
                             : link.label === "Tours"
-                            ? "-left-[360px] xl:-left-[320px]"
+                            ? "-left-32"
                             : link.label === "Expeditions"
-                            ? "-left-[580px] xl:-left-[540px]"
+                            ? "-left-48"
                             : "left-0"
                         }`}
                       >
                         <div
-                          className={`bg-white rounded-xl border border-stone-200/90 shadow-xl shadow-stone-900/5 p-6 sm:p-8 overflow-hidden ${
+                          className={`bg-white rounded-lg shadow-xl shadow-stone-900/10 p-6 overflow-hidden ${
                             link.items && link.items.length > 0
-                              ? "w-[320px]"
-                              : "w-[1040px] max-w-[calc(100vw-32px)]"
+                              ? "w-[280px]"
+                              : "w-[720px] sm:w-[780px]"
                           }`}
                         >
                           {link.items && link.items.length > 0 ? (
-                            /* Simple Sub-Items (e.g. Resources: Blog, Contact) */
-                            <div>
-                              <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-2 px-1">
-                                Resources
-                              </div>
-                              <div className="space-y-1">
-                                {link.items.map((subItem) => (
-                                  <Link
-                                    key={subItem.href}
-                                    href={subItem.href}
-                                    onClick={() => setActiveDropdown(null)}
-                                    className="group/item flex items-center justify-between p-2.5 rounded-md hover:bg-stone-50 transition-colors cursor-pointer"
-                                  >
-                                    <div className="space-y-0.5 pr-2">
-                                      <div className="text-xs sm:text-sm font-semibold text-stone-900 group-hover/item:text-stone-900 transition-colors">
-                                        {subItem.label}
-                                      </div>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-stone-400 group-hover/item:text-stone-900 transition-transform group-hover/item:translate-x-0.5 shrink-0" />
-                                  </Link>
-                                ))}
-                              </div>
+                            /* Simple Resources Dropdown Links */
+                            <div className="space-y-1">
+                              {link.items.map((subItem) => (
+                                <Link
+                                  key={subItem.href}
+                                  href={subItem.href}
+                                  onClick={() => setActiveDropdown(null)}
+                                  className="flex items-center justify-between p-2.5 rounded-md hover:bg-stone-50 transition-colors text-slate-900 hover:text-amber-700 font-semibold text-sm cursor-pointer"
+                                >
+                                  <span>{subItem.label}</span>
+                                  <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+                                </Link>
+                              ))}
                             </div>
                           ) : (
-                            /* Subcategory Mega Menu */
+                            /* Category -> Subcategory Human Editorial Navigation Menu */
                             <div>
                               {isLoading ? (
-                                <div className="grid grid-cols-12 gap-8 p-2 animate-pulse">
-                                  <div className="col-span-4 space-y-3">
-                                    <div className="h-3 w-20 bg-stone-200 rounded" />
-                                    <div className="h-8 bg-stone-100 rounded-md" />
-                                    <div className="h-8 bg-stone-100 rounded-md" />
-                                    <div className="h-8 bg-stone-100 rounded-md" />
+                                <div className="grid grid-cols-12 gap-6 animate-pulse">
+                                  <div className="col-span-4 space-y-2">
+                                    <div className="h-9 bg-stone-100 rounded-md" />
+                                    <div className="h-9 bg-stone-100 rounded-md" />
+                                    <div className="h-9 bg-stone-100 rounded-md" />
                                   </div>
-                                  <div className="col-span-8 space-y-3">
-                                    <div className="h-3 w-28 bg-stone-200 rounded" />
-                                    <div className="h-10 bg-stone-100 rounded-md" />
-                                    <div className="h-10 bg-stone-100 rounded-md" />
+                                  <div className="col-span-8 grid grid-cols-2 gap-3.5">
+                                    <div className="h-32 bg-stone-100 rounded-md" />
+                                    <div className="h-32 bg-stone-100 rounded-md" />
                                   </div>
-                                </div>
-                              ) : categories.length === 0 ? (
-                                <div className="py-8 px-4 text-center text-xs text-stone-500 font-medium">
-                                  No categories available.
                                 </div>
                               ) : (
                                 (() => {
@@ -468,158 +907,104 @@ export function SiteHeader() {
                                   const selectedParent =
                                     categories.find((c) => c.id === activeParentId) ||
                                     categories[0];
-                                  const subcategories = selectedParent?.children || [];
-                                  const activeSubId =
-                                    hoveredSubcategoryMap[selectedParent.id] ||
-                                    subcategories[0]?.id;
-                                  const selectedSubCat =
-                                    subcategories.find((s) => s.id === activeSubId) ||
-                                    subcategories[0];
-
-                                  // Get ONLY subcategories of selectedParent that HAVE a real image string directly from the API
-                                  const subcategoriesWithImages = subcategories.filter(
-                                    (s) =>
-                                      s.image &&
-                                      typeof s.image === "string" &&
-                                      s.image.trim().length > 0
-                                  );
-                                  const hasSubCatImages = subcategoriesWithImages.length > 0;
+                                  const subcategories =
+                                    selectedParent?.children && selectedParent.children.length > 0
+                                      ? selectedParent.children
+                                      : categories.filter((c) => c.id !== selectedParent.id);
 
                                   return (
-                                    <div className="flex flex-col gap-5">
-                                      <div className="grid grid-cols-12 gap-8 divide-x divide-stone-100">
-                                        {/* Column 1: Main Navigation Categories (col-span-4) */}
-                                        <div className="col-span-4 pr-3 space-y-3">
-                                          <div className="text-xs font-bold text-stone-900 uppercase tracking-wider px-1">
-                                            Categories
-                                          </div>
-                                          <div className="space-y-1">
-                                            {categories.map((cat) => {
-                                              const isSelected = cat.id === selectedParent.id;
-                                              return (
-                                                <div
-                                                  key={cat.id}
-                                                  onMouseEnter={() =>
-                                                    setHoveredCategoryMap((prev) => ({
-                                                      ...prev,
-                                                      [catType]: cat.id,
-                                                    }))
-                                                  }
-                                                  className={`group/cat px-3.5 py-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-between ${
-                                                    isSelected
-                                                      ? "bg-stone-900 text-white font-semibold shadow-xs"
-                                                      : "hover:bg-stone-100/80 text-stone-900 font-medium"
-                                                  }`}
-                                                >
-                                                  <Link
-                                                    href={getCategoryLink(link.href, cat)}
-                                                    onClick={() => setActiveDropdown(null)}
-                                                    className="flex-1 min-w-0 pr-2"
-                                                  >
-                                                    <div className="text-xs sm:text-sm font-semibold truncate">
-                                                      {cat.name}
-                                                    </div>
-                                                  </Link>
-                                                  <ChevronRight
-                                                    className={`w-3.5 h-3.5 shrink-0 transition-transform ${
-                                                      isSelected
-                                                        ? "text-white translate-x-0.5 opacity-100"
-                                                        : "text-stone-400 opacity-0 group-hover/cat:opacity-100"
-                                                    }`}
-                                                  />
-                                                </div>
-                                              );
-                                            })}
-                                          </div>
-                                        </div>
-
-                                        {/* Column 2: Subcategories Visual Image Grid (col-span-8) */}
-                                        <div className="col-span-8 pl-6 flex flex-col justify-between">
-                                          <div>
-                                            <div className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-3">
-                                              {selectedParent.name} Subcategories
+                                    <div className="grid grid-cols-12 gap-8">
+                                      {/* Left Column: Category Navigation List (col-span-4) */}
+                                      <div className="col-span-4 space-y-1">
+                                        {categories.map((cat) => {
+                                          const isSelected = cat.id === selectedParent.id;
+                                          return (
+                                            <div
+                                              key={cat.id}
+                                              onMouseEnter={() =>
+                                                setHoveredCategoryMap((prev) => ({
+                                                  ...prev,
+                                                  [catType]: cat.id,
+                                                }))
+                                              }
+                                              className={`px-3.5 py-2.5 rounded-md transition-colors cursor-pointer flex items-center justify-between ${
+                                                isSelected
+                                                  ? "bg-slate-950 text-white font-semibold shadow-xs"
+                                                  : "hover:bg-stone-100 text-slate-800 font-medium"
+                                              }`}
+                                            >
+                                              <Link
+                                                href={getCategoryLink(link.href, cat)}
+                                                onClick={() => setActiveDropdown(null)}
+                                                className="flex-1 min-w-0"
+                                              >
+                                                <span className="text-sm font-semibold truncate block">
+                                                  {cat.name}
+                                                </span>
+                                              </Link>
+                                              <ChevronRight
+                                                className={`w-4 h-4 shrink-0 transition-opacity ${
+                                                  isSelected
+                                                    ? "text-white opacity-100"
+                                                    : "text-stone-400 opacity-0"
+                                                }`}
+                                              />
                                             </div>
-
-                                            {hasSubCatImages ? (
-                                              <div className="grid grid-cols-3 gap-3 max-h-[350px] overflow-y-auto pr-1">
-                                                {subcategoriesWithImages.map((subCat) => {
-                                                  return (
-                                                    <Link
-                                                      key={subCat.id}
-                                                      href={getCategoryLink(link.href, subCat)}
-                                                      onClick={() => setActiveDropdown(null)}
-                                                      className="group/imgcard relative h-36 sm:h-40 rounded-xl overflow-hidden border border-stone-200 hover:border-stone-900 transition-all duration-200 cursor-pointer block hover:shadow-md"
-                                                    >
-                                                      <Image
-                                                        src={subCat.image!}
-                                                        alt={subCat.name}
-                                                        fill
-                                                        className="object-cover group-hover/imgcard:scale-105 transition-transform duration-300"
-                                                        sizes="280px"
-                                                      />
-                                                      {/* Clean pure image by default; text overlay reveals strictly on hover with lightweight gradient */}
-                                                      <div className="absolute inset-0 transition-opacity duration-200 flex flex-col justify-end p-3.5 bg-gradient-to-t from-stone-950/70 via-stone-950/30 to-transparent opacity-0 group-hover/imgcard:opacity-100">
-                                                        <span className="text-xs sm:text-sm font-bold text-white line-clamp-2 leading-snug drop-shadow-xs">
-                                                          {subCat.name}
-                                                        </span>
-                                                        {subCat.itemCount > 0 && (
-                                                          <span className="text-[11px] text-stone-200 font-medium mt-0.5 drop-shadow-xs">
-                                                            {subCat.itemCount}{" "}
-                                                            {subCat.itemCount === 1
-                                                              ? "trip"
-                                                              : "trips"}
-                                                          </span>
-                                                        )}
-                                                      </div>
-                                                    </Link>
-                                                  );
-                                                })}
-                                              </div>
-                                            ) : subcategories.length > 0 ? (
-                                              /* Clean text grid fallback if API returns zero images for subcategories */
-                                              <div className="grid grid-cols-2 gap-x-6 gap-y-2 max-h-[340px] overflow-y-auto pr-1">
-                                                {subcategories.map((subCat) => (
-                                                  <Link
-                                                    key={subCat.id}
-                                                    href={getCategoryLink(link.href, subCat)}
-                                                    onClick={() => setActiveDropdown(null)}
-                                                    className="p-2.5 rounded-lg hover:bg-stone-100 text-stone-900 font-semibold flex items-center justify-between text-xs sm:text-sm"
-                                                  >
-                                                    <span>{subCat.name}</span>
-                                                    {subCat.itemCount > 0 && (
-                                                      <span className="text-stone-500 font-normal">
-                                                        ({subCat.itemCount})
-                                                      </span>
-                                                    )}
-                                                  </Link>
-                                                ))}
-                                              </div>
-                                            ) : (
-                                              <div className="py-4 px-1">
-                                                <Link
-                                                  href={getCategoryLink(link.href, selectedParent)}
-                                                  onClick={() => setActiveDropdown(null)}
-                                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-900 hover:text-stone-700 pt-1"
-                                                >
-                                                  <span>Explore {selectedParent.name}</span>
-                                                  <ArrowRight className="w-3.5 h-3.5" />
-                                                </Link>
-                                              </div>
-                                            )}
-                                          </div>
-                                        </div>
+                                          );
+                                        })}
                                       </div>
 
-                                      {/* Bottom Bar: High-Contrast Pure Navigation Link */}
-                                      <div className="pt-3.5 border-t border-stone-200 flex items-center justify-end">
-                                        <Link
-                                          href={link.href}
-                                          onClick={() => setActiveDropdown(null)}
-                                          className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-900 hover:text-stone-700 transition-colors group/all"
-                                        >
-                                          <span>View All {link.label}</span>
-                                          <ArrowRight className="w-3.5 h-3.5 text-stone-900 transition-transform group-hover/all:translate-x-0.5" />
-                                        </Link>
+                                      {/* Right Column: Wide Subcategory Destination Tiles (col-span-8) */}
+                                      <div className="col-span-8">
+                                        <div className="grid grid-cols-2 gap-3.5 max-h-[380px] overflow-y-auto pr-1">
+                                          {subcategories.map((subCat) => {
+                                            const hasImage = Boolean(
+                                              subCat.image &&
+                                                typeof subCat.image === "string" &&
+                                                subCat.image.trim().length > 0
+                                            );
+
+                                            if (hasImage) {
+                                              return (
+                                                <Link
+                                                  key={subCat.id}
+                                                  href={getCategoryLink(link.href, subCat)}
+                                                  onClick={() => setActiveDropdown(null)}
+                                                  className="group/tile relative h-32 sm:h-36 w-full rounded-md overflow-hidden block cursor-pointer"
+                                                >
+                                                  {/* Landscape Background Image */}
+                                                  <Image
+                                                    src={subCat.image!}
+                                                    alt={subCat.name}
+                                                    fill
+                                                    className="object-cover group-hover/tile:scale-103 transition-transform duration-300 ease-out"
+                                                    sizes="320px"
+                                                  />
+
+                                                  {/* Natural Overlay & Centered Subcategory Name INSIDE Image */}
+                                                  <div className="absolute inset-0 bg-slate-950/30 group-hover/tile:bg-slate-950/20 transition-colors duration-300 flex items-center justify-center p-3 text-center">
+                                                    <span className="text-sm sm:text-base font-semibold text-white tracking-wide leading-snug drop-shadow-md">
+                                                      {subCat.name}
+                                                    </span>
+                                                  </div>
+                                                </Link>
+                                              );
+                                            }
+
+                                            /* Clean Text Navigation Item when subcategory has no image */
+                                            return (
+                                              <Link
+                                                key={subCat.id}
+                                                href={getCategoryLink(link.href, subCat)}
+                                                onClick={() => setActiveDropdown(null)}
+                                                className="p-3 rounded-md hover:bg-stone-50 text-slate-900 hover:text-amber-700 font-semibold text-sm flex items-center justify-between border border-stone-100"
+                                              >
+                                                <span>{subCat.name}</span>
+                                                <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+                                              </Link>
+                                            );
+                                          })}
+                                        </div>
                                       </div>
                                     </div>
                                   );
@@ -639,228 +1024,138 @@ export function SiteHeader() {
             <div className="flex items-center gap-3">
               <Link
                 href="/contact"
-                className="hidden sm:inline-flex items-center gap-2 rounded-md bg-stone-900 hover:bg-stone-800 text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all duration-200 cursor-pointer group"
+                className="hidden sm:inline-flex items-center justify-center bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2 rounded-sm transition-colors shadow-2xs"
               >
-                <span>Plan Your Trip</span>
-                <ArrowRight className="w-3.5 h-3.5 text-amber-400 transition-transform group-hover:translate-x-0.5" />
+                Inquire &amp; Book
               </Link>
 
               <button
-                onClick={() => setMobileMenuOpen(true)}
-                className="lg:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                aria-label="Open navigation menu"
-                aria-expanded={mobileMenuOpen}
+                type="button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-stone-700 hover:text-stone-950 lg:hidden rounded-sm cursor-pointer"
+                aria-label="Toggle menu"
               >
-                <Menu className="h-6 w-6" />
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
         )}
       </header>
 
-      {/* Full-Screen Mobile Navigation Overlay */}
+      {/* Mobile Drawer Overlay & Content */}
       {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col bg-white text-slate-900 min-h-screen w-screen overflow-y-auto animate-in fade-in duration-200 lg:hidden"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile Navigation Menu"
-        >
-          {/* Mobile Overlay Top Header Bar */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white shrink-0">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3"
-            >
-              <Image
-                src="/logo.jpg"
-                alt="AlpineAce Logo"
-                width={36}
-                height={36}
-                className="h-9 w-9 object-cover rounded-lg border border-slate-200"
-              />
-              <span className="font-heading text-base font-bold text-slate-900">
-                {settings.siteName || "AlpineAce"}
-              </span>
-            </Link>
+        <div className="fixed inset-0 z-50 lg:hidden bg-slate-950/60 backdrop-blur-xs flex justify-end">
+          <div className="bg-white w-full max-w-sm h-full p-6 overflow-y-auto flex flex-col justify-between shadow-2xl">
+            <div>
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-200">
+                <Link
+                  href="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2"
+                >
+                  <Image
+                    src="/logo.jpg"
+                    alt="Logo"
+                    width={32}
+                    height={32}
+                    className="rounded-sm border border-stone-200"
+                  />
+                  <span className="font-heading text-base font-bold text-slate-950">
+                    {settings.siteName || "Alpine Ace"}
+                  </span>
+                </Link>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-1 text-slate-600 hover:text-slate-900 rounded-sm cursor-pointer"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
 
-            <button
-              onClick={() => setMobileMenuOpen(false)}
-              className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-              aria-label="Close navigation menu"
-            >
-              <X className="h-6 w-6" />
-            </button>
-          </div>
+              {/* Mobile Navigation Links */}
+              <nav className="space-y-3">
+                {navLinks.map((link) => {
+                  const hasDropdown = Boolean(
+                    link.categoryType || (link.items && link.items.length > 0)
+                  );
+                  const isExpanded = !!mobileExpanded[link.label];
+                  const catType = link.categoryType || "";
+                  const fetched = categoriesMap[catType];
+                  const categories =
+                    fetched && fetched.length > 0
+                      ? fetched
+                      : FALLBACK_CATEGORIES[catType] || [];
+                  const isLoading = !!loadingMap[catType] && categories.length === 0;
 
-          {/* Mobile Overlay Content Body */}
-          <div className="flex-1 flex flex-col justify-between px-6 py-8 max-w-md mx-auto w-full">
-            <nav className="flex flex-col space-y-1.5">
-              {navLinks.map((link) => {
-                const isActive =
-                  link.href === "/"
-                    ? pathname === "/"
-                    : link.items
-                    ? link.items.some((item) => pathname.startsWith(item.href))
-                    : pathname.startsWith(link.href);
-
-                const hasDropdown = Boolean(link.categoryType || (link.items && link.items.length > 0));
-                const isExpanded = !!mobileExpanded[link.label];
-                const catType = link.categoryType || "";
-                const categories = categoriesMap[catType] || [];
-                const isLoading = !!loadingMap[catType];
-
-                return (
-                  <div key={link.label} className="flex flex-col">
-                    <div
-                      className={`flex items-center justify-between rounded-xl transition-colors ${
-                        isActive
-                          ? "bg-amber-50/80 text-amber-800"
-                          : "hover:bg-slate-50 text-slate-700"
-                      }`}
-                    >
-                      <Link
-                        href={link.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`flex-1 py-3 px-3.5 text-lg font-medium ${
-                          isActive ? "font-bold text-amber-800" : "text-slate-700"
-                        }`}
-                      >
-                        {link.label}
-                      </Link>
-
-                      {hasDropdown && (
-                        <button
-                          onClick={() => handleMobileToggle(link)}
-                          className="p-3 text-stone-500 hover:text-amber-800 transition-colors cursor-pointer"
-                          aria-label={`Toggle ${link.label} items`}
-                          aria-expanded={isExpanded}
+                  return (
+                    <div key={link.label} className="border-b border-stone-100 pb-3">
+                      <div className="flex items-center justify-between">
+                        <Link
+                          href={link.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="text-sm font-bold text-slate-950 hover:text-amber-700 transition-colors"
                         >
-                          <ChevronDown
-                            className={`w-5 h-5 transition-transform duration-200 ${
-                              isExpanded ? "rotate-180 text-amber-700" : ""
-                            }`}
-                          />
-                        </button>
-                      )}
-                    </div>
+                          {link.label}
+                        </Link>
+                        {hasDropdown && (
+                          <button
+                            type="button"
+                            onClick={() => handleMobileToggle(link)}
+                            className="p-1 text-slate-500 hover:text-slate-900 cursor-pointer"
+                          >
+                            <ChevronDown
+                              className={`w-4 h-4 transition-transform duration-200 ${
+                                isExpanded ? "rotate-180 text-amber-700" : ""
+                              }`}
+                            />
+                          </button>
+                        )}
+                      </div>
 
-                    {hasDropdown && isExpanded && (
-                      <div className="pl-3 pr-2 py-2 space-y-1.5 bg-stone-50/70 rounded-xl mt-1 mb-2 border border-stone-200/60 animate-in fade-in duration-150">
-                        {link.items && link.items.length > 0 ? (
-                          <>
-                            {link.items.map((subItem) => (
+                      {/* Mobile Accordion Content */}
+                      {hasDropdown && isExpanded && (
+                        <div className="mt-3 pl-3 space-y-2 border-l-2 border-amber-600/30">
+                          {link.items && link.items.length > 0 ? (
+                            link.items.map((subItem) => (
                               <Link
                                 key={subItem.href}
                                 href={subItem.href}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="flex items-center justify-between p-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-amber-800 hover:bg-amber-50 transition-colors"
+                                className="block text-xs font-semibold text-slate-700 hover:text-slate-950 py-1"
                               >
-                                <div>
-                                  <div className="font-semibold text-xs text-slate-800">
-                                    {subItem.label}
-                                  </div>
-                                  {subItem.description && (
-                                    <p className="text-xs text-slate-500 line-clamp-1">
-                                      {subItem.description}
-                                    </p>
-                                  )}
-                                </div>
-                                <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                {subItem.label}
                               </Link>
-                            ))}
-                          </>
-                        ) : (
-                          <>
-                            {isLoading ? (
-                              <div className="p-3 text-xs text-stone-500 animate-pulse">
-                                Loading {link.label} categories...
-                              </div>
-                            ) : categories.length === 0 ? (
-                              <div className="p-3 text-xs text-stone-500">
-                                No subcategories available.
-                              </div>
-                            ) : (
-                              <>
-                                {categories.map((cat) => {
-                                  const subcategories = cat.children || [];
-                                  const isCategoryOpen = !!mobileCategoryExpanded[cat.id];
+                            ))
+                          ) : isLoading ? (
+                            <div className="text-xs text-slate-400 py-1">Loading...</div>
+                          ) : (
+                            categories.map((cat) => (
+                              <Link
+                                key={cat.id}
+                                href={getCategoryLink(link.href, cat)}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="block text-xs font-semibold text-slate-700 hover:text-slate-950 py-1.5"
+                              >
+                                {cat.name}
+                              </Link>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </nav>
+            </div>
 
-                                  return (
-                                    <div key={cat.id} className="space-y-1">
-                                      <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-stone-200/80">
-                                        <Link
-                                          href={getCategoryLink(link.href, cat)}
-                                          onClick={() => setMobileMenuOpen(false)}
-                                          className="font-semibold text-xs text-stone-900 flex-1 min-w-0 pr-2"
-                                        >
-                                          {cat.name}
-                                        </Link>
-
-                                        {subcategories.length > 0 && (
-                                          <button
-                                            type="button"
-                                            onClick={() => handleMobileCategoryToggle(cat.id)}
-                                            className="p-1 text-stone-500 hover:text-amber-800 cursor-pointer"
-                                          >
-                                            <ChevronDown
-                                              className={`w-3.5 h-3.5 transition-transform ${
-                                                isCategoryOpen ? "rotate-180 text-amber-700" : ""
-                                              }`}
-                                            />
-                                          </button>
-                                        )}
-                                      </div>
-
-                                      {/* Subcategories Accordion List */}
-                                      {subcategories.length > 0 && isCategoryOpen && (
-                                        <div className="pl-3 space-y-1 border-l-2 border-amber-300 ml-2 py-1">
-                                          {subcategories.map((subCat) => (
-                                            <Link
-                                              key={subCat.id}
-                                              href={getCategoryLink(link.href, subCat)}
-                                              onClick={() => setMobileMenuOpen(false)}
-                                              className="block p-1.5 text-xs font-semibold text-stone-700 hover:text-amber-800 hover:bg-amber-50 rounded"
-                                            >
-                                              {subCat.name}
-                                            </Link>
-                                          ))}
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-
-                                <div className="pt-1.5 mt-1 border-t border-stone-200/60">
-                                  <Link
-                                    href={link.href}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center justify-between p-2 text-xs font-bold text-amber-800 hover:underline"
-                                  >
-                                    <span>View All {link.label}</span>
-                                    <ArrowRight className="w-3.5 h-3.5" />
-                                  </Link>
-                                </div>
-                              </>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </nav>
-
-            <div className="pt-6 border-t border-slate-100 mt-6 space-y-4">
+            {/* Mobile Footer Inquiry CTA */}
+            <div className="pt-6 border-t border-stone-200">
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-md bg-stone-900 hover:bg-stone-800 text-white py-3 px-4 font-semibold text-sm shadow-md transition-colors"
+                className="w-full inline-flex items-center justify-center bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs py-3 rounded-sm transition-colors text-center shadow-2xs"
               >
-                <span>Plan Your Trip</span>
-                <ArrowRight className="w-4 h-4" />
+                Inquire &amp; Book Trip
               </Link>
             </div>
           </div>

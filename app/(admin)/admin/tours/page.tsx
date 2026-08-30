@@ -13,6 +13,7 @@ import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { TourFormModal, DeleteTourModal } from "@/components/admin/modals/tour-modal";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import {
   AdminTableContainer,
@@ -242,13 +243,11 @@ export default function AdminToursPage() {
         description="Manage tour packages and itineraries."
       >
         <Button
-          size="sm"
           onClick={() => {
             setActiveTour(null);
             setIsEditing(true);
             setIsFormOpen(true);
           }}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1.5" />
           Add New Tour Itinerary
@@ -261,19 +260,16 @@ export default function AdminToursPage() {
         onSearchChange={setSearchQuery}
         searchPlaceholder="Search tour title or location..."
       >
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-600 font-semibold">Status:</span>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
-          >
-            <option value="All">All Statuses</option>
-            <option value={PackageStatus.ACTIVE}>Active</option>
-            <option value={PackageStatus.FEATURED}>Featured</option>
-            <option value={PackageStatus.DRAFT}>Draft</option>
-          </select>
-        </div>
+        <AdminFilterSelect
+          label="Status:"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="All">All Statuses</option>
+          <option value={PackageStatus.ACTIVE}>Active</option>
+          <option value={PackageStatus.FEATURED}>Featured</option>
+          <option value={PackageStatus.DRAFT}>Draft</option>
+        </AdminFilterSelect>
       </AdminFilterBar>
 
       {/* Tours Table */}

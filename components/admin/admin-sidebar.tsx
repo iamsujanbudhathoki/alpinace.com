@@ -162,7 +162,7 @@ export function AdminSidebar({
               <span className="font-bold text-sm text-slate-900 tracking-tight truncate">
                 AlpineAce
               </span>
-              <span className="text-[10px] font-medium text-slate-500 truncate mt-0.5">
+              <span className="text-[10px] font-semibold text-slate-700 truncate mt-0.5">
                 Admin Console
               </span>
             </div>
@@ -178,7 +178,7 @@ export function AdminSidebar({
         {navGroups.map((group, gIdx) => (
           <div
             key={gIdx}
-            className={`space-y-1 ${gIdx > 0 ? "pt-3 border-t border-slate-100" : ""
+            className={`space-y-1 ${gIdx > 0 ? "pt-3 border-t border-slate-200" : ""
               }`}
           >
             {group.items.map((item) => {
@@ -194,19 +194,19 @@ export function AdminSidebar({
                       href={item.href}
                       onClick={handleNavClick}
                       title={item.title}
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${isActive
-                          ? "bg-slate-900 text-amber-400 font-semibold shadow-2xs"
-                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      className={`w-9 h-9 rounded-md flex items-center justify-center transition-all ${isActive
+                          ? "bg-slate-900 text-amber-400 font-semibold shadow-xs"
+                          : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                         }`}
                     >
                       <Icon
-                        className={`w-4 h-4 ${isActive ? "text-amber-400" : "text-slate-500 group-hover:text-slate-900"
+                        className={`w-4 h-4 ${isActive ? "text-amber-400" : "text-slate-600 group-hover:text-slate-900"
                           }`}
                       />
                     </Link>
 
                     {/* Hover Tooltip when Collapsed */}
-                    <div className="absolute left-full ml-2.5 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 flex items-center gap-2 top-1/2 -translate-y-1/2 -translate-x-1 group-hover:translate-x-0">
+                    <div className="absolute left-full ml-2.5 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 flex items-center gap-2 top-1/2 -translate-y-1/2 -translate-x-1 group-hover:translate-x-0">
                       <span>{item.title}</span>
                     </div>
                   </div>
@@ -218,16 +218,16 @@ export function AdminSidebar({
                   key={item.href}
                   href={item.href}
                   onClick={handleNavClick}
-                  className={`group flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${isActive
-                      ? "bg-slate-900 text-white shadow-2xs"
-                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80"
+                  className={`group flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-semibold transition-colors ${isActive
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-800 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Icon
                       className={`w-4 h-4 shrink-0 transition-colors ${isActive
                           ? "text-amber-400"
-                          : "text-slate-500 group-hover:text-slate-900"
+                          : "text-slate-600 group-hover:text-slate-900"
                         }`}
                     />
                     <span className="truncate">{item.title}</span>
@@ -236,7 +236,7 @@ export function AdminSidebar({
                     <span
                       className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${isActive
                           ? "bg-white/20 text-white"
-                          : "bg-slate-100 text-slate-700 border border-slate-200"
+                          : "bg-slate-100 text-slate-800 border border-slate-200"
                         }`}
                     >
                       {item.badge}
@@ -254,15 +254,15 @@ export function AdminSidebar({
         <div className="p-2.5 border-t border-slate-200 shrink-0 hidden md:block">
           <button
             onClick={onToggleCollapse}
-            className={`w-full py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center ${isCollapsed ? "justify-center px-0" : "px-2.5 justify-between"
+            className={`w-full py-1.5 rounded-md text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center ${isCollapsed ? "justify-center px-0" : "px-2.5 justify-between"
               }`}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {!isCollapsed && <span>Collapse sidebar</span>}
             {isCollapsed ? (
-              <PanelLeftOpen className="w-4 h-4 text-slate-600" />
+              <PanelLeftOpen className="w-4 h-4 text-slate-700" />
             ) : (
-              <PanelLeftClose className="w-4 h-4 text-slate-400" />
+              <PanelLeftClose className="w-4 h-4 text-slate-600" />
             )}
           </button>
         </div>

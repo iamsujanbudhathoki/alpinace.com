@@ -69,7 +69,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const fetchSettings = async () => {
     try {
-      const data = await SettingService.getAll();
+      const data = await SettingService.getPublicAll();
       if (data && Object.keys(data).length > 0) {
         setSettings((prev) => ({
           ...prev,

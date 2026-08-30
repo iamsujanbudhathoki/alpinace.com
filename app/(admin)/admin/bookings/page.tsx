@@ -12,6 +12,7 @@ import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { BookingFormModal, DeleteBookingModal } from "@/components/admin/modals/booking-modal";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import {
   AdminTableContainer,
@@ -346,35 +347,29 @@ export default function AdminBookingsPage() {
         onSearchChange={setSearchQuery}
         searchPlaceholder="Filter guest, ref, or package..."
       >
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-600 font-semibold">Category:</span>
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
-          >
-            <option value="All">All Categories</option>
-            <option value={BookingPackageType.TREKKING}>Trekking</option>
-            <option value={BookingPackageType.EXPEDITION}>Expedition</option>
-            <option value={BookingPackageType.TOUR}>Tour</option>
-          </select>
-        </div>
+        <AdminFilterSelect
+          label="Category:"
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+        >
+          <option value="All">All Categories</option>
+          <option value={BookingPackageType.TREKKING}>Trekking</option>
+          <option value={BookingPackageType.EXPEDITION}>Expedition</option>
+          <option value={BookingPackageType.TOUR}>Tour</option>
+        </AdminFilterSelect>
 
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-600 font-semibold">Status:</span>
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
-          >
-            <option value="All">All Statuses</option>
-            <option value={BookingStatus.CONFIRMED}>Confirmed</option>
-            <option value={BookingStatus.IN_REVIEW}>In Review</option>
-            <option value={BookingStatus.ACTIVE_TREK}>Active Trek</option>
-            <option value={BookingStatus.COMPLETED}>Completed</option>
-            <option value={BookingStatus.CANCELLED}>Cancelled</option>
-          </select>
-        </div>
+        <AdminFilterSelect
+          label="Status:"
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+        >
+          <option value="All">All Statuses</option>
+          <option value={BookingStatus.CONFIRMED}>Confirmed</option>
+          <option value={BookingStatus.IN_REVIEW}>In Review</option>
+          <option value={BookingStatus.ACTIVE_TREK}>Active Trek</option>
+          <option value={BookingStatus.COMPLETED}>Completed</option>
+          <option value={BookingStatus.CANCELLED}>Cancelled</option>
+        </AdminFilterSelect>
       </AdminFilterBar>
 
       {/* Bookings Table */}

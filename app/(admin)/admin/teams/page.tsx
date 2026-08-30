@@ -16,6 +16,7 @@ import {
   AdminActionButton,
 } from "@/components/admin/ui/admin-table";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -203,19 +204,16 @@ export default function AdminTeamsPage() {
         title="Team Members & Leadership"
         description="Manage Sherpa guides, expedition leaders, and executive staff displayed on the marketing website."
       >
-        <Button
-          onClick={handleOpenCreateModal}
-          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer flex items-center gap-2"
-        >
+        <Button onClick={handleOpenCreateModal}>
           <Plus className="w-4 h-4" />
           <span>Add Team Member</span>
         </Button>
       </AdminPageHeader>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-white p-4 rounded-xl border border-slate-200">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center bg-white p-4 rounded-lg border border-slate-200">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <Input
             type="text"
             value={searchQuery}
@@ -224,25 +222,22 @@ export default function AdminTeamsPage() {
               setPage(1);
             }}
             placeholder="Search team member name, role, or bio..."
-            className="pl-9 text-xs bg-slate-50/80 border-slate-200 text-slate-900 focus:bg-white rounded-lg h-9"
+            className="pl-9 h-9"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 font-medium">Status:</span>
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
-            className="text-xs bg-white border border-slate-200 text-slate-900 font-semibold rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-400/10 cursor-pointer"
-          >
-            <option value="All">All Members ({totalItems})</option>
-            <option value="active">Active Only</option>
-            <option value="inactive">Inactive Only</option>
-          </select>
-        </div>
+        <AdminFilterSelect
+          label="Status:"
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="All">All Members ({totalItems})</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </AdminFilterSelect>
       </div>
 
       {/* Table Container */}
@@ -283,7 +278,7 @@ export default function AdminTeamsPage() {
                     {/* Member Info */}
                     <AdminTableCell>
                       <div className="flex items-center gap-3">
-                        <GripVertical className="w-4 h-4 text-slate-300 hover:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing" />
+                        <GripVertical className="w-4 h-4 text-slate-400 hover:text-slate-700 shrink-0 cursor-grab active:cursor-grabbing" />
                         {member.avatar ? (
                           <img
                             src={member.avatar}
@@ -293,7 +288,7 @@ export default function AdminTeamsPage() {
                             title="Click to view image lightbox"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
+                          <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-700">
                             <User className="w-5 h-5" />
                           </div>
                         )}
@@ -306,7 +301,7 @@ export default function AdminTeamsPage() {
                             {member.name}
                           </button>
                           {member.bio && (
-                            <div className="text-[11px] text-slate-500 font-normal line-clamp-1 max-w-xs">
+                            <div className="text-[11px] text-slate-700 font-normal line-clamp-1 max-w-xs">
                               {member.bio}
                             </div>
                           )}
@@ -324,8 +319,8 @@ export default function AdminTeamsPage() {
                     {/* Badge / Experience */}
                     <AdminTableCell>
                       {member.experience ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
-                          <Award className="w-3 h-3 text-slate-500 shrink-0" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-800 text-[11px] font-medium border border-slate-200">
+                          <Award className="w-3 h-3 text-slate-600 shrink-0" />
                           <span>{member.experience}</span>
                         </span>
                       ) : (

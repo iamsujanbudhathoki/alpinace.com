@@ -68,9 +68,9 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
         }
 
         const [faqsData, settingsData, allTours] = await Promise.all([
-          FaqService.getAll(FaqStatus.ACTIVE).catch(() => []),
-          SettingService.getAll().catch(() => ({})),
-          TourService.getAll().catch(() => []),
+          FaqService.getPublicAll(FaqStatus.ACTIVE).catch(() => []),
+          SettingService.getPublicAll().catch(() => ({})),
+          TourService.getPublicAll().catch(() => []),
         ]);
 
         if (faqsData) setGlobalFaqs(faqsData);

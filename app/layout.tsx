@@ -23,7 +23,7 @@ import { SettingService } from "@/lib/services/admin-service";
 export async function generateMetadata(): Promise<Metadata> {
   let googleVerificationToken = "";
   try {
-    const settings = await SettingService.getAll();
+    const settings = await SettingService.getPublicAll();
     if (settings?.googleSiteVerification) {
       googleVerificationToken = extractVerificationToken(settings.googleSiteVerification);
     }

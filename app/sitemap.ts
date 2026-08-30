@@ -26,10 +26,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const [treks, tours, expeditions, blogs] = await Promise.all([
-      TrekService.getAll({ status: PackageStatus.ACTIVE }).catch(() => []),
-      TourService.getAll({ status: PackageStatus.ACTIVE }).catch(() => []),
-      ExpeditionService.getAll({ status: PackageStatus.ACTIVE }).catch(() => []),
-      BlogService.getAll(BlogStatus.PUBLISHED).catch(() => []),
+      TrekService.getPublicAll({ status: PackageStatus.ACTIVE }).catch(() => []),
+      TourService.getPublicAll({ status: PackageStatus.ACTIVE }).catch(() => []),
+      ExpeditionService.getPublicAll({ status: PackageStatus.ACTIVE }).catch(() => []),
+      BlogService.getPublicAll(BlogStatus.PUBLISHED).catch(() => []),
     ]);
 
     const trekRoutes: MetadataRoute.Sitemap = treks

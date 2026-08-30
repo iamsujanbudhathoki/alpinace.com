@@ -16,6 +16,7 @@ import {
   ReplyInquiryModal,
   DeleteInquiryModal,
 } from "@/components/admin/modals/inquiry-modal";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -201,10 +202,7 @@ export default function AdminInquiriesPage() {
         title="Inquiries & Lead Management"
         description="Review inbound travel leads, dispatch custom quotes, and track customer communication."
       >
-        <Button
-          onClick={() => setIsFormOpen(true)}
-          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer"
-        >
+        <Button onClick={() => setIsFormOpen(true)}>
           <Plus className="w-4 h-4 mr-1.5" />
           Log Manual Inquiry
         </Button>
@@ -218,42 +216,32 @@ export default function AdminInquiriesPage() {
       >
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           {/* Status Dropdown Filter */}
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-slate-600 whitespace-nowrap">
-              Status:
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="text-xs font-semibold text-slate-900 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-400/10 focus:border-slate-400 cursor-pointer transition-all"
-            >
-              <option value="All">All Statuses</option>
-              {Object.values(InquiryStatus).map((st) => (
-                <option key={st} value={st}>
-                  {st}
-                </option>
-              ))}
-            </select>
-          </div>
+          <AdminFilterSelect
+            label="Status:"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="All">All Statuses</option>
+            {Object.values(InquiryStatus).map((st) => (
+              <option key={st} value={st}>
+                {st}
+              </option>
+            ))}
+          </AdminFilterSelect>
 
           {/* Inquiry Type Dropdown Filter */}
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-slate-600 whitespace-nowrap">
-              Inquiry Type:
-            </label>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="text-xs font-semibold text-slate-900 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-slate-400/10 focus:border-slate-400 cursor-pointer transition-all"
-            >
-              <option value="All">All Inquiry Types</option>
-              {Object.values(InquiryType).map((tp) => (
-                <option key={tp} value={tp}>
-                  {tp}
-                </option>
-              ))}
-            </select>
-          </div>
+          <AdminFilterSelect
+            label="Inquiry Type:"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <option value="All">All Inquiry Types</option>
+            {Object.values(InquiryType).map((tp) => (
+              <option key={tp} value={tp}>
+                {tp}
+              </option>
+            ))}
+          </AdminFilterSelect>
         </div>
       </AdminFilterBar>
 

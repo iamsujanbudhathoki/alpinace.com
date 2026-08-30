@@ -14,6 +14,7 @@ import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { TrekFormModal, DeleteTrekModal } from "@/components/admin/modals/trek-modal";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import {
   AdminTableContainer,
@@ -243,13 +244,11 @@ export default function AdminTreksPage() {
         description="Manage high-altitude routes, tea-house circuits, permits, and pricing."
       >
         <Button
-          size="sm"
           onClick={() => {
             setActiveTrek(null);
             setIsEditing(true);
             setIsFormOpen(true);
           }}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1.5" />
           Add New Trek Itinerary
@@ -262,21 +261,18 @@ export default function AdminTreksPage() {
         onSearchChange={setSearchQuery}
         searchPlaceholder="Search trek title or region..."
       >
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
-          <span className="text-slate-600 font-semibold">Difficulty:</span>
-          <select
-            value={selectedDifficulty}
-            onChange={(e) => setSelectedDifficulty(e.target.value)}
-            className="bg-transparent text-slate-900 font-semibold focus:outline-none cursor-pointer"
-          >
-            <option value="All">All Difficulties</option>
-            <option value={TripDifficulty.EASY}>Easy</option>
-            <option value={TripDifficulty.MODERATE}>Moderate</option>
-            <option value={TripDifficulty.CHALLENGING}>Challenging</option>
-            <option value={TripDifficulty.STRENUOUS}>Strenuous</option>
-            <option value={TripDifficulty.EXTREME}>Extreme</option>
-          </select>
-        </div>
+        <AdminFilterSelect
+          label="Difficulty:"
+          value={selectedDifficulty}
+          onChange={(e) => setSelectedDifficulty(e.target.value)}
+        >
+          <option value="All">All Difficulties</option>
+          <option value={TripDifficulty.EASY}>Easy</option>
+          <option value={TripDifficulty.MODERATE}>Moderate</option>
+          <option value={TripDifficulty.CHALLENGING}>Challenging</option>
+          <option value={TripDifficulty.STRENUOUS}>Strenuous</option>
+          <option value={TripDifficulty.EXTREME}>Extreme</option>
+        </AdminFilterSelect>
       </AdminFilterBar>
 
       {/* Treks Table */}

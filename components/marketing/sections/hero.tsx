@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { siteConfig } from "@/lib/site-config";
 
 export function Hero() {
   return (
-    <section className="relative isolate flex min-h-[90svh] sm:min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-slate-950 px-6 text-center">
+    <section className="relative isolate flex min-h-[82vh] flex-col justify-end overflow-hidden bg-stone-950 text-white">
       {/* Background Video */}
       <video
         autoPlay
@@ -12,43 +10,48 @@ export function Hero() {
         muted
         playsInline
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover opacity-55"
       >
         <source src="/hero-video.mp4" type="video/mp4" />
       </video>
 
-      {/* Natural overlay gradient */}
+      {/* High-Contrast Gradient */}
       <div
-        className="absolute inset-0 bg-stone-950/40"
+        className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-stone-950/20"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 flex max-w-4xl flex-col items-center mt-12">
-        <h1 className="font-heading text-4xl leading-tight font-semibold text-white sm:text-5xl md:text-6xl tracking-tight">
-          Walk deeper into the Himalayas.
-        </h1>
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+        <div className="max-w-2xl space-y-5">
+          <span className="text-amber-400 text-xs sm:text-sm font-medium uppercase tracking-wider block">
+            Sherpa-Guided Himalayan Expeditions &bull; Kathmandu, Nepal
+          </span>
 
-        <p className="mt-6 max-w-2xl text-base leading-relaxed text-stone-100 sm:text-lg font-normal drop-shadow-md">
-          {siteConfig.description}
-        </p>
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-white">
+            Walk deeper into the Himalayas.
+          </h1>
 
-        {/* Action Buttons */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-          <Link
-            href="/trekking"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-sm bg-amber-700 hover:bg-amber-800 text-white px-8 py-3.5 text-sm font-semibold transition-colors cursor-pointer"
-          >
-            <span>Explore Treks</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/contact"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-sm bg-stone-900/80 hover:bg-stone-900 text-white border border-stone-600 px-8 py-3.5 text-sm font-medium transition-colors cursor-pointer backdrop-blur-sm"
-          >
-            <span>Plan Custom Trip</span>
-          </Link>
+          <p className="text-stone-200 text-base sm:text-lg font-normal leading-relaxed">
+            Custom Himalayan trekking circuits and high-peak climbs guided exclusively by IFMGA Sherpa leaders.
+          </p>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <Link
+              href="/trekking"
+              className="inline-flex items-center justify-center rounded-sm bg-amber-600 hover:bg-amber-700 text-white px-7 py-3 text-sm font-semibold transition-colors text-center"
+            >
+              Explore Routes &rarr;
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center rounded-sm bg-stone-900/90 hover:bg-stone-900 text-white border border-stone-700 px-7 py-3 text-sm font-medium transition-colors text-center"
+            >
+              Plan Custom Trip
+            </Link>
+          </div>
         </div>
       </div>
     </section>
   );
 }
+

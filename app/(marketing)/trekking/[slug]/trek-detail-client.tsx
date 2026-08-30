@@ -78,9 +78,9 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         }
 
         const [faqsData, settingsData, allTreks] = await Promise.all([
-          FaqService.getAll(FaqStatus.ACTIVE).catch(() => []),
-          SettingService.getAll().catch(() => ({})),
-          TrekService.getAll().catch(() => []),
+          FaqService.getPublicAll(FaqStatus.ACTIVE).catch(() => []),
+          SettingService.getPublicAll().catch(() => ({})),
+          TrekService.getPublicAll().catch(() => []),
         ]);
 
         if (isMounted) {

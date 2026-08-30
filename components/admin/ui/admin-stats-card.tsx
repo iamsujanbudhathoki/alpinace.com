@@ -20,10 +20,10 @@ export function AdminStatsCard({
   trendType = "positive",
 }: AdminStatsCardProps) {
   return (
-    <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-2 relative overflow-hidden group hover:border-slate-300 transition-all">
+    <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-2 relative overflow-hidden transition-all">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-500">{label}</span>
-        <div className="w-8 h-8 rounded-lg bg-slate-100/80 border border-slate-200/60 text-slate-600 flex items-center justify-center shrink-0">
+        <span className="text-xs font-semibold text-slate-700">{label}</span>
+        <div className="w-8 h-8 rounded-md bg-slate-50 border border-slate-200 text-slate-700 flex items-center justify-center shrink-0">
           <Icon className="w-4 h-4" />
         </div>
       </div>
@@ -38,13 +38,13 @@ export function AdminStatsCard({
                 ? "text-amber-700"
                 : trendType === "negative"
                 ? "text-rose-700"
-                : "text-slate-500"
+                : "text-slate-700"
             }`}
           >
             {trendText}
           </div>
         )}
-        {subtext && <p className="text-[11px] text-slate-500 mt-0.5 font-medium">{subtext}</p>}
+        {subtext && <p className="text-[11px] text-slate-600 mt-0.5 font-normal">{subtext}</p>}
       </div>
     </div>
   );

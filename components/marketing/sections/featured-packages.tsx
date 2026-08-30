@@ -4,17 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import {
-  Clock,
-  TrendingUp,
-  Star,
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Footprints,
-  Compass,
-  Mountain,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { apiClient } from "@/lib/services/api-client";
 import { TravelPackage } from "@/lib/home-data";
 import { PackageStatus } from "@/lib/admin-data";
@@ -40,15 +30,11 @@ export function FeaturedPackages({
     initialTreks.length === 0 && initialTours.length === 0 && initialExpeditions.length === 0
   );
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
-
-  // Autoplay Plugin Setup
+  // Autoplay plugin configuration for smooth, continuous sliding
   const autoplay = useRef(
-    Autoplay({ delay: 3500, stopOnInteraction: false, stopOnMouseEnter: true })
+    Autoplay({ delay: 3800, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
-  // Embla Carousel Hook
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       loop: true,
@@ -67,29 +53,13 @@ export function FeaturedPackages({
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  const scrollTo = useCallback(
-    (index: number) => {
-      if (emblaApi) emblaApi.scrollTo(index);
-    },
-    [emblaApi]
-  );
-
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi]);
-
+  // Re-init Embla when changing active category tab
   useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    setScrollSnaps(emblaApi.scrollSnapList());
-    emblaApi.on("select", onSelect);
-    emblaApi.on("reInit", onSelect);
-    return () => {
-      emblaApi.off("select", onSelect);
-      emblaApi.off("reInit", onSelect);
-    };
-  }, [emblaApi, onSelect]);
+    if (emblaApi) {
+      emblaApi.reInit();
+      emblaApi.scrollTo(0);
+    }
+  }, [activeTab, emblaApi]);
 
   // Load featured items from backend API
   useEffect(() => {
@@ -156,9 +126,9 @@ export function FeaturedPackages({
           status: p.status,
         }));
 
-        setTreks(mappedTreks);
-        setTours(mappedTours);
-        setExpeditions(mappedExpeditions);
+        if (mappedTreks.length > 0) setTreks(mappedTreks);
+        if (mappedTours.length > 0) setTours(mappedTours);
+        if (mappedExpeditions.length > 0) setExpeditions(mappedExpeditions);
       } catch (e) {
         console.warn("Failed to fetch featured packages from backend:", e);
       } finally {
@@ -174,14 +144,6 @@ export function FeaturedPackages({
       : activeTab === "tours"
         ? tours
         : expeditions;
-
-  // Re-initialize Embla when switching active tab
-  useEffect(() => {
-    if (emblaApi) {
-      emblaApi.reInit();
-      emblaApi.scrollTo(0);
-    }
-  }, [activeTab, emblaApi]);
 
   const getPackageLink = (pkg: TravelPackage, tab: FeaturedTab) => {
     if (tab === "tours") return `/tours/${pkg.slug}`;
@@ -203,77 +165,64 @@ export function FeaturedPackages({
 
   const exploreInfo = getExploreAllLink(activeTab);
 
-  const tabs = [
-    { key: "treks" as FeaturedTab, label: "Treks", count: treks.length, icon: Footprints },
-    { key: "tours" as FeaturedTab, label: "Tours", count: tours.length, icon: Compass },
-    { key: "expeditions" as FeaturedTab, label: "Expeditions", count: expeditions.length, icon: Mountain },
+  const tabs: { key: FeaturedTab; label: string }[] = [
+    { key: "treks", label: "Trekking Circuits" },
+    { key: "expeditions", label: "Peak Expeditions" },
+    { key: "tours", label: "Cultural Tours" },
   ];
 
   return (
-    <section className="py-12 sm:py-16 bg-stone-50/50 overflow-hidden border-b border-stone-200">
+    <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Centered Section Header */}
-        <div className="flex flex-col items-center text-center space-y-3 mb-8 pb-5 border-b border-stone-200">
-          <div className="space-y-1 max-w-xl mx-auto">
-            <span className="text-amber-800 text-xs font-bold block tracking-normal">
-              Sherpa-Guided Journeys
+        
+        {/* Clean Travel Agency Header & Tab Controls */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-stone-200">
+          <div className="space-y-1">
+            <span className="text-amber-700 text-xs font-semibold uppercase tracking-wider block">
+              Featured Destinations
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
-              Featured Treks &amp; Expeditions
+              Himalayan Expeditions &amp; Routes
             </h2>
-            <p className="text-stone-700 text-xs sm:text-sm font-normal mt-1 leading-relaxed">
-              Guided Himalayan routes organized directly by our team in Kathmandu.
-            </p>
           </div>
 
-          {/* Centered Category Navigation Tabs */}
-          <div className="flex items-center justify-center gap-1.5 sm:gap-3 overflow-x-auto max-w-full scrollbar-none pt-3">
+          {/* Minimalist Category Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.key;
-              const Icon = tab.icon;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 border-b-2 whitespace-nowrap ${
+                  className={`px-4 py-2 text-xs sm:text-sm font-medium rounded-sm transition-colors cursor-pointer whitespace-nowrap border ${
                     isActive
-                      ? "border-stone-900 text-stone-900 font-bold"
-                      : "border-transparent text-stone-700 hover:text-stone-900 font-medium"
+                      ? "bg-stone-900 text-white border-stone-900"
+                      : "bg-white text-stone-700 border-stone-200 hover:border-stone-400"
                   }`}
-                  aria-selected={isActive}
-                  role="tab"
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-stone-900" : "text-stone-500"}`} />
-                  <span>{tab.label}</span>
-                  <span
-                    className={`text-[11px] px-1.5 py-0.5 rounded-sm font-bold ${
-                      isActive ? "bg-stone-900 text-white" : "bg-stone-200/80 text-stone-700"
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
+                  {tab.label}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Embla Carousel Container */}
-        <div className="relative group/carousel">
-          {/* Floating Side Navigation Arrows (Desktop & Tablet) */}
+        {/* Horizontal Showcase / Grid */}
+        <div className="relative pt-8 group/carousel">
+          {/* Navigation Arrows (Only if more than 1 item) */}
           {!loading && currentPackages.length > 1 && (
             <>
               <button
                 onClick={scrollPrev}
-                aria-label="Previous Slide"
-                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-100 hover:scale-105 transition-all duration-200 cursor-pointer"
+                aria-label="Previous Destination"
+                className="hidden md:flex absolute -left-4 top-1/2 z-20 w-10 h-10 rounded-sm bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={scrollNext}
-                aria-label="Next Slide"
-                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-100 hover:scale-105 transition-all duration-200 cursor-pointer"
+                aria-label="Next Destination"
+                className="hidden md:flex absolute -right-4 top-1/2 z-20 w-10 h-10 rounded-sm bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-colors cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -281,117 +230,140 @@ export function FeaturedPackages({
           )}
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
-                  className="bg-white rounded-sm border border-stone-200 p-4 space-y-4 animate-pulse shadow-sm"
+                  className="bg-white rounded-sm border border-stone-200 p-4 space-y-4 animate-pulse"
                 >
-                  <div className="h-48 bg-stone-100 rounded-sm w-full" />
+                  <div className="h-52 bg-stone-100 rounded-sm w-full" />
                   <div className="h-4 bg-stone-200 rounded w-1/3" />
                   <div className="h-5 bg-stone-200 rounded w-3/4" />
-                  <div className="h-3 bg-stone-100 rounded w-full" />
                 </div>
               ))}
             </div>
           ) : currentPackages.length === 0 ? (
-            <div className="bg-white rounded-sm p-8 sm:p-12 text-center space-y-3 border border-stone-200 shadow-2xs">
-              <p className="text-sm font-medium text-stone-700">
-                No featured {activeTab} available at this moment.
+            <div className="bg-white rounded-sm p-8 sm:p-12 text-center space-y-3 border border-stone-200">
+              <p className="text-sm text-stone-600">
+                No featured routes in this category currently.
               </p>
               <Link
                 href={exploreInfo.href}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 hover:underline"
+                className="inline-block text-xs font-semibold text-amber-700 hover:underline"
               >
-                <span>{exploreInfo.label}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                {exploreInfo.label} &rarr;
               </Link>
             </div>
+          ) : currentPackages.length === 1 ? (
+            /* Single item clean layout - static, no horizontal scrolling */
+            <div className="max-w-md">
+              {currentPackages.map((pkg) => {
+                const packageHref = getPackageLink(pkg, activeTab);
+                return (
+                  <Link
+                    key={pkg.id}
+                    href={packageHref}
+                    className="group flex flex-col bg-white rounded-sm border border-stone-200 hover:border-stone-400 transition-all duration-300 overflow-hidden"
+                  >
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
+                      <img
+                        src={pkg.image || "/mountain-placeholder.jpg"}
+                        alt={pkg.title}
+                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                      />
+                      {pkg.region && (
+                        <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
+                          {pkg.region}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-5 space-y-4">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
+                          <span>{pkg.durationDays} Days</span>
+                          {pkg.maxAltitudeMeters > 0 && (
+                            <span>{pkg.maxAltitudeMeters.toLocaleString()}m altitude</span>
+                          )}
+                        </div>
+                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-amber-700 transition-colors leading-snug line-clamp-1">
+                          {pkg.title}
+                        </h3>
+                      </div>
+                      <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                        <div>
+                          <span className="text-[11px] text-stone-400 block font-medium">From</span>
+                          <span className="text-base font-bold text-stone-900">
+                            ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
+                          </span>
+                        </div>
+                        <span className="text-xs font-semibold text-amber-700 group-hover:underline">
+                          Explore Route &rarr;
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           ) : (
-            <div className="overflow-hidden cursor-grab active:cursor-grabbing py-2 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8" ref={emblaRef}>
-              <div className="flex gap-5">
+            /* Multi-item Embla Carousel */
+            <div className="overflow-hidden cursor-grab active:cursor-grabbing" ref={emblaRef}>
+              <div className="flex gap-6">
                 {currentPackages.map((pkg) => {
                   const packageHref = getPackageLink(pkg, activeTab);
 
                   return (
                     <div
                       key={pkg.id}
-                      className="flex-[0_0_88%] sm:flex-[0_0_48%] lg:flex-[0_0_31.5%] min-w-0"
+                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0"
                     >
                       <Link
                         href={packageHref}
-                        className="group h-full flex flex-col bg-white rounded-sm border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden"
+                        className="group flex flex-col h-full bg-white rounded-sm border border-stone-200 hover:border-stone-400 transition-all duration-300 overflow-hidden"
                       >
-                        {/* Image Frame */}
+                        {/* Mountain Image Frame */}
                         <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
                           <img
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
-                            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out"
+                            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent pointer-events-none" />
 
-                          {/* Top Badges */}
+                          {/* Region Tag */}
                           {pkg.region && (
-                            <div className="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-xs text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm border border-white/10">
+                            <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
                               {pkg.region}
-                            </div>
-                          )}
-
-                          {pkg.rating > 0 && (
-                            <div className="absolute top-3 right-3 bg-white/95 text-stone-900 text-[11px] font-bold px-2 py-0.5 rounded-sm flex items-center gap-1 border border-stone-200">
-                              <Star className="w-3 h-3 text-amber-600 fill-amber-600" />
-                              <span>{pkg.rating.toFixed(1)}</span>
-                            </div>
+                            </span>
                           )}
                         </div>
 
-                        {/* Card Content */}
+                        {/* Minimalist Destination Card Body */}
                         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                          <div className="space-y-2">
-                            {pkg.difficulty && (
-                              <span className="text-[11px] font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-sm border border-amber-200 inline-block">
-                                {pkg.difficulty}
-                              </span>
-                            )}
-                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-amber-800 transition-colors line-clamp-2">
-                              {pkg.title}
-                            </h3>
-                            {pkg.shortDesc && (
-                              <p className="text-stone-700 text-xs sm:text-sm leading-relaxed font-normal line-clamp-2">
-                                {pkg.shortDesc.replace(/<[^>]*>?/gm, "")}
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Metadata & Pricing Footer */}
-                          <div className="pt-3 border-t border-stone-100 space-y-3">
-                            <div className="flex items-center justify-between text-xs text-stone-800 font-semibold">
-                              <span className="flex items-center gap-1.5 text-stone-800">
-                                <Clock className="w-3.5 h-3.5 text-stone-500" />
-                                <span>{pkg.durationDays} Days</span>
-                              </span>
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
+                              <span>{pkg.durationDays} Days</span>
                               {pkg.maxAltitudeMeters > 0 && (
-                                <span className="flex items-center gap-1.5 text-stone-900 font-bold">
-                                  <TrendingUp className="w-3.5 h-3.5 text-amber-800" />
-                                  <span>{pkg.maxAltitudeMeters.toLocaleString()}m max</span>
-                                </span>
+                                <span>{pkg.maxAltitudeMeters.toLocaleString()}m altitude</span>
                               )}
                             </div>
 
-                            <div className="flex items-center justify-between pt-1">
-                              <div>
-                                <span className="text-xs text-stone-500 font-medium block">Starting from</span>
-                                <span className="text-base sm:text-lg font-extrabold text-stone-900">
-                                  ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-stone-600">USD</span>
-                                </span>
-                              </div>
+                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-amber-700 transition-colors leading-snug line-clamp-1">
+                              {pkg.title}
+                            </h3>
+                          </div>
 
-                              <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-stone-100 text-stone-900 group-hover:bg-stone-900 group-hover:text-white text-xs font-semibold transition-all duration-200">
-                                <span>Explore</span>
-                                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                              </div>
+                          {/* Pricing & CTA */}
+                          <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                            <div>
+                              <span className="text-[11px] text-stone-400 block font-medium">From</span>
+                              <span className="text-base font-bold text-stone-900">
+                                ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
+                              </span>
                             </div>
+
+                            <span className="text-xs font-semibold text-amber-700 group-hover:underline">
+                              Explore Route &rarr;
+                            </span>
                           </div>
                         </div>
                       </Link>
@@ -402,36 +374,14 @@ export function FeaturedPackages({
             </div>
           )}
 
-          {/* Pagination Indicators, Slide Counter & View All Link */}
+          {/* Bottom Explore Link */}
           {!loading && currentPackages.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-1 pt-2">
-              <div className="flex items-center gap-4 text-xs font-semibold text-stone-700">
-                <span>
-                  Showing <span className="text-stone-900 font-bold">{selectedIndex + 1}</span> of <span className="text-stone-900 font-bold">{scrollSnaps.length}</span>
-                </span>
-
-                <div className="flex items-center gap-1.5">
-                  {scrollSnaps.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => scrollTo(idx)}
-                      aria-label={`Go to slide ${idx + 1}`}
-                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                        idx === selectedIndex
-                          ? "w-8 bg-stone-900"
-                          : "w-2 bg-stone-300 hover:bg-stone-400"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
+            <div className="mt-8 flex justify-end">
               <Link
                 href={exploreInfo.href}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 hover:text-amber-950 transition-colors group shrink-0"
+                className="text-xs font-semibold text-stone-800 hover:text-amber-700 transition-colors"
               >
-                <span>{exploreInfo.label}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                {exploreInfo.label} &rarr;
               </Link>
             </div>
           )}

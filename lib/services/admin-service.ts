@@ -47,7 +47,7 @@ export const MediaService = {
       if (params?.page) query.set("page", String(params.page));
       const q = query.toString() ? `?${query.toString()}` : "";
 
-      const res = await apiClient.get<any[]>(`/media${q}`);
+      const res = await apiClient.get<any[]>(`/admin/media${q}`);
       const items = Array.isArray(res?.data) ? res.data : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
@@ -63,7 +63,7 @@ export const MediaService = {
     const q = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : "";
     try {
       const response = await axiosInstance.post<ApiResponse<any>>(
-        `/media/upload${q}`,
+        `/admin/media/upload${q}`,
         formData,
         {
           headers: {
@@ -78,16 +78,16 @@ export const MediaService = {
   },
 
   async update(id: string, data: { title?: string; categoryId?: string; description?: string; altText?: string }): Promise<ApiResponse<any>> {
-    return apiClient.put<any>(`/media/${id}`, data);
+    return apiClient.put<any>(`/admin/media/${id}`, data);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/media/${id}`);
+    return apiClient.delete<boolean>(`/admin/media/${id}`);
   },
 };
 
 export const CategoryService = {
-  async getAll(params?: { type?: CategoryType | string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<CategoryItem>> {
+  async getPublicAll(params?: { type?: CategoryType | string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<CategoryItem>> {
     try {
       const query = new URLSearchParams();
       if (params?.type && params.type !== "All") query.set("type", params.type);
@@ -97,6 +97,24 @@ export const CategoryService = {
       const q = query.toString() ? `?${query.toString()}` : "";
 
       const res = await apiClient.get<CategoryItem[]>(`/categories${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend categories fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getAll(params?: { type?: CategoryType | string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<CategoryItem>> {
+    try {
+      const query = new URLSearchParams();
+      if (params?.type && params.type !== "All") query.set("type", params.type);
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<CategoryItem[]>(`/admin/categories${q}`);
       const items = Array.isArray(res?.data) ? res.data : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
@@ -117,7 +135,7 @@ export const CategoryService = {
 
   async getById(id: string): Promise<CategoryItem | null> {
     try {
-      const res = await apiClient.get<CategoryItem>(`/categories/${id}`);
+      const res = await apiClient.get<CategoryItem>(`/admin/categories/${id}`);
       return res?.data || null;
     } catch (e) {
       return null;
@@ -138,7 +156,7 @@ export const CategoryService = {
     if (data.mediaId && typeof data.mediaId === "string" && data.mediaId.trim()) {
       payload.mediaId = data.mediaId.trim();
     }
-    return apiClient.post<CategoryItem>("/categories", payload);
+    return apiClient.post<CategoryItem>("/admin/categories", payload);
   },
 
   async update(id: string, data: Partial<CategoryFormValues> | Record<string, any>): Promise<ApiResponse<CategoryItem>> {
@@ -154,11 +172,11 @@ export const CategoryService = {
     }
     if (data.parentId !== undefined) payload.parentId = data.parentId || null;
 
-    return apiClient.put<CategoryItem>(`/categories/${id}`, payload);
+    return apiClient.put<CategoryItem>(`/admin/categories/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/categories/${id}`);
+    return apiClient.delete<boolean>(`/admin/categories/${id}`);
   },
 };
 
@@ -520,7 +538,7 @@ export const TrekService = {
 
   async create(data: TrekFormValues): Promise<ApiResponse<TrekItem>> {
     const payload = cleanPackagePayload(data);
-    const res = await apiClient.post<any>("/treks", payload);
+    const res = await apiClient.post<any>("/admin/treks", payload);
     return {
       ...res,
       data: res.data ? formatBackendTrek(res.data) : (null as any),
@@ -529,7 +547,7 @@ export const TrekService = {
 
   async update(id: string, data: Partial<TrekFormValues>): Promise<ApiResponse<TrekItem>> {
     const payload = cleanPackagePayload(data);
-    const res = await apiClient.put<any>(`/treks/${id}`, payload);
+    const res = await apiClient.put<any>(`/admin/treks/${id}`, payload);
     return {
       ...res,
       data: res.data ? formatBackendTrek(res.data) : (null as any),
@@ -537,7 +555,7 @@ export const TrekService = {
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/treks/${id}`);
+    return apiClient.delete<boolean>(`/admin/treks/${id}`);
   },
 };
 
@@ -582,7 +600,7 @@ export const TourService = {
 
   async create(data: TourFormValues): Promise<ApiResponse<PackageItem>> {
     const payload = cleanPackagePayload(data);
-    const res = await apiClient.post<any>("/tours", payload);
+    const res = await apiClient.post<any>("/admin/tours", payload);
     return {
       ...res,
       data: res.data ? formatBackendPackage(res.data) : (null as any),
@@ -591,7 +609,7 @@ export const TourService = {
 
   async update(id: string, data: Partial<TourFormValues>): Promise<ApiResponse<PackageItem>> {
     const payload = cleanPackagePayload(data);
-    const res = await apiClient.put<any>(`/tours/${id}`, payload);
+    const res = await apiClient.put<any>(`/admin/tours/${id}`, payload);
     return {
       ...res,
       data: res.data ? formatBackendPackage(res.data) : (null as any),
@@ -599,7 +617,7 @@ export const TourService = {
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/tours/${id}`);
+    return apiClient.delete<boolean>(`/admin/tours/${id}`);
   },
 };
 
@@ -644,7 +662,7 @@ export const ExpeditionService = {
 
   async create(data: ExpeditionFormValues): Promise<ApiResponse<PackageItem>> {
     const payload = cleanPackagePayload(data);
-    const res = await apiClient.post<any>("/expeditions", payload);
+    const res = await apiClient.post<any>("/admin/expeditions", payload);
     return {
       ...res,
       data: res.data ? formatBackendPackage(res.data) : (null as any),
@@ -653,7 +671,7 @@ export const ExpeditionService = {
 
   async update(id: string, data: Partial<ExpeditionFormValues>): Promise<ApiResponse<PackageItem>> {
     const payload = cleanPackagePayload(data);
-    const res = await apiClient.put<any>(`/expeditions/${id}`, payload);
+    const res = await apiClient.put<any>(`/admin/expeditions/${id}`, payload);
     return {
       ...res,
       data: res.data ? formatBackendPackage(res.data) : (null as any),
@@ -661,7 +679,7 @@ export const ExpeditionService = {
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/expeditions/${id}`);
+    return apiClient.delete<boolean>(`/admin/expeditions/${id}`);
   },
 };
 
@@ -732,7 +750,7 @@ export const BookingService = {
       if (params?.page) query.set("page", String(params.page));
       const q = query.toString() ? `?${query.toString()}` : "";
 
-      const res = await apiClient.get<Booking[]>(`/bookings${q}`);
+      const res = await apiClient.get<Booking[]>(`/admin/bookings${q}`);
       const items = Array.isArray(res?.data) ? res.data : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
@@ -748,11 +766,11 @@ export const BookingService = {
 
   async update(id: string, data: Partial<BookingFormValues>): Promise<ApiResponse<Booking>> {
     const payload = cleanBookingPayload(data);
-    return apiClient.put<Booking>(`/bookings/${id}`, payload);
+    return apiClient.put<Booking>(`/admin/bookings/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/bookings/${id}`);
+    return apiClient.delete<boolean>(`/admin/bookings/${id}`);
   },
 };
 
@@ -773,7 +791,7 @@ export const InquiryService = {
       if (params?.page) query.set("page", String(params.page));
       const q = query.toString() ? `?${query.toString()}` : "";
 
-      const res = await apiClient.get<Inquiry[]>(`/inquiries${q}`);
+      const res = await apiClient.get<Inquiry[]>(`/admin/inquiries${q}`);
       const items = Array.isArray(res?.data) ? res.data : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
@@ -800,15 +818,15 @@ export const InquiryService = {
   },
 
   async update(id: string, data: { status?: Inquiry["status"]; notes?: string }): Promise<ApiResponse<Inquiry>> {
-    return apiClient.put<Inquiry>(`/inquiries/${id}`, data);
+    return apiClient.put<Inquiry>(`/admin/inquiries/${id}`, data);
   },
 
   async sendQuote(id: string, data: { message: string }): Promise<ApiResponse<any>> {
-    return apiClient.post<any>(`/inquiries/${id}/quote`, { message: data.message });
+    return apiClient.post<any>(`/admin/inquiries/${id}/quote`, { message: data.message });
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/inquiries/${id}`);
+    return apiClient.delete<boolean>(`/admin/inquiries/${id}`);
   },
 };
 
@@ -916,7 +934,7 @@ export const BlogService = {
       ...(data.metaDescription ? { metaDescription: String(data.metaDescription).trim() } : {}),
       ...(data.keywords ? { keywords: String(data.keywords).trim() } : {}),
     };
-    return apiClient.post<BlogArticle>("/blogs", payload);
+    return apiClient.post<BlogArticle>("/admin/blogs", payload);
   },
 
   async update(id: string, data: Partial<BlogFormValues> | Record<string, any>): Promise<ApiResponse<BlogArticle>> {
@@ -936,11 +954,11 @@ export const BlogService = {
     if (data.metaTitle !== undefined) payload.metaTitle = String(data.metaTitle).trim();
     if (data.metaDescription !== undefined) payload.metaDescription = String(data.metaDescription).trim();
     if (data.keywords !== undefined) payload.keywords = String(data.keywords).trim();
-    return apiClient.put<BlogArticle>(`/blogs/${id}`, payload);
+    return apiClient.put<BlogArticle>(`/admin/blogs/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/blogs/${id}`);
+    return apiClient.delete<boolean>(`/admin/blogs/${id}`);
   },
 };
 
@@ -957,9 +975,19 @@ export const DashboardService = {
 };
 
 export const SettingService = {
-  async getAll(): Promise<Record<string, string>> {
+  async getPublicAll(): Promise<Record<string, string>> {
     try {
       const res = await apiClient.get<Record<string, string>>("/settings");
+      return res?.data || {};
+    } catch (e) {
+      console.warn("Backend public settings fetch error:", e);
+      return {};
+    }
+  },
+
+  async getAll(): Promise<Record<string, string>> {
+    try {
+      const res = await apiClient.get<Record<string, string>>("/admin/settings");
       return res?.data || {};
     } catch (e) {
       console.warn("Backend settings fetch error:", e);
@@ -968,7 +996,7 @@ export const SettingService = {
   },
 
   async update(data: any): Promise<ApiResponse<Record<string, string>>> {
-    return apiClient.put<Record<string, string>>("/settings", data);
+    return apiClient.put<Record<string, string>>("/admin/settings", data);
   },
 };
 
@@ -1066,7 +1094,7 @@ export function buildQueryParams(params?: string | BaseQueryParams | Record<stri
 }
 
 export const FaqService = {
-  async getAll(statusOrParams?: FaqStatus | string | FaqQueryParams): Promise<PaginatedList<FaqItem>> {
+  async getPublicAll(statusOrParams?: FaqStatus | string | FaqQueryParams): Promise<PaginatedList<FaqItem>> {
     try {
       const query = buildQueryParams(statusOrParams);
       const endpoint = query ? `/faqs?${query}` : "/faqs";
@@ -1079,9 +1107,22 @@ export const FaqService = {
     }
   },
 
+  async getAll(statusOrParams?: FaqStatus | string | FaqQueryParams): Promise<PaginatedList<FaqItem>> {
+    try {
+      const query = buildQueryParams(statusOrParams);
+      const endpoint = query ? `/admin/faqs?${query}` : "/admin/faqs";
+      const res = await apiClient.get<FaqItem[]>(endpoint);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend faqs fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
   async getById(id: string): Promise<FaqItem | null> {
     try {
-      const res = await apiClient.get<FaqItem>(`/faqs/${id}`);
+      const res = await apiClient.get<FaqItem>(`/admin/faqs/${id}`);
       return res?.data || null;
     } catch (e) {
       console.warn("Backend faq by id fetch error:", e);
@@ -1090,19 +1131,19 @@ export const FaqService = {
   },
 
   async create(data: FaqFormValues): Promise<ApiResponse<FaqItem>> {
-    return apiClient.post<FaqItem>("/faqs", data);
+    return apiClient.post<FaqItem>("/admin/faqs", data);
   },
 
   async update(id: string, data: Partial<FaqFormValues>): Promise<ApiResponse<FaqItem>> {
-    return apiClient.put<FaqItem>(`/faqs/${id}`, data);
+    return apiClient.put<FaqItem>(`/admin/faqs/${id}`, data);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/faqs/${id}`);
+    return apiClient.delete<boolean>(`/admin/faqs/${id}`);
   },
 
   async reorder(items: { id: string; order: number }[]): Promise<ApiResponse<boolean>> {
-    return apiClient.put<boolean>("/faqs/reorder", { items });
+    return apiClient.put<boolean>("/admin/faqs/reorder", { items });
   },
 };
 
@@ -1132,7 +1173,7 @@ export interface TeamMemberFormValues {
 }
 
 export const adminTeamsApi = {
-  async getAll(statusOrParams?: string | TeamQueryParams): Promise<PaginatedList<TeamMemberItem>> {
+  async getPublicAll(statusOrParams?: string | TeamQueryParams): Promise<PaginatedList<TeamMemberItem>> {
     try {
       const query = buildQueryParams(statusOrParams);
       const endpoint = query ? `/teams?${query}` : "/teams";
@@ -1140,14 +1181,27 @@ export const adminTeamsApi = {
       const items = Array.isArray(res?.data) ? res.data : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
-      console.warn("Backend teams fetch error:", e);
+      console.warn("Backend public teams fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getAll(statusOrParams?: string | TeamQueryParams): Promise<PaginatedList<TeamMemberItem>> {
+    try {
+      const query = buildQueryParams(statusOrParams);
+      const endpoint = query ? `/admin/teams?${query}` : "/admin/teams";
+      const res = await apiClient.get<TeamMemberItem[]>(endpoint);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend admin teams fetch error:", e);
       return makePaginatedList([]);
     }
   },
 
   async getById(id: string): Promise<TeamMemberItem | null> {
     try {
-      const res = await apiClient.get<TeamMemberItem>(`/teams/${id}`);
+      const res = await apiClient.get<TeamMemberItem>(`/admin/teams/${id}`);
       return res?.data || null;
     } catch (e) {
       console.warn("Backend team member by id fetch error:", e);
@@ -1162,7 +1216,7 @@ export const adminTeamsApi = {
     } else {
       delete payload.avatarMediaId;
     }
-    return apiClient.post<TeamMemberItem>("/teams", payload);
+    return apiClient.post<TeamMemberItem>("/admin/teams", payload);
   },
 
   async update(id: string, data: Partial<TeamMemberFormValues>): Promise<ApiResponse<TeamMemberItem>> {
@@ -1172,14 +1226,15 @@ export const adminTeamsApi = {
     } else {
       delete payload.avatarMediaId;
     }
-    return apiClient.put<TeamMemberItem>(`/teams/${id}`, payload);
+    return apiClient.put<TeamMemberItem>(`/admin/teams/${id}`, payload);
   },
+
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/teams/${id}`);
+    return apiClient.delete<boolean>(`/admin/teams/${id}`);
   },
 
   async reorder(items: { id: string; order: number }[]): Promise<ApiResponse<boolean>> {
-    return apiClient.put<boolean>("/teams/reorder", { items });
+    return apiClient.put<boolean>("/admin/teams/reorder", { items });
   },
 };
 
@@ -1218,7 +1273,7 @@ export interface TestimonialQueryParams {
 }
 
 export const adminTestimonialsApi = {
-  async getAll(statusOrParams?: string | TestimonialQueryParams): Promise<PaginatedList<TestimonialItem>> {
+  async getPublicAll(statusOrParams?: string | TestimonialQueryParams): Promise<PaginatedList<TestimonialItem>> {
     try {
       const query = buildQueryParams(statusOrParams);
       const endpoint = query ? `/testimonials?${query}` : "/testimonials";
@@ -1226,14 +1281,27 @@ export const adminTestimonialsApi = {
       const items = Array.isArray(res?.data) ? res.data : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
-      console.warn("Backend testimonials fetch error:", e);
+      console.warn("Backend public testimonials fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getAll(statusOrParams?: string | TestimonialQueryParams): Promise<PaginatedList<TestimonialItem>> {
+    try {
+      const query = buildQueryParams(statusOrParams);
+      const endpoint = query ? `/admin/testimonials?${query}` : "/admin/testimonials";
+      const res = await apiClient.get<TestimonialItem[]>(endpoint);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backend admin testimonials fetch error:", e);
       return makePaginatedList([]);
     }
   },
 
   async getById(id: string): Promise<TestimonialItem | null> {
     try {
-      const res = await apiClient.get<TestimonialItem>(`/testimonials/${id}`);
+      const res = await apiClient.get<TestimonialItem>(`/admin/testimonials/${id}`);
       return res?.data || null;
     } catch (e) {
       console.warn("Backend testimonial by id fetch error:", e);
@@ -1248,7 +1316,7 @@ export const adminTestimonialsApi = {
     } else {
       delete payload.avatarMediaId;
     }
-    return apiClient.post<TestimonialItem>("/testimonials", payload);
+    return apiClient.post<TestimonialItem>("/admin/testimonials", payload);
   },
 
   async update(id: string, data: Partial<TestimonialFormValues>): Promise<ApiResponse<TestimonialItem>> {
@@ -1258,15 +1326,15 @@ export const adminTestimonialsApi = {
     } else {
       delete payload.avatarMediaId;
     }
-    return apiClient.put<TestimonialItem>(`/testimonials/${id}`, payload);
+    return apiClient.put<TestimonialItem>(`/admin/testimonials/${id}`, payload);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    return apiClient.delete<boolean>(`/testimonials/${id}`);
+    return apiClient.delete<boolean>(`/admin/testimonials/${id}`);
   },
 
   async reorder(items: { id: string; order: number }[]): Promise<ApiResponse<boolean>> {
-    return apiClient.put<boolean>("/testimonials/reorder", { items });
+    return apiClient.put<boolean>("/admin/testimonials/reorder", { items });
   },
 };
 

@@ -89,9 +89,9 @@ export function ExpeditionDetailClient({
         }
 
         const [faqsData, settingsData, allExps] = await Promise.all([
-          FaqService.getAll(FaqStatus.ACTIVE).catch(() => []),
-          SettingService.getAll().catch(() => ({})),
-          ExpeditionService.getAll().catch(() => []),
+          FaqService.getPublicAll(FaqStatus.ACTIVE).catch(() => []),
+          SettingService.getPublicAll().catch(() => ({})),
+          ExpeditionService.getPublicAll().catch(() => []),
         ]);
 
         if (faqsData) setGlobalFaqs(faqsData);

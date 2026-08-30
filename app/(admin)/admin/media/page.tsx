@@ -6,7 +6,9 @@ import { toast } from "sonner";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminTablePagination } from "@/components/admin/ui/admin-table";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { openLightbox } from "@/lib/utils/lightbox";
@@ -323,11 +325,11 @@ export default function AdminMediaPage() {
             <h3 className="font-bold text-slate-900 text-sm">
               {isUploading ? "Uploading file to server..." : "Upload photos directly to media library"}
             </h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+            <p className="text-xs text-slate-700 max-w-sm mx-auto mt-1">
               Supports JPEG, PNG, WebP, and AVIF up to 15MB. Files will be saved into the database asset collection.
             </p>
           </div>
-          <label className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-colors">
+          <label className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-md cursor-pointer transition-colors">
             <span>Browse Files</span>
             <input
               type="file"
@@ -342,46 +344,46 @@ export default function AdminMediaPage() {
 
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-slate-100/80 border border-slate-200/60 text-slate-600 flex items-center justify-center font-bold">
+        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold">
             <ImageIcon className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-xs font-medium text-slate-500">Total Assets</div>
+            <div className="text-xs font-semibold text-slate-700">Total Assets</div>
             <div className="text-lg font-bold text-slate-900">{totalItems || allAssetsForStats.length}</div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center font-bold">
-            <FolderOpen className="w-5 h-5" />
+        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center font-bold">
+            <FolderOpen className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">Everest Assets</div>
+            <div className="text-xs font-semibold text-slate-700">Everest Assets</div>
             <div className="text-lg font-bold text-slate-900">
               {allAssetsForStats.filter((a) => a.category === "Everest & Peaks").length}
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center font-bold">
-            <Tag className="w-5 h-5" />
+        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-bold">
+            <Tag className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">Cultural Assets</div>
+            <div className="text-xs font-semibold text-slate-700">Annapurna Assets</div>
             <div className="text-lg font-bold text-slate-900">
-              {allAssetsForStats.filter((a) => a.category === "Cultural Heritage").length}
+              {allAssetsForStats.filter((a) => a.category === "Annapurna Region").length}
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
-            <Check className="w-5 h-5" />
+        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-bold">
+            <Check className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">Helicopter Charters</div>
+            <div className="text-xs font-semibold text-slate-700">Helicopter Charters</div>
             <div className="text-lg font-bold text-slate-900">
               {allAssetsForStats.filter((a) => a.category === "Helicopter Charters").length}
             </div>
@@ -390,33 +392,28 @@ export default function AdminMediaPage() {
       </div>
 
       {/* Control Bar: Search & Category Filter */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+      <div className="bg-white p-4 rounded-lg border border-slate-200 space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-500" />
-            <input
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Input
               type="text"
               placeholder="Search photo asset by title or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-500"
+              className="pl-9 h-9"
             />
           </div>
 
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-bold text-slate-800 whitespace-nowrap">
-              Category Filter:
-            </label>
-            <select
+            <AdminFilterSelect
+              label="Category Filter:"
               value={selectedCategoryId}
               onChange={(e) => setSelectedCategoryId(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-xs rounded-xl px-3.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer shadow-xs"
             >
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
-            </select>
-          </div>
+            </AdminFilterSelect>
         </div>
       </div>
 

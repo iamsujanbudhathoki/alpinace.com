@@ -9,6 +9,15 @@ export const PACKAGE_REGIONS = [
 
 export type PackageRegion = (typeof PACKAGE_REGIONS)[number] | string;
 
+export enum PackageSortOption {
+  RATING = "rating",
+  PRICE_ASC = "priceAsc",
+  PRICE_DESC = "priceDesc",
+  DURATION = "duration",
+}
+
+export const FILTER_ALL = "All";
+
 export const PACKAGE_COUNTRIES = [
   "Nepal",
   "Tibet",

@@ -3,14 +3,11 @@
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, SlidersHorizontal, X, Search, RotateCcw, Check } from "lucide-react";
-import { ClimbingGrade, ExpeditionItem } from "@/lib/expedition-data";
-import { ExpeditionService, PackageFilterService, PackageFilterOptions } from "@/lib/services/admin-service";
+import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Mountain } from "lucide-react";
+import { ExpeditionItem } from "@/lib/expedition-data";
+import { ExpeditionService, PackageFilterService, PackageFilterOptions, CategoryService } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
-import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
-import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
-import { BookingPackageType, PackageStatus } from "@/lib/admin-data";
-import { SearchableCategorySelect } from "@/components/marketing/searchable-category-select";
+import { CategoryType, PackageStatus, PackageSortOption, FILTER_ALL } from "@/lib/admin-data";
 
 interface ExpeditionsCatalogClientProps {
   initialExpeditions: ExpeditionItem[];
@@ -27,9 +24,7 @@ export function ExpeditionsCatalogClient({
   const [expeditions, setExpeditions] = useState<ExpeditionItem[]>(initialExpeditions);
   const [loading, setLoading] = useState<boolean>(false);
   const [filterOptions, setFilterOptions] = useState<PackageFilterOptions | null>(initialFilterOptions);
-  const [loadingOptions, setLoadingOptions] = useState<boolean>(!initialFilterOptions);
-  const [selectedBookingTrip, setSelectedBookingTrip] = useState<ExpeditionItem | null>(null);
-  const [submittedSlugs, setSubmittedSlugs] = useState<string[]>([]);
+  const [categoryList, setCategoryList] = useState<{ id: string; name: string; slug?: string }[]>([]);
 
   // Filter States
   const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
@@ -47,24 +42,27 @@ export function ExpeditionsCatalogClient({
     setSelectedCategory(categoryParam);
   }
 
-  // Fetch filter options if not provided initially
+  // Fetch expedition categories and filter options on mount
   useEffect(() => {
-    if (filterOptions) return;
-    async function loadOptions() {
+    async function loadData() {
       try {
-        const opts = await PackageFilterService.getOptions("Expedition");
+        const [opts, cats] = await Promise.all([
+          filterOptions ? Promise.resolve(filterOptions) : PackageFilterService.getOptions("Expedition"),
+          CategoryService.getByType(CategoryType.EXPEDITIONS).catch(() => []),
+        ]);
         if (opts) {
           setFilterOptions(opts);
-          if (opts.minAltitude) setMinPeakHeight(opts.minAltitude);
+          if (!initialFilterOptions && opts.minAltitude) setMinPeakHeight(opts.minAltitude);
+        }
+        if (cats && cats.length > 0) {
+          setCategoryList(cats.map((c) => ({ id: c.id, name: c.name, slug: c.slug })));
         }
       } catch (e) {
-        console.warn("Failed to load expedition filter options from backend:", e);
-      } finally {
-        setLoadingOptions(false);
+        console.warn("Failed to load expedition filter metadata:", e);
       }
     }
-    loadOptions();
-  }, [filterOptions]);
+    loadData();
+  }, [filterOptions, initialFilterOptions]);
 
   // Debounce search query
   useEffect(() => {
@@ -88,34 +86,31 @@ export function ExpeditionsCatalogClient({
     async function loadExpeditions() {
       setLoading(true);
       try {
-        const raw = await ExpeditionService.getAll({
+        const raw = await ExpeditionService.getPublicAll({
           search: debouncedSearch,
           category: selectedCategory === "All" ? undefined : selectedCategory,
           difficulty: selectedGrade === "All" ? undefined : selectedGrade,
           sortBy,
           status: PackageStatus.ACTIVE,
         });
-        const mapped: ExpeditionItem[] = raw.map((p) => ({
+        const itemsList: ExpeditionItem[] = (Array.isArray(raw) ? raw : (raw as any)?.items || []).map((p: any) => ({
           id: p.id,
           title: p.title,
           slug: p.slug,
           category: p.category,
-          categoryId: p.categoryId,
-          categorySlug: p.categorySlug,
-          rating: Number(p.rating),
-          reviewsCount: Number(p.reviewsCount),
+          region: p.region,
+          durationDays: Number(p.durationDays || 0),
+          maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
+          climbingGrade: p.climbingGrade || p.difficulty || "Grade 4",
+          priceUSD: Number(p.priceUSD || 0),
+          rating: Number(p.rating || 5),
+          reviewsCount: Number(p.reviewsCount || 0),
           image: p.image || "",
           shortDesc: p.shortDesc || "",
-          durationDays: Number(p.durationDays),
-          peakHeightM: Number(p.peakHeightM || p.maxAltitudeMeters || 0),
-          climbingGrade: p.climbingGrade || (p.difficulty as unknown as ClimbingGrade),
-          bestSeason: p.bestSeason || "",
-          priceUSD: Number(p.priceUSD),
           status: p.status,
-          region: p.region,
         }));
         if (!isCancelled) {
-          setExpeditions(mapped);
+          setExpeditions(itemsList);
         }
       } catch (e) {
         console.warn("Failed to load expedition packages from backend:", e);
@@ -127,7 +122,7 @@ export function ExpeditionsCatalogClient({
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedCategory, selectedGrade, minPeakHeight, sortBy]);
+  }, [debouncedSearch, selectedCategory, selectedGrade, sortBy, isDefaultFilter, initialExpeditions]);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -139,14 +134,14 @@ export function ExpeditionsCatalogClient({
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (searchQuery.trim() !== "") count++;
     if (selectedCategory !== "All") count++;
     if (selectedGrade !== "All") count++;
     if (minPeakHeight > (filterOptions?.minAltitude || 5500)) count++;
-    if (sortBy !== "rating") count++;
+    if (searchQuery.trim() !== "") count++;
     return count;
-  }, [searchQuery, selectedCategory, selectedGrade, minPeakHeight, sortBy, filterOptions?.minAltitude]);
+  }, [selectedCategory, selectedGrade, minPeakHeight, searchQuery, filterOptions?.minAltitude]);
 
+  // Filtered Expeditions list
   const filteredExpeditions = useMemo(() => {
     let list = [...expeditions];
 
@@ -155,7 +150,7 @@ export function ExpeditionsCatalogClient({
       list = list.filter(
         (e) =>
           e.title.toLowerCase().includes(q) ||
-          (e.region && e.region.toLowerCase().includes(q)) ||
+          e.region.toLowerCase().includes(q) ||
           (e.shortDesc && e.shortDesc.toLowerCase().includes(q))
       );
     }
@@ -163,231 +158,227 @@ export function ExpeditionsCatalogClient({
     if (selectedCategory !== "All") {
       const selected = selectedCategory.toLowerCase();
       list = list.filter(
-        (e) =>
-          (e.categoryId && e.categoryId.toLowerCase() === selected) ||
-          (e.category && e.category.toLowerCase() === selected) ||
-          (e.categorySlug && e.categorySlug.toLowerCase() === selected)
+        (e: any) =>
+          (e.categoryId && String(e.categoryId).toLowerCase() === selected) ||
+          (e.category && String(e.category).toLowerCase() === selected) ||
+          (e.region && String(e.region).toLowerCase().includes(selected))
       );
     }
 
     if (selectedGrade !== "All") {
-      list = list.filter(
-        (e) =>
-          (e.climbingGrade && String(e.climbingGrade).toLowerCase().includes(selectedGrade.toLowerCase())) ||
-          (e.difficulty && String(e.difficulty).toLowerCase().includes(selectedGrade.toLowerCase()))
-      );
+      list = list.filter((e) => e.climbingGrade === selectedGrade || e.difficulty === selectedGrade);
     }
 
     if (minPeakHeight > (filterOptions?.minAltitude || 5500)) {
-      list = list.filter((e) => e.peakHeightM >= minPeakHeight);
+      list = list.filter((e) => (e.maxAltitudeMeters || e.peakHeightM || 0) >= minPeakHeight);
     }
 
-    if (sortBy === "priceAsc" || sortBy === "price-low") {
-      list.sort((a, b) => a.priceUSD - b.priceUSD);
-    } else if (sortBy === "priceDesc" || sortBy === "price-high") {
-      list.sort((a, b) => b.priceUSD - a.priceUSD);
-    } else if (sortBy === "duration") {
-      list.sort((a, b) => a.durationDays - b.durationDays);
-    }
+    // Sort list
+    list.sort((a, b) => {
+      if (sortBy === PackageSortOption.PRICE_ASC) return (a.priceUSD || 0) - (b.priceUSD || 0);
+      if (sortBy === PackageSortOption.PRICE_DESC) return (b.priceUSD || 0) - (a.priceUSD || 0);
+      if (sortBy === PackageSortOption.DURATION) return (a.durationDays || 0) - (b.durationDays || 0);
+      return (b.rating || 5) - (a.rating || 5);
+    });
 
     return list;
   }, [expeditions, debouncedSearch, selectedCategory, selectedGrade, minPeakHeight, sortBy, filterOptions?.minAltitude]);
 
-  const difficulties = filterOptions?.difficulties || [
-    { label: "All Alpine Grades", value: "All" },
-    { label: "PD (Slightly Difficult)", value: "Alpine PD" },
-    { label: "AD (Fairly Difficult)", value: "Alpine AD" },
-    { label: "D (Difficult / Technical)", value: "Alpine D" },
-    { label: "ED (Extremely Difficult)", value: "Alpine ED" },
-  ];
+  const normalizedCategories = useMemo(() => {
+    if (categoryList.length > 0) {
+      return categoryList.map((c) => ({ label: c.name, value: c.slug || c.name }));
+    }
+    if (filterOptions?.categories && Array.isArray(filterOptions.categories)) {
+      return filterOptions.categories.map((c: any) => {
+        if (typeof c === "string") return { label: c, value: c };
+        const label = c.label || c.name || c.value || "Category";
+        const val = c.value || c.slug || c.name || label;
+        return { label: String(label), value: String(val) };
+      });
+    }
+    return [
+      { label: "8000m Peaks", value: "8000m Peaks" },
+      { label: "7000m Technical Peaks", value: "7000m Technical Peaks" },
+      { label: "6000m Climbing Peaks", value: "6000m Climbing Peaks" },
+    ];
+  }, [categoryList, filterOptions?.categories]);
 
-  const sortOptions = filterOptions?.sortOptions || [
-    { label: "Guest Rating", value: "rating" },
-    { label: "Price: Low to High", value: "price-low" },
-    { label: "Price: High to Low", value: "price-high" },
-    { label: "Peak Elevation: High to Low", value: "altitude" },
-  ];
-
-  const minAltitudeLimit = filterOptions?.minAltitude || 5500;
-  const maxAltitudeLimit = filterOptions?.maxAltitude || 8848;
-
-  const filterControls = loadingOptions ? (
-    <FilterSidebarSkeleton />
-  ) : (
+  // Clean Compact Dropdown Controls
+  const filterControls = (
     <div className="space-y-5">
       {/* Search Input */}
-      <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-slate-900">
-          Search Expeditions
+      <div>
+        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
+          Search Expedition
         </label>
         <div className="relative">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
           <input
             type="text"
+            placeholder="Search Everest, Ama Dablam, K2..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search Island Peak, Mera Peak, Lobuche..."
-            className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-400 transition-all"
+            className="w-full text-xs pl-9 pr-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 placeholder:text-stone-400"
           />
         </div>
       </div>
 
-      {/* Category Filter */}
-      <SearchableCategorySelect
-        label="Expedition Category"
-        categories={filterOptions?.categories}
-        selectedCategory={selectedCategory}
-        onSelectCategory={(val) => setSelectedCategory(val)}
-        totalCount={expeditions.length}
-        loadingOptions={loadingOptions}
-        placeholder="Search expedition category..."
-      />
-
-      {/* Climbing Difficulty Level */}
-      <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-slate-900">
-          Alpine Climbing Grade
+      {/* Category Dropdown Filter */}
+      <div>
+        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
+          Category
         </label>
         <select
-          value={selectedGrade}
-          onChange={(e) => setSelectedGrade(e.target.value)}
-          className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-lg px-3 py-2.5 focus:outline-none focus:bg-white focus:border-slate-400 cursor-pointer"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="w-full text-xs px-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 cursor-pointer"
         >
-          {!difficulties.some((d) => d.value === "All") && (
-            <option value="All">All Grades</option>
-          )}
-          {difficulties.map((item) => (
-            <option key={item.value} value={item.value}>
-              {item.label}
+          <option value="All">All Categories</option>
+          {normalizedCategories.map((cat, idx) => (
+            <option key={`${cat.value}-${idx}`} value={cat.value}>
+              {cat.label}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Min Peak Height */}
-      <div className="space-y-2 pt-3 border-t border-slate-100">
-        <div className="flex items-center justify-between">
-          <label className="text-sm font-semibold text-slate-900">
-            Min Summit Height
+      {/* Climbing Grade Dropdown Filter */}
+      <div>
+        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
+          Climbing Grade
+        </label>
+        <select
+          value={selectedGrade}
+          onChange={(e) => setSelectedGrade(e.target.value)}
+          className="w-full text-xs px-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 cursor-pointer"
+        >
+          <option value="All">All Climbing Grades</option>
+          <option value="6000m Peak">6000m Climbing Peak</option>
+          <option value="7000m Peak">7000m Technical Peak</option>
+          <option value="8000m Extreme">8000m Extreme Expedition</option>
+        </select>
+      </div>
+
+      {/* Peak Altitude Slider */}
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+            Min Peak Altitude
           </label>
-          <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-md">
-            {minPeakHeight.toLocaleString()}m
+          <span className="text-xs font-bold text-amber-700">
+            {minPeakHeight.toLocaleString()}m+
           </span>
         </div>
         <input
           type="range"
-          min={minAltitudeLimit}
-          max={maxAltitudeLimit}
-          step="100"
+          min={5500}
+          max={8848}
+          step={100}
           value={minPeakHeight}
           onChange={(e) => setMinPeakHeight(Number(e.target.value))}
-          className="w-full accent-amber-600 cursor-pointer"
+          className="w-full accent-slate-900 cursor-pointer"
         />
+        <div className="flex justify-between text-[10px] font-medium text-slate-600 mt-1">
+          <span>5,500m</span>
+          <span>8,848m</span>
+        </div>
       </div>
 
-      {/* Sort Results By */}
-      <div className="space-y-1.5 pt-3 border-t border-slate-100">
-        <label className="block text-sm font-semibold text-slate-900">
+      {/* Sort Options */}
+      <div>
+        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
           Sort By
         </label>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium rounded-lg px-3 py-2.5 focus:outline-none focus:bg-white focus:border-slate-400 cursor-pointer"
+          className="w-full text-xs px-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 cursor-pointer"
         >
-          {sortOptions.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label}
-            </option>
-          ))}
+          <option value={PackageSortOption.RATING}>Top Rated</option>
+          <option value={PackageSortOption.PRICE_ASC}>Price: Low to High</option>
+          <option value={PackageSortOption.PRICE_DESC}>Price: High to Low</option>
+          <option value={PackageSortOption.DURATION}>Shortest Duration</option>
         </select>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-stone-50 text-slate-900 pt-16 sm:pt-20 pb-20 font-sans">
-      {/* Hero Header */}
-      <section className="bg-white border-b border-stone-200 py-8 sm:py-10 px-4 sm:px-6 md:px-12">
-        <div className="max-w-7xl mx-auto space-y-1.5">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-stone-900">
-            Himalayan Peak Expeditions
+    <div className="bg-stone-50/60 min-h-screen pb-24 font-sans text-slate-900">
+      {/* Hero Banner Header */}
+      <section className="bg-slate-950 text-white py-16 sm:py-20 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=1600"
+            alt="High Altitude Himalayan Peak Expeditions"
+            className="w-full h-full object-cover opacity-25 object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">
+            IFMGA Sherpa Technical Climbing
+          </span>
+          <h1 className="font-heading text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            High-Altitude Peak Expeditions
           </h1>
-
-          <p className="text-stone-600 text-xs sm:text-sm max-w-2xl font-normal leading-relaxed">
-            Technical ascents across Island Peak, Mera Peak, Lobuche East, and Ama Dablam led by certified IFMGA Sherpa guide leaders.
+          <p className="text-stone-300 text-sm sm:text-base font-normal leading-relaxed max-w-2xl">
+            8000m summits, 7000m technical peaks, and 6000m climbing routes led by certified IFMGA Sherpa mountaineers with full basecamp infrastructure.
           </p>
         </div>
       </section>
 
-      {/* Main Content Workspace */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-6 sm:mt-8">
-        {/* Mobile Filter Bar & Search Trigger */}
-        <div className="lg:hidden mb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search peak expedition..."
-              className="w-full text-sm bg-white border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 transition-all shadow-xs"
-            />
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-          </div>
-
+      {/* Main Container */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+        {/* Mobile Filter Control Bar */}
+        <div className="lg:hidden mb-6 flex items-center justify-between bg-white border border-stone-200 rounded-sm p-3.5 shadow-2xs">
           <button
             onClick={() => setIsMobileFilterOpen(true)}
-            className="flex items-center justify-center gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 shadow-xs hover:bg-slate-50 transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-xs font-bold text-slate-900 bg-stone-100 hover:bg-stone-200 px-4 py-2 rounded-sm transition-colors cursor-pointer"
           >
-            <SlidersHorizontal className="w-4 h-4 text-amber-600" />
-            <span>Filters</span>
-            {activeFilterCount > 0 && (
-              <span className="bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                {activeFilterCount}
-              </span>
-            )}
+            <SlidersHorizontal className="w-3.5 h-3.5 text-amber-700" />
+            <span>Filter Expeditions {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
           </button>
+
+          <span className="text-xs text-slate-700 font-semibold">
+            {filteredExpeditions.length} Expeditions
+          </span>
         </div>
 
-        {/* Mobile Drawer Overlay */}
+        {/* Mobile Filter Drawer */}
         {isMobileFilterOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
-            <div
-              className="fixed inset-0"
-              onClick={() => setIsMobileFilterOpen(false)}
-            />
-            <div className="relative z-10 bg-white w-full rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto space-y-4 border-t border-slate-200 shadow-2xl">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 sticky top-0 bg-white z-10 pt-1">
-                <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-amber-600" />
-                  <h2 className="text-base font-bold text-slate-900">
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex justify-end lg:hidden">
+            <div className="bg-white w-full max-w-xs h-full p-6 overflow-y-auto flex flex-col justify-between shadow-2xl">
+              <div>
+                <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-200">
+                  <h3 className="font-heading font-bold text-sm text-slate-900">
                     Filter Expeditions
-                  </h2>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={resetFilters}
-                    className="text-xs font-medium text-slate-500 hover:text-slate-900 flex items-center gap-1 cursor-pointer"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                    <span>Reset</span>
-                  </button>
+                  </h3>
                   <button
                     onClick={() => setIsMobileFilterOpen(false)}
-                    className="p-1 text-slate-400 hover:text-slate-900 rounded-lg transition-colors cursor-pointer"
+                    className="p-1 rounded-sm text-slate-600 hover:text-slate-900 cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
+                {filterControls}
               </div>
 
-              {filterControls}
-
-              <div className="pt-4 border-t border-slate-100">
+              <div className="pt-6 border-t border-stone-200 flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    resetFilters();
+                    setIsMobileFilterOpen(false);
+                  }}
+                  className="w-1/2 py-2.5 rounded-sm border border-stone-300 text-slate-800 font-bold text-xs hover:bg-stone-100 cursor-pointer"
+                >
+                  Reset
+                </button>
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-3 rounded-xl shadow-xs transition-colors cursor-pointer"
+                  className="w-1/2 py-2.5 rounded-sm bg-slate-950 text-white font-bold text-xs hover:bg-slate-900 cursor-pointer"
                 >
-                  Show {filteredExpeditions.length} Expeditions
+                  Apply
                 </button>
               </div>
             </div>
@@ -395,32 +386,34 @@ export function ExpeditionsCatalogClient({
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Sidebar Filter Column */}
-          <aside className="hidden lg:block lg:col-span-4 bg-white border border-stone-200/80 rounded-xl p-5 sticky top-24">
-            <div className="flex items-center justify-between pb-3 mb-5 border-b border-slate-100">
-              <h2 className="text-base font-bold text-slate-900">
+          {/* Desktop Filter Sidebar */}
+          <aside className="hidden lg:block lg:col-span-4 bg-white border border-stone-200 rounded-sm p-6 sticky top-24 shadow-2xs">
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-200">
+              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                 Filter Expeditions
               </h2>
-              <button
-                onClick={resetFilters}
-                className="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer flex items-center gap-1.5"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset</span>
-              </button>
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={resetFilters}
+                  className="text-xs font-semibold text-amber-700 hover:underline cursor-pointer flex items-center gap-1"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset</span>
+                </button>
+              )}
             </div>
 
             {filterControls}
           </aside>
 
-          {/* Right Main Catalog Content Column */}
-          <main className="lg:col-span-8 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-stone-200/80 text-xs sm:text-sm text-slate-700 font-medium">
+          {/* Main Expedition Catalog Grid */}
+          <main className="lg:col-span-8 space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-stone-200 text-xs sm:text-sm text-slate-600 font-medium">
               <span>Showing <strong className="text-slate-900 font-bold">{loading ? "..." : filteredExpeditions.length}</strong> peak expeditions</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-xs font-bold text-amber-800 hover:underline cursor-pointer"
+                  className="text-xs font-bold text-amber-700 hover:underline cursor-pointer"
                 >
                   Clear filters ({activeFilterCount})
                 </button>
@@ -430,138 +423,95 @@ export function ExpeditionsCatalogClient({
             {loading ? (
               <PackageGridSkeleton count={6} />
             ) : filteredExpeditions.length === 0 ? (
-              <div className="bg-white border border-slate-200 rounded-xl p-10 text-center space-y-3">
-                <p className="text-slate-700 text-xs font-semibold">
-                  No matching mountaineering expeditions found.
-                </p>
+              <div className="bg-white border border-stone-200 rounded-sm p-12 text-center space-y-4 shadow-2xs max-w-md mx-auto my-6">
+                <div className="w-12 h-12 rounded-full bg-stone-100 text-stone-500 flex items-center justify-center mx-auto">
+                  <Mountain className="w-6 h-6 text-amber-600" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-heading text-base font-bold text-slate-900">
+                    No Matching Expeditions Found
+                  </h3>
+                  <p className="text-slate-600 text-xs font-normal leading-relaxed">
+                    We couldn&apos;t find any mountain climbing expeditions matching your selected filter criteria.
+                  </p>
+                </div>
                 <button
                   onClick={resetFilters}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-xl text-slate-900 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold bg-slate-950 hover:bg-slate-900 text-white px-5 py-2.5 rounded-sm transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset all filters</span>
+                  <span>Reset All Filters</span>
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {filteredExpeditions.map((exp) => (
-                  <div
-                    key={exp.id}
-                    className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col justify-between hover:border-slate-300 transition-all shadow-xs hover:shadow-md group"
-                  >
-                    {/* Clickable Card Header & Body */}
-                    <Link href={`/expeditions/${exp.slug}`} className="block">
-                      <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100">
-                        <img
-                          src={exp.image}
-                          alt={exp.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-
-                      <div className="p-4 space-y-2">
-                        <div className="text-xs font-bold text-amber-800 uppercase tracking-wider">
-                          {exp.region} • {exp.durationDays} DAYS
-                        </div>
-
-                        <h3 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-amber-700 transition-colors">
-                          {exp.title}
-                        </h3>
-
-                        <p className="text-xs text-slate-700 leading-relaxed font-medium line-clamp-2">
-                          {(exp.shortDesc || "").replace(/<[^>]*>?/gm, "")}
-                        </p>
-
-                        <div className="pt-2 text-xs text-slate-800 font-semibold border-t border-slate-100 flex items-center justify-between">
-                          <span>Summit: {exp.peakHeightM?.toLocaleString()}m</span>
-                          <span className="text-slate-900 font-bold">★ {exp.rating}</span>
-                        </div>
-                      </div>
-                    </Link>
-
-                    {/* Footer Row with Details and Book Button */}
-                    <div className="p-4 pt-0 border-t border-slate-100 mt-2">
-                      <div className="flex items-center justify-between pt-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {filteredExpeditions.map((exp) => {
+                  const altitudeDisplay = exp.maxAltitudeMeters || exp.peakHeightM;
+                  return (
+                    <div
+                      key={exp.id}
+                      className="bg-white rounded-sm border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-400 transition-all duration-300 group shadow-2xs"
+                    >
+                      <Link href={`/expeditions/${exp.slug}`} className="block flex-1 flex flex-col justify-between">
                         <div>
-                          <span className="text-xs text-slate-900 uppercase font-bold block">Starting from</span>
-                          <div className="text-base font-extrabold text-slate-900">
-                            ${exp.priceUSD?.toLocaleString()} <span className="text-xs font-bold text-slate-700">USD</span>
+                          {/* Clean Image Frame */}
+                          <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+                            <img
+                              src={exp.image || "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=800"}
+                              alt={exp.title}
+                              className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                            />
+                            {altitudeDisplay && (
+                              <span className="absolute top-3 left-3 bg-slate-950/90 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-sm tracking-wide">
+                                {altitudeDisplay.toLocaleString()}m Summit
+                              </span>
+                            )}
+                            {exp.durationDays && (
+                              <span className="absolute top-3 right-3 bg-stone-900/90 text-amber-400 text-[11px] font-bold px-2.5 py-0.5 rounded-sm">
+                                {exp.durationDays} Days
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Scannable Card Body */}
+                          <div className="p-5 space-y-3">
+                            <h3 className="font-heading text-base sm:text-lg font-bold text-slate-950 group-hover:text-amber-700 transition-colors leading-snug line-clamp-1">
+                              {exp.title}
+                            </h3>
+
+                            {/* Key Specs Row */}
+                            <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-slate-600 font-medium">
+                              <span>Grade: <strong className="text-slate-900 font-bold">{exp.climbingGrade || exp.difficulty || "Technical Climb"}</strong></span>
+                              <span>Region: <strong className="text-slate-900 font-bold">{exp.region || "Himalayas"}</strong></span>
+                            </div>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <Link href={`/expeditions/${exp.slug}`}>
-                            <button className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all cursor-pointer">
-                              Details
-                            </button>
-                          </Link>
-
-                          {submittedSlugs.includes(exp.slug) ? (
-                            <div className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-700 text-white flex items-center gap-1 shadow-2xs">
-                              <span>Requested</span>
-                              <Check className="w-3 h-3" />
+                        {/* Footer Row */}
+                        <div className="p-5 pt-0 border-t border-stone-100 mt-2">
+                          <div className="flex items-center justify-between pt-3">
+                            <div>
+                              <span className="text-[11px] text-slate-600 block font-medium">From</span>
+                              <span className="text-base font-bold text-slate-950">
+                                ${exp.priceUSD?.toLocaleString()} <span className="text-xs font-normal text-slate-600">USD</span>
+                              </span>
                             </div>
-                          ) : (
-                            <button
-                              onClick={() => setSelectedBookingTrip(exp)}
-                              className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1.5"
-                            >
-                              <span>Book</span>
-                              <ArrowRight className="w-3 h-3 text-amber-400" />
-                            </button>
-                          )}
+
+                            <span className="text-xs font-bold text-amber-700 group-hover:underline flex items-center gap-1">
+                              <span>Explore Expedition</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </span>
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </main>
         </div>
-
-        {/* Bottom Custom Trip Section */}
-        <div className="mt-12 sm:mt-14 bg-white text-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
-          <div className="space-y-1 max-w-xl">
-            <h3 className="text-base sm:text-lg font-bold text-slate-900">
-              Planning an Independent or Multi-Peak Expedition?
-            </h3>
-            <p className="text-xs text-slate-600 font-normal leading-relaxed">
-              We organize private expedition logistics, restricted peak permits, custom acclimatization rotations, and dedicated Sherpa climbing crews for any Himalayan objective.
-            </p>
-          </div>
-
-          <Link href="/contact" className="shrink-0 w-full sm:w-auto">
-            <button className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all shadow-xs hover:shadow-md flex items-center justify-center gap-2">
-              <span>Consult Expedition Planner</span>
-              <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
-            </button>
-          </Link>
-        </div>
       </section>
-
-      {/* Public Booking Modal */}
-      {selectedBookingTrip && (
-        <PublicBookingModal
-          isOpen={!!selectedBookingTrip}
-          onClose={() => setSelectedBookingTrip(null)}
-          onSuccess={() => {
-            if (selectedBookingTrip) {
-              setSubmittedSlugs((prev) => [...prev, selectedBookingTrip.slug]);
-            }
-          }}
-          trip={{
-            title: selectedBookingTrip.title,
-            slug: selectedBookingTrip.slug,
-            region: selectedBookingTrip.region,
-            durationDays: selectedBookingTrip.durationDays,
-            priceUSD: selectedBookingTrip.priceUSD,
-            maxAltitudeMeters: selectedBookingTrip.peakHeightM,
-            difficulty: selectedBookingTrip.climbingGrade,
-            categoryType: BookingPackageType.EXPEDITION,
-          }}
-        />
-      )}
     </div>
   );
 }

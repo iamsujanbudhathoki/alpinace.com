@@ -6,7 +6,7 @@ interface PackageGridSkeletonProps {
 
 export function PackageGridSkeleton({ count = 6 }: PackageGridSkeletonProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {Array.from({ length: count }).map((_, index) => (
         <PackageCardSkeleton key={index} />
       ))}

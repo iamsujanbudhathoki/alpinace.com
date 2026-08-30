@@ -40,19 +40,14 @@ export function AdminConfirmModal({
         variant="outline"
         onClick={onClose}
         disabled={isLoading}
-        className="text-xs font-semibold h-9 px-4 rounded-lg cursor-pointer"
       >
         {cancelText}
       </Button>
       <Button
         type="button"
+        variant={variant === "danger" ? "destructive" : "default"}
         onClick={handleConfirm}
         disabled={isLoading}
-        className={`text-xs font-semibold h-9 px-4 rounded-lg cursor-pointer flex items-center gap-1.5 ${
-          variant === "danger"
-            ? "bg-rose-600 hover:bg-rose-700 text-white"
-            : "bg-slate-900 hover:bg-slate-800 text-white"
-        }`}
       >
         {isLoading ? (
           <>
@@ -80,7 +75,7 @@ export function AdminConfirmModal({
       fixedHeight={false}
     >
       {error && (
-        <div className="p-3 mb-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold">
+        <div className="p-3 mb-3 bg-rose-50 border border-rose-200 rounded-md text-rose-800 text-xs font-semibold">
           {error}
         </div>
       )}
@@ -94,9 +89,9 @@ export function AdminConfirmModal({
         >
           <AlertTriangle className="w-5 h-5" />
         </div>
-        <div className="space-y-1 text-xs text-slate-600 font-normal leading-relaxed">
+        <div className="space-y-1 text-xs text-slate-700 font-normal leading-relaxed">
           <p>{description}</p>
-          <p className="text-[11px] text-slate-500 font-medium pt-1">
+          <p className="text-[11px] text-slate-600 font-medium pt-1">
             This operation is permanent. Please confirm if you wish to continue.
           </p>
         </div>

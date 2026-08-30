@@ -158,7 +158,7 @@ export default function AdminSettingsPage() {
                 value={formData.siteName}
                 onChange={(e) => handleChange("siteName", e.target.value)}
                 placeholder="e.g. Alpine Ace Treks & Expeditions"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
                 required
               />
             </div>
@@ -172,7 +172,7 @@ export default function AdminSettingsPage() {
                 value={formData.tagline}
                 onChange={(e) => handleChange("tagline", e.target.value)}
                 placeholder="e.g. Venture Beyond the Ordinary"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -199,7 +199,7 @@ export default function AdminSettingsPage() {
                 value={formData.contactEmail}
                 onChange={(e) => handleChange("contactEmail", e.target.value)}
                 placeholder="info@alpineacetreks.com"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
                 required
               />
             </div>
@@ -214,7 +214,7 @@ export default function AdminSettingsPage() {
                 value={formData.contactPhone}
                 onChange={(e) => handleChange("contactPhone", e.target.value)}
                 placeholder="+977 1 4700543"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -228,7 +228,7 @@ export default function AdminSettingsPage() {
                 value={formData.emergencyPhone}
                 onChange={(e) => handleChange("emergencyPhone", e.target.value)}
                 placeholder="+977 9851000000"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -242,7 +242,7 @@ export default function AdminSettingsPage() {
                 value={formData.whatsappNumber}
                 onChange={(e) => handleChange("whatsappNumber", e.target.value)}
                 placeholder="9779851000000 (no leading +)"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
               <span className="text-[11px] text-slate-600 mt-1 block">
                 Used by the floating WhatsApp chat widget across the website.
@@ -259,7 +259,7 @@ export default function AdminSettingsPage() {
                 value={formData.companyAddress}
                 onChange={(e) => handleChange("companyAddress", e.target.value)}
                 placeholder="Thamel Marg, Ward 26, Kathmandu, Nepal"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -273,7 +273,7 @@ export default function AdminSettingsPage() {
                 value={formData.officeHours}
                 onChange={(e) => handleChange("officeHours", e.target.value)}
                 placeholder="Sun - Fri: 09:00 AM - 06:00 PM (NPT)"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -287,7 +287,7 @@ export default function AdminSettingsPage() {
                 value={formData.googleMapsUrl}
                 onChange={(e) => handleChange("googleMapsUrl", e.target.value)}
                 placeholder="https://maps.google.com/?q=..."
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
           </div>
@@ -322,7 +322,7 @@ export default function AdminSettingsPage() {
                 value={formData.metaTitle}
                 onChange={(e) => handleChange("metaTitle", e.target.value)}
                 placeholder="Alpine Ace | Nepal Trekking, Historical Tours & Peak Expeditions"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -355,7 +355,7 @@ export default function AdminSettingsPage() {
                 value={formData.metaKeywords}
                 onChange={(e) => handleChange("metaKeywords", e.target.value)}
                 placeholder="Nepal trekking, Everest Base Camp, peak climbing, Sherpa guides, luxury lodges"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -369,7 +369,7 @@ export default function AdminSettingsPage() {
                   value={formData.canonicalUrl}
                   onChange={(e) => handleChange("canonicalUrl", e.target.value)}
                   placeholder={websiteDomain}
-                  className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                  className="text-xs"
                 />
               </div>
 
@@ -385,7 +385,7 @@ export default function AdminSettingsPage() {
                     handleChange("googleAnalyticsId", e.target.value)
                   }
                   placeholder="G-XXXXXXXXXX"
-                  className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                  className="text-xs"
                 />
               </div>
 
@@ -400,7 +400,7 @@ export default function AdminSettingsPage() {
                     handleChange("googleSiteVerification", e.target.value)
                   }
                   placeholder="verification_token_here"
-                  className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                  className="text-xs"
                 />
               </div>
             </div>
@@ -431,7 +431,7 @@ export default function AdminSettingsPage() {
                 value={formData.facebookUrl}
                 onChange={(e) => handleChange("facebookUrl", e.target.value)}
                 placeholder="https://facebook.com/alpineacenepal"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -444,7 +444,7 @@ export default function AdminSettingsPage() {
                 value={formData.instagramUrl}
                 onChange={(e) => handleChange("instagramUrl", e.target.value)}
                 placeholder="https://instagram.com/alpineacenepal"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -457,7 +457,7 @@ export default function AdminSettingsPage() {
                 value={formData.youtubeUrl}
                 onChange={(e) => handleChange("youtubeUrl", e.target.value)}
                 placeholder="https://youtube.com/@alpineacenepal"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -470,7 +470,7 @@ export default function AdminSettingsPage() {
                 value={formData.tripadvisorUrl}
                 onChange={(e) => handleChange("tripadvisorUrl", e.target.value)}
                 placeholder="https://tripadvisor.com/..."
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
 
@@ -483,7 +483,7 @@ export default function AdminSettingsPage() {
                 value={formData.linkedinUrl}
                 onChange={(e) => handleChange("linkedinUrl", e.target.value)}
                 placeholder="https://linkedin.com/company/alpine-ace-expeditions"
-                className="text-xs bg-slate-50 border-slate-200 text-slate-900 font-medium focus:bg-white rounded-xl py-2.5"
+                className="text-xs"
               />
             </div>
           </div>

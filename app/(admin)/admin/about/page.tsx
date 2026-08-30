@@ -254,14 +254,14 @@ export default function AdminAboutUsPage() {
       )}
 
       {/* Tabs Navigation */}
-      <div className="flex border-b border-slate-200 text-xs font-bold gap-6">
+      <div className="flex border-b border-slate-200 text-xs font-semibold gap-6">
         <button
           type="button"
           onClick={() => setActiveTab("content")}
           className={`pb-3 border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
             activeTab === "content"
               ? "border-slate-900 text-slate-900 font-bold"
-              : "border-transparent text-slate-500 hover:text-slate-900"
+              : "border-transparent text-slate-700 hover:text-slate-900"
           }`}
         >
           <Info className="w-4 h-4 text-slate-700" />
@@ -274,7 +274,7 @@ export default function AdminAboutUsPage() {
           className={`pb-3 border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
             activeTab === "seo"
               ? "border-slate-900 text-slate-900 font-bold"
-              : "border-transparent text-slate-500 hover:text-slate-900"
+              : "border-transparent text-slate-700 hover:text-slate-900"
           }`}
         >
           <Globe className="w-4 h-4 text-slate-700" />

@@ -31,29 +31,29 @@ interface AdminSearchModalProps {
 function getEntityIcon(type: string) {
   switch (type) {
     case "trek":
-      return <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <MapPin className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "tour":
-      return <Compass className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <Compass className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "expedition":
-      return <Mountain className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <Mountain className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "category":
-      return <FolderTree className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <FolderTree className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "booking":
-      return <Calendar className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <Calendar className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "inquiry":
-      return <User className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <User className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "blog":
-      return <FileText className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <FileText className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "testimonial":
-      return <MessageSquare className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <MessageSquare className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "team":
-      return <Users className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <Users className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "faq":
-      return <HelpCircle className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <HelpCircle className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     case "media":
-      return <Images className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <Images className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
     default:
-      return <LayoutGrid className="w-3.5 h-3.5 text-slate-600 shrink-0" />;
+      return <LayoutGrid className="w-3.5 h-3.5 text-slate-800 shrink-0" />;
   }
 }
 
@@ -171,11 +171,11 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
         <DialogTitle className="sr-only">Search Admin Panel</DialogTitle>
 
         {/* Search Input Bar */}
-        <div className="flex items-center px-3.5 py-2.5 border-b border-slate-200 bg-white gap-2.5">
+        <div className="flex items-center px-3.5 py-2.5 border-b border-slate-300 bg-white gap-2.5">
           {loading ? (
-            <Loader2 className="w-4 h-4 text-slate-600 animate-spin shrink-0" />
+            <Loader2 className="w-4 h-4 text-slate-800 animate-spin shrink-0" />
           ) : (
-            <Search className="w-4 h-4 text-slate-500 shrink-0" />
+            <Search className="w-4 h-4 text-slate-800 shrink-0" />
           )}
           <input
             type="text"
@@ -183,17 +183,17 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search categories, treks, tours, bookings..."
-            className="w-full bg-transparent text-xs font-medium text-slate-950 placeholder:text-slate-400 focus:outline-none"
+            className="w-full bg-transparent text-xs font-bold text-slate-950 placeholder:text-slate-500 focus:outline-none"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="p-0.5 rounded text-slate-500 hover:text-slate-800 transition-colors"
+              className="p-0.5 rounded text-slate-800 hover:text-slate-950 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-          <kbd className="text-[10px] font-semibold text-slate-700 border border-slate-300 bg-slate-100 px-1.5 py-0.5 rounded shrink-0 select-none">
+          <kbd className="text-[10px] font-bold text-slate-900 border border-slate-300 bg-slate-100 px-1.5 py-0.5 rounded shrink-0 select-none">
             ESC
           </kbd>
         </div>
@@ -201,19 +201,19 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
         {/* Results Area */}
         <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
           {loading && results.length === 0 ? (
-            <div className="py-8 flex items-center justify-center text-xs font-medium text-slate-700 gap-2">
-              <Loader2 className="w-4 h-4 text-slate-600 animate-spin" />
+            <div className="py-8 flex items-center justify-center text-xs font-bold text-slate-900 gap-2">
+              <Loader2 className="w-4 h-4 text-slate-800 animate-spin" />
               <span>Searching database...</span>
             </div>
           ) : debouncedQuery.trim() === "" ? (
             <div className="py-8 text-center text-xs space-y-1">
-              <p className="text-slate-900 font-bold">Type to search admin database...</p>
-              <p className="text-[11px] text-slate-600 font-medium">Search treks, tours, expeditions, categories, bookings &amp; inquiries</p>
+              <p className="text-slate-950 font-bold">Type to search admin database...</p>
+              <p className="text-[11px] text-slate-700 font-semibold">Search treks, tours, expeditions, categories, bookings &amp; inquiries</p>
             </div>
           ) : results.length > 0 ? (
             groupedResults.map(([groupLabel, groupItems]) => (
               <div key={groupLabel}>
-                <div className="px-3.5 py-1.5 text-[11px] font-bold text-slate-800 uppercase tracking-wider bg-slate-100/90 border-y border-slate-200/80 sticky top-0">
+                <div className="px-3.5 py-1.5 text-[11px] font-bold text-slate-900 uppercase tracking-wider bg-slate-100 border-y border-slate-200 sticky top-0">
                   {groupLabel}
                 </div>
                 <div className="divide-y divide-slate-100">
@@ -227,14 +227,14 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
                         onClick={() => handleSelectResult(item)}
                         onMouseEnter={() => setSelectedIndex(currentIndex)}
                         className={`w-full text-left px-3.5 py-2.5 flex items-center justify-between text-xs transition-colors cursor-pointer ${
-                          isHighlighted ? "bg-slate-100/90 text-slate-950 font-semibold" : "text-slate-900 hover:bg-slate-50 font-normal"
+                          isHighlighted ? "bg-slate-100 text-slate-950 font-bold" : "text-slate-950 hover:bg-slate-50 font-medium"
                         }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           {getEntityIcon(item.type)}
-                          <span className="truncate text-slate-950 font-semibold">{item.title}</span>
+                          <span className="truncate text-slate-950 font-bold">{item.title}</span>
                           {item.subtitle && (
-                            <span className="truncate text-[11px] text-slate-600 font-medium shrink-0 max-w-xs sm:max-w-md">
+                            <span className="truncate text-[11px] text-slate-700 font-medium shrink-0 max-w-xs sm:max-w-md">
                               {item.subtitle}
                             </span>
                           )}
@@ -252,20 +252,20 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
             ))
           ) : (
             <div className="py-8 text-center text-xs space-y-1">
-              <p className="text-slate-900 font-bold">No results found for &ldquo;{debouncedQuery}&rdquo;</p>
-              <p className="text-[11px] text-slate-600 font-medium">Try searching for a different keyword.</p>
+              <p className="text-slate-950 font-bold">No results found for &ldquo;{debouncedQuery}&rdquo;</p>
+              <p className="text-[11px] text-slate-700 font-semibold">Try searching for a different keyword.</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-3.5 py-2 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-700">
+        <div className="px-3.5 py-2 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-800">
           <span>
             <span className="font-bold text-slate-950">Global Search</span> • AlpineAce Admin
           </span>
-          <div className="flex items-center gap-3 text-[10px] font-semibold text-slate-700">
-            <span><kbd className="bg-white border border-slate-300 text-slate-900 px-1.5 py-0.5 rounded font-bold">↑↓</kbd> Navigate</span>
-            <span><kbd className="bg-white border border-slate-300 text-slate-900 px-1.5 py-0.5 rounded font-bold">↵</kbd> Select</span>
+          <div className="flex items-center gap-3 text-[10px] font-bold text-slate-900">
+            <span><kbd className="bg-white border border-slate-300 text-slate-950 px-1.5 py-0.5 rounded font-bold">↑↓</kbd> Navigate</span>
+            <span><kbd className="bg-white border border-slate-300 text-slate-950 px-1.5 py-0.5 rounded font-bold">↵</kbd> Select</span>
           </div>
         </div>
       </DialogContent>

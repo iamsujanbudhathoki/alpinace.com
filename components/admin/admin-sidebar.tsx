@@ -21,6 +21,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   MessageSquareQuote,
+  Bell,
 } from "lucide-react";
 
 interface NavItem {
@@ -115,6 +116,11 @@ const navGroups: { items: NavItem[] }[] = [
   },
   {
     items: [
+      {
+        title: "Notifications",
+        href: "/admin/notifications",
+        icon: Bell,
+      },
       {
         title: "Settings",
         href: "/admin/settings",

@@ -3,35 +3,61 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useAdminAuth } from "@/lib/admin-auth-context";
-import { Mountain, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Mountain, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required.")
+    .email("Please enter a valid email address."),
+  password: z
+    .string()
+    .min(1, "Password is required.")
+    .min(6, "Password must be at least 6 characters."),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function AdminLoginPage() {
   const { login } = useAdminAuth();
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: LoginFormValues) => {
     setErrorMsg("");
     setIsSubmitting(true);
 
     try {
-      const success = await login(email, password);
+      const success = await login(values.email, values.password);
       if (success) {
         router.replace("/admin");
       } else {
         setErrorMsg("Invalid email or password.");
       }
     } catch (err: any) {
-      const message = err?.message || "Invalid credentials or network connection issue.";
+      const message = err?.message || "Invalid credentials or account disabled after failed attempts.";
       setErrorMsg(message);
     } finally {
       setIsSubmitting(false);
@@ -44,56 +70,77 @@ export default function AdminLoginPage() {
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold shadow-xs">
               <Mountain className="w-5 h-5" />
             </div>
           </Link>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight font-heading">
             Sign in to AlpineAce Admin
           </h1>
+          <p className="text-xs text-slate-500">Authorized personnel access only</p>
         </div>
 
         {/* Login Form Card */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-              {errorMsg}
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{errorMsg}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4 text-xs">
+            {/* Email Field */}
             <div className="space-y-1">
-              <label className="block text-slate-700 font-bold">Email</label>
+              <label className="block text-slate-700 font-bold">Email Address</label>
               <Input
                 type="email"
-                required
                 disabled={isSubmitting}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@alpineacetreks.com"
-                className="text-xs bg-slate-50/50 border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                {...register("email")}
+                placeholder="admin@alpineacetreks.com"
+                className={`text-xs bg-slate-50/50 text-slate-900 font-medium transition-all focus:bg-white ${
+                  errors.email
+                    ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 bg-rose-50/30"
+                    : "border-slate-200 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
+                }`}
               />
+              {errors.email && (
+                <p className="text-[11px] font-semibold text-rose-600 flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>{errors.email.message}</span>
+                </p>
+              )}
             </div>
 
+            {/* Password Field */}
             <div className="space-y-1">
               <label className="block text-slate-700 font-bold">Password</label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  required
                   disabled={isSubmitting}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pr-9 text-xs bg-slate-50/50 border-slate-200 text-slate-900 font-medium focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                  {...register("password")}
+                  placeholder="••••••••"
+                  className={`pr-9 text-xs bg-slate-50/50 text-slate-900 font-medium transition-all focus:bg-white ${
+                    errors.password
+                      ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 bg-rose-50/30"
+                      : "border-slate-200 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
+                  }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-[11px] font-semibold text-rose-600 flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>{errors.password.message}</span>
+                </p>
+              )}
             </div>
 
             <Button
@@ -114,7 +161,7 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="text-center">
-          <Link href="/" className="text-xs font-bold text-slate-800 hover:text-slate-950 transition-colors">
+          <Link href="/" className="text-xs font-bold text-slate-700 hover:text-slate-950 transition-colors">
             ← Back to website
           </Link>
         </div>

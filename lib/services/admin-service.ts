@@ -1071,6 +1071,15 @@ export interface AppNotification {
   createdAt: string;
 }
 
+export interface PaginatedNotificationResponse {
+  items: AppNotification[];
+  total: number;
+  unreadCount: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface PaginatedNotifications {
   items: AppNotification[];
   total: number;
@@ -1080,13 +1089,26 @@ export interface PaginatedNotifications {
 }
 
 export const NotificationService = {
-  async getAll(): Promise<AppNotification[]> {
+  async getAll(params?: {
+    page?: number;
+    limit?: number;
+    isRead?: boolean;
+  }): Promise<PaginatedNotificationResponse> {
     try {
-      const res = await apiClient.get<AppNotification[]>("/notifications");
-      return Array.isArray(res?.data) ? res.data : [];
+      const query = new URLSearchParams();
+      if (params?.page) query.set("page", String(params.page));
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.isRead !== undefined) query.set("isRead", String(params.isRead));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<PaginatedNotificationResponse>(`/notifications${q}`);
+      if (res?.data && Array.isArray(res.data.items)) {
+        return res.data;
+      }
+      return { items: [], total: 0, unreadCount: 0, page: 1, limit: 10, totalPages: 1 };
     } catch (e) {
       console.warn("Notifications fetch error:", e);
-      return [];
+      return { items: [], total: 0, unreadCount: 0, page: 1, limit: 10, totalPages: 1 };
     }
   },
 

@@ -289,16 +289,26 @@ export function AdminHeader({
               )}
             </div>
 
-            {/* Popover Footer — Show More */}
-            {hasMore && (
-              <button
-                onClick={handleLoadMore}
-                disabled={isLoadingMore}
-                className="w-full p-2.5 text-center text-xs font-semibold text-slate-700 hover:bg-slate-100 bg-slate-50 border-t border-slate-200 cursor-pointer transition-colors disabled:opacity-50"
+            {/* Popover Footer — Show More & View All */}
+            <div className="bg-slate-50 border-t border-slate-200 p-2 flex items-center justify-between gap-2 text-xs font-semibold">
+              {hasMore ? (
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                  className="text-slate-700 hover:text-slate-900 cursor-pointer transition-colors disabled:opacity-50"
+                >
+                  {isLoadingMore ? "Loading..." : `Load more (+${totalNotifications - notifications.length})`}
+                </button>
+              ) : (
+                <span className="text-[11px] font-medium text-slate-400">All loaded</span>
+              )}
+              <Link
+                href="/admin/notifications"
+                className="text-slate-900 hover:underline font-bold text-[11px] ml-auto"
               >
-                {isLoadingMore ? "Loading..." : `Show more (${totalNotifications - notifications.length} remaining)`}
-              </button>
-            )}
+                View all page →
+              </Link>
+            </div>
           </PopoverContent>
         </Popover>
 

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAdminAuth } from "@/lib/admin-auth-context";
-import { Mountain, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { Mountain, Eye, EyeOff, Loader2, AlertCircle, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -61,6 +61,11 @@ export default function AdminLoginPage() {
     }
   };
 
+  const isLockoutError =
+    errorMsg.toLowerCase().includes("locked") ||
+    errorMsg.toLowerCase().includes("too many failed") ||
+    errorMsg.toLowerCase().includes("disabled");
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-sm space-y-6">
@@ -80,9 +85,26 @@ export default function AdminLoginPage() {
         {/* Login Form Card */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
           {errorMsg && (
-            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200/90 text-rose-800 text-xs font-semibold flex items-start gap-2.5 shadow-2xs leading-relaxed">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
-              <span className="flex-1">{errorMsg}</span>
+            <div
+              className={`p-3.5 rounded-xl text-xs font-semibold flex items-start gap-2.5 shadow-2xs leading-relaxed ${
+                isLockoutError
+                  ? "bg-amber-500/10 border border-amber-500/30 text-amber-950"
+                  : "bg-rose-50 border border-rose-200/90 text-rose-800"
+              }`}
+            >
+              {isLockoutError ? (
+                <ShieldAlert className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
+              )}
+              <div className="flex-1">
+                {isLockoutError && (
+                  <p className="font-bold text-amber-900 text-[11px] uppercase tracking-wider mb-0.5">
+                    Security Lockout Notice
+                  </p>
+                )}
+                <span>{errorMsg}</span>
+              </div>
             </div>
           )}
 

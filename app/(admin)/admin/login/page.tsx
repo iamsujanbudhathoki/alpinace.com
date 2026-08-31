@@ -97,7 +97,6 @@ export default function AdminLoginPage() {
                 type="email"
                 disabled={isSubmitting}
                 {...register("email")}
-                placeholder="admin@alpineacetreks.com"
                 className={`text-xs bg-slate-50/50 text-slate-900 font-medium transition-all focus:bg-white ${
                   errors.email
                     ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 bg-rose-50/30"

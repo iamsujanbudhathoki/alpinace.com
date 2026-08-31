@@ -41,6 +41,10 @@ export enum TripActivity {
   OTHER = "Other",
 }
 
+export enum AdminRole {
+  ADMIN = "Admin",
+}
+
 export enum PackageStatus {
   ACTIVE = "active",
   FEATURED = "featured",

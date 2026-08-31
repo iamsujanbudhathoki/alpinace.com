@@ -2,12 +2,13 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { apiClient } from "@/lib/services/api-client";
+import { AdminRole } from "@/lib/admin-data";
 
 export interface AdminUser {
   id: string;
   name: string;
   email: string;
-  role: "Expedition Director" | "Operations Manager" | "Guide Coordinator" | string;
+  role: AdminRole;
   avatarUrl?: string;
   token?: string;
 }

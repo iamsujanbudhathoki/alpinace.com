@@ -465,7 +465,7 @@ export function formatBackendTrek(p: any): TrekItem {
     id: p.id,
     title: p.title,
     slug: p.slug,
-    category: p.categoryType || p.category,
+    category: p.category,
     categoryId: p.categoryId,
     subcategoryId: p.subcategoryId,
     rating: Number(p.rating),

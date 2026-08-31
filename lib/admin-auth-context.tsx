@@ -62,13 +62,14 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         setUser(response.data);
         return true;
       }
+
+      setUser(null);
+      throw new Error(response.message || "Invalid email or password.");
     } catch (err: any) {
       console.error("Admin login error:", err);
+      setUser(null);
       throw err;
     }
-
-    setUser(null);
-    return false;
   };
 
   const logout = () => {

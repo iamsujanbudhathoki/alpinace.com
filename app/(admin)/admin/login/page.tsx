@@ -53,13 +53,11 @@ export default function AdminLoginPage() {
       const success = await login(values.email, values.password);
       if (success) {
         router.replace("/admin");
-      } else {
-        setErrorMsg("Invalid email or password.");
       }
     } catch (err: any) {
       const message =
         err?.message ||
-        "Too many failed login attempts. Your account has been temporarily locked. Please contact a system administrator to restore access.";
+        "Too many failed requests. Your account has been temporarily locked for security. Please contact a system administrator to restore access.";
       setErrorMsg(message);
     } finally {
       setIsSubmitting(false);

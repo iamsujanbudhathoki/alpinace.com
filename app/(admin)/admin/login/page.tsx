@@ -57,7 +57,9 @@ export default function AdminLoginPage() {
         setErrorMsg("Invalid email or password.");
       }
     } catch (err: any) {
-      const message = err?.message || "Invalid credentials or account disabled after failed attempts.";
+      const message =
+        err?.message ||
+        "Too many failed login attempts. Your account has been temporarily locked. Please contact a system administrator to restore access.";
       setErrorMsg(message);
     } finally {
       setIsSubmitting(false);
@@ -83,9 +85,9 @@ export default function AdminLoginPage() {
         {/* Login Form Card */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{errorMsg}</span>
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200/90 text-rose-800 text-xs font-semibold flex items-start gap-2.5 shadow-2xs leading-relaxed">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
+              <span className="flex-1">{errorMsg}</span>
             </div>
           )}
 

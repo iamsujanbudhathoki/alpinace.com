@@ -55,10 +55,7 @@ export default function AdminLoginPage() {
         router.replace("/admin");
       }
     } catch (err: any) {
-      const message =
-        err?.message ||
-        "Too many failed requests. Your account has been temporarily locked for security. Please contact a system administrator to restore access.";
-      setErrorMsg(message);
+      setErrorMsg(err?.message || "Authentication failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

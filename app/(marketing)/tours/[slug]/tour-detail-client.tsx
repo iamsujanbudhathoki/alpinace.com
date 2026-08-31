@@ -46,6 +46,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
   const [relatedTours, setRelatedTours] = useState<TourItem[]>([]);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
+  const [isInquired, setIsInquired] = useState(false);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
 
   const { setDetailNav } = useDetailNav();
@@ -237,14 +238,14 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       activeTab,
       onTabChange: handleTabChange,
       priceUSD: tour.priceUSD,
-      onBookClick: () => setIsBookingModalOpen(true),
-      bookButtonLabel: "Reserve Private Tour",
+      onBookClick: isBooked ? undefined : () => setIsBookingModalOpen(true),
+      bookButtonLabel: isBooked ? "Booking Submitted" : "Reserve Private Tour",
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [tour, availableTabs, activeTab, setDetailNav]);
+  }, [tour, availableTabs, activeTab, isBooked, setDetailNav]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -315,6 +316,8 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
         priceUSD={tour.priceUSD}
         bookButtonLabel="Book Tour"
         onBookClick={() => setIsBookingModalOpen(true)}
+        isBooked={isBooked}
+        isInquired={isInquired}
         badges={[
           ...(tour.region ? [{ label: tour.region }] : []),
           { label: tour.tourType || "Heritage Tour", highlight: true },
@@ -378,31 +381,8 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
                       </p>
                     </div>
                   )}
-
-                  {/* {tour.startEndLocation && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Start &amp; Finish
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {tour.startEndLocation}
-                      </p>
-                    </div>
-                  )} */}
-
-                  {/* {tour.groupSizeRange && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Group Capacity
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {tour.groupSizeRange}
-                      </p>
-                    </div>
-                  )} */}
                 </div>
               )}
-
             </section>
 
             {/* SECTION: ITINERARY */}
@@ -494,6 +474,10 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               bookButtonLabel="Reserve Private Tour"
               packageType={InquiryType.TOUR}
               isBooked={isBooked}
+              isInquired={isInquired}
+              onResetBooked={() => setIsBooked(false)}
+              onResetInquired={() => setIsInquired(false)}
+              onInquirySuccess={() => setIsInquired(true)}
             />
           </div>
         </div>
@@ -534,9 +518,9 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
           </div>
         </div>
         {isBooked ? (
-          <div className="bg-emerald-700 text-white font-semibold text-xs px-3 py-2 rounded-lg shadow-xs flex items-center gap-1 shrink-0">
-            <Check className="w-3.5 h-3.5" />
-            <span>Request Submitted</span>
+          <div className="bg-emerald-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs flex items-center gap-1.5 shrink-0">
+            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <span>Booking Submitted</span>
           </div>
         ) : (
           <button

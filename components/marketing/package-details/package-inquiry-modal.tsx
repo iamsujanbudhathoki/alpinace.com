@@ -70,22 +70,6 @@ export function PackageInquiryModal({
 
     setIsSubmitting(true);
     try {
-      const activeAddons = addons.filter((a) => a.checked).map((a) => a.label);
-      const addonsSummary = activeAddons.length > 0 ? activeAddons.join(", ") : "None";
-
-      const formattedMessage = [
-        inquiryMessage.trim(),
-        "",
-        "--- Trip Details ---",
-        `Trip: ${tripTitle}`,
-        `Type: ${packageType}`,
-        `Duration: ${durationDays} Days`,
-        `Selected Upgrades: ${addonsSummary}`,
-        inquiryCountry.trim() ? `Country: ${inquiryCountry.trim()}` : undefined,
-      ]
-        .filter(Boolean)
-        .join("\n");
-
       const res = await InquiryService.create({
         guestName: inquiryName.trim(),
         email: inquiryEmail.trim(),
@@ -94,13 +78,13 @@ export function PackageInquiryModal({
         interestedTrip: tripTitle,
         travelDates: "Flexible",
         groupSize: travelers || 1,
-        message: formattedMessage,
+        message: inquiryMessage.trim(),
         type: packageType,
         cfTurnstileToken: turnstileToken,
       });
 
       if (res?.success) {
-        toast.success("Inquiry sent successfully! Our mountain specialist team will reply within 12 hours.");
+        toast.success("Inquiry sent successfully! Our team will reply within 12 hours.");
         onSuccess?.();
         setFormErrors({});
         setErrorMessage(null);

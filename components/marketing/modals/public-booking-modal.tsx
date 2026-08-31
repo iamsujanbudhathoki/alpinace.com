@@ -1,5 +1,15 @@
 "use client";
 
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { Loader2, CheckCircle2, AlertTriangle, Send } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   Booking,
   BookingPackageType,
@@ -9,22 +19,10 @@ import {
 } from "@/lib/admin-data";
 import { BookingFormValues } from "@/lib/admin-schemas";
 import { BookingService } from "@/lib/services/admin-service";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Compass,
-  CreditCard,
-  FileCheck,
-  Loader2,
-  Mountain,
-  X
-} from "lucide-react";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
 import { TurnstileWidget } from "@/components/ui/turnstile-widget";
-import { toast } from "sonner";
-import { useCallback, useEffect, useMemo, useState } from "react";
 
-interface PublicBookingModalProps {
+export interface PublicBookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
@@ -42,13 +40,6 @@ interface PublicBookingModalProps {
   initialTravelers?: number;
   initialDate?: string;
 }
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^[+\d][\d\s()-]{6,}$/;
-
-type FieldErrors = Partial<
-  Record<"guestName" | "guestEmail" | "guestPhone" | "country" | "startDate", string>
->;
 
 export function PublicBookingModal({
   isOpen,
@@ -72,42 +63,28 @@ export function PublicBookingModal({
   const [guestPhone, setGuestPhone] = useState("");
   const [country, setCountry] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
 
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, string | undefined>>({});
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState("");
 
-  // 1. Prevent background page scrolling when modal is open
+  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
+
+  // Reset state whenever the modal opens
   useEffect(() => {
     if (isOpen) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [isOpen]);
-
-  // 2. Reset and synchronize state whenever the modal is opened
-  useEffect(() => {
-    if (isOpen) {
-      if (initialTravelers && initialTravelers >= 1) {
-        setTravelers(initialTravelers);
-      }
-      if (initialDate && initialDate.trim()) {
-        setStartDate(initialDate);
-      } else {
-        setStartDate(defaultStartDate);
-      }
+      setTravelers(initialTravelers && initialTravelers >= 1 ? initialTravelers : 2);
+      setStartDate(initialDate && initialDate.trim() ? initialDate : defaultStartDate);
       setGuestName("");
       setGuestEmail("");
       setGuestPhone("");
       setCountry("");
       setSpecialRequests("");
-      setTouched({});
+      setTurnstileToken("");
+      setFormErrors({});
       setConfirmedBooking(null);
       setErrorMessage(null);
       setIsSubmitting(false);
@@ -115,7 +92,6 @@ export function PublicBookingModal({
     }
   }, [isOpen, initialTravelers, initialDate, defaultStartDate]);
 
-  // 3. Accurately detect if the user has changed anything from original state
   const isDirty = useMemo(() => {
     if (confirmedBooking) return false;
     const initialDateValue = initialDate && initialDate.trim() ? initialDate : defaultStartDate;
@@ -143,11 +119,11 @@ export function PublicBookingModal({
     specialRequests,
   ]);
 
-  // Return date is inclusive of the departure day
   const endDate = useMemo(() => {
     if (!startDate) return "";
     const nights = Math.max(1, trip.durationDays) - 1;
     const d = new Date(startDate);
+    if (isNaN(d.getTime())) return "";
     d.setDate(d.getDate() + nights);
     return d.toISOString().split("T")[0];
   }, [startDate, trip.durationDays]);
@@ -155,37 +131,13 @@ export function PublicBookingModal({
   const baseCostPerPerson = trip.priceUSD || 0;
 
   const totalPriceUSD = useMemo(() => {
-    const perPerson = baseCostPerPerson;
-    return Math.round(perPerson * travelers);
+    return Math.round(baseCostPerPerson * travelers);
   }, [travelers, baseCostPerPerson]);
 
   const depositUSD = useMemo(() => {
     return Math.round(totalPriceUSD * 0.25);
   }, [totalPriceUSD]);
 
-  const todayStr = new Date().toISOString().split("T")[0];
-
-  const fieldErrors: FieldErrors = useMemo(() => {
-    const errs: FieldErrors = {};
-    if (!guestName.trim()) errs.guestName = "Enter the lead traveler's full name.";
-    if (!guestEmail.trim()) errs.guestEmail = "Enter an email address.";
-    else if (!EMAIL_RE.test(guestEmail.trim())) errs.guestEmail = "Enter a valid email address.";
-    if (!guestPhone.trim()) errs.guestPhone = "Enter a phone number.";
-    else if (!PHONE_RE.test(guestPhone.trim())) errs.guestPhone = "Enter a valid phone number.";
-    if (!country.trim()) errs.country = "Enter a country.";
-    if (!startDate) errs.startDate = "Choose a departure date.";
-    else if (startDate < todayStr) errs.startDate = "Departure date can't be in the past.";
-    return errs;
-  }, [guestName, guestEmail, guestPhone, country, startDate, todayStr]);
-
-  const isFormValid = Object.keys(fieldErrors).length === 0;
-
-  const showError = (field: keyof FieldErrors) =>
-    touched[field] ? fieldErrors[field] : undefined;
-
-  const markTouched = (field: string) => setTouched((prev) => ({ ...prev, [field]: true }));
-
-  // Force-close and clear all state
   const forceClose = useCallback(() => {
     setShowExitConfirm(false);
     setGuestName("");
@@ -193,15 +145,14 @@ export function PublicBookingModal({
     setGuestPhone("");
     setCountry("");
     setSpecialRequests("");
+    setTurnstileToken("");
     setConfirmedBooking(null);
     setErrorMessage(null);
-    setTouched({});
+    setFormErrors({});
     setIsSubmitting(false);
-    setTurnstileToken("");
     onClose();
   }, [onClose]);
 
-  // Request close: checks if dirty, otherwise prompts confirmation
   const requestClose = useCallback(() => {
     if (confirmedBooking || !isDirty) {
       forceClose();
@@ -210,40 +161,30 @@ export function PublicBookingModal({
     }
   }, [confirmedBooking, isDirty, forceClose]);
 
-  // Handle keyboard Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        if (showExitConfirm) {
-          setShowExitConfirm(false);
-        } else {
-          requestClose();
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, showExitConfirm, requestClose]);
-
-  if (!isOpen) return null;
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!guestName.trim()) errors.guestName = "Full name is required";
+    if (!guestEmail.trim()) {
+      errors.guestEmail = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail.trim())) {
+      errors.guestEmail = "Invalid email address";
+    }
+    if (!guestPhone.trim()) errors.guestPhone = "Phone or WhatsApp is required";
+    if (!country.trim()) errors.country = "Country is required";
+    if (!startDate) {
+      errors.startDate = "Departure date is required";
+    } else if (startDate < todayStr) {
+      errors.startDate = "Departure date cannot be in the past";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    setTouched({
-      guestName: true,
-      guestEmail: true,
-      guestPhone: true,
-      country: true,
-      startDate: true,
-    });
-
-    if (!isFormValid) return;
+    if (!validateForm()) return;
 
     if (!turnstileToken) {
       setErrorMessage("Please complete the Turnstile CAPTCHA verification.");
@@ -274,239 +215,196 @@ export function PublicBookingModal({
       if (res.success && res.data) {
         toast.success(`Booking request submitted successfully! (Reference: ${res.data.reference})`);
         onSuccess?.();
-        forceClose();
+        setConfirmedBooking(res.data);
       } else {
-        setErrorMessage(res.message || "We couldn't save this booking. Please try again.");
+        const msg = res.message || "Failed to submit booking request. Please try again.";
+        setErrorMessage(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
       console.error("Booking error:", err);
-      setErrorMessage(err.message || "Something went wrong while sending your request.");
+      const msg = err?.message || "Something went wrong while sending your request.";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const inputBase =
-    "w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-1 transition-colors";
-  const inputOk = "border-slate-200 focus:border-amber-500 focus:ring-amber-500";
-  const inputBad = "border-red-400 focus:border-red-500 focus:ring-red-500";
-
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="booking-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) requestClose();
-      }}
-    >
-      <div className="relative flex w-full max-w-lg sm:max-w-2xl max-h-[90vh] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
-
-        {/* Unsaved Changes Confirmation Overlay */}
-        {showExitConfirm && (
-          <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
-            <div className="max-w-sm w-full text-center space-y-4">
-              <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center justify-center mx-auto">
-                <AlertTriangle className="w-5 h-5" strokeWidth={2} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xl font-bold text-slate-900">
-                  Leave booking?
-                </h3>
-                <p className="text-sm text-slate-600">
-                  You have unsaved changes. If you leave now, your entered booking details will be lost.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowExitConfirm(false)}
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-amber-700 text-white font-semibold text-sm hover:bg-amber-800"
-                  autoFocus
-                >
-                  Continue Editing
-                </button>
-                <button
-                  type="button"
-                  onClick={forceClose}
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-semibold text-sm hover:text-red-700 hover:border-red-300"
-                >
-                  Discard &amp; Leave
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
+    <Dialog open={isOpen} onOpenChange={(open) => !open && requestClose()}>
+      <DialogContent
+        showCloseButton
+        onCloseClick={requestClose}
+        className="sm:max-w-xl md:max-w-2xl w-full max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white rounded-2xl shadow-xl border border-stone-200"
+      >
         {/* Header */}
-        <div className="relative shrink-0 border-b border-slate-200 bg-white">
-          <div className="flex items-start justify-between gap-3 px-5 py-4 sm:px-7 sm:py-5">
-            <div className="min-w-0 space-y-1.5">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-slate-500">
-                <span className="inline-flex items-center gap-1">
-                  <Compass className="h-3 w-3" strokeWidth={2.25} />
-                  {trip.region}
-                </span>
-                <span aria-hidden="true">·</span>
-                <span>{trip.durationDays} days</span>
-                {trip.maxAltitudeMeters ? (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <span className="inline-flex items-center gap-1">
-                      <Mountain className="h-3 w-3" strokeWidth={2.25} />
-                      {trip.maxAltitudeMeters.toLocaleString()}m
-                    </span>
-                  </>
-                ) : null}
-                {trip.difficulty ? (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <span>{trip.difficulty}</span>
-                  </>
-                ) : null}
-              </div>
-              <h2 id="booking-modal-title" className="font-heading text-base sm:text-lg font-bold leading-snug text-slate-900">
-                {trip.title}
-              </h2>
-            </div>
-
-            <button
-              type="button"
-              onClick={requestClose}
-              className="shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 cursor-pointer"
-              aria-label="Close booking form"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+        <div className="bg-stone-50 border-b border-stone-200 px-5 sm:px-7 py-4 sm:py-4.5 pr-12 shrink-0">
+          <DialogTitle className="font-heading text-base sm:text-lg font-bold text-stone-900">
+            {confirmedBooking ? "Booking Confirmation" : "Book This Trip"}
+          </DialogTitle>
+          <DialogDescription className="text-xs text-stone-500 font-medium truncate mt-0.5">
+            {trip.title} ({trip.durationDays} Days · {trip.region})
+          </DialogDescription>
         </div>
 
-        {/* Scrollable body */}
-        <div className="overflow-y-auto">
-          {confirmedBooking ? (
-            <div className="px-6 py-8 sm:px-10 sm:py-10">
-              <div className="mx-auto max-w-sm text-center">
-                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
-                  <CheckCircle2 className="h-7 w-7" strokeWidth={2} />
-                </div>
-                <h3 className="font-heading text-xl font-bold text-slate-900 sm:text-2xl">
-                  Request sent
-                </h3>
-                <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-slate-500">
-                  We&apos;ve logged your trip and emailed a copy to {confirmedBooking.guestEmail || guestEmail}.
-                  A trip coordinator will confirm permits and lodges, then send payment instructions.
-                </p>
-              </div>
-
-              <div className="mx-auto mt-6 max-w-sm rounded-xl border border-slate-200 bg-slate-50">
-                <div className="flex items-center justify-between border-b border-dashed border-slate-300 px-5 py-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Booking reference
-                  </span>
-                  <span className="rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1 font-mono text-sm font-bold text-amber-800">
-                    {confirmedBooking.reference}
-                  </span>
-                </div>
-                <div className="space-y-2.5 px-5 py-4 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500">Traveler</span>
-                    <span className="font-medium text-slate-900">{confirmedBooking.guestName}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500">Dates</span>
-                    <span className="font-medium text-slate-900">
-                      {confirmedBooking.startDate} → {confirmedBooking.endDate}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500">Group</span>
-                    <span className="font-medium text-slate-900">
-                      {confirmedBooking.groupSize}{" "}
-                      {confirmedBooking.groupSize === 1 ? "traveler" : "travelers"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between border-t border-dashed border-slate-300 pt-2.5">
-                    <span className="font-medium text-slate-900">Estimated total</span>
-                    <span className="font-mono text-base font-bold text-slate-900">
-                      ${Number(confirmedBooking.totalAmountUSD).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <button
+        {/* Scrollable Body */}
+        <div className="overflow-y-auto max-h-[calc(90vh-70px)] p-5 sm:p-7 space-y-4">
+          {showExitConfirm ? (
+            <div className="text-center space-y-4 py-2">
+            <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-5 h-5" strokeWidth={2} />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-heading text-base font-bold text-stone-900">
+                Discard Booking Request?
+              </h3>
+              <p className="text-xs text-stone-600 leading-relaxed max-w-xs mx-auto">
+                You have unsaved changes in your booking form. If you leave now, your entered details will be lost.
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowExitConfirm(false)}
+                className="text-xs font-semibold py-2.5 px-5 rounded-xl border-stone-300 hover:bg-stone-50 text-stone-700"
+              >
+                Continue Editing
+              </Button>
+              <Button
                 type="button"
                 onClick={forceClose}
-                className="mx-auto mt-7 block w-full max-w-sm rounded-xl bg-amber-700 hover:bg-amber-800 active:bg-amber-900 py-3.5 text-sm font-semibold text-white transition-colors cursor-pointer"
+                className="bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs py-2.5 px-5 rounded-xl cursor-pointer"
               >
-                Back to trip details
-              </button>
+                Discard & Leave
+              </Button>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-6 px-5 py-6 sm:px-7 sm:py-7">
-              {errorMessage && (
-                <div
-                  role="alert"
-                  className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-sm text-red-800"
-                >
-                  {errorMessage}
-                </div>
-              )}
+          </div>
+        ) : confirmedBooking ? (
+          <div className="space-y-5">
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-6 h-6" strokeWidth={2.5} />
+              </div>
+              <h3 className="font-heading text-lg font-bold text-stone-900">
+                Booking Request Submitted!
+              </h3>
+              <p className="text-xs text-stone-600 max-w-sm mx-auto leading-relaxed">
+                Thank you for choosing Alpine Ace! We&apos;ve received your request for{" "}
+                <strong className="text-stone-900">{trip.title}</strong>. A confirmation copy has been sent to{" "}
+                <strong className="text-stone-900">{confirmedBooking.guestEmail || guestEmail}</strong>.
+              </p>
+            </div>
 
-              {/* Dates + group size */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <label htmlFor="startDate" className="text-sm font-semibold text-slate-900">
-                    Departure date <span className="text-red-500">*</span>
+            <div className="bg-stone-50 border border-stone-200 rounded-xl p-4.5 space-y-3 text-xs">
+              <div className="flex items-center justify-between border-b border-dashed border-stone-200 pb-3">
+                <span className="font-semibold text-stone-500 uppercase tracking-wider text-[11px]">
+                  Booking Reference
+                </span>
+                <span className="font-mono font-bold text-amber-900 bg-amber-100/80 px-2.5 py-1 rounded-md border border-amber-200/80">
+                  {confirmedBooking.reference}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-stone-700">
+                <div className="flex items-center justify-between">
+                  <span className="text-stone-500">Lead Traveler</span>
+                  <span className="font-semibold text-stone-900">{confirmedBooking.guestName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-stone-500">Departure &amp; Return</span>
+                  <span className="font-medium text-stone-900">
+                    {confirmedBooking.startDate} → {confirmedBooking.endDate}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-stone-500">Group Size</span>
+                  <span className="font-medium text-stone-900">
+                    {confirmedBooking.groupSize} {confirmedBooking.groupSize === 1 ? "Traveler" : "Travelers"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-stone-200 pt-2 font-bold text-stone-900">
+                  <span>Estimated Total</span>
+                  <span className="text-sm font-bold text-amber-900">
+                    ${Number(confirmedBooking.totalAmountUSD || totalPriceUSD).toLocaleString()} USD
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-amber-50/70 border border-amber-200/70 rounded-xl p-3.5 text-xs text-stone-700 leading-relaxed">
+              <p className="font-semibold text-amber-950 mb-1">What Happens Next?</p>
+              We are checking lodge rooms and permits for your dates. Our team will email you within 12 hours to confirm your reservation details.
+            </div>
+
+            <Button
+              type="button"
+              onClick={forceClose}
+              className="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs py-3 rounded-xl cursor-pointer shadow-xs transition-colors"
+            >
+              Done
+            </Button>
+          </div>
+        ) : (
+          <div>
+            {errorMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
+                {errorMessage}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
+              {/* Row 1: Departure Date & Travelers */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                    Departure Date <span className="text-rose-500">*</span>
                   </label>
                   <input
-                    id="startDate"
                     type="date"
-                    required
                     min={todayStr}
                     value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    onBlur={() => markTouched("startDate")}
-                    aria-invalid={!!showError("startDate")}
-                    aria-describedby={showError("startDate") ? "startDate-error" : undefined}
-                    className={`${inputBase} ${showError("startDate") ? inputBad : inputOk}`}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      if (formErrors.startDate) setFormErrors((prev) => ({ ...prev, startDate: undefined }));
+                    }}
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                      formErrors.startDate
+                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                    }`}
                   />
-                  {showError("startDate") ? (
-                    <p id="startDate-error" className="text-xs text-red-600">
-                      {showError("startDate")}
-                    </p>
+                  {formErrors.startDate ? (
+                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.startDate}</p>
                   ) : startDate ? (
-                    <p className="text-xs text-slate-500">
-                      Returns <span className="font-medium text-slate-600">{endDate}</span> ·{" "}
-                      {trip.durationDays} days
+                    <p className="text-[11px] text-stone-500 mt-1 font-medium">
+                      Returns: <span className="text-stone-700 font-semibold">{endDate}</span> ({trip.durationDays} Days)
                     </p>
                   ) : null}
                 </div>
 
-                <div className="space-y-1.5">
-                  <span className="block text-sm font-semibold text-slate-900" id="travelers-label">
-                    Travelers
-                  </span>
-                  <div className="flex items-center gap-2" role="group" aria-labelledby="travelers-label">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                    Travelers <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       disabled={travelers <= 1}
                       onClick={() => setTravelers((prev) => Math.max(1, prev - 1))}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-lg font-semibold text-slate-900 transition-colors hover:bg-slate-50 disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
-                      aria-label="Decrease travelers"
+                      className="w-10 h-[38px] flex items-center justify-center rounded-xl border border-stone-300 text-stone-800 font-bold text-base hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                     >
-                      −
+                      -
                     </button>
-                    <div className="flex h-11 flex-1 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-900">
-                      {travelers} {travelers === 1 ? "traveler" : "travelers"}
+                    <div className="flex-1 h-[38px] flex items-center justify-center rounded-xl border border-stone-300 bg-stone-50 text-xs font-semibold text-stone-800">
+                      {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
                     </div>
                     <button
                       type="button"
                       disabled={travelers >= 12}
                       onClick={() => setTravelers((prev) => Math.min(12, prev + 1))}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-lg font-semibold text-slate-900 transition-colors hover:bg-slate-50 disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
-                      aria-label="Increase travelers"
+                      className="w-10 h-[38px] flex items-center justify-center rounded-xl border border-stone-300 text-stone-800 font-bold text-base hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                     >
                       +
                     </button>
@@ -514,153 +412,136 @@ export function PublicBookingModal({
                 </div>
               </div>
 
-
-              {/* Traveler details */}
-              <div className="space-y-3.5 border-t border-slate-100 pt-5">
-                <h3 className="text-sm font-semibold text-slate-900">Lead traveler</h3>
-
-                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                  <div className="space-y-1">
-                    <label htmlFor="guestName" className="text-xs font-medium text-slate-600">
-                      Full name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="guestName"
-                      type="text"
-                      required
-                      placeholder="Eleanor Vance"
-                      value={guestName}
-                      onChange={(e) => setGuestName(e.target.value)}
-                      onBlur={() => markTouched("guestName")}
-                      aria-invalid={!!showError("guestName")}
-                      aria-describedby={showError("guestName") ? "guestName-error" : undefined}
-                      className={`${inputBase} ${showError("guestName") ? inputBad : inputOk}`}
-                    />
-                    {showError("guestName") && (
-                      <p id="guestName-error" className="text-xs text-red-600">
-                        {showError("guestName")}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <label htmlFor="guestEmail" className="text-xs font-medium text-slate-600">
-                      Email <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="guestEmail"
-                      type="email"
-                      required
-                      placeholder="eleanor@example.com"
-                      value={guestEmail}
-                      onChange={(e) => setGuestEmail(e.target.value)}
-                      onBlur={() => markTouched("guestEmail")}
-                      aria-invalid={!!showError("guestEmail")}
-                      aria-describedby={showError("guestEmail") ? "guestEmail-error" : undefined}
-                      className={`${inputBase} ${showError("guestEmail") ? inputBad : inputOk}`}
-                    />
-                    {showError("guestEmail") && (
-                      <p id="guestEmail-error" className="text-xs text-red-600">
-                        {showError("guestEmail")}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <label htmlFor="guestPhone" className="text-xs font-medium text-slate-600">
-                      Phone <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="guestPhone"
-                      type="tel"
-                      required
-                      placeholder="+1 555 234 5678"
-                      value={guestPhone}
-                      onChange={(e) => setGuestPhone(e.target.value)}
-                      onBlur={() => markTouched("guestPhone")}
-                      aria-invalid={!!showError("guestPhone")}
-                      aria-describedby={showError("guestPhone") ? "guestPhone-error" : undefined}
-                      className={`${inputBase} ${showError("guestPhone") ? inputBad : inputOk}`}
-                    />
-                    {showError("guestPhone") && (
-                      <p id="guestPhone-error" className="text-xs text-red-600">
-                        {showError("guestPhone")}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <label htmlFor="country" className="text-xs font-medium text-slate-600">
-                      Country <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      id="country"
-                      required
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      onBlur={() => markTouched("country")}
-                      aria-invalid={!!showError("country")}
-                      aria-describedby={showError("country") ? "country-error" : undefined}
-                      className={`${inputBase} ${showError("country") ? inputBad : inputOk} cursor-pointer`}
-                    >
-                      <option value="">Select Country...</option>
-                      {COUNTRY_OPTIONS.map((c) => (
-                        <option key={c.value} value={c.value}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </select>
-                    {showError("country") && (
-                      <p id="country-error" className="text-xs text-red-600">
-                        {showError("country")}
-                      </p>
-                    )}
-                  </div>
+              {/* Row 2: Full Name & Email */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                    Full Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Alex Wright"
+                    value={guestName}
+                    onChange={(e) => {
+                      setGuestName(e.target.value);
+                      if (formErrors.guestName) setFormErrors((prev) => ({ ...prev, guestName: undefined }));
+                    }}
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                      formErrors.guestName
+                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                    }`}
+                  />
+                  {formErrors.guestName && (
+                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.guestName}</p>
+                  )}
                 </div>
 
-                <div className="space-y-1">
-                  <label htmlFor="specialRequests" className="text-xs font-medium text-slate-600">
-                    Notes for your trip coordinator{" "}
-                    <span className="font-normal text-slate-400">(optional)</span>
+                <div>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                    Email Address <span className="text-rose-500">*</span>
                   </label>
-                  <textarea
-                    id="specialRequests"
-                    rows={2}
-                    placeholder="Diet, room preferences, altitude concerns…"
-                    value={specialRequests}
-                    onChange={(e) => setSpecialRequests(e.target.value)}
-                    className={`${inputBase} ${inputOk} resize-none`}
+                  <input
+                    type="email"
+                    placeholder="alex@example.com"
+                    value={guestEmail}
+                    onChange={(e) => {
+                      setGuestEmail(e.target.value);
+                      if (formErrors.guestEmail) setFormErrors((prev) => ({ ...prev, guestEmail: undefined }));
+                    }}
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                      formErrors.guestEmail
+                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                    }`}
                   />
+                  {formErrors.guestEmail && (
+                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.guestEmail}</p>
+                  )}
                 </div>
               </div>
 
-              {/* Price summary */}
-              <div className="space-y-2.5 rounded-xl border border-slate-200 bg-slate-50 p-5">
-                <div className="flex items-center justify-between text-sm text-slate-600">
-                  <span>
-                    {travelers} × ${baseCostPerPerson.toLocaleString()}
-                  </span>
-                  <span className="font-medium text-slate-900">
-                    ${(baseCostPerPerson * travelers).toLocaleString()}
-                  </span>
+              {/* Row 3: Phone & Country */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                    Phone / WhatsApp <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="+1 555-019-2834"
+                    value={guestPhone}
+                    onChange={(e) => {
+                      setGuestPhone(e.target.value);
+                      if (formErrors.guestPhone) setFormErrors((prev) => ({ ...prev, guestPhone: undefined }));
+                    }}
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                      formErrors.guestPhone
+                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                    }`}
+                  />
+                  {formErrors.guestPhone && (
+                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.guestPhone}</p>
+                  )}
                 </div>
 
-
-
-                <div className="flex items-end justify-between border-t border-slate-200 pt-3">
-                  <div>
-                    <span className="block text-xs font-medium uppercase tracking-wide text-slate-400">
-                      Estimated total
-                    </span>
-                    <span className="mt-0.5 flex items-center gap-1 text-xs text-amber-700">
-                      <CreditCard className="h-3 w-3" strokeWidth={2.25} />
-                      ${depositUSD.toLocaleString()} deposit to confirm
-                    </span>
-                  </div>
-                  <span className="font-heading text-xl sm:text-2xl font-bold text-slate-900">
-                    ${totalPriceUSD.toLocaleString()}
-                  </span>
+                <div>
+                  <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                    Country <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={country}
+                    onChange={(e) => {
+                      setCountry(e.target.value);
+                      if (formErrors.country) setFormErrors((prev) => ({ ...prev, country: undefined }));
+                    }}
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all cursor-pointer ${
+                      formErrors.country
+                        ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
+                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                    }`}
+                  >
+                    <option value="">Select Country...</option>
+                    {COUNTRY_OPTIONS.map((c) => (
+                      <option key={c.value} value={c.value}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                  {formErrors.country && (
+                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.country}</p>
+                  )}
                 </div>
+              </div>
+
+              {/* Row 4: Special Requests / Notes */}
+              <div>
+                <label className="block text-xs font-semibold text-stone-800 mb-1.5">
+                  Special Requests / Notes <span className="text-stone-400 font-normal">(Optional)</span>
+                </label>
+                <textarea
+                  placeholder="Dietary requirements, room preferences, flight details..."
+                  rows={2}
+                  value={specialRequests}
+                  onChange={(e) => setSpecialRequests(e.target.value)}
+                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900 resize-none font-medium transition-all"
+                />
+              </div>
+
+              {/* Price Summary */}
+              <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 space-y-2 text-xs">
+                <div className="flex items-center justify-between text-stone-600 font-medium">
+                  <span>{travelers} × ${baseCostPerPerson.toLocaleString()} USD</span>
+                  <span className="text-stone-900 font-semibold">${totalPriceUSD.toLocaleString()} USD</span>
+                </div>
+                <div className="flex items-center justify-between border-t border-stone-200 pt-2 text-sm font-bold text-stone-900">
+                  <span>Estimated Total</span>
+                  <span className="text-amber-900">${totalPriceUSD.toLocaleString()} USD</span>
+                </div>
+                <p className="text-[11px] text-stone-500 font-medium pt-0.5">
+                  No upfront charge required. A 25% deposit (${depositUSD.toLocaleString()} USD) secures your trip once permits are verified.
+                </p>
               </div>
 
               <TurnstileWidget
@@ -669,30 +550,40 @@ export function PublicBookingModal({
                 onError={() => setTurnstileToken('')}
               />
 
-              <button
-                type="submit"
-                disabled={isSubmitting || !turnstileToken}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-600 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-800"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Sending request…
-                  </>
-                ) : (
-                  "Request this booking"
-                )}
-              </button>
-
-              <p className="flex items-start gap-1.5 text-xs leading-relaxed text-slate-500">
-                <FileCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2.25} />
-                No card charge yet. We confirm permits and lodge availability first, then send
-                payment instructions for the deposit above.
-              </p>
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={requestClose}
+                  disabled={isSubmitting}
+                  className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-xl border-stone-300 hover:bg-stone-50 text-stone-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || !turnstileToken}
+                  className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Submitting...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5">
+                      <Send className="w-3.5 h-3.5" />
+                      Request Booking
+                    </span>
+                  )}
+                </Button>
+              </div>
             </form>
-          )}
+          </div>
+        )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

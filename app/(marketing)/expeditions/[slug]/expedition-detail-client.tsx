@@ -61,6 +61,7 @@ export function ExpeditionDetailClient({
   const [loading, setLoading] = useState(!initialExpedition);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
+  const [isInquired, setIsInquired] = useState(false);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
   const [relatedExpeditions, setRelatedExpeditions] = useState<ExpeditionItem[]>(
     [],
@@ -266,14 +267,14 @@ export function ExpeditionDetailClient({
       activeTab,
       onTabChange: handleTabChange,
       priceUSD: expedition.priceUSD,
-      onBookClick: () => setIsBookingModalOpen(true),
-      bookButtonLabel: "Apply for Expedition",
+      onBookClick: isBooked ? undefined : () => setIsBookingModalOpen(true),
+      bookButtonLabel: isBooked ? "Booking Submitted" : "Apply for Expedition",
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [expedition, availableTabs, activeTab, setDetailNav]);
+  }, [expedition, availableTabs, activeTab, isBooked, setDetailNav]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -345,6 +346,8 @@ export function ExpeditionDetailClient({
         priceUSD={expedition.priceUSD}
         bookButtonLabel="Book Expedition"
         onBookClick={() => setIsBookingModalOpen(true)}
+        isBooked={isBooked}
+        isInquired={isInquired}
         badges={[
           { label: `${peakMeters.toLocaleString()}m Summit` },
           { label: expedition.climbingGrade || "Technical Grade", highlight: true },
@@ -444,7 +447,6 @@ export function ExpeditionDetailClient({
                   )}
                 </div>
               )}
-
             </section>
 
             {/* SECTION: CLIMBING ITINERARY */}
@@ -536,6 +538,10 @@ export function ExpeditionDetailClient({
               bookButtonLabel="Apply for Expedition"
               packageType={InquiryType.EXPEDITION}
               isBooked={isBooked}
+              isInquired={isInquired}
+              onResetBooked={() => setIsBooked(false)}
+              onResetInquired={() => setIsInquired(false)}
+              onInquirySuccess={() => setIsInquired(true)}
             />
           </div>
         </div>
@@ -576,9 +582,9 @@ export function ExpeditionDetailClient({
           </div>
         </div>
         {isBooked ? (
-          <div className="bg-emerald-700 text-white font-semibold text-xs px-3 py-2 rounded-lg shadow-xs flex items-center gap-1 shrink-0">
-            <Check className="w-3.5 h-3.5" />
-            <span>Request Submitted</span>
+          <div className="bg-emerald-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs flex items-center gap-1.5 shrink-0">
+            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <span>Booking Submitted</span>
           </div>
         ) : (
           <button

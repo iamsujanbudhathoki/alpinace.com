@@ -7,7 +7,7 @@ import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Compass } from "lu
 import { TourItem } from "@/lib/tour-data";
 import { TourService, PackageFilterService, PackageFilterOptions, CategoryService } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
-import { CategoryType, PackageStatus, PackageSortOption, FILTER_ALL } from "@/lib/admin-data";
+import { CategoryType, PackageStatus, PackageSortOption } from "@/lib/admin-data";
 
 interface ToursCatalogClientProps {
   initialTours: TourItem[];
@@ -31,7 +31,9 @@ export function ToursCatalogClient({
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [maxDuration, setMaxDuration] = useState<number>(initialFilterOptions?.maxDuration || 14);
+  const defaultMaxDuration = initialFilterOptions?.maxDuration || 14;
+  const [localMaxDuration, setLocalMaxDuration] = useState<number>(defaultMaxDuration);
+  const [appliedMaxDuration, setAppliedMaxDuration] = useState<number>(defaultMaxDuration);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
@@ -51,7 +53,10 @@ export function ToursCatalogClient({
         ]);
         if (opts) {
           setFilterOptions(opts);
-          if (!initialFilterOptions && opts.maxDuration) setMaxDuration(opts.maxDuration);
+          if (!initialFilterOptions && opts.maxDuration) {
+            setLocalMaxDuration(opts.maxDuration);
+            setAppliedMaxDuration(opts.maxDuration);
+          }
         }
         if (cats && cats.length > 0) {
           setCategoryList(cats.map((c) => ({ id: c.id, name: c.name, slug: c.slug })));
@@ -71,10 +76,18 @@ export function ToursCatalogClient({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  // Debounce local slider changes so API is called after dragging stops
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAppliedMaxDuration(localMaxDuration);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [localMaxDuration]);
+
   const isDefaultFilter =
     !debouncedSearch &&
     selectedCategory === "All" &&
-    maxDuration >= (filterOptions?.maxDuration || 14) &&
+    appliedMaxDuration >= (filterOptions?.maxDuration || 14) &&
     sortBy === "rating";
 
   useEffect(() => {
@@ -87,7 +100,7 @@ export function ToursCatalogClient({
         const raw = await TourService.getPublicAll({
           search: debouncedSearch,
           category: selectedCategory === "All" ? undefined : selectedCategory,
-          maxDuration: maxDuration < (filterOptions?.maxDuration || 14) ? maxDuration : undefined,
+          maxDuration: appliedMaxDuration < (filterOptions?.maxDuration || 14) ? appliedMaxDuration : undefined,
           sortBy,
           status: PackageStatus.ACTIVE,
         });
@@ -124,7 +137,7 @@ export function ToursCatalogClient({
     return () => {
       isCancelled = true;
     };
-  }, [debouncedSearch, selectedCategory, maxDuration, sortBy, filterOptions?.maxDuration, isDefaultFilter, initialTours]);
+  }, [debouncedSearch, selectedCategory, appliedMaxDuration, sortBy, filterOptions?.maxDuration, isDefaultFilter, initialTours]);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -132,7 +145,9 @@ export function ToursCatalogClient({
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
-    setMaxDuration(filterOptions?.maxDuration || 14);
+    const defaultMax = filterOptions?.maxDuration || 14;
+    setLocalMaxDuration(defaultMax);
+    setAppliedMaxDuration(defaultMax);
     setSortBy("rating");
     if (typeof window !== "undefined" && window.location.search) {
       window.history.pushState({}, "", window.location.pathname);
@@ -143,10 +158,10 @@ export function ToursCatalogClient({
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (selectedCategory !== "All") count++;
-    if (maxDuration < (filterOptions?.maxDuration || 14)) count++;
+    if (appliedMaxDuration < (filterOptions?.maxDuration || 14)) count++;
     if (searchQuery.trim() !== "") count++;
     return count;
-  }, [selectedCategory, maxDuration, searchQuery, filterOptions?.maxDuration]);
+  }, [selectedCategory, appliedMaxDuration, searchQuery, filterOptions?.maxDuration]);
 
   // Filtered Tours list
   const filteredTours = useMemo(() => {
@@ -177,8 +192,8 @@ export function ToursCatalogClient({
       );
     }
 
-    if (maxDuration < (filterOptions?.maxDuration || 14)) {
-      list = list.filter((t) => Number(t.durationDays) <= maxDuration);
+    if (appliedMaxDuration < (filterOptions?.maxDuration || 14)) {
+      list = list.filter((t) => Number(t.durationDays) <= appliedMaxDuration);
     }
 
     // Sort list
@@ -190,7 +205,7 @@ export function ToursCatalogClient({
     });
 
     return list;
-  }, [tours, debouncedSearch, selectedCategory, maxDuration, sortBy, filterOptions?.maxDuration, isDefaultFilter]);
+  }, [tours, debouncedSearch, selectedCategory, appliedMaxDuration, sortBy, filterOptions?.maxDuration, isDefaultFilter]);
 
   const normalizedCategories = useMemo(() => {
     if (categoryList.length > 0) {
@@ -212,35 +227,35 @@ export function ToursCatalogClient({
     ];
   }, [categoryList, filterOptions?.categories]);
 
-  // Clean Compact Dropdown Controls
+  // Clean Filter Controls
   const filterControls = (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Search Input */}
       <div>
-        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
-          Search Tour
+        <label className="block text-xs font-medium text-stone-700 mb-1.5">
+          Search tour
         </label>
         <div className="relative">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
           <input
             type="text"
             placeholder="Search Kathmandu, Pokhara, Chitwan..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-9 pr-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 placeholder:text-stone-400"
+            className="w-full text-xs pl-9 pr-3 py-2 rounded-md border border-stone-200 focus:outline-none focus:border-stone-400 bg-white font-normal text-stone-900 placeholder:text-stone-400"
           />
         </div>
       </div>
 
       {/* Category Dropdown Filter */}
       <div>
-        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
+        <label className="block text-xs font-medium text-stone-700 mb-1.5">
           Category
         </label>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="w-full text-xs px-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 cursor-pointer"
+          className="w-full text-xs px-3 py-2 rounded-md border border-stone-200 focus:outline-none focus:border-stone-400 bg-white font-normal text-stone-900 cursor-pointer"
         >
           <option value="All">All Categories</option>
           {normalizedCategories.map((cat, idx) => (
@@ -251,39 +266,58 @@ export function ToursCatalogClient({
         </select>
       </div>
 
-      {/* Duration Slider */}
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-            Max Duration
-          </label>
-          <span className="text-xs font-bold text-amber-700">
-            {maxDuration} Days
-          </span>
-        </div>
-        <input
-          type="range"
-          min={2}
-          max={filterOptions?.maxDuration || 14}
-          value={maxDuration}
-          onChange={(e) => setMaxDuration(Number(e.target.value))}
-          className="w-full accent-slate-900 cursor-pointer"
-        />
-        <div className="flex justify-between text-[10px] font-medium text-slate-600 mt-1">
-          <span>2 Days</span>
-          <span>{filterOptions?.maxDuration || 14} Days</span>
-        </div>
-      </div>
+      {/* Duration Range Slider */}
+      {(() => {
+        const tourMinDuration = 2;
+        const tourMaxDuration = filterOptions?.maxDuration || 14;
+        const tourFillPct = Math.min(
+          100,
+          Math.max(0, ((localMaxDuration - tourMinDuration) / (tourMaxDuration - tourMinDuration)) * 100)
+        );
+        return (
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-medium text-stone-700">
+                Max duration
+              </label>
+              <span className="text-xs font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80">
+                {localMaxDuration} Days
+              </span>
+            </div>
+            <div className="py-1">
+              <input
+                type="range"
+                min={tourMinDuration}
+                max={tourMaxDuration}
+                value={localMaxDuration}
+                onChange={(e) => setLocalMaxDuration(Number(e.target.value))}
+                onMouseUp={() => setAppliedMaxDuration(localMaxDuration)}
+                onTouchEnd={() => setAppliedMaxDuration(localMaxDuration)}
+                onKeyUp={() => setAppliedMaxDuration(localMaxDuration)}
+                onBlur={() => setAppliedMaxDuration(localMaxDuration)}
+                style={{
+                  background: `linear-gradient(to right, #92400e 0%, #92400e ${tourFillPct}%, #e7e5e4 ${tourFillPct}%, #e7e5e4 100%)`,
+                }}
+                className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-700/30 touch-none"
+              />
+            </div>
+            <div className="flex justify-between text-[10px] text-stone-500 font-medium">
+              <span>{tourMinDuration} Days</span>
+              <span>{tourMaxDuration} Days</span>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Sort Options */}
       <div>
-        <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
-          Sort By
+        <label className="block text-xs font-medium text-stone-700 mb-1.5">
+          Sort by
         </label>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="w-full text-xs px-3 py-2.5 rounded-sm border border-stone-200 focus:outline-none focus:border-stone-400 bg-stone-50 font-normal text-slate-800 cursor-pointer"
+          className="w-full text-xs px-3 py-2 rounded-md border border-stone-200 focus:outline-none focus:border-stone-400 bg-white font-normal text-stone-900 cursor-pointer"
         >
           <option value={PackageSortOption.RATING}>Top Rated</option>
           <option value={PackageSortOption.PRICE_ASC}>Price: Low to High</option>
@@ -295,59 +329,48 @@ export function ToursCatalogClient({
   );
 
   return (
-    <div className="bg-stone-50/60 min-h-screen pb-24 font-sans text-slate-900">
-      {/* Hero Banner Header */}
-      <section className="bg-slate-950 text-white py-16 sm:py-20 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1600"
-            alt="Cultural Tours & Sightseeing"
-            className="w-full h-full object-cover opacity-25 object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent" />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
-          <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">
-            Himalayan Heritage &amp; Culture
-          </span>
-          <h1 className="font-heading text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
-            Cultural &amp; Scenic Tours
+    <div className="bg-stone-50/60 min-h-screen pb-20 font-sans text-stone-900">
+      {/* Clean Hero Banner Header */}
+      <section className="bg-amber-50/70 border-b border-stone-200 pt-24 pb-10 sm:pt-28 sm:pb-12 relative overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
+          <h1 className="font-heading text-2xl sm:text-4xl font-bold tracking-tight text-stone-900">
+            Tour Packages
           </h1>
-          <p className="text-stone-300 text-sm sm:text-base font-normal leading-relaxed max-w-2xl">
-            Explore UNESCO World Heritage sites in Kathmandu, scenic lakes in Pokhara, wildlife safaris in Chitwan, and spiritual journeys in Lumbini.
+          <p className="text-stone-600 text-sm font-normal leading-relaxed max-w-2xl">
+            Guided heritage tours, Chitwan wildlife safaris, and Pokhara scenic journeys across Nepal.
           </p>
         </div>
       </section>
 
       {/* Main Container */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Mobile Filter Control Bar */}
-        <div className="lg:hidden mb-6 flex items-center justify-between bg-white border border-stone-200 rounded-sm p-3.5 shadow-2xs">
+        <div className="lg:hidden mb-6 flex items-center justify-between bg-white border border-stone-200 rounded-md p-3">
           <button
             onClick={() => setIsMobileFilterOpen(true)}
-            className="flex items-center gap-2 text-xs font-bold text-slate-900 bg-stone-100 hover:bg-stone-200 px-4 py-2 rounded-sm transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3.5 py-2 rounded-md transition-colors cursor-pointer"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-amber-700" />
-            <span>Filter Tours {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
+            <SlidersHorizontal className="w-3.5 h-3.5 text-amber-800" />
+            <span>Filters {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
           </button>
 
-          <span className="text-xs text-slate-700 font-semibold">
+          <span className="text-xs text-stone-600 font-medium">
             {filteredTours.length} Tours
           </span>
         </div>
 
         {/* Mobile Filter Drawer */}
         {isMobileFilterOpen && (
-          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex justify-end lg:hidden">
-            <div className="bg-white w-full max-w-xs h-full p-6 overflow-y-auto flex flex-col justify-between shadow-2xl">
+          <div className="fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex justify-end lg:hidden">
+            <div className="bg-white w-full max-w-xs h-full p-5 overflow-y-auto flex flex-col justify-between shadow-xl">
               <div>
-                <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-200">
-                  <h3 className="font-heading font-bold text-sm text-slate-900">
-                    Filter Tour Routes
+                <div className="flex items-center justify-between pb-3 mb-5 border-b border-stone-200">
+                  <h3 className="font-heading font-semibold text-sm text-stone-900">
+                    Filter Tours
                   </h3>
                   <button
                     onClick={() => setIsMobileFilterOpen(false)}
-                    className="p-1 rounded-sm text-slate-600 hover:text-slate-900 cursor-pointer"
+                    className="p-1 rounded text-stone-500 hover:text-stone-900 cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -355,19 +378,19 @@ export function ToursCatalogClient({
                 {filterControls}
               </div>
 
-              <div className="pt-6 border-t border-stone-200 flex gap-3 mt-6">
+              <div className="pt-4 border-t border-stone-200 flex gap-3 mt-6">
                 <button
                   onClick={() => {
                     resetFilters();
                     setIsMobileFilterOpen(false);
                   }}
-                  className="w-1/2 py-2.5 rounded-sm border border-stone-300 text-slate-800 font-bold text-xs hover:bg-stone-100 cursor-pointer"
+                  className="w-1/2 py-2 rounded-md border border-stone-300 text-stone-700 font-semibold text-xs hover:bg-stone-100 cursor-pointer"
                 >
                   Reset
                 </button>
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="w-1/2 py-2.5 rounded-sm bg-slate-950 text-white font-bold text-xs hover:bg-slate-900 cursor-pointer"
+                  className="w-1/2 py-2 rounded-md bg-amber-800 text-white font-semibold text-xs hover:bg-amber-900 cursor-pointer"
                 >
                   Apply
                 </button>
@@ -378,15 +401,15 @@ export function ToursCatalogClient({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Desktop Filter Sidebar */}
-          <aside className="hidden lg:block lg:col-span-4 bg-white border border-stone-200 rounded-sm p-6 sticky top-24 shadow-2xs">
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-200">
-              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                Filter Tours
+          <aside className="hidden lg:block lg:col-span-4 bg-white border border-stone-200 rounded-md p-5 sticky top-24">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-stone-200">
+              <h2 className="text-sm font-semibold text-stone-900">
+                Filters
               </h2>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-xs font-semibold text-amber-700 hover:underline cursor-pointer flex items-center gap-1"
+                  className="text-xs font-semibold text-amber-800 hover:underline cursor-pointer flex items-center gap-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset</span>
@@ -399,12 +422,12 @@ export function ToursCatalogClient({
 
           {/* Main Tour Catalog Grid */}
           <main className="lg:col-span-8 space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-stone-200 text-xs sm:text-sm text-slate-600 font-medium">
-              <span>Showing <strong className="text-slate-900 font-bold">{loading ? "..." : filteredTours.length}</strong> tour packages</span>
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200 text-xs sm:text-sm text-stone-600 font-medium">
+              <span>Showing <strong className="text-stone-900 font-semibold">{loading ? "..." : filteredTours.length}</strong> tour packages</span>
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-xs font-bold text-amber-700 hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-amber-800 hover:underline cursor-pointer"
                 >
                   Clear filters ({activeFilterCount})
                 </button>
@@ -414,80 +437,86 @@ export function ToursCatalogClient({
             {loading ? (
               <PackageGridSkeleton count={6} />
             ) : filteredTours.length === 0 ? (
-              <div className="bg-white border border-stone-200 rounded-sm p-12 text-center space-y-4 shadow-2xs max-w-md mx-auto my-6">
-                <div className="w-12 h-12 rounded-full bg-stone-100 text-stone-500 flex items-center justify-center mx-auto">
-                  <Compass className="w-6 h-6 text-amber-600" />
+              <div className="bg-white border border-stone-200 rounded-md p-10 text-center space-y-3 max-w-md mx-auto my-4">
+                <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-500 flex items-center justify-center mx-auto">
+                  <Compass className="w-5 h-5 text-amber-800" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-heading text-base font-bold text-slate-900">
-                    No Matching Tours Found
+                  <h3 className="font-heading text-sm font-semibold text-stone-900">
+                    {activeFilterCount > 0
+                      ? "No tours match your selected filters."
+                      : "No tours found"}
                   </h3>
-                  <p className="text-slate-600 text-xs font-normal leading-relaxed">
-                    We couldn&apos;t find any cultural or scenic tours matching your selected filter criteria.
+                  <p className="text-stone-500 text-xs font-normal leading-relaxed">
+                    {activeFilterCount > 0
+                      ? "Try adjusting or clearing your filters to see more results."
+                      : "There are currently no tour packages available."}
                   </p>
                 </div>
-                <button
-                  onClick={resetFilters}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold bg-slate-950 hover:bg-slate-900 text-white px-5 py-2.5 rounded-sm transition-colors cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset All Filters</span>
-                </button>
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={resetFilters}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold bg-stone-900 hover:bg-stone-800 text-white px-4 py-2 rounded-md transition-colors cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {filteredTours.map((tour) => (
                   <div
                     key={tour.id}
-                    className="bg-white rounded-sm border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-400 transition-all duration-300 group shadow-2xs"
+                    className="bg-white rounded-md border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-400 transition-colors group"
                   >
                     <Link href={`/tours/${tour.slug}`} className="block flex-1 flex flex-col justify-between">
                       <div>
                         {/* Clean Image Frame */}
-                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-950">
                           <img
                             src={tour.image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800"}
                             alt={tour.title}
-                            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                            className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 ease-out opacity-95 group-hover:opacity-100"
                           />
                           {tour.region && (
-                            <span className="absolute top-3 left-3 bg-slate-950/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
+                            <span className="absolute top-3 left-3 bg-stone-950/80 text-white text-[11px] font-medium px-2.5 py-0.5 rounded">
                               {tour.region}
                             </span>
                           )}
                           {tour.durationDays && (
-                            <span className="absolute top-3 right-3 bg-stone-900/90 text-amber-400 text-[11px] font-bold px-2.5 py-0.5 rounded-sm">
+                            <span className="absolute top-3 right-3 bg-stone-900/80 text-amber-300 text-[11px] font-semibold px-2.5 py-0.5 rounded">
                               {tour.durationDays} Days
                             </span>
                           )}
                         </div>
 
                         {/* Scannable Card Body */}
-                        <div className="p-5 space-y-3">
-                          <h3 className="font-heading text-base sm:text-lg font-bold text-slate-950 group-hover:text-amber-700 transition-colors leading-snug line-clamp-1">
+                        <div className="p-4 space-y-2">
+                          <h3 className="font-heading text-base font-semibold text-stone-900 group-hover:text-amber-900 transition-colors line-clamp-1">
                             {tour.title}
                           </h3>
 
                           {/* Key Specs Row */}
-                          <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-slate-600 font-medium">
-                            <span>Focus: <strong className="text-slate-900 font-bold">{tour.tourType || "Heritage & Sightseeing"}</strong></span>
-                            <span>Region: <strong className="text-slate-900 font-bold">{tour.region || "Nepal"}</strong></span>
+                          <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs text-stone-600">
+                            <span>Type: <strong className="text-stone-900 font-semibold">{tour.tourType || "Guided Tour"}</strong></span>
+                            <span>Region: <strong className="text-stone-900 font-semibold">{tour.region || "Nepal"}</strong></span>
                           </div>
                         </div>
                       </div>
 
                       {/* Footer Row */}
-                      <div className="p-5 pt-0 border-t border-stone-100 mt-2">
-                        <div className="flex items-center justify-between pt-3">
+                      <div className="p-4 pt-0 border-t border-stone-100 mt-2">
+                        <div className="flex items-center justify-between pt-2.5">
                           <div>
-                            <span className="text-[11px] text-slate-600 block font-medium">From</span>
-                            <span className="text-base font-bold text-slate-950">
-                              ${tour.priceUSD?.toLocaleString()} <span className="text-xs font-normal text-slate-600">USD</span>
+                            <span className="text-[11px] text-stone-500 block">From</span>
+                            <span className="text-base font-bold text-stone-900">
+                              ${tour.priceUSD?.toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
                             </span>
                           </div>
 
-                          <span className="text-xs font-bold text-amber-700 group-hover:underline flex items-center gap-1">
-                            <span>Explore Tour</span>
+                          <span className="text-xs font-semibold text-amber-800 group-hover:underline flex items-center gap-1">
+                            <span>View Details</span>
                             <ArrowRight className="w-3.5 h-3.5" />
                           </span>
                         </div>

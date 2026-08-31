@@ -74,11 +74,11 @@ export function TestimonialsSection() {
         
         {/* Section Header */}
         <div className="mb-8 space-y-1 pb-6 border-b border-stone-200">
-          <span className="text-amber-700 text-xs font-semibold uppercase tracking-wider block">
-            Testimonials
+          <span className="text-amber-800 text-xs font-semibold uppercase tracking-wider block">
+            Traveler&apos;s Tales
           </span>
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
-            Trekker Experiences &amp; Reviews
+            What Our Clients Say
           </h2>
         </div>
 

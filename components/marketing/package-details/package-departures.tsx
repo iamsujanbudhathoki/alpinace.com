@@ -31,7 +31,7 @@ export function PackageDepartures({
           </h2>
         </div>
         <p className="text-base text-stone-600 leading-relaxed">
-          Custom departure dates are available upon request. Contact our travel specialists to arrange private departures tailored to your schedule.
+          Custom departure dates are available upon request. Contact our team to arrange private departures tailored to your schedule.
         </p>
       </div>
     );

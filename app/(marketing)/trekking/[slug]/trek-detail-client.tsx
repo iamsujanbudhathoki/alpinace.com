@@ -54,9 +54,10 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
 
   const { setDetailNav } = useDetailNav();
 
-  // Booking modal state
+  // Booking & Inquiry submission states
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
+  const [isInquired, setIsInquired] = useState(false);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
 
@@ -251,14 +252,14 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
       activeTab,
       onTabChange: handleTabChange,
       priceUSD: trek.priceUSD,
-      onBookClick: () => setIsBookingModalOpen(true),
-      bookButtonLabel: "Book Trek",
+      onBookClick: isBooked ? undefined : () => setIsBookingModalOpen(true),
+      bookButtonLabel: isBooked ? "Booking Submitted" : "Book Trek",
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [trek, availableTabs, activeTab, setDetailNav]);
+  }, [trek, availableTabs, activeTab, isBooked, setDetailNav]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -335,6 +336,8 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         priceUSD={trek.priceUSD}
         bookButtonLabel="Book Trek"
         onBookClick={() => setIsBookingModalOpen(true)}
+        isBooked={isBooked}
+        isInquired={isInquired}
         badges={[
           ...(trek.region ? [{ label: trek.region }] : []),
           { label: trek.difficulty || "Moderate", highlight: true },
@@ -382,47 +385,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
                   dangerouslySetInnerHTML={{ __html: trek.shortDesc }}
                 />
               )}
-
-              {/* Key Specs Typographic Grid */}
-              {/* {(trek.startEndLocation ||
-                trek.meals ||
-                trek.groupSizeRange) && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 py-3.5 border-y border-stone-200">
-                  {trek.startEndLocation && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Start &amp; Finish
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {trek.startEndLocation}
-                      </p>
-                    </div>
-                  )}
-
-                  {trek.meals && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Meals Provided
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {trek.meals}
-                      </p>
-                    </div>
-                  )}
-
-                  {trek.groupSizeRange && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Group Size
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {trek.groupSizeRange}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )} */}
-
             </section>
 
             {/* SECTION: ITINERARY */}
@@ -514,6 +476,10 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               bookButtonLabel="Book Trek"
               packageType={InquiryType.TREKKING}
               isBooked={isBooked}
+              isInquired={isInquired}
+              onResetBooked={() => setIsBooked(false)}
+              onResetInquired={() => setIsInquired(false)}
+              onInquirySuccess={() => setIsInquired(true)}
             />
           </div>
         </div>
@@ -542,9 +508,9 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
           </div>
         </div>
         {isBooked ? (
-          <div className="bg-emerald-700 text-white font-semibold text-xs px-3 py-2 rounded-lg shadow-xs flex items-center gap-1 shrink-0">
-            <Check className="w-3.5 h-3.5" />
-            <span>Request Submitted</span>
+          <div className="bg-emerald-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs flex items-center gap-1.5 shrink-0">
+            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <span>Booking Submitted</span>
           </div>
         ) : (
           <button

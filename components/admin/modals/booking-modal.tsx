@@ -257,8 +257,8 @@ export function BookingFormModal({
     setFormError(null);
     try {
       const bookingToSave: Booking = {
-        id: initialData?.id || `bkg-${Date.now()}`,
-        reference: initialData?.reference || `ACE-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+        id: initialData?.id!,
+        reference: initialData?.reference!,
         guestName: values.guestName.trim(),
         guestEmail: values.guestEmail.trim(),
         guestPhone: values.guestPhone.trim(),

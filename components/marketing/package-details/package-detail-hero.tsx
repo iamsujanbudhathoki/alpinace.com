@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 export interface HeroBadge {
   label: string;
@@ -18,6 +18,8 @@ export interface PackageDetailHeroProps {
   onBookClick: () => void;
   priceLabel?: string;
   bookButtonLabel?: string;
+  isBooked?: boolean;
+  isInquired?: boolean;
 }
 
 export function PackageDetailHero({
@@ -30,6 +32,8 @@ export function PackageDetailHero({
   onBookClick,
   priceLabel = "Starting from",
   bookButtonLabel = "Book Expedition",
+  isBooked = false,
+  isInquired = false,
 }: PackageDetailHeroProps) {
   return (
     <section className="relative h-[340px] sm:h-[380px] lg:h-[420px] w-full overflow-hidden bg-stone-950">
@@ -93,14 +97,22 @@ export function PackageDetailHero({
                   <span className="text-xs font-normal text-stone-300">USD</span>
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={onBookClick}
-                className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm px-4.5 py-2.5 rounded-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
-              >
-                <span>{bookButtonLabel}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
-              </button>
+
+              {isBooked ? (
+                <div className="bg-emerald-800/90 backdrop-blur-sm text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-sm border border-emerald-600/50 flex items-center gap-2 shadow-sm">
+                  <Check className="w-4 h-4" strokeWidth={2.5} />
+                  <span>Booking Request Submitted</span>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onBookClick}
+                  className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm px-4.5 py-2.5 rounded-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
+                >
+                  <span>{bookButtonLabel}</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
+                </button>
+              )}
             </div>
           </div>
         </div>

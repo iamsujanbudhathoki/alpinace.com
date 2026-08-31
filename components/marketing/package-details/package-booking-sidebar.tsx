@@ -34,6 +34,10 @@ export interface PackageBookingSidebarProps {
   trustBadges?: { icon?: React.ReactNode; text: string }[];
   packageType?: InquiryType;
   isBooked?: boolean;
+  isInquired?: boolean;
+  onResetBooked?: () => void;
+  onResetInquired?: () => void;
+  onInquirySuccess?: () => void;
 }
 
 export function PackageBookingSidebar({
@@ -49,12 +53,18 @@ export function PackageBookingSidebar({
   trustBadges,
   packageType = InquiryType.TREKKING,
   isBooked = false,
+  isInquired = false,
+  onResetBooked,
+  onResetInquired,
+  onInquirySuccess,
 }: PackageBookingSidebarProps) {
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
 
   const perPersonCalculated = Math.round(totalPrice / Math.max(1, travelers));
 
-
+  const handleInquirySuccess = () => {
+    onInquirySuccess?.();
+  };
 
   return (
     <aside className="w-full">
@@ -130,10 +140,11 @@ export function PackageBookingSidebar({
                 {addons.map((addon) => (
                   <label
                     key={addon.id}
-                    className={`p-2.5 rounded-sm border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${addon.checked
-                      ? "bg-stone-50 border-stone-400"
-                      : "bg-white border-stone-200 hover:border-stone-300"
-                      }`}
+                    className={`p-2.5 rounded-sm border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${
+                      addon.checked
+                        ? "bg-stone-50 border-stone-400"
+                        : "bg-white border-stone-200 hover:border-stone-300"
+                    }`}
                   >
                     <div className="min-w-0 pr-2">
                       <span className="type-heading-md text-stone-900 block">
@@ -180,12 +191,33 @@ export function PackageBookingSidebar({
             </div>
           </div>
 
-          {/* Action CTAs */}
-          <div className="space-y-2 pt-0.5">
+          {/* Action CTAs & Independent Post-Submission Confirmation States */}
+          <div className="space-y-3 pt-1">
+            {/* 1. BOOKING BUTTON OR BOOKING CONFIRMATION */}
             {isBooked ? (
-              <div className="w-full bg-emerald-700 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-sm flex items-center justify-center gap-2">
-                <Check className="w-4 h-4" strokeWidth={3} />
-                <span>Request Submitted</span>
+              <div className="p-4 rounded-sm bg-emerald-50 border border-emerald-200/80 space-y-2.5 animate-in fade-in duration-200">
+                <div className="flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                    <Check className="w-4 h-4" strokeWidth={2.5} />
+                  </div>
+                  <div className="space-y-0.5 min-w-0">
+                    <h4 className="text-xs sm:text-sm font-bold text-emerald-950 leading-snug">
+                      Thank you for your booking!
+                    </h4>
+                    <p className="text-xs text-emerald-800 leading-relaxed font-medium">
+                      We’ll be in touch shortly to confirm the details.
+                    </p>
+                  </div>
+                </div>
+                {onResetBooked && (
+                  <button
+                    type="button"
+                    onClick={onResetBooked}
+                    className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 underline cursor-pointer pt-1 block"
+                  >
+                    Start a new booking request
+                  </button>
+                )}
               </div>
             ) : (
               <button
@@ -198,14 +230,42 @@ export function PackageBookingSidebar({
               </button>
             )}
 
-            <button
-              type="button"
-              onClick={() => setIsInquiryModalOpen(true)}
-              className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
-              <span>Ask a Question / Custom Dates</span>
-            </button>
+            {/* 2. INQUIRY BUTTON OR INQUIRY CONFIRMATION */}
+            {isInquired ? (
+              <div className="p-4 rounded-sm bg-amber-50 border border-amber-200/80 space-y-2.5 animate-in fade-in duration-200">
+                <div className="flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-amber-700 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                    <Check className="w-4 h-4" strokeWidth={2.5} />
+                  </div>
+                  <div className="space-y-0.5 min-w-0">
+                    <h4 className="text-xs sm:text-sm font-bold text-amber-950 leading-snug">
+                      Thank you for your inquiry!
+                    </h4>
+                    <p className="text-xs text-amber-900 leading-relaxed font-medium">
+                      We’ll get back to you shortly.
+                    </p>
+                  </div>
+                </div>
+                {onResetInquired && (
+                  <button
+                    type="button"
+                    onClick={onResetInquired}
+                    className="text-[11px] font-semibold text-amber-900 hover:text-amber-950 underline cursor-pointer pt-1 block"
+                  >
+                    Send another question or inquiry
+                  </button>
+                )}
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsInquiryModalOpen(true)}
+                className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
+                <span>Ask a Question / Custom Dates</span>
+              </button>
+            )}
           </div>
 
           {/* Optional Custom Trust Badges */}
@@ -226,6 +286,7 @@ export function PackageBookingSidebar({
       <PackageInquiryModal
         isOpen={isInquiryModalOpen}
         onClose={() => setIsInquiryModalOpen(false)}
+        onSuccess={handleInquirySuccess}
         tripTitle={tripTitle}
         durationDays={durationDays}
         travelers={travelers}

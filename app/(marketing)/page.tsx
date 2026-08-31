@@ -1,5 +1,6 @@
 import { Hero } from "@/components/marketing/sections/hero";
 import { PartnersAffiliationsSection } from "@/components/marketing/sections/partners-affiliations";
+import { WhyChooseUs } from "@/components/marketing/sections/why-choose-us";
 import { FeaturedPackages } from "@/components/marketing/sections/featured-packages";
 import { TestimonialsSection } from "@/components/marketing/sections/testimonials";
 import { FeaturedBlogs } from "@/components/marketing/sections/featured-blogs";
@@ -272,7 +273,10 @@ export default async function Home() {
       {/* 3. Official Partners & Affiliations Trust Board */}
       <PartnersAffiliationsSection />
 
-      {/* 4. Trekker Reviews */}
+      {/* 4. Discover the Difference - Why Alpine Ace? */}
+      <WhyChooseUs />
+
+      {/* 5. Traveler's Tales - Client Testimonials */}
       <TestimonialsSection />
 
       {/* 5. Expedition Journal */}

@@ -26,6 +26,8 @@ interface CategoryFormModalProps {
   categoriesList?: CategoryItem[];
 }
 
+const parseBoolean = (val: any) => val === true || val === 1 || val === "true";
+
 export function CategoryFormModal({
   isOpen,
   onClose,
@@ -92,8 +94,8 @@ export function CategoryFormModal({
         type: initialData.type,
         description: initialData.description,
         status: (initialData.status as CategoryStatus) || CategoryStatus.ACTIVE,
-        showInMenu: initialData.showInMenu !== false,
-        isFeatured: Boolean(initialData.isFeatured),
+        showInMenu: parseBoolean(initialData.showInMenu),
+        isFeatured: parseBoolean(initialData.isFeatured),
         image: initialData.image || "",
         mediaId: initialData.mediaId || "",
         parentId: initialData.parentId || "",
@@ -167,7 +169,8 @@ export function CategoryFormModal({
         type: values.type,
         description: values.description.trim(),
         status: values.status,
-        showInMenu: values.showInMenu !== false,
+        showInMenu: parseBoolean(values.showInMenu),
+        isFeatured: parseBoolean(values.isFeatured),
         image: values.image || null,
         mediaId: values.mediaId || null,
         parentId: values.parentId || null,
@@ -435,6 +438,16 @@ export function CategoryFormModal({
             <div>
               <span className="text-slate-950 font-bold block">Status:</span>
               <AdminStatusBadge status={initialData?.status || "Active"} />
+            </div>
+            <div>
+              <span className="text-slate-950 font-bold block">Featured Status:</span>
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                parseBoolean(initialData?.isFeatured)
+                  ? "bg-amber-100 text-amber-900 border border-amber-300"
+                  : "bg-slate-100 text-slate-700 border border-slate-200"
+              }`}>
+                {parseBoolean(initialData?.isFeatured) ? "★ Featured" : "Standard"}
+              </span>
             </div>
           </div>
 

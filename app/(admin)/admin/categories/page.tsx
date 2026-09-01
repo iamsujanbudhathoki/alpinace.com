@@ -295,8 +295,11 @@ export default function AdminCategoriesPage() {
     }
   };
 
+const parseBoolean = (val: any) => val === true || val === 1 || val === "true";
+
   const handleToggleFeatured = async (cat: CategoryItem) => {
-    const newFeatured = !cat.isFeatured;
+    const currentFeatured = parseBoolean(cat.isFeatured);
+    const newFeatured = !currentFeatured;
 
     setCategories((prev) =>
       prev.map((c) => (c.id === cat.id ? { ...c, isFeatured: newFeatured } : c))
@@ -575,6 +578,11 @@ export default function AdminCategoriesPage() {
                           <div className="min-w-0">
                             <div className="font-bold text-slate-900 group-hover:text-slate-950 transition-colors truncate flex items-center gap-2">
                               <span>{parentCat.name}</span>
+                              {parseBoolean(parentCat.isFeatured) && (
+                                <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                                  ★ Featured
+                                </span>
+                              )}
                               {hasChildren && (
                                 <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                                   {subCategories.length} subcategories
@@ -653,13 +661,13 @@ export default function AdminCategoriesPage() {
                           type="button"
                           onClick={() => handleToggleFeatured(parentCat)}
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors cursor-pointer border ${
-                            parentCat.isFeatured
+                            parseBoolean(parentCat.isFeatured)
                               ? "bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200"
                               : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
                           }`}
                           title="Click to toggle featured status"
                         >
-                          {parentCat.isFeatured ? "★ YES" : "NO"}
+                          {parseBoolean(parentCat.isFeatured) ? "★ YES" : "NO"}
                         </button>
                       </AdminTableCell>
 
@@ -721,8 +729,13 @@ export default function AdminCategoriesPage() {
                               )}
 
                               <div className="min-w-0">
-                                <div className="font-semibold text-slate-900 truncate text-xs">
-                                  {subCat.name}
+                                <div className="font-semibold text-slate-900 truncate text-xs flex items-center gap-1.5">
+                                  <span>{subCat.name}</span>
+                                  {parseBoolean(subCat.isFeatured) && (
+                                    <span className="text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                                      ★ Featured
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="text-[11px] text-slate-500 line-clamp-1 max-w-md font-normal">
                                   {subCat.description}
@@ -775,13 +788,13 @@ export default function AdminCategoriesPage() {
                               type="button"
                               onClick={() => handleToggleFeatured(subCat)}
                               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors cursor-pointer border ${
-                                subCat.isFeatured
+                                parseBoolean(subCat.isFeatured)
                                   ? "bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200"
                                   : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
                               }`}
                               title="Click to toggle featured status"
                             >
-                              {subCat.isFeatured ? "★ YES" : "NO"}
+                              {parseBoolean(subCat.isFeatured) ? "★ YES" : "NO"}
                             </button>
                           </AdminTableCell>
 

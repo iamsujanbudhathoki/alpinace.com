@@ -322,6 +322,7 @@ export default function AdminAboutUsPage() {
                     setFormData((prev) => ({ ...prev, heroImage: url, heroMediaId: mediaId }))
                   }
                   error={errors.heroImage}
+                  libraryOnly={true}
                 />
               </div>
             </Card>
@@ -354,6 +355,7 @@ export default function AdminAboutUsPage() {
                       setFormData((prev) => ({ ...prev, storyImage: url, storyMediaId: mediaId }))
                     }
                     error={errors.storyImage}
+                    libraryOnly={true}
                   />
                 </div>
 

@@ -23,7 +23,7 @@ export function Hero() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
         <div className="max-w-2xl space-y-5">
-          <span className="text-amber-400 text-xs sm:text-sm font-medium uppercase tracking-wider block">
+          <span className="text-amber-400 text-xs sm:text-sm font-medium block">
             Sherpa-Guided Himalayan Expeditions &bull; Kathmandu, Nepal
           </span>
 

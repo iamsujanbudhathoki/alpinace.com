@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, FolderTree } from "lucide-react";
 import { navLinks, NavLink } from "@/lib/site-config";
 import { useSettings } from "@/lib/settings-context";
 import { useDetailNav } from "@/lib/detail-nav-context";
@@ -452,18 +452,26 @@ export function SiteHeader() {
                                 </div>
                               ) : (
                                 (() => {
+                                  if (categories.length === 0) {
+                                    return (
+                                      <div className="py-12 text-center text-xs text-stone-500 font-medium space-y-2">
+                                        <FolderTree className="w-6 h-6 text-stone-400 mx-auto opacity-60" />
+                                        <p className="font-semibold text-slate-800">No categories available</p>
+                                      </div>
+                                    );
+                                  }
+
                                   const activeParentId =
                                     hoveredCategoryMap[catType] || categories[0]?.id;
                                   const selectedParent =
                                     categories.find((c) => c.id === activeParentId) ||
                                     categories[0];
-                                  const subcategories =
-                                    selectedParent?.children && selectedParent.children.length > 0
-                                      ? selectedParent.children
-                                      : categories.filter((c) => c.id !== selectedParent.id);
+                                  const subcategories = Array.isArray(selectedParent?.children)
+                                    ? selectedParent.children
+                                    : [];
 
                                   return (
-                                    <div className="grid grid-cols-12 gap-8">
+                                    <div className="grid grid-cols-12 gap-8 min-h-[260px]">
                                       {/* Left Column: Category Navigation List (col-span-4) */}
                                       <div className="col-span-4 space-y-1">
                                         {categories.map((cat) => {
@@ -504,58 +512,82 @@ export function SiteHeader() {
                                         })}
                                       </div>
 
-                                      {/* Right Column: Wide Subcategory Destination Tiles (col-span-8) */}
-                                      <div className="col-span-8">
-                                        <div className="grid grid-cols-2 gap-3.5 max-h-[380px] overflow-y-auto pr-1">
-                                          {subcategories.map((subCat) => {
-                                            const hasImage = Boolean(
-                                              subCat.image &&
-                                                typeof subCat.image === "string" &&
-                                                subCat.image.trim().length > 0
-                                            );
+                                      {/* Right Column: Wide Subcategory Destination Tiles or Clean Empty State (col-span-8) */}
+                                      <div className="col-span-8 flex flex-col justify-start">
+                                        {subcategories.length > 0 ? (
+                                          <div className="grid grid-cols-2 gap-3.5 max-h-[380px] overflow-y-auto pr-1 w-full content-start">
+                                            {subcategories.map((subCat) => {
+                                              const hasImage = Boolean(
+                                                subCat.image &&
+                                                  typeof subCat.image === "string" &&
+                                                  subCat.image.trim().length > 0
+                                              );
 
-                                            if (hasImage) {
+                                              if (hasImage) {
+                                                return (
+                                                  <Link
+                                                    key={subCat.id}
+                                                    href={getCategoryLink(link.href, subCat)}
+                                                    onClick={() => setActiveDropdown(null)}
+                                                    className="group/tile relative h-32 sm:h-36 w-full rounded-md overflow-hidden block cursor-pointer bg-slate-900"
+                                                  >
+                                                    {/* Landscape Background Image */}
+                                                    <Image
+                                                      src={subCat.image!}
+                                                      alt={subCat.name}
+                                                      fill
+                                                      unoptimized
+                                                      className="object-cover group-hover/tile:scale-103 transition-transform duration-300 ease-out"
+                                                      sizes="320px"
+                                                    />
+
+                                                    {/* Natural Overlay & Centered Subcategory Name INSIDE Image */}
+                                                    <div className="absolute inset-0 bg-slate-950/35 group-hover/tile:bg-slate-950/20 transition-colors duration-300 flex items-center justify-center p-3 text-center">
+                                                      <span className="text-sm sm:text-base font-semibold text-white tracking-wide leading-snug drop-shadow-md">
+                                                        {subCat.name}
+                                                      </span>
+                                                    </div>
+                                                  </Link>
+                                                );
+                                              }
+
+                                              /* Clean Text Navigation Item when subcategory has no image */
                                               return (
                                                 <Link
                                                   key={subCat.id}
                                                   href={getCategoryLink(link.href, subCat)}
                                                   onClick={() => setActiveDropdown(null)}
-                                                  className="group/tile relative h-32 sm:h-36 w-full rounded-md overflow-hidden block cursor-pointer bg-slate-900"
+                                                  className="p-3 rounded-md hover:bg-stone-50 text-slate-900 hover:text-amber-700 font-semibold text-sm flex items-center justify-between border border-stone-100 transition-colors"
                                                 >
-                                                  {/* Landscape Background Image */}
-                                                  <Image
-                                                    src={subCat.image!}
-                                                    alt={subCat.name}
-                                                    fill
-                                                    unoptimized
-                                                    className="object-cover group-hover/tile:scale-103 transition-transform duration-300 ease-out"
-                                                    sizes="320px"
-                                                  />
-
-                                                  {/* Natural Overlay & Centered Subcategory Name INSIDE Image */}
-                                                  <div className="absolute inset-0 bg-slate-950/35 group-hover/tile:bg-slate-950/20 transition-colors duration-300 flex items-center justify-center p-3 text-center">
-                                                    <span className="text-sm sm:text-base font-semibold text-white tracking-wide leading-snug drop-shadow-md">
-                                                      {subCat.name}
-                                                    </span>
-                                                  </div>
+                                                  <span className="truncate">{subCat.name}</span>
+                                                  <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                                                 </Link>
                                               );
-                                            }
-
-                                            /* Clean Text Navigation Item when subcategory has no image */
-                                            return (
+                                            })}
+                                          </div>
+                                        ) : (
+                                          <div className="h-full min-h-[240px] border border-dashed border-stone-200 rounded-md p-6 flex flex-col items-center justify-center text-center space-y-2.5 bg-stone-50/50">
+                                            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400">
+                                              <FolderTree className="w-5 h-5" />
+                                            </div>
+                                            <div className="space-y-1 max-w-xs">
+                                              <p className="text-sm font-bold text-slate-900">No subcategories found</p>
+                                              <p className="text-xs text-slate-500 font-normal leading-relaxed">
+                                                There are no subcategories listed under {selectedParent?.name || "this category"}.
+                                              </p>
+                                            </div>
+                                            {selectedParent && (
                                               <Link
-                                                key={subCat.id}
-                                                href={getCategoryLink(link.href, subCat)}
+                                                href={getCategoryLink(link.href, selectedParent)}
                                                 onClick={() => setActiveDropdown(null)}
-                                                className="p-3 rounded-md hover:bg-stone-50 text-slate-900 hover:text-amber-700 font-semibold text-sm flex items-center justify-between border border-stone-100"
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-slate-950 text-white text-xs font-semibold hover:bg-slate-800 transition-colors shadow-2xs mt-1"
                                               >
-                                                <span>{subCat.name}</span>
-                                                <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+                                                <span>Explore {selectedParent.name}</span>
+                                                <ChevronRight className="w-3.5 h-3.5" />
                                               </Link>
-                                            );
-                                          })}
-                                        </div>
+                                            )}
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                   );

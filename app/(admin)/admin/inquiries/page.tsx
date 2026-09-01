@@ -79,6 +79,10 @@ export default function AdminInquiriesPage() {
     }
   };
 
+  useEffect(() => {
+    loadInquiries();
+  }, [debouncedSearch, statusFilter, typeFilter, page, limit]);
+
   const searchParams = useSearchParams();
   const targetId = searchParams?.get("id") || searchParams?.get("viewId");
 

@@ -311,6 +311,31 @@ export interface CategoryItem {
   children?: CategoryItem[];
 }
 
+export interface MenuSubcategoryDto {
+  id: string;
+  name: string;
+  slug: string;
+  menuOrder: number;
+  showInMenu: boolean;
+  status: CategoryStatus;
+  type: CategoryType;
+  parentId: string;
+  itemCount?: number;
+}
+
+export interface MenuCategoryDto {
+  id: string;
+  name: string;
+  slug: string;
+  menuOrder: number;
+  showInMenu: boolean;
+  status: CategoryStatus;
+  type: CategoryType;
+  parentId: string | null;
+  itemCount?: number;
+  subcategories: MenuSubcategoryDto[];
+}
+
 
 export interface FaqItem {
   id: string;

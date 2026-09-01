@@ -24,6 +24,7 @@ interface AdminImageUploadProps {
   value: string;
   onChange: (url: string, mediaId?: string) => void;
   error?: string;
+  libraryOnly?: boolean;
 }
 
 interface MediaAsset {
@@ -63,6 +64,7 @@ export function AdminImageUpload({
   value,
   onChange,
   error,
+  libraryOnly = false,
 }: AdminImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -310,6 +312,39 @@ export function AdminImageUpload({
             </div>
           </div>
         </div>
+      ) : libraryOnly ? (
+        /* ── Clean Media Library Selection Box (No Drag and Drop) ── */
+        <div
+          onClick={() => setIsLibraryOpen(true)}
+          className="border-2 border-dashed border-slate-300 hover:border-slate-400 rounded-xl p-5 bg-slate-50/60 hover:bg-slate-100/60 transition-all flex flex-col items-center justify-center text-center cursor-pointer group space-y-2"
+        >
+          <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <FolderOpen className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-900">
+              Choose from Media Library
+            </p>
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5 max-w-xs">
+              Select an image from category options in your Media Library.
+            </p>
+          </div>
+          <div className="pt-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsLibraryOpen(true);
+              }}
+              className="text-xs font-bold h-8 px-3.5 bg-white border-slate-300 hover:bg-slate-50 text-slate-800 shadow-2xs cursor-pointer flex items-center gap-1.5"
+            >
+              <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
+              <span>Choose from Library</span>
+            </Button>
+          </div>
+        </div>
       ) : (
         /* ── Clean Compact Dropzone Box ── */
         <div className="border-2 border-dashed border-slate-300 hover:border-slate-400 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-100/50 transition-colors relative flex flex-col items-center justify-center text-center group cursor-pointer">
@@ -368,7 +403,11 @@ export function AdminImageUpload({
             setShowModalUploader(false);
           }}
           title="Media Library"
-          description="Select a cover photo or upload new media."
+          description={
+            libraryOnly
+              ? "Select an image from category options in your Media Library."
+              : "Select a cover photo or upload new media."
+          }
           maxWidth="2xl"
         >
           <div className="space-y-3 py-2 text-xs">
@@ -398,15 +437,17 @@ export function AdminImageUpload({
                     </option>
                   ))}
                 </select>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => setShowModalUploader(!showModalUploader)}
-                  className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5 sm:mr-1" />
-                  <span className="hidden sm:inline">{showModalUploader ? "Hide" : "Upload"}</span>
-                </Button>
+                {!libraryOnly && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setShowModalUploader(!showModalUploader)}
+                    className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5 sm:mr-1" />
+                    <span className="hidden sm:inline">{showModalUploader ? "Hide" : "Upload"}</span>
+                  </Button>
+                )}
               </div>
             </div>
 

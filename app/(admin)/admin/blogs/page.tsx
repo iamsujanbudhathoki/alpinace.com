@@ -105,6 +105,10 @@ export default function AdminBlogsPage() {
     }
   };
 
+  useEffect(() => {
+    loadArticles();
+  }, [debouncedSearch, page, limit]);
+
   const searchParams = useSearchParams();
   const targetId = searchParams?.get("id") || searchParams?.get("viewId");
 

@@ -132,6 +132,10 @@ export default function AdminBookingsPage() {
     }
   };
 
+  useEffect(() => {
+    loadBookings();
+  }, [debouncedSearch, selectedStatus, selectedType, page, limit]);
+
   const searchParams = useSearchParams();
   const targetId = searchParams?.get("id") || searchParams?.get("viewId");
 

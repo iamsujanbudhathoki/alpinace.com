@@ -10,6 +10,7 @@ import {
   Inquiry,
   InquiryStatus,
   InquiryType,
+  MenuCategoryDto,
   NotificationType,
   PackageItem,
 } from "@/lib/admin-data";
@@ -176,8 +177,18 @@ export const CategoryService = {
     }
   },
 
-  async reorder(items: { id: string; menuOrder: number }[]): Promise<ApiResponse<boolean>> {
-    return apiClient.put<boolean>("/admin/categories/reorder", { items });
+  async getMenuOrderingStructure(domain: CategoryType): Promise<MenuCategoryDto[]> {
+    try {
+      const res = await apiClient.get<MenuCategoryDto[]>(`/admin/categories/menu-structure?domain=${domain}`);
+      return Array.isArray(res?.data) ? res.data : [];
+    } catch (e) {
+      console.warn("Backend categories getMenuOrderingStructure error:", e);
+      return [];
+    }
+  },
+
+  async reorder(items: { id: string; menuOrder: number }[], domain?: CategoryType): Promise<ApiResponse<boolean>> {
+    return apiClient.put<boolean>("/admin/categories/reorder", { items, domain });
   },
 
   async getById(id: string): Promise<CategoryItem | null> {

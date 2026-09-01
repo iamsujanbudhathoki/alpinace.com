@@ -295,6 +295,34 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const handleToggleFeatured = async (cat: CategoryItem) => {
+    const newFeatured = !cat.isFeatured;
+
+    setCategories((prev) =>
+      prev.map((c) => (c.id === cat.id ? { ...c, isFeatured: newFeatured } : c))
+    );
+    setAllCategoriesForStats((prev) =>
+      prev.map((c) => (c.id === cat.id ? { ...c, isFeatured: newFeatured } : c))
+    );
+
+    try {
+      const res = await CategoryService.update(cat.id, { isFeatured: newFeatured });
+      if (res.success) {
+        categoryCache.clear();
+        toast.success(
+          `"${cat.name}" featured status set to ${newFeatured ? "YES" : "NO"}.`
+        );
+        await Promise.all([loadCategories(), loadStats()]);
+      } else {
+        toast.error(res.message || "Failed to update featured status");
+        await Promise.all([loadCategories(), loadStats()]);
+      }
+    } catch (err: any) {
+      toast.error("Failed to update featured status");
+      await Promise.all([loadCategories(), loadStats()]);
+    }
+  };
+
   const getTypeIcon = (type: CategoryType) => {
     switch (type) {
       case CategoryType.TREKKING:
@@ -326,7 +354,7 @@ export default function AdminCategoriesPage() {
       </AdminPageHeader>
 
       {/* Summary KPI Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
           <div className="w-8 h-8 rounded-md bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold">
             <Mountain className="w-4 h-4" />
@@ -364,7 +392,19 @@ export default function AdminCategoriesPage() {
         </div>
 
         <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-md bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-center font-bold text-xs">
+            ★
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-700">Featured</div>
+            <div className="text-lg font-bold text-slate-900">
+              {allCategoriesForStats.filter((c) => c.isFeatured).length}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-bold">
             <BookOpen className="w-4 h-4" />
           </div>
           <div>
@@ -376,7 +416,7 @@ export default function AdminCategoriesPage() {
         </div>
 
         <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-md bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-bold">
             <ImageIcon className="w-4 h-4" />
           </div>
           <div>
@@ -388,17 +428,17 @@ export default function AdminCategoriesPage() {
         </div>
       </div>
 
-      {/* Controls Bar & Domain Filter Dropdown */}
-      <div className="bg-white p-4 rounded-lg border border-slate-200 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Category Toolbar Controls */}
+      <div className="bg-white p-4 rounded-lg border border-slate-200 space-y-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          {/* Search Input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <Input
-              type="text"
-              placeholder="Search categories by title or description..."
+              placeholder="Search by category name, slug, or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9"
+              className="pl-9 text-xs"
             />
           </div>
 
@@ -438,12 +478,13 @@ export default function AdminCategoriesPage() {
               <AdminTableHead>Slug</AdminTableHead>
               <AdminTableHead>Status</AdminTableHead>
               <AdminTableHead>Show on Menu</AdminTableHead>
+              <AdminTableHead>Featured</AdminTableHead>
               <AdminTableHead align="right">Actions</AdminTableHead>
             </tr>
           </AdminTableHeader>
           <AdminTableBody>
             {isLoading ? (
-              <AdminTableLoading colSpan={9} rows={10} message="Loading category taxonomy..." />
+              <AdminTableLoading colSpan={10} rows={10} message="Loading category taxonomy..." />
             ) : (() => {
               const parentIdsOfMatchingSubcats = new Set(
                 categories.filter((c) => c.parentId).map((c) => c.parentId!)
@@ -461,7 +502,7 @@ export default function AdminCategoriesPage() {
               if (parentCategories.length === 0) {
                 return (
                   <AdminTableEmpty
-                    colSpan={9}
+                    colSpan={10}
                     title="No categories found"
                     description="No categories matching your search or module filter query."
                   />
@@ -607,6 +648,21 @@ export default function AdminCategoriesPage() {
                         </button>
                       </AdminTableCell>
 
+                      <AdminTableCell onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleFeatured(parentCat)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors cursor-pointer border ${
+                            parentCat.isFeatured
+                              ? "bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200"
+                              : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
+                          }`}
+                          title="Click to toggle featured status"
+                        >
+                          {parentCat.isFeatured ? "★ YES" : "NO"}
+                        </button>
+                      </AdminTableCell>
+
                       <AdminTableCell align="right" onClick={(e) => e.stopPropagation()}>
                         <AdminTableActions>
                           <AdminActionButton
@@ -714,8 +770,19 @@ export default function AdminCategoriesPage() {
                             />
                           </AdminTableCell>
 
-                          <AdminTableCell>
-                            <span className="text-slate-400 text-xs font-semibold pl-3">—</span>
+                          <AdminTableCell onClick={(e) => e.stopPropagation()}>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleFeatured(subCat)}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors cursor-pointer border ${
+                                subCat.isFeatured
+                                  ? "bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200"
+                                  : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
+                              }`}
+                              title="Click to toggle featured status"
+                            >
+                              {subCat.isFeatured ? "★ YES" : "NO"}
+                            </button>
                           </AdminTableCell>
 
                           <AdminTableCell align="right" onClick={(e) => e.stopPropagation()}>

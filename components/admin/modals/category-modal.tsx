@@ -57,6 +57,7 @@ export function CategoryFormModal({
       description: "",
       status: CategoryStatus.ACTIVE,
       showInMenu: true,
+      isFeatured: false,
       image: "",
       mediaId: "",
       parentId: "",
@@ -92,6 +93,7 @@ export function CategoryFormModal({
         description: initialData.description,
         status: (initialData.status as CategoryStatus) || CategoryStatus.ACTIVE,
         showInMenu: initialData.showInMenu !== false,
+        isFeatured: Boolean(initialData.isFeatured),
         image: initialData.image || "",
         mediaId: initialData.mediaId || "",
         parentId: initialData.parentId || "",
@@ -104,6 +106,7 @@ export function CategoryFormModal({
         description: "",
         status: CategoryStatus.ACTIVE,
         showInMenu: true,
+        isFeatured: false,
         image: "",
         mediaId: "",
         parentId: "",
@@ -350,6 +353,20 @@ export function CategoryFormModal({
                 ]}
                 value={watch("showInMenu") !== false ? "true" : "false"}
                 onChange={(e) => setValue("showInMenu", e.target.value === "true", { shouldValidate: true })}
+              />
+            </div>
+
+            <div className="col-span-2 sm:col-span-1">
+              <AdminSelectField
+                label="Featured Category"
+                required
+                error={errors.isFeatured?.message}
+                options={[
+                  { label: "NO (Standard Category)", value: "false" },
+                  { label: "YES (Featured Category)", value: "true" },
+                ]}
+                value={watch("isFeatured") ? "true" : "false"}
+                onChange={(e) => setValue("isFeatured", e.target.value === "true", { shouldValidate: true })}
               />
             </div>
 

@@ -227,6 +227,7 @@ export const CategoryService = {
     if (data.description !== undefined) payload.description = String(data.description).trim();
     if (data.status !== undefined) payload.status = data.status;
     if (data.showInMenu !== undefined) payload.showInMenu = Boolean(data.showInMenu);
+    if (data.isFeatured !== undefined) payload.isFeatured = Boolean(data.isFeatured);
     if (data.menuOrder !== undefined) payload.menuOrder = Number(data.menuOrder);
     if (data.mediaId !== undefined) {
       if (typeof data.mediaId === "string" && data.mediaId.trim()) payload.mediaId = data.mediaId.trim();

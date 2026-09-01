@@ -26,7 +26,6 @@ interface CategoryFormModalProps {
   categoriesList?: CategoryItem[];
 }
 
-const parseBoolean = (val: any) => val === true || val === 1 || val === "true";
 
 export function CategoryFormModal({
   isOpen,
@@ -94,8 +93,8 @@ export function CategoryFormModal({
         type: initialData.type,
         description: initialData.description,
         status: (initialData.status as CategoryStatus) || CategoryStatus.ACTIVE,
-        showInMenu: parseBoolean(initialData.showInMenu),
-        isFeatured: parseBoolean(initialData.isFeatured),
+        showInMenu: initialData.showInMenu !== false,
+        isFeatured: Boolean(initialData.isFeatured),
         image: initialData.image || "",
         mediaId: initialData.mediaId || "",
         parentId: initialData.parentId || "",
@@ -169,8 +168,8 @@ export function CategoryFormModal({
         type: values.type,
         description: values.description.trim(),
         status: values.status,
-        showInMenu: parseBoolean(values.showInMenu),
-        isFeatured: parseBoolean(values.isFeatured),
+        showInMenu: values.showInMenu !== false,
+        isFeatured: Boolean(values.isFeatured),
         image: values.image || null,
         mediaId: values.mediaId || null,
         parentId: values.parentId || null,

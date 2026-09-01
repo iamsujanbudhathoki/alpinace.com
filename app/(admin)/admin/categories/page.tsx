@@ -295,11 +295,8 @@ export default function AdminCategoriesPage() {
     }
   };
 
-const parseBoolean = (val: any) => val === true || val === 1 || val === "true";
-
   const handleToggleFeatured = async (cat: CategoryItem) => {
-    const currentFeatured = parseBoolean(cat.isFeatured);
-    const newFeatured = !currentFeatured;
+    const newFeatured = !Boolean(cat.isFeatured);
 
     setCategories((prev) =>
       prev.map((c) => (c.id === cat.id ? { ...c, isFeatured: newFeatured } : c))
@@ -578,7 +575,7 @@ const parseBoolean = (val: any) => val === true || val === 1 || val === "true";
                           <div className="min-w-0">
                             <div className="font-bold text-slate-900 group-hover:text-slate-950 transition-colors truncate flex items-center gap-2">
                               <span>{parentCat.name}</span>
-                              {parseBoolean(parentCat.isFeatured) && (
+                              {parentCat.isFeatured && (
                                 <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-300">
                                   ★ Featured
                                 </span>
@@ -661,13 +658,13 @@ const parseBoolean = (val: any) => val === true || val === 1 || val === "true";
                           type="button"
                           onClick={() => handleToggleFeatured(parentCat)}
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors cursor-pointer border ${
-                            parseBoolean(parentCat.isFeatured)
+                            parentCat.isFeatured
                               ? "bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200"
                               : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
                           }`}
                           title="Click to toggle featured status"
                         >
-                          {parseBoolean(parentCat.isFeatured) ? "★ YES" : "NO"}
+                          {parentCat.isFeatured ? "★ YES" : "NO"}
                         </button>
                       </AdminTableCell>
 
@@ -731,7 +728,7 @@ const parseBoolean = (val: any) => val === true || val === 1 || val === "true";
                               <div className="min-w-0">
                                 <div className="font-semibold text-slate-900 truncate text-xs flex items-center gap-1.5">
                                   <span>{subCat.name}</span>
-                                  {parseBoolean(subCat.isFeatured) && (
+                                  {subCat.isFeatured && (
                                     <span className="text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-300">
                                       ★ Featured
                                     </span>
@@ -788,13 +785,13 @@ const parseBoolean = (val: any) => val === true || val === 1 || val === "true";
                               type="button"
                               onClick={() => handleToggleFeatured(subCat)}
                               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors cursor-pointer border ${
-                                parseBoolean(subCat.isFeatured)
+                                subCat.isFeatured
                                   ? "bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200"
                                   : "bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200"
                               }`}
                               title="Click to toggle featured status"
                             >
-                              {parseBoolean(subCat.isFeatured) ? "★ YES" : "NO"}
+                              {subCat.isFeatured ? "★ YES" : "NO"}
                             </button>
                           </AdminTableCell>
 

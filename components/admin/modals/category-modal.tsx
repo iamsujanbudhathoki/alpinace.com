@@ -441,11 +441,11 @@ export function CategoryFormModal({
             <div>
               <span className="text-slate-950 font-bold block">Featured Status:</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                parseBoolean(initialData?.isFeatured)
+                initialData?.isFeatured
                   ? "bg-amber-100 text-amber-900 border border-amber-300"
                   : "bg-slate-100 text-slate-700 border border-slate-200"
               }`}>
-                {parseBoolean(initialData?.isFeatured) ? "★ Featured" : "Standard"}
+                {initialData?.isFeatured ? "★ Featured" : "Standard"}
               </span>
             </div>
           </div>

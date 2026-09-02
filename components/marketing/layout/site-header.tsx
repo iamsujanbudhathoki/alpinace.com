@@ -615,7 +615,7 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-stone-700 hover:text-stone-950 lg:hidden rounded-sm cursor-pointer"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-stone-700 hover:text-stone-950 lg:hidden rounded-md cursor-pointer transition-colors"
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -628,13 +628,13 @@ export function SiteHeader() {
       {/* Mobile Drawer Overlay & Content */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden bg-slate-950/60 backdrop-blur-xs flex justify-end">
-          <div className="bg-white w-full max-w-sm h-full p-6 overflow-y-auto flex flex-col justify-between shadow-2xl">
+          <div className="bg-white w-full max-w-xs sm:max-w-sm h-full p-5 sm:p-6 overflow-y-auto flex flex-col justify-between shadow-2xl">
             <div>
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-stone-200">
+              <div className="flex items-center justify-between pb-4 mb-5 border-b border-stone-200">
                 <Link
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2.5"
                 >
                   <Image
                     src="/logo.jpg"
@@ -649,14 +649,15 @@ export function SiteHeader() {
                 </Link>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-1 text-slate-600 hover:text-slate-900 rounded-sm cursor-pointer"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-md cursor-pointer transition-colors"
+                  aria-label="Close menu"
                 >
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
               {/* Mobile Navigation Links */}
-              <nav className="space-y-3">
+              <nav className="space-y-1">
                 {navLinks.map((link) => {
                   const hasDropdown = Boolean(
                     link.categoryType || (link.items && link.items.length > 0)
@@ -668,12 +669,12 @@ export function SiteHeader() {
                   const isLoading = !!loadingMap[catType] && categories.length === 0;
 
                   return (
-                    <div key={link.label} className="border-b border-stone-100 pb-3">
-                      <div className="flex items-center justify-between">
+                    <div key={link.label} className="border-b border-stone-100 py-1.5">
+                      <div className="flex items-center justify-between min-h-[44px]">
                         <Link
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="text-sm font-bold text-slate-950 hover:text-amber-700 transition-colors"
+                          className="text-sm font-bold text-slate-950 hover:text-amber-700 transition-colors py-2 flex-1"
                         >
                           {link.label}
                         </Link>
@@ -681,10 +682,11 @@ export function SiteHeader() {
                           <button
                             type="button"
                             onClick={() => handleMobileToggle(link)}
-                            className="p-1 text-slate-500 hover:text-slate-900 cursor-pointer"
+                            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-slate-900 cursor-pointer -mr-2"
+                            aria-label={`Toggle ${link.label} subcategories`}
                           >
                             <ChevronDown
-                              className={`w-4 h-4 transition-transform duration-200 ${
+                              className={`w-5 h-5 transition-transform duration-200 ${
                                 isExpanded ? "rotate-180 text-amber-700" : ""
                               }`}
                             />
@@ -694,27 +696,27 @@ export function SiteHeader() {
 
                       {/* Mobile Accordion Content */}
                       {hasDropdown && isExpanded && (
-                        <div className="mt-3 pl-3 space-y-2 border-l-2 border-amber-600/30">
+                        <div className="mt-1 pl-3.5 space-y-1 border-l-2 border-amber-600/40 py-1">
                           {link.items && link.items.length > 0 ? (
                             link.items.map((subItem) => (
                               <Link
                                 key={subItem.href}
                                 href={subItem.href}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block text-xs font-semibold text-slate-700 hover:text-slate-950 py-1"
+                                className="block text-xs font-semibold text-slate-700 hover:text-slate-950 py-2 min-h-[40px] flex items-center"
                               >
                                 {subItem.label}
                               </Link>
                             ))
                           ) : isLoading ? (
-                            <div className="text-xs text-slate-400 py-1">Loading...</div>
+                            <div className="text-xs text-slate-400 py-2">Loading categories...</div>
                           ) : (
                             categories.map((cat) => (
                               <Link
                                 key={cat.id}
                                 href={getCategoryLink(link.href, cat)}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block text-xs font-semibold text-slate-700 hover:text-slate-950 py-1.5"
+                                className="block text-xs font-semibold text-slate-700 hover:text-slate-950 py-2 min-h-[40px] flex items-center"
                               >
                                 {cat.name}
                               </Link>
@@ -729,11 +731,11 @@ export function SiteHeader() {
             </div>
 
             {/* Mobile Footer Inquiry CTA */}
-            <div className="pt-6 border-t border-stone-200">
+            <div className="pt-5 border-t border-stone-200 mt-6">
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full inline-flex items-center justify-center bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs py-3 rounded-sm transition-colors text-center shadow-2xs"
+                className="w-full min-h-[44px] inline-flex items-center justify-center bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs py-3 rounded-md transition-colors text-center shadow-xs"
               >
                 Inquire &amp; Book Trip
               </Link>

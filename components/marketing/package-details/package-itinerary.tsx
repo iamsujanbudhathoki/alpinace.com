@@ -45,14 +45,14 @@ export function PackageItinerary({
         <button
           type="button"
           onClick={toggleExpandAll}
-          className="btn-secondary py-1 px-2.5 self-start sm:self-auto shrink-0"
+          className="btn-secondary py-2 px-3.5 self-start sm:self-auto shrink-0 min-h-[40px] text-xs font-semibold"
         >
           <span>{isAllExpanded ? "Collapse All" : "Expand All"}</span>
         </button>
       </div>
 
       {/* Clean Editorial Timeline Flow */}
-      <div className="relative pl-5 sm:pl-7 border-l border-stone-200 ml-2 sm:ml-2.5 space-y-6 sm:space-y-7 pt-1 pb-2">
+      <div className="relative pl-5 sm:pl-7 border-l border-stone-200 ml-2 sm:ml-2.5 space-y-5 sm:space-y-6 pt-1 pb-2">
         {days.map((day, idx) => {
           const dayNum = Number(day.day || idx + 1);
           const formattedDayLabel = `Day ${String(dayNum).padStart(2, "0")}`;
@@ -68,13 +68,13 @@ export function PackageItinerary({
           return (
             <article key={idx} className="relative group">
               {/* Timeline Marker Dot */}
-              <div className="absolute -left-[25px] sm:-left-[33px] top-1.5 w-2 h-2 rounded-full bg-amber-700 ring-4 ring-white" />
+              <div className="absolute -left-[25px] sm:-left-[33px] top-3.5 w-2.5 h-2.5 rounded-full bg-amber-700 ring-4 ring-white" />
 
               {/* Day Header */}
               <button
                 type="button"
                 onClick={() => setOpenDay(openDay === dayNum ? 0 : dayNum)}
-                className="w-full text-left cursor-pointer group flex items-baseline justify-between gap-3"
+                className="w-full text-left cursor-pointer group flex items-center justify-between gap-3 py-2 min-h-[44px]"
               >
                 <div className="space-y-0.5 min-w-0">
                   <span className="type-caption text-amber-800 font-bold block">

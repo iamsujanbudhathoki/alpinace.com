@@ -69,7 +69,7 @@ export function TestimonialsSection() {
   return (
     <section className="py-16 sm:py-20 bg-white border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="mb-8 space-y-1 pb-6 border-b border-stone-200">
           <span className="text-amber-800 text-xs font-semibold block">

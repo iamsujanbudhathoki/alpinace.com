@@ -20,33 +20,14 @@ export function PackageQuickFacts({
   if (!facts || facts.length === 0) return null;
 
   return (
-    <div
-      className={`border-y border-stone-200 py-3 sm:py-4 ${className}`}
-    >
-      <div
-        className={`grid gap-3 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-stone-200 ${
-          facts.length === 2
-            ? "grid-cols-1 sm:grid-cols-2"
-            : facts.length === 3
-            ? "grid-cols-1 sm:grid-cols-3"
-            : "grid-cols-2 lg:grid-cols-4"
-        }`}
-      >
+    <div className={`bg-stone-50/70 border border-stone-200 rounded-md p-3.5 sm:p-4.5 ${className}`}>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {facts.map((fact, index) => (
-          <div
-            key={index}
-            className={`${
-              index === 0
-                ? "sm:pr-5"
-                : index === facts.length - 1
-                ? "pt-2.5 sm:pt-0 sm:pl-5"
-                : "pt-2.5 sm:pt-0 sm:px-5"
-            }`}
-          >
-            <span className="type-caption block mb-0.5">
+          <div key={index} className="bg-white border border-stone-200/80 rounded p-2.5 sm:p-3">
+            <span className="type-caption block text-stone-500 font-semibold text-[11px] uppercase tracking-wider mb-0.5">
               {fact.label}
             </span>
-            <span className="type-heading-md text-stone-900 block">
+            <span className="type-heading-md text-stone-900 block font-bold truncate">
               {fact.value}
             </span>
           </div>

@@ -29,16 +29,19 @@ import {
   Table as TableIcon,
   Trash2,
   ImageIcon,
-  Loader2,
-  Globe,
-  Upload,
-  ChevronDown,
-  Plus,
   Check,
-  ListOrdered
+  ListOrdered,
+  UploadCloud,
+  FolderOpen,
+  Loader2,
 } from 'lucide-react'
-import { Button, Input, Tooltip, Dropdown } from 'antd'
+import { Input, Tooltip, Dropdown } from 'antd'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload"
+import { AdminModal } from "@/components/admin/ui/admin-modal"
+import { MediaService } from "@/lib/services/admin-service"
 
 interface MenuBarProps {
   editor: Editor | null
@@ -65,7 +68,7 @@ const ToolbarButton = ({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "h-8 w-8 flex items-center justify-center rounded-md transition-all duration-200",
+        "h-8 w-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer",
         "hover:bg-slate-100 text-slate-600",
         active && "bg-primary text-white hover:bg-primary/90 shadow-sm",
         disabled && "opacity-50 cursor-not-allowed"
@@ -76,29 +79,29 @@ const ToolbarButton = ({
   </Tooltip>
 )
 
-const MenuBar: React.FC<MenuBarProps> = ({ editor, onMediaUpload, showMediaUpload = false }) => {
-  const [isUploading, setIsUploading] = useState(false)
+const MenuBar: React.FC<MenuBarProps> = ({ editor, showMediaUpload = true }) => {
   const [isImageMenuOpen, setIsImageMenuOpen] = useState(false)
+  const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [isLinkMenuOpen, setIsLinkMenuOpen] = useState(false)
-  const [imageUrl, setImageUrl] = useState('')
   const [linkUrl, setLinkUrl] = useState('')
-  const imageMenuRef = useRef<HTMLDivElement>(null)
   const linkMenuRef = useRef<HTMLDivElement>(null)
+  const imageMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (imageMenuRef.current && !imageMenuRef.current.contains(event.target as Node)) {
-        setIsImageMenuOpen(false)
-      }
       if (linkMenuRef.current && !linkMenuRef.current.contains(event.target as Node)) {
         setIsLinkMenuOpen(false)
       }
+      if (imageMenuRef.current && !imageMenuRef.current.contains(event.target as Node)) {
+        setIsImageMenuOpen(false)
+      }
     }
-    if (isImageMenuOpen || isLinkMenuOpen) {
+    if (isLinkMenuOpen || isImageMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isImageMenuOpen, isLinkMenuOpen])
+  }, [isLinkMenuOpen, isImageMenuOpen])
 
   if (!editor) return null
 
@@ -116,50 +119,28 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor, onMediaUpload, showMediaUploa
     setIsLinkMenuOpen(false)
   }
 
-  const handleImageUpload = () => {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = 'image/*'
-    input.onchange = async () => {
-      if (input.files?.length) {
-        const file = input.files[0]
+  const handleDirectFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploading(true)
+    try {
+      const res = await MediaService.uploadFile(file)
+      if (res.success && res.data?.url) {
+        const publicUrl = res.data.url
+        editor.chain().focus().setImage({ src: publicUrl }).run()
         setIsImageMenuOpen(false)
-        if (onMediaUpload) {
-          setIsUploading(true)
-          try {
-            const url = await onMediaUpload(file)
-            if (url) {
-              editor.chain().focus().setImage({ src: url }).run()
-            }
-          } catch (error) {
-            console.error('Image upload failed:', error)
-          } finally {
-            setIsUploading(false)
-          }
-        } else {
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            if (e.target?.result) {
-              editor.chain().focus().setImage({ src: e.target.result as string }).run()
-            }
-          }
-          reader.readAsDataURL(file)
-        }
+        toast.success(`Image "${file.name}" uploaded & inserted into content!`)
+      } else {
+        toast.error(res?.message || "Failed to upload image.")
       }
-    }
-    input.click()
-  }
-
-  const handleImageUrlSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
-    if (imageUrl) {
-      editor.chain().focus().setImage({ src: imageUrl }).run()
-      setImageUrl('')
-      setIsImageMenuOpen(false)
+    } catch (err: any) {
+      console.error("Direct rich text upload error:", err)
+      toast.error(err?.message || "Failed to upload image.")
+    } finally {
+      setIsUploading(false)
     }
   }
-
-
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -248,7 +229,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor, onMediaUpload, showMediaUploa
         </ToolbarButton>
       </div>
 
-      {/* Links & Tables */}
+      {/* Links, Tables & Images */}
       <div className="flex items-center gap-0.5 bg-white border border-slate-100 rounded-lg p-0.5 shadow-sm">
         <div className="relative" ref={linkMenuRef}>
           <ToolbarButton
@@ -278,26 +259,25 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor, onMediaUpload, showMediaUploa
                       autoFocus
                       className="h-9 text-sm"
                     />
-                    <Button
-                      type="primary"
+                    <button
+                      type="button"
                       onClick={() => handleLinkSubmit()}
-                      className="h-9 w-9 p-0 flex items-center justify-center shrink-0"
+                      className="h-9 w-9 p-0 flex items-center justify-center shrink-0 bg-primary text-white rounded-md hover:bg-primary/90 cursor-pointer disabled:opacity-50"
                       disabled={!linkUrl}
                     >
                       <Check className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
                 {editor.isActive('link') && (
-                  <Button
-                    type="text"
-                    danger
+                  <button
+                    type="button"
                     onClick={handleRemoveLink}
-                    className="w-full justify-start h-8 text-[11px] font-bold"
-                    icon={<Trash2 className="h-3.5 w-3.5" />}
+                    className="w-full text-left h-8 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-md px-2 flex items-center gap-1.5 cursor-pointer"
                   >
-                    Remove Link
-                  </Button>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Remove Link</span>
+                  </button>
                 )}
               </div>
             </div>
@@ -375,77 +355,44 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor, onMediaUpload, showMediaUploa
             </ToolbarButton>
           </div>
         </Dropdown>
+
+        {showMediaUpload && (
+          <ToolbarButton
+            onClick={() => setIsLibraryModalOpen(true)}
+            active={editor.isActive('image') || isLibraryModalOpen}
+            title={editor.isActive('image') ? "Edit or Replace Selected Image" : "Insert Image from Gallery"}
+          >
+            <ImageIcon className="h-4 w-4" />
+          </ToolbarButton>
+        )}
       </div>
 
-      {showMediaUpload && (
-        <div className="relative" ref={imageMenuRef}>
-          <button
-            type="button"
-            onClick={() => setIsImageMenuOpen(!isImageMenuOpen)}
-            disabled={isUploading}
-            className={cn(
-              "h-8 px-3 flex items-center gap-2 transition-all rounded-lg border text-sm font-semibold",
-              isImageMenuOpen 
-                ? "border-primary bg-primary/5 text-primary" 
-                : "border-slate-200 hover:border-primary hover:text-primary text-slate-600"
-            )}
-          >
-            {isUploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <>
-                <ImageIcon className="h-4 w-4" />
-                <span>Media</span>
-                <ChevronDown className={cn("h-3 w-3 transition-transform", isImageMenuOpen && "rotate-180")} />
-              </>
-            )}
-          </button>
-
-          {isImageMenuOpen && (
-            <div className="absolute left-0 mt-2 w-72 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-4 animate-in fade-in zoom-in duration-200">
-              <div className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Upload</label>
-                  <Button
-                    onClick={handleImageUpload}
-                    className="w-full h-12 border-dashed flex flex-col items-center justify-center gap-1 group"
-                  >
-                    <Upload className="h-4 w-4 text-slate-400 group-hover:text-primary" />
-                    <span className="text-[11px] font-semibold text-slate-500 group-hover:text-primary">Select Files</span>
-                  </Button>
-                </div>
-
-                <div className="relative flex items-center py-1">
-                  <div className="flex-grow border-t border-slate-100"></div>
-                  <span className="flex-shrink mx-3 text-[10px] font-bold text-slate-300 uppercase">OR</span>
-                  <div className="flex-grow border-t border-slate-100"></div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Media URL</label>
-                  <div className="flex gap-2">
-                    <Input
-                      prefix={<Globe className="h-3.5 w-3.5 text-slate-300" />}
-                      placeholder="https://example.com/image.jpg"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleImageUrlSubmit()}
-                      className="h-9 text-sm"
-                    />
-                    <Button
-                      type="primary"
-                      onClick={() => handleImageUrlSubmit()}
-                      className="h-9 w-9 p-0 flex items-center justify-center shrink-0"
-                      disabled={!imageUrl}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+      {/* Media Library Selection Modal */}
+      {isLibraryModalOpen && (
+        <AdminModal
+          isOpen={isLibraryModalOpen}
+          onClose={() => setIsLibraryModalOpen(false)}
+          title={editor.isActive('image') ? "Edit or Replace Image" : "Insert Image into Content"}
+          description="Upload a new photo or select an existing asset from your Media Gallery."
+          maxWidth="2xl"
+        >
+          <div className="py-2">
+            <AdminImageUpload
+              label=""
+              value={editor.isActive('image') ? (editor.getAttributes('image').src || '') : ''}
+              onChange={(url) => {
+                if (url) {
+                  editor.chain().focus().setImage({ src: url }).run()
+                  toast.success("Image inserted into content!")
+                } else if (editor.isActive('image')) {
+                  editor.chain().focus().deleteSelection().run()
+                  toast.info("Image removed from content.")
+                }
+                setIsLibraryModalOpen(false)
+              }}
+            />
+          </div>
+        </AdminModal>
       )}
     </div>
   )

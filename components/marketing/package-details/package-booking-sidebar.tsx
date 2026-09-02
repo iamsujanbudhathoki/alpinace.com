@@ -282,6 +282,43 @@ export function PackageBookingSidebar({
         </div>
       </div>
 
+      {/* Mobile Fixed Bottom Action Bar */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200 px-4 py-2.5 shadow-lg flex items-center justify-between gap-3">
+        <div className="flex flex-col justify-center min-w-0">
+          <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider truncate">
+            {durationDays} Days · Rate
+          </span>
+          <div className="flex items-baseline gap-1 truncate">
+            <span className="text-base sm:text-lg font-bold font-heading text-stone-900">
+              ${perPersonCalculated.toLocaleString()}
+            </span>
+            <span className="text-[11px] text-stone-500 font-medium truncate">
+              USD / person
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsInquiryModalOpen(true)}
+            aria-label="Ask a question"
+            className="bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-xs py-2 px-3 rounded-md transition-colors border border-stone-200 cursor-pointer min-h-[42px] flex items-center gap-1"
+          >
+            <MessageSquare className="w-4 h-4 text-stone-700 shrink-0" />
+            <span className="hidden sm:inline">Inquire</span>
+          </button>
+          <button
+            type="button"
+            onClick={onBookClick}
+            className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-bold text-xs py-2 px-4 rounded-md shadow-xs transition-all cursor-pointer min-h-[42px] flex items-center gap-1.5"
+          >
+            <span>{bookButtonLabel}</span>
+            <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+          </button>
+        </div>
+      </div>
+
       {/* Direct Specialist Inquiry Modal Dialog */}
       <PackageInquiryModal
         isOpen={isInquiryModalOpen}

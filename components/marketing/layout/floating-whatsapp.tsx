@@ -20,7 +20,7 @@ export function FloatingWhatsApp() {
   const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(defaultMessage)}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 group print:hidden">
+    <div className="fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end gap-2 group print:hidden">
       {/* Optional Dismissible Tooltip */}
       {showTooltip && (
         <div className="hidden sm:flex items-center gap-2 bg-white text-zinc-900 text-xs font-medium py-2 px-3.5 rounded-full shadow-lg border border-stone-200 animate-in fade-in slide-in-from-bottom-2 duration-300">

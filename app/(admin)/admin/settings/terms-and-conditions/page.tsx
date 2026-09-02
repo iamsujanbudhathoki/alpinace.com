@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Save, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { SettingService, MediaService } from "@/lib/services/admin-service";
+import { SettingService } from "@/lib/services/admin-service";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -28,14 +28,6 @@ export default function AdminTermsAndConditionsPage() {
     }
     load();
   }, []);
-
-  const handleMediaUpload = async (file: File): Promise<string> => {
-    const res = await MediaService.uploadFile(file);
-    if (res.success && res.data?.path) {
-      return res.data.path;
-    }
-    throw new Error("Media upload failed");
-  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,8 +92,6 @@ export default function AdminTermsAndConditionsPage() {
           <AppRichTextEditor
             value={content}
             onChange={setContent}
-            onMediaUpload={handleMediaUpload}
-            showMediaUpload={false}
             placeholder="Start writing your Terms & Conditions..."
             height="500px"
           />

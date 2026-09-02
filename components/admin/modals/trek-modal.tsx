@@ -337,8 +337,8 @@ export function TrekFormModal({
   const modalTitle = !initialData
     ? "Add New Trek Package"
     : editingMode
-    ? `Edit: ${initialData.title}`
-    : `Trek Details: ${initialData.title}`;
+      ? `Edit: ${initialData.title}`
+      : `Trek Details: ${initialData.title}`;
 
   const modalDescription = editingMode
     ? "Fill out all required details, itinerary, media gallery, departure dates, and downloadable files."
@@ -452,13 +452,12 @@ export function TrekFormModal({
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
-                    isActive
+                  className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${isActive
                       ? "bg-slate-900 text-white shadow-xs"
                       : isTabError
-                      ? "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
+                        ? "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : isTabError ? "text-rose-500" : "text-slate-500"}`} />
                   <span>{tab.label}</span>
@@ -467,11 +466,10 @@ export function TrekFormModal({
                   )}
                   {tab.count !== undefined && tab.count > 0 && !isTabError && (
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                        isActive
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive
                           ? "bg-slate-900 text-white"
                           : "bg-slate-200 text-slate-800"
-                      }`}
+                        }`}
                     >
                       {tab.count}
                     </span>
@@ -526,8 +524,8 @@ export function TrekFormModal({
                       isLoadingSubcats
                         ? "Loading subcategories..."
                         : subcategories.length > 0
-                        ? "Select subcategory (Optional)..."
-                        : "No subcategories available"
+                          ? "Select subcategory (Optional)..."
+                          : "No subcategories available"
                     }
                     searchPlaceholder="Search subcategories..."
                     options={subcategories}
@@ -697,11 +695,6 @@ export function TrekFormModal({
                         onChange={field.onChange}
                         placeholder="Detailed marketing overview, highlights, terrain insights, and trekking experiences..."
                         height="220px"
-                        showMediaUpload={true}
-                        onMediaUpload={async (file) => {
-                          const res = await MediaService.uploadFile(file);
-                          return res?.data?.url || "";
-                        }}
                       />
                     )}
                   />
@@ -956,13 +949,12 @@ export function TrekFormModal({
                     <label className="text-xs font-bold text-slate-800">
                       Meta Title
                     </label>
-                    <span className={`text-[10px] font-semibold ${
-                      (watchMetaTitle?.length || 0) > 60
+                    <span className={`text-[10px] font-semibold ${(watchMetaTitle?.length || 0) > 60
                         ? "text-rose-600"
                         : (watchMetaTitle?.length || 0) >= 30
-                        ? "text-emerald-600"
-                        : "text-slate-500"
-                    }`}>
+                          ? "text-emerald-600"
+                          : "text-slate-500"
+                      }`}>
                       {watchMetaTitle?.length || 0} / 60
                     </span>
                   </div>
@@ -977,13 +969,12 @@ export function TrekFormModal({
                     <label className="text-xs font-bold text-slate-800">
                       Meta Description
                     </label>
-                    <span className={`text-[10px] font-semibold ${
-                      (watchMetaDesc?.length || 0) > 160
+                    <span className={`text-[10px] font-semibold ${(watchMetaDesc?.length || 0) > 160
                         ? "text-rose-600"
                         : (watchMetaDesc?.length || 0) >= 120
-                        ? "text-emerald-600"
-                        : "text-slate-500"
-                    }`}>
+                          ? "text-emerald-600"
+                          : "text-slate-500"
+                      }`}>
                       {watchMetaDesc?.length || 0} / 160
                     </span>
                   </div>
@@ -1147,7 +1138,7 @@ export function TrekFormModal({
           {initialData?.departureDates && initialData.departureDates.length > 0 && (
             <div className="space-y-1.5">
               <span className="font-bold text-slate-900 block text-xs">Scheduled Departure Dates ({initialData.departureDates.length}):</span>
-              <TripDepartureDatesManager dates={initialData.departureDates} onChange={() => {}} readOnly />
+              <TripDepartureDatesManager dates={initialData.departureDates} onChange={() => { }} readOnly />
             </div>
           )}
 
@@ -1157,14 +1148,14 @@ export function TrekFormModal({
               {initialData.mapImage && (
                 <div>
                   <span className="font-bold text-slate-900 block text-xs mb-1">Trek Route Map:</span>
-                  <TripMapManager mapImage={initialData.mapImage} onChange={() => {}} readOnly packageTitle={initialData.title} />
+                  <TripMapManager mapImage={initialData.mapImage} onChange={() => { }} readOnly packageTitle={initialData.title} />
                 </div>
               )}
 
               {initialData.galleryImages && initialData.galleryImages.length > 0 && (
                 <div>
                   <span className="font-bold text-slate-900 block text-xs mb-1">Photo Gallery ({initialData.galleryImages.length}):</span>
-                  <TripGalleryManager images={initialData.galleryImages} onChange={() => {}} readOnly />
+                  <TripGalleryManager images={initialData.galleryImages} onChange={() => { }} readOnly />
                 </div>
               )}
             </div>
@@ -1174,7 +1165,7 @@ export function TrekFormModal({
           {initialData?.packageFiles && initialData.packageFiles.length > 0 && (
             <div className="space-y-1.5">
               <span className="font-bold text-slate-900 block text-xs">Downloadable Files &amp; Brochures ({initialData.packageFiles.length}):</span>
-              <TripFilesManager files={initialData.packageFiles} onChange={() => {}} readOnly />
+              <TripFilesManager files={initialData.packageFiles} onChange={() => { }} readOnly />
             </div>
           )}
         </div>

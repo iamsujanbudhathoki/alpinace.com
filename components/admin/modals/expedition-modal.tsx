@@ -463,8 +463,8 @@ export function ExpeditionFormModal({
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${isActive
-                      ? "bg-slate-900 text-white shadow-xs"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    ? "bg-slate-900 text-white shadow-xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                     }`}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : "text-slate-500"}`} />
@@ -472,8 +472,8 @@ export function ExpeditionFormModal({
                   {tab.count !== undefined && tab.count > 0 && (
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive
-                          ? "bg-slate-900 text-white"
-                          : "bg-slate-200 text-slate-800"
+                        ? "bg-slate-900 text-white"
+                        : "bg-slate-200 text-slate-800"
                         }`}
                     >
                       {tab.count}

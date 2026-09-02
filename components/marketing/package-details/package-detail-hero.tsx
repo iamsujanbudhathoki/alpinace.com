@@ -36,7 +36,7 @@ export function PackageDetailHero({
   isInquired = false,
 }: PackageDetailHeroProps) {
   return (
-    <section className="relative h-[340px] sm:h-[380px] lg:h-[420px] w-full overflow-hidden bg-stone-950">
+    <section className="relative min-h-[360px] sm:h-[380px] lg:h-[420px] w-full overflow-hidden bg-stone-950 flex flex-col justify-between">
       {/* Background Image & Editorial Gradient */}
       <div className="absolute inset-0">
         <img
@@ -49,12 +49,12 @@ export function PackageDetailHero({
       </div>
 
       {/* Breadcrumb Navigation */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 w-full">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-white/80 hover:text-white transition-all bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1 rounded-sm border border-white/10"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-white/90 hover:text-white transition-all bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3.5 py-2 rounded-md border border-white/15 min-h-[38px]"
         >
-          <ArrowLeft className="h-3 w-3" strokeWidth={2} />
+          <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
           <span>{backLabel}</span>
         </Link>
       </div>

@@ -97,20 +97,6 @@ export default function AdminAboutUsPage() {
     }
   };
 
-  const handleRichTextMediaUpload = async (file: File): Promise<string> => {
-    try {
-      const res = await MediaService.uploadFile(file);
-      if (res?.data?.url) {
-        return res.data.url;
-      }
-      return URL.createObjectURL(file);
-    } catch (err) {
-      console.error("Rich text image upload error:", err);
-      toast.error("Failed to upload image to editor");
-      throw err;
-    }
-  };
-
   // Stat item handlers
   const addStat = () => {
     setFormData((prev) => ({
@@ -366,9 +352,7 @@ export default function AdminAboutUsPage() {
                   <AppRichTextEditor
                     value={formData.storyContent || ""}
                     onChange={(html) => handleChange("storyContent", html)}
-                    onMediaUpload={handleRichTextMediaUpload}
                     placeholder="Write your company story, origins, and expedition background..."
-                    showMediaUpload={true}
                     height="300px"
                   />
                   {errors.storyContent && (
@@ -400,9 +384,7 @@ export default function AdminAboutUsPage() {
                   <AppRichTextEditor
                     value={formData.mission || ""}
                     onChange={(html) => handleChange("mission", html)}
-                    onMediaUpload={handleRichTextMediaUpload}
                     placeholder="Describe your company's primary mission..."
-                    showMediaUpload={false}
                     height="200px"
                   />
                   {errors.mission && (
@@ -420,9 +402,7 @@ export default function AdminAboutUsPage() {
                   <AppRichTextEditor
                     value={formData.vision || ""}
                     onChange={(html) => handleChange("vision", html)}
-                    onMediaUpload={handleRichTextMediaUpload}
                     placeholder="Describe your company's long-term vision..."
-                    showMediaUpload={false}
                     height="200px"
                   />
                   {errors.vision && (

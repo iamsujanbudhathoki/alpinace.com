@@ -345,12 +345,12 @@ export function ExpeditionsCatalogClient({
       {/* Main Container */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Mobile Filter Control Bar */}
-        <div className="lg:hidden mb-6 flex items-center justify-between bg-white border border-stone-200 rounded-md p-3">
+        <div className="lg:hidden mb-6 flex items-center justify-between bg-white border border-stone-200 rounded-md p-3 shadow-xs">
           <button
             onClick={() => setIsMobileFilterOpen(true)}
-            className="flex items-center gap-2 text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-3.5 py-2 rounded-md transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-4 py-2.5 rounded-md transition-colors cursor-pointer min-h-[42px]"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-amber-800" />
+            <SlidersHorizontal className="w-4 h-4 text-amber-800" />
             <span>Filters {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
           </button>
 
@@ -361,16 +361,17 @@ export function ExpeditionsCatalogClient({
 
         {/* Mobile Filter Drawer */}
         {isMobileFilterOpen && (
-          <div className="fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex justify-end lg:hidden">
-            <div className="bg-white w-full max-w-xs h-full p-5 overflow-y-auto flex flex-col justify-between shadow-xl">
+          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex justify-end lg:hidden">
+            <div className="bg-white w-full max-w-xs h-full p-5 overflow-y-auto flex flex-col justify-between shadow-2xl">
               <div>
                 <div className="flex items-center justify-between pb-3 mb-5 border-b border-stone-200">
-                  <h3 className="font-heading font-semibold text-sm text-stone-900">
+                  <h3 className="font-heading font-bold text-sm text-stone-900">
                     Filter Expeditions
                   </h3>
                   <button
                     onClick={() => setIsMobileFilterOpen(false)}
-                    className="p-1 rounded text-stone-500 hover:text-stone-900 cursor-pointer"
+                    className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md text-stone-500 hover:text-stone-900 cursor-pointer"
+                    aria-label="Close filters"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -384,13 +385,13 @@ export function ExpeditionsCatalogClient({
                     resetFilters();
                     setIsMobileFilterOpen(false);
                   }}
-                  className="w-1/2 py-2 rounded-md border border-stone-300 text-stone-700 font-semibold text-xs hover:bg-stone-100 cursor-pointer"
+                  className="w-1/2 py-2.5 min-h-[44px] rounded-md border border-stone-300 text-stone-700 font-semibold text-xs hover:bg-stone-100 cursor-pointer"
                 >
                   Reset
                 </button>
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="w-1/2 py-2 rounded-md bg-amber-800 text-white font-semibold text-xs hover:bg-amber-900 cursor-pointer"
+                  className="w-1/2 py-2.5 min-h-[44px] rounded-md bg-amber-800 text-white font-bold text-xs hover:bg-amber-900 cursor-pointer shadow-xs"
                 >
                   Apply
                 </button>

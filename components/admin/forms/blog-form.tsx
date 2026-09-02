@@ -145,20 +145,6 @@ export function BlogArticleForm({
     }
   };
 
-  const handleRichTextMediaUpload = async (file: File): Promise<string> => {
-    try {
-      const res = await MediaService.uploadFile(file);
-      if (res?.data?.url) {
-        return res.data.url;
-      }
-      return URL.createObjectURL(file);
-    } catch (err) {
-      console.error("Rich text image upload error:", err);
-      toast.error("Failed to upload image to editor");
-      throw err;
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -311,9 +297,7 @@ export function BlogArticleForm({
             <AppRichTextEditor
               value={formData.content || ""}
               onChange={(htmlValue) => handleChange("content", htmlValue)}
-              onMediaUpload={handleRichTextMediaUpload}
               placeholder="Write your article content here... Add headings, images, blockquotes, lists, and formatted tables."
-              showMediaUpload={true}
               height="450px"
             />
             {errors.content && (

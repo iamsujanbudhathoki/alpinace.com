@@ -81,11 +81,10 @@ export function AdminConfirmModal({
       )}
       <div className="py-2 flex items-start gap-4">
         <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-            variant === "danger"
+          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${variant === "danger"
               ? "bg-rose-50 text-rose-600 border border-rose-200"
               : "bg-amber-50 text-amber-600 border border-amber-200"
-          }`}
+            }`}
         >
           <AlertTriangle className="w-5 h-5" />
         </div>

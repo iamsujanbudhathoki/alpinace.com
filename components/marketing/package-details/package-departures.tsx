@@ -96,10 +96,10 @@ export function PackageDepartures({
                   <button
                     type="button"
                     onClick={() => onBookDate(item)}
-                    className="btn-primary py-1.5 px-3"
+                    className="btn-primary py-2 px-4 min-h-[42px] text-xs font-semibold"
                   >
                     <span>Reserve</span>
-                    <ArrowRight className="w-3 h-3" strokeWidth={2} />
+                    <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
                   </button>
                 )}
               </div>

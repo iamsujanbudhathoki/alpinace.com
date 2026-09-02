@@ -60,10 +60,10 @@ export function PackageTabsNav({
   };
 
   return (
-    <div className={`border-b border-stone-200 ${className}`}>
+    <div className={`border-b border-stone-200 bg-white/80 backdrop-blur-xs ${className}`}>
       <div
         ref={containerRef}
-        className="flex items-center overflow-x-auto scrollbar-none touch-pan-x -mb-px"
+        className="flex items-center overflow-x-auto scrollbar-none touch-pan-x -mb-px px-2 sm:px-0"
       >
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
@@ -74,11 +74,10 @@ export function PackageTabsNav({
               type="button"
               onClick={() => handleTabClick(tab.key)}
               className={`
-                relative px-4 py-3 text-xs font-medium whitespace-nowrap shrink-0 cursor-pointer
-                transition-colors duration-200
-                border-b-2
+                relative px-3.5 sm:px-5 py-3 sm:py-3.5 text-xs sm:text-sm whitespace-nowrap shrink-0 cursor-pointer min-h-[44px] flex items-center justify-center
+                transition-colors duration-200 border-b-2 font-medium
                 ${isActive
-                  ? "border-amber-700 text-amber-900 font-semibold"
+                  ? "border-amber-700 text-amber-900 font-bold"
                   : "border-transparent text-stone-500 hover:text-stone-800 hover:border-stone-300"
                 }
               `}

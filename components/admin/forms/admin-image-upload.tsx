@@ -141,10 +141,10 @@ export function AdminImageUpload({
           const list = Array.isArray(res) ? res : [];
           setCategories(list.map((c: any) => ({ id: c.id, name: c.name ?? c.title ?? "" })));
         })
-        .catch(() => {});
+        .catch(() => { });
       loadMedia(1, "All");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLibraryOpen]);
 
   // Reload when page, category, or debounced search changes
@@ -152,13 +152,13 @@ export function AdminImageUpload({
     if (isLibraryOpen) {
       loadMedia(mediaPage, selectedCategory, debouncedSearch);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaPage, selectedCategory, debouncedSearch]);
 
   // Reset page to 1 when search or category changes
   useEffect(() => {
     if (isLibraryOpen) setMediaPage(1);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, selectedCategory]);
 
   // Compute unique categories list from available assets (fallback if backend categories not loaded)
@@ -188,7 +188,7 @@ export function AdminImageUpload({
 
         if (fromModal) {
           const newAsset: MediaAsset = {
-            id: mediaId ,
+            id: mediaId,
             title: file.name.replace(/\.[^/.]+$/, ""),
             category: "General",
             url: url,
@@ -512,11 +512,10 @@ export function AdminImageUpload({
                       key={asset.id}
                       onClick={() => setTempSelectedUrl(asset.url)}
                       style={{ cursor: "pointer" }}
-                      className={`group rounded-xl overflow-hidden border-2 transition-all ${
-                        isSelected
+                      className={`group rounded-xl overflow-hidden border-2 transition-all ${isSelected
                           ? "border-amber-500 ring-2 ring-amber-500/30 shadow-md"
                           : "border-slate-200 hover:border-slate-400"
-                      }`}
+                        }`}
                     >
                       {/* Fixed height image container — inline style for guaranteed height */}
                       <div className="relative overflow-hidden bg-slate-900" style={{ height: 90 }}>
@@ -596,19 +595,18 @@ export function AdminImageUpload({
                       const p = mediaPage <= 3
                         ? i + 1
                         : mediaPage >= mediaTotalPages - 2
-                        ? mediaTotalPages - 4 + i
-                        : mediaPage - 2 + i;
+                          ? mediaTotalPages - 4 + i
+                          : mediaPage - 2 + i;
                       if (p < 1 || p > mediaTotalPages) return null;
                       return (
                         <button
                           key={p}
                           type="button"
                           onClick={() => setMediaPage(p)}
-                          className={`h-7 w-7 rounded-lg border text-[11px] font-bold transition-colors cursor-pointer ${
-                            mediaPage === p
+                          className={`h-7 w-7 rounded-lg border text-[11px] font-bold transition-colors cursor-pointer ${mediaPage === p
                               ? "bg-slate-900 border-slate-900 text-white"
                               : "border-slate-200 text-slate-700 bg-white hover:bg-slate-100"
-                          }`}
+                            }`}
                         >
                           {p}
                         </button>

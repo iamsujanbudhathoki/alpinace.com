@@ -27,24 +27,24 @@ export function Hero() {
             Sherpa-Guided Himalayan Expeditions &bull; Kathmandu, Nepal
           </span>
 
-          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-white">
+          <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.15] text-white">
             Walk deeper into the Himalayas.
           </h1>
 
-          <p className="text-stone-200 text-base sm:text-lg font-normal leading-relaxed">
+          <p className="text-stone-200 text-sm sm:text-lg font-normal leading-relaxed">
             Custom Himalayan trekking circuits and high-peak climbs guided exclusively by IFMGA Sherpa leaders.
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Link
               href="/trekking"
-              className="inline-flex items-center justify-center rounded-sm bg-amber-600 hover:bg-amber-700 text-white px-7 py-3 text-sm font-semibold transition-colors text-center"
+              className="inline-flex items-center justify-center rounded-sm bg-amber-600 hover:bg-amber-700 text-white px-7 py-3 text-sm font-semibold transition-colors text-center min-h-[44px]"
             >
               Explore Routes &rarr;
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-sm bg-stone-900/90 hover:bg-stone-900 text-white border border-stone-700 px-7 py-3 text-sm font-medium transition-colors text-center"
+              className="inline-flex items-center justify-center rounded-sm bg-stone-900/90 hover:bg-stone-900 text-white border border-stone-700 px-7 py-3 text-sm font-medium transition-colors text-center min-h-[44px]"
             >
               Plan Custom Trip
             </Link>

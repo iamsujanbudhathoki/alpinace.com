@@ -174,7 +174,7 @@ export function FeaturedPackages({
   return (
     <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Clean Travel Agency Header & Tab Controls */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-stone-200">
           <div className="space-y-1">
@@ -187,18 +187,17 @@ export function FeaturedPackages({
           </div>
 
           {/* Minimalist Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none touch-pan-x">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.key;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`px-4 py-2 text-xs sm:text-sm font-medium rounded-sm transition-colors cursor-pointer whitespace-nowrap border ${
-                    isActive
-                      ? "bg-stone-900 text-white border-stone-900"
+                  className={`px-4 py-2.5 min-h-[42px] text-xs sm:text-sm font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap border ${isActive
+                      ? "bg-stone-900 text-white border-stone-900 shadow-xs"
                       : "bg-white text-stone-700 border-stone-200 hover:border-stone-400"
-                  }`}
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -307,7 +306,7 @@ export function FeaturedPackages({
             </div>
           ) : (
             /* Multi-item Embla Carousel */
-            <div className="overflow-hidden cursor-grab active:cursor-grabbing" ref={emblaRef}>
+            <div className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y" ref={emblaRef}>
               <div className="flex gap-6">
                 {currentPackages.map((pkg) => {
                   const packageHref = getPackageLink(pkg, activeTab);

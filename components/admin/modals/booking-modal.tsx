@@ -72,7 +72,7 @@ export function BookingFormModal({
       groupSize: 1,
       totalAmountUSD: 0,
       paymentStatus: BookingPaymentStatus.PENDING,
-      bookingStatus: BookingStatus.IN_REVIEW,
+      bookingStatus: BookingStatus.PENDING,
       assignedGuide: "",
       permitStatus: BookingPermitStatus.PROCESSING,
       specialRequests: "",
@@ -180,7 +180,7 @@ export function BookingFormModal({
         groupSize: 1,
         totalAmountUSD: 0,
         paymentStatus: BookingPaymentStatus.PENDING,
-        bookingStatus: BookingStatus.IN_REVIEW,
+        bookingStatus: BookingStatus.PENDING,
         assignedGuide: "",
         permitStatus: BookingPermitStatus.PROCESSING,
         specialRequests: "",
@@ -567,12 +567,11 @@ export function BookingFormModal({
 
             <AdminSelectField
               label="Booking Status"
-              required
               error={errors.bookingStatus?.message}
               options={[
                 { label: "Confirmed", value: BookingStatus.CONFIRMED },
-                { label: "In Review", value: BookingStatus.IN_REVIEW },
-                { label: "Active Trek", value: BookingStatus.ACTIVE_TREK },
+                { label: "Pending", value: BookingStatus.PENDING },
+                { label: "Active", value: BookingStatus.ACTIVE },
                 { label: "Completed", value: BookingStatus.COMPLETED },
                 { label: "Cancelled", value: BookingStatus.CANCELLED },
               ]}
@@ -581,12 +580,11 @@ export function BookingFormModal({
 
             <AdminSelectField
               label="Permit Status"
-              required
               error={errors.permitStatus?.message}
               options={[
                 { label: "Issued", value: BookingPermitStatus.ISSUED },
                 { label: "Processing", value: BookingPermitStatus.PROCESSING },
-                { label: "Pending Document", value: BookingPermitStatus.PENDING_DOCUMENT },
+                { label: "Docs Pending", value: BookingPermitStatus.PENDING_DOCUMENT },
               ]}
               {...register("permitStatus")}
             />

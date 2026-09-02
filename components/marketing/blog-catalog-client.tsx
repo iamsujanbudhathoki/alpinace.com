@@ -124,10 +124,10 @@ export function BlogCatalogClient({
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">
-            Expedition Journal
+            Travel Blog &amp; Guides
           </h1>
           <p className="text-slate-200 text-sm sm:text-base font-normal leading-relaxed max-w-2xl">
-            Trekking advice, high-altitude acclimatization guides, packing lists, and Sherpa stories from the field.
+            Trekking advice, high-altitude preparation guides, packing lists, and stories from the Himalayas.
           </p>
         </div>
       </section>

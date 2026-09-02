@@ -62,41 +62,37 @@ export function PartnersAffiliationsSection() {
     setImgErrors((prev) => ({ ...prev, [id]: true }));
   };
 
-  // Duplicate logos 4 times to ensure a seamless, continuous marquee track on all screen sizes
-  const marqueeLogos = [...OFFICIAL_PARTNERS, ...OFFICIAL_PARTNERS, ...OFFICIAL_PARTNERS, ...OFFICIAL_PARTNERS];
-
   return (
-    <section className="py-8 bg-stone-100/70 border-b border-stone-200/80 overflow-hidden select-none">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-3 text-stone-500 text-xs font-semibold uppercase tracking-wider">
-        <span>Partners &amp; Affiliations</span>
+    <section className="py-10 sm:py-12 bg-stone-100/70 border-b border-stone-200/80 overflow-hidden select-none">
+      {/* Centered Section Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 text-center">
+        <span className="text-stone-500 text-xs sm:text-sm font-semibold uppercase tracking-wider inline-block">
+          Partners &amp; Affiliations
+        </span>
       </div>
 
-      <div className="relative w-full overflow-hidden">
-        {/* Gradient edge masks for smooth fade effect */}
-        <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-stone-100/90 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-stone-100/90 to-transparent z-10 pointer-events-none" />
-
-        {/* Continuous Automatic Marquee Track */}
-        <div className="animate-marquee-track flex items-center gap-8 sm:gap-12 py-2">
-          {marqueeLogos.map((partner, idx) => {
+      {/* Centered Responsive Grid/Flex Logos */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 md:gap-12">
+          {OFFICIAL_PARTNERS.map((partner) => {
             const hasError = imgErrors[partner.id];
             const imgSrc = hasError ? partner.fallbackUrl : partner.logoUrl;
 
             return (
               <a
-                key={`${partner.id}-${idx}`}
+                key={partner.id}
                 href={partner.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={partner.name}
                 aria-label={partner.name}
-                className="shrink-0 flex items-center justify-center h-12 w-28 sm:w-36 px-3 py-1 group transition-opacity"
+                className="flex items-center justify-center h-14 w-28 sm:w-36 md:w-40 p-2 group transition-all duration-300 rounded-lg hover:bg-stone-200/50"
               >
                 <img
                   src={imgSrc}
                   alt={partner.name}
                   onError={() => handleImageError(partner.id)}
-                  className="max-h-10 max-w-full object-contain hover:scale-105 transition-all duration-300"
+                  className="max-h-11 sm:max-h-12 max-w-full object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
                 />
               </a>
             );

@@ -46,11 +46,11 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-3 border-b border-stone-200 pb-5">
           <div className="space-y-1">
-            <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block">
-              Sherpa Dispatch &amp; Trail Advice
+            <span className="text-amber-700 text-xs font-bold block">
+              Articles &amp; Guides
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
-              Expedition Journal
+              Latest Articles
             </h2>
           </div>
           <Link
@@ -93,7 +93,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                   </div>
 
                   <span className="text-xs font-semibold text-amber-700 group-hover:underline pt-2 block border-t border-stone-100">
-                    Read Journal Entry &rarr;
+                    Read Article &rarr;
                   </span>
                 </div>
               </div>

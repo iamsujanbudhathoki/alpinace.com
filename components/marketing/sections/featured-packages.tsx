@@ -178,7 +178,7 @@ export function FeaturedPackages({
         {/* Clean Travel Agency Header & Tab Controls */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-stone-200">
           <div className="space-y-1">
-            <span className="text-amber-700 text-xs font-semibold uppercase tracking-wider block">
+            <span className="text-amber-700 text-xs font-semibold block">
               Featured Destinations
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">

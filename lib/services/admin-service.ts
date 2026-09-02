@@ -1068,6 +1068,26 @@ export const SettingService = {
     }
   },
 
+  async getPublicPrivacyPolicy(): Promise<{ content: string | null }> {
+    try {
+      const res = await apiClient.get<{ content: string | null }>("/settings/privacy-policy");
+      return res?.data ?? { content: null };
+    } catch (e) {
+      console.warn("Failed to fetch privacy policy:", e);
+      return { content: null };
+    }
+  },
+
+  async getPublicTermsAndConditions(): Promise<{ content: string | null }> {
+    try {
+      const res = await apiClient.get<{ content: string | null }>("/settings/terms-and-conditions");
+      return res?.data ?? { content: null };
+    } catch (e) {
+      console.warn("Failed to fetch terms and conditions:", e);
+      return { content: null };
+    }
+  },
+
   async update(data: any): Promise<ApiResponse<Record<string, string>>> {
     return apiClient.put<Record<string, string>>("/admin/settings", data);
   },

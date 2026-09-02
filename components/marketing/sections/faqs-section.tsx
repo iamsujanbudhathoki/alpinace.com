@@ -90,31 +90,61 @@ export function FaqsSection() {
           </div>
         ) : (
           <div className="divide-y divide-stone-200 border-t border-b border-stone-200">
-            {filteredFaqs.map((faq) => {
+            {filteredFaqs.map((faq, idx) => {
               const isOpen = activeFaq === faq.id;
+              const questionId = `sec-faq-q-${idx}`;
+              const answerId = `sec-faq-a-${idx}`;
+
               return (
-                <div key={faq.id}>
+                <div key={faq.id} className="group">
                   <button
+                    type="button"
+                    id={questionId}
+                    aria-expanded={isOpen}
+                    aria-controls={answerId}
                     onClick={() => toggleFaq(faq.id)}
-                    className="w-full py-4 text-left flex items-start justify-between gap-4 cursor-pointer group"
+                    className="w-full py-4 text-left flex items-start justify-between gap-4 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/40 rounded-xs transition-colors"
                   >
-                    <span className="font-heading text-base font-semibold text-stone-900 group-hover:text-amber-700 transition-colors leading-snug">
+                    <span
+                      className={`font-heading text-base sm:text-lg font-bold leading-snug transition-colors pr-2 ${
+                        isOpen
+                          ? "text-amber-900"
+                          : "text-stone-900 group-hover:text-amber-800"
+                      }`}
+                    >
                       {faq.question}
                     </span>
-                    <ChevronDown
-                      className={`h-4 w-4 text-stone-500 shrink-0 mt-1 transition-transform duration-200 ${
-                        isOpen ? "rotate-180 text-amber-700" : ""
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200 ${
+                        isOpen
+                          ? "bg-amber-100 text-amber-900 rotate-180"
+                          : "bg-stone-100 text-stone-500 group-hover:bg-stone-200 group-hover:text-stone-800"
                       }`}
-                    />
+                    >
+                      <ChevronDown className="w-4 h-4 stroke-[2.2]" />
+                    </div>
                   </button>
                   <div
-                    className={`transition-all duration-200 ease-in-out overflow-hidden ${
-                      isOpen ? "max-h-96 pb-5" : "max-h-0"
+                    id={answerId}
+                    role="region"
+                    aria-labelledby={questionId}
+                    className={`grid transition-[grid-template-rows,opacity] duration-250 ease-out ${
+                      isOpen
+                        ? "grid-rows-[1fr] opacity-100 pb-5"
+                        : "grid-rows-[0fr] opacity-0 pb-0"
                     }`}
                   >
-                    <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-normal">
-                      {faq.answer}
-                    </p>
+                    <div className="overflow-hidden">
+                      <div className="text-stone-700 text-xs sm:text-sm leading-relaxed font-normal pr-6 sm:pr-8 space-y-2">
+                        {typeof faq.answer === "string" ? (
+                          faq.answer.split("\n\n").map((paragraph, pIdx) => (
+                            <p key={pIdx}>{paragraph}</p>
+                          ))
+                        ) : (
+                          <p>{faq.answer}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               );

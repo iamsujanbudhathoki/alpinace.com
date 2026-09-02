@@ -205,7 +205,7 @@ export function PublicBookingModal({
         groupSize: travelers,
         totalAmountUSD: totalPriceUSD,
         paymentStatus: BookingPaymentStatus.PENDING,
-        bookingStatus: BookingStatus.IN_REVIEW,
+        bookingStatus: BookingStatus.PENDING,
         permitStatus: BookingPermitStatus.PROCESSING,
         specialRequests: specialRequests.trim(),
         cfTurnstileToken: turnstileToken,

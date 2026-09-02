@@ -54,16 +54,30 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
       break;
   }
 
-  // Format label for display if it's snake_case or lowercase
-  const displayLabel = raw.includes("_")
-    ? raw
-        .split("_")
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(" ")
-    : raw.charAt(0).toUpperCase() + raw.slice(1);
+  // Friendly human label overrides for clean presentation
+  const STATUS_LABEL_MAP: Record<string, string> = {
+    in_review: "Pending",
+    "in review": "Pending",
+    active_trek: "Active",
+    "active trek": "Active",
+    pending_document: "Docs Pending",
+    "pending document": "Docs Pending",
+    deposit_paid: "Deposit Paid",
+    "deposit paid": "Deposit Paid",
+  };
+
+  const displayLabel =
+    STATUS_LABEL_MAP[normalized] ||
+    STATUS_LABEL_MAP[raw.toLowerCase()] ||
+    (raw.includes("_")
+      ? raw
+          .split("_")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ")
+      : raw.charAt(0).toUpperCase() + raw.slice(1));
 
   return (
-    <Badge variant="outline" className={`text-[11px] px-2 py-0.5 inline-flex items-center gap-1.5 capitalize rounded-md border shadow-2xs ${styleClass} ${className}`}>
+    <Badge variant="outline" className={`text-[11px] px-2 py-0.5 inline-flex items-center gap-1.5 rounded-md border shadow-2xs ${styleClass} ${className}`}>
       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotClass}`} />
       <span>{displayLabel}</span>
     </Badge>

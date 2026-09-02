@@ -45,8 +45,8 @@ const PAYMENT_OPTIONS: InlineSelectOption[] = [
 
 const STATUS_OPTIONS: InlineSelectOption[] = [
   { value: BookingStatus.CONFIRMED, label: "Confirmed" },
-  { value: BookingStatus.IN_REVIEW, label: "In Review" },
-  { value: BookingStatus.ACTIVE_TREK, label: "Active Trek" },
+  { value: BookingStatus.PENDING, label: "Pending" },
+  { value: BookingStatus.ACTIVE, label: "Active" },
   { value: BookingStatus.COMPLETED, label: "Completed" },
   { value: BookingStatus.CANCELLED, label: "Cancelled" },
 ];
@@ -384,8 +384,8 @@ export default function AdminBookingsPage() {
         >
           <option value="All">All Statuses</option>
           <option value={BookingStatus.CONFIRMED}>Confirmed</option>
-          <option value={BookingStatus.IN_REVIEW}>In Review</option>
-          <option value={BookingStatus.ACTIVE_TREK}>Active Trek</option>
+          <option value={BookingStatus.PENDING}>Pending</option>
+          <option value={BookingStatus.ACTIVE}>Active</option>
           <option value={BookingStatus.COMPLETED}>Completed</option>
           <option value={BookingStatus.CANCELLED}>Cancelled</option>
         </AdminFilterSelect>

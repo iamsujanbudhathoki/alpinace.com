@@ -11,14 +11,14 @@ export const revalidate = 3600; // Hourly ISR
 
 export function generateMetadata(): Metadata {
   return generateStaticMetadata({
-    title: "Himalayan Journal & Trekking Guides | AlpineAce Editorial",
+    title: "Travel Blog & Trekking Guides | AlpineAce",
     description:
-      "Read trail guides, high-altitude gear advice, packing lists, and climbing insights written directly by certified Sherpa leaders.",
+      "Read trail guides, high-altitude gear advice, packing lists, and trekking insights written directly by experienced mountain leaders.",
     path: "/blog",
     keywords: [
       "Nepal trekking blog",
       "Everest climbing guides",
-      "Himalayan travel journal",
+      "Himalayan travel guides",
       "Trekking gear list Nepal",
       "Sherpa guides blog",
     ],

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
+import AutoScroll from "embla-carousel-auto-scroll";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { adminTestimonialsApi, SettingService, TestimonialItem } from "@/lib/services/admin-service";
 import { Testimonial } from "@/lib/home-data";
@@ -10,19 +10,17 @@ import { Testimonial } from "@/lib/home-data";
 export function TestimonialsSection() {
   const [items, setItems] = useState<(Testimonial | TestimonialItem)[]>([]);
 
-  // Autoplay plugin configuration for automatic horizontal movement
-  const autoplay = useRef(
-    Autoplay({ delay: 4200, stopOnInteraction: false, stopOnMouseEnter: true })
+  // Continuous infinite auto scroll configuration
+  const autoScroll = useRef(
+    AutoScroll({ speed: 1.2, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       loop: true,
       align: "start",
-      slidesToScroll: 1,
-      containScroll: "trimSnaps",
     },
-    [autoplay.current]
+    [autoScroll.current]
   );
 
   const scrollPrev = useCallback(() => {
@@ -74,7 +72,7 @@ export function TestimonialsSection() {
         
         {/* Section Header */}
         <div className="mb-8 space-y-1 pb-6 border-b border-stone-200">
-          <span className="text-amber-800 text-xs font-semibold uppercase tracking-wider block">
+          <span className="text-amber-800 text-xs font-semibold block">
             Traveler&apos;s Tales
           </span>
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
@@ -186,7 +184,7 @@ export function TestimonialsSection() {
                                 {item.author}
                               </h3>
                               <p className="text-[11px] text-stone-500">
-                                {item.country || "Himalayan Trekker"}
+                                {item.country}
                               </p>
                             </div>
                           </div>

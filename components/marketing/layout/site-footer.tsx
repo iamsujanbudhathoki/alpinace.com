@@ -102,32 +102,32 @@ export function SiteFooter() {
             <ul className="space-y-2 text-xs sm:text-sm font-medium text-slate-700">
               <li>
                 <Link href="/trekking" className="hover:text-amber-700 transition-colors inline-block py-0.5 cursor-pointer">
-                  Trekking in Nepal
+                  Trekking
                 </Link>
               </li>
               <li>
                 <Link href="/tours" className="hover:text-amber-700 transition-colors inline-block py-0.5 cursor-pointer">
-                  Cultural &amp; City Tours
+                  Tours
                 </Link>
               </li>
               <li>
                 <Link href="/expeditions" className="hover:text-amber-700 transition-colors inline-block py-0.5 cursor-pointer">
-                  Peak Climbing Expeditions
+                  Expeditions
                 </Link>
               </li>
               <li>
                 <Link href="/about" className="hover:text-amber-700 transition-colors inline-block py-0.5 cursor-pointer">
-                  About AlpineAce
+                  About
                 </Link>
               </li>
               <li>
                 <Link href="/blog" className="hover:text-amber-700 transition-colors inline-block py-0.5 cursor-pointer">
-                  Expedition Journal &amp; Blog
+                  Blog
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="hover:text-amber-700 transition-colors inline-block py-0.5 cursor-pointer">
-                  Contact Kathmandu Desk
+                  Contact
                 </Link>
               </li>
             </ul>

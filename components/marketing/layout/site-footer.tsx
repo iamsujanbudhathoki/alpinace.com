@@ -16,8 +16,8 @@ export function SiteFooter() {
           <div className="space-y-4 sm:col-span-2 lg:col-span-5">
             <Link href="/" className="flex items-center gap-3 group w-fit cursor-pointer">
               <img
-                src="/logo.jpg"
-                alt="AlpineAce Logo"
+                src={settings.siteLogo || "/logo.jpg"}
+                alt={settings.siteName || "AlpineAce Logo"}
                 className="h-10 w-10 object-cover rounded-sm border border-stone-200"
               />
               <span className="flex flex-col leading-none">

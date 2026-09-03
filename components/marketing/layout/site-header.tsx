@@ -9,16 +9,21 @@ import { navLinks, NavLink } from "@/lib/site-config";
 import { useSettings } from "@/lib/settings-context";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { categoryCache } from "@/lib/services/category-cache";
-import { CategoryItem, CategoryType, CategoryStatus } from "@/lib/admin-data";
+import { CategoryItem, CategoryType } from "@/lib/admin-data";
 
 export function SiteHeader() {
   const { settings } = useSettings();
   const { detailNav } = useDetailNav();
   const pathname = usePathname();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [showDetailNav, setShowDetailNav] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(57);
+
+  const headerRef = useRef<HTMLElement>(null);
   const detailTabsContainerRef = useRef<HTMLDivElement>(null);
+  const scrollPosRef = useRef<number>(0);
 
   // Desktop Dropdown & Prefetch State
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -33,6 +38,7 @@ export function SiteHeader() {
   const hoverIntentTimerRef = useRef<NodeJS.Timeout | null>(null);
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Track scroll position for header styling & detail tab threshold
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -62,6 +68,75 @@ export function SiteHeader() {
     };
   }, [detailNav]);
 
+  // Bulletproof Page Scroll Lock when Mobile Navigation is opened
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      const scrollY = window.scrollY || window.pageYOffset;
+      scrollPosRef.current = scrollY;
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
+    } else {
+      if (document.body.style.position === "fixed") {
+        const savedY = scrollPosRef.current;
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.width = "";
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+        window.scrollTo(0, savedY);
+      }
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
+  // Clean up scroll lock on component unmount
+  useEffect(() => {
+    return () => {
+      if (document.body.style.position === "fixed") {
+        const savedY = scrollPosRef.current;
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.width = "";
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+        window.scrollTo(0, savedY);
+      }
+    };
+  }, []);
+
+  // Measure dynamic header height so mobile menu panel aligns seamlessly below header
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.getBoundingClientRect().height);
+      }
+    };
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight, { passive: true });
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, [isScrolled, mobileMenuOpen, showDetailNav]);
+
   // Auto-scroll active tab into view in the top header tabs row
   useEffect(() => {
     if (showDetailNav && detailNav?.activeTab && detailTabsContainerRef.current) {
@@ -83,6 +158,7 @@ export function SiteHeader() {
     }
   }, [showDetailNav, detailNav?.activeTab]);
 
+  // Load category tree on mount for instant dropdown & mobile accordion availability
   useEffect(() => {
     async function loadAllNavbarCategories() {
       const types = [CategoryType.TREKKING, CategoryType.TOURS, CategoryType.EXPEDITIONS];
@@ -174,29 +250,6 @@ export function SiteHeader() {
     }, 150);
   };
 
-  const toggleMobileExpanded = (label: string) => {
-    setMobileExpanded((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
-
-  // Prevent background scroll when mobile navigation is open
-  useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileMenuOpen(false);
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [mobileMenuOpen]);
-
   // Clean up timers on unmount
   useEffect(() => {
     return () => {
@@ -271,10 +324,11 @@ export function SiteHeader() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-40 bg-white/95 backdrop-blur-sm transition-all duration-200 ${
-          isScrolled
-            ? "border-b border-stone-200 shadow-sm py-2 sm:py-2.5"
-            : "border-b border-stone-100 py-3 sm:py-3.5"
+        ref={headerRef}
+        className={`fixed inset-x-0 top-0 z-50 bg-white/95 backdrop-blur-sm transition-all duration-200 ${
+          mobileMenuOpen || !isScrolled
+            ? "border-b border-stone-100 py-3 sm:py-3.5"
+            : "border-b border-stone-200 shadow-sm py-2 sm:py-2.5"
         }`}
       >
         {showDetailNav && detailNav ? (
@@ -296,9 +350,10 @@ export function SiteHeader() {
                       className={`
                         relative px-2.5 sm:px-3.5 py-0 text-[11px] sm:text-xs font-medium whitespace-nowrap shrink-0 cursor-pointer
                         transition-colors duration-200 border-b-2 h-full flex items-center
-                        ${isActive
-                          ? "border-amber-700 text-amber-900 font-semibold"
-                          : "border-transparent text-stone-500 hover:text-stone-800 hover:border-stone-300"
+                        ${
+                          isActive
+                            ? "border-amber-700 text-amber-900 font-semibold"
+                            : "border-transparent text-stone-500 hover:text-stone-800 hover:border-stone-300"
                         }
                       `}
                     >
@@ -309,7 +364,7 @@ export function SiteHeader() {
               </div>
             </div>
 
-            <div className="shrink-0 flex items-center gap-3">
+            <div className="shrink-0 flex items-center gap-2 sm:gap-3">
               {detailNav.priceUSD !== undefined && (
                 <div className="text-right hidden sm:block">
                   <span className="type-caption text-stone-600 block text-[10px]">
@@ -330,22 +385,33 @@ export function SiteHeader() {
                   <span className="sm:hidden">Book</span>
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-stone-700 hover:text-stone-950 lg:hidden rounded-md cursor-pointer transition-colors"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-menu-panel"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
           </div>
         ) : (
           /* 2. STANDARD WEBSITE NAVIGATION BAR */
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 sm:gap-6 px-4 sm:px-6 md:px-10 animate-in fade-in duration-200">
             {/* Brand Logo */}
-            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0 min-w-0">
               <Image
-                src="/logo.jpg"
-                alt="AlpineAce Logo"
+                src={settings.siteLogo || "/logo.jpg"}
+                alt={settings.siteName || "AlpineAce Logo"}
                 width={36}
                 height={36}
                 priority
-                className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-sm border border-stone-200"
+                unoptimized={Boolean(settings.siteLogo && (settings.siteLogo.startsWith("http") || settings.siteLogo.startsWith("data:")))}
+                className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-sm border border-stone-200 shrink-0"
               />
-              <span className="font-heading text-sm sm:text-base font-bold text-slate-950 transition-colors">
+              <span className="font-heading text-sm sm:text-base font-bold text-slate-950 transition-colors truncate">
                 {settings.siteName || "Alpine Ace"}
               </span>
             </Link>
@@ -396,7 +462,7 @@ export function SiteHeader() {
                       )}
                     </Link>
 
-                    {/* Desktop 2-Column Split Dropdown (Clean, Human, Spacious Travel UX) */}
+                    {/* Desktop 2-Column Split Dropdown */}
                     {hasDropdown && isDropdownOpen && (
                       <div
                         onMouseEnter={handleDropdownMouseEnter}
@@ -436,7 +502,7 @@ export function SiteHeader() {
                               ))}
                             </div>
                           ) : (
-                            /* Category -> Subcategory Human Editorial Navigation Menu */
+                            /* Category -> Subcategory Navigation Menu */
                             <div>
                               {isLoading ? (
                                 <div className="grid grid-cols-12 gap-6 animate-pulse">
@@ -472,7 +538,7 @@ export function SiteHeader() {
 
                                   return (
                                     <div className="grid grid-cols-12 gap-8 min-h-[260px]">
-                                      {/* Left Column: Category Navigation List (col-span-4) */}
+                                      {/* Left Column: Category Navigation List */}
                                       <div className="col-span-4 space-y-1">
                                         {categories.map((cat) => {
                                           const isSelected = cat.id === selectedParent.id;
@@ -512,7 +578,7 @@ export function SiteHeader() {
                                         })}
                                       </div>
 
-                                      {/* Right Column: Wide Subcategory Destination Tiles or Clean Empty State (col-span-8) */}
+                                      {/* Right Column: Subcategory Destination Tiles */}
                                       <div className="col-span-8 flex flex-col justify-start">
                                         {subcategories.length > 0 ? (
                                           <div className="grid grid-cols-2 gap-3.5 max-h-[380px] overflow-y-auto pr-1 w-full content-start">
@@ -531,7 +597,6 @@ export function SiteHeader() {
                                                     onClick={() => setActiveDropdown(null)}
                                                     className="group/tile relative h-32 sm:h-36 w-full rounded-md overflow-hidden block cursor-pointer bg-slate-900"
                                                   >
-                                                    {/* Landscape Background Image */}
                                                     <Image
                                                       src={subCat.image!}
                                                       alt={subCat.name}
@@ -540,8 +605,6 @@ export function SiteHeader() {
                                                       className="object-cover group-hover/tile:scale-103 transition-transform duration-300 ease-out"
                                                       sizes="320px"
                                                     />
-
-                                                    {/* Natural Overlay & Centered Subcategory Name INSIDE Image */}
                                                     <div className="absolute inset-0 bg-slate-950/35 group-hover/tile:bg-slate-950/20 transition-colors duration-300 flex items-center justify-center p-3 text-center">
                                                       <span className="text-sm sm:text-base font-semibold text-white tracking-wide leading-snug drop-shadow-md">
                                                         {subCat.name}
@@ -551,7 +614,6 @@ export function SiteHeader() {
                                                 );
                                               }
 
-                                              /* Clean Text Navigation Item when subcategory has no image */
                                               return (
                                                 <Link
                                                   key={subCat.id}
@@ -616,7 +678,9 @@ export function SiteHeader() {
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="min-w-[44px] min-h-[44px] flex items-center justify-center text-stone-700 hover:text-stone-950 lg:hidden rounded-md cursor-pointer transition-colors"
-                aria-label="Toggle menu"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-menu-panel"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -625,39 +689,29 @@ export function SiteHeader() {
         )}
       </header>
 
-      {/* Mobile Drawer Overlay & Content */}
+      {/* Mobile Navigation Drawer / Panel Attached Directly Below Header */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden bg-slate-950/60 backdrop-blur-xs flex justify-end">
-          <div className="bg-white w-full max-w-xs sm:max-w-sm h-full p-5 sm:p-6 overflow-y-auto flex flex-col justify-between shadow-2xl">
-            <div>
-              <div className="flex items-center justify-between pb-4 mb-5 border-b border-stone-200">
-                <Link
-                  href="/"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2.5"
-                >
-                  <Image
-                    src="/logo.jpg"
-                    alt="Logo"
-                    width={32}
-                    height={32}
-                    className="rounded-sm border border-stone-200"
-                  />
-                  <span className="font-heading text-base font-bold text-slate-950">
-                    {settings.siteName || "Alpine Ace"}
-                  </span>
-                </Link>
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-600 hover:text-slate-900 rounded-md cursor-pointer transition-colors"
-                  aria-label="Close menu"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
+        <div
+          id="mobile-menu-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation"
+          className="fixed inset-x-0 bottom-0 z-40 lg:hidden flex flex-col"
+          style={{ top: `${headerHeight}px` }}
+        >
+          {/* Dark Backdrop Overlay */}
+          <div
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+            onTouchMove={(e) => e.preventDefault()}
+            aria-hidden="true"
+          />
 
-              {/* Mobile Navigation Links */}
-              <nav className="space-y-1">
+          {/* Scrollable Menu Panel Content */}
+          <div className="relative z-10 bg-white w-full h-full overflow-y-auto overscroll-contain flex flex-col justify-between p-5 sm:p-6 shadow-2xl border-t border-stone-200/80">
+            <div className="space-y-4">
+              {/* Mobile Navigation Links Accordion */}
+              <nav className="space-y-1" aria-label="Mobile navigation links">
                 {navLinks.map((link) => {
                   const hasDropdown = Boolean(
                     link.categoryType || (link.items && link.items.length > 0)
@@ -684,6 +738,7 @@ export function SiteHeader() {
                             onClick={() => handleMobileToggle(link)}
                             className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-slate-900 cursor-pointer -mr-2"
                             aria-label={`Toggle ${link.label} subcategories`}
+                            aria-expanded={isExpanded}
                           >
                             <ChevronDown
                               className={`w-5 h-5 transition-transform duration-200 ${
@@ -696,7 +751,7 @@ export function SiteHeader() {
 
                       {/* Mobile Accordion Content */}
                       {hasDropdown && isExpanded && (
-                        <div className="mt-1 pl-3.5 space-y-1 border-l-2 border-amber-600/40 py-1">
+                        <div className="mt-1 pl-3.5 space-y-1.5 border-l-2 border-amber-600/40 py-1">
                           {link.items && link.items.length > 0 ? (
                             link.items.map((subItem) => (
                               <Link
@@ -710,16 +765,33 @@ export function SiteHeader() {
                             ))
                           ) : isLoading ? (
                             <div className="text-xs text-slate-400 py-2">Loading categories...</div>
+                          ) : categories.length === 0 ? (
+                            <div className="text-xs text-slate-400 py-2">No categories available</div>
                           ) : (
                             categories.map((cat) => (
-                              <Link
-                                key={cat.id}
-                                href={getCategoryLink(link.href, cat)}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="block text-xs font-semibold text-slate-700 hover:text-slate-950 py-2 min-h-[40px] flex items-center"
-                              >
-                                {cat.name}
-                              </Link>
+                              <div key={cat.id} className="space-y-1">
+                                <Link
+                                  href={getCategoryLink(link.href, cat)}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                  className="block text-xs font-bold text-slate-900 hover:text-amber-700 py-1.5 min-h-[36px] flex items-center"
+                                >
+                                  {cat.name}
+                                </Link>
+                                {Array.isArray(cat.children) && cat.children.length > 0 && (
+                                  <div className="pl-3 space-y-1 border-l border-stone-200 my-1">
+                                    {cat.children.map((subCat) => (
+                                      <Link
+                                        key={subCat.id}
+                                        href={getCategoryLink(link.href, subCat)}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="block text-[11px] font-medium text-slate-600 hover:text-slate-950 py-1 min-h-[32px] flex items-center"
+                                      >
+                                        {subCat.name}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             ))
                           )}
                         </div>
@@ -731,7 +803,7 @@ export function SiteHeader() {
             </div>
 
             {/* Mobile Footer Inquiry CTA */}
-            <div className="pt-5 border-t border-stone-200 mt-6">
+            <div className="pt-5 border-t border-stone-200 mt-6 shrink-0">
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}

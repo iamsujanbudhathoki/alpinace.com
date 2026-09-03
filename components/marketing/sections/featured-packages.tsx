@@ -167,8 +167,8 @@ export function FeaturedPackages({
 
   const tabs: { key: FeaturedTab; label: string; iconUrl: string }[] = [
     { key: "treks", label: "Trekkings", iconUrl: "/trekking.png" },
-    { key: "expeditions", label: "Peaks", iconUrl: "/peaks.png" },
-    { key: "tours", label: "Expeditions", iconUrl: "/expeditions.png" },
+    { key: "tours", label: "Tours", iconUrl: "/peaks.png" },
+    { key: "expeditions", label: "Expeditions", iconUrl: "/expeditions.png" },
   ];
 
   return (

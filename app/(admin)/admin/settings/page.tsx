@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { SettingService } from "@/lib/services/admin-service";
 import { websiteDomain } from "@/lib/env.constants";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
+import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -35,6 +36,7 @@ export default function AdminSettingsPage() {
   const [formData, setFormData] = useState({
     // Agency Profile
     siteName: "",
+    siteLogo: "",
     tagline: "",
     siteDescription: "",
     contactEmail: "",
@@ -186,6 +188,21 @@ export default function AdminSettingsPage() {
                 onChange={(e) => handleChange("siteDescription", e.target.value)}
                 placeholder="e.g. Sherpa-owned trek and expedition agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang..."
                 className="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-medium focus:bg-white focus:outline-none resize-y"
+              />
+            </div>
+
+            {/* Agency Brand Logo Upload */}
+            <div className="md:col-span-2 space-y-1.5 pt-2 border-t border-slate-100">
+              <label className="block text-slate-800 font-bold text-xs">
+                Agency Brand Logo
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Upload your official company logo. This logo will automatically display on the website header, mobile drawer menu, and footer.
+              </p>
+              <AdminImageUpload
+                label="Site Logo"
+                value={formData.siteLogo || ""}
+                onChange={(url) => handleChange("siteLogo", url)}
               />
             </div>
 

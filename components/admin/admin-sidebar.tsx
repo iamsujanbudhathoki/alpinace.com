@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSettings } from "@/lib/settings-context";
 import {
   LayoutGrid,
   MapPin,
@@ -136,6 +137,7 @@ export function AdminSidebar({
   isCollapsed = false,
   onToggleCollapse,
 }: AdminSidebarProps) {
+  const { settings } = useSettings();
   const pathname = usePathname();
   const [categoriesOpen, setCategoriesOpen] = useState(
     pathname?.startsWith("/admin/categories") || false
@@ -172,8 +174,8 @@ export function AdminSidebar({
           title="AlpineAce Admin Console"
         >
           <img
-            src="/logo.jpg"
-            alt="AlpineAce Logo"
+            src={settings.siteLogo || "/logo.jpg"}
+            alt={settings.siteName || "AlpineAce Logo"}
             className="w-8 h-8 object-cover rounded-lg border border-slate-200 shrink-0 shadow-2xs"
           />
           {!isCollapsed && (

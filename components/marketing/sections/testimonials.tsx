@@ -155,7 +155,7 @@ export function TestimonialsSection() {
             </div>
           ) : (
             /* Multiple Testimonials - Automatic Horizontal Embla Carousel */
-            <div className="overflow-hidden cursor-grab active:cursor-grabbing" ref={emblaRef}>
+            <div className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y" ref={emblaRef}>
               <div className="flex -ml-6">
                 {displayItems.map((item, idx) => {
                   const avatarUrl = (item as any).avatar || (item as any).image;
@@ -196,7 +196,7 @@ export function TestimonialsSection() {
                           </div>
 
                           {item.tripName && (
-                            <span className="text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-1 rounded border border-amber-200/80 shrink-0">
+                            <span className="text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-1 rounded-sm border border-amber-200/80 shrink-0">
                               {item.tripName}
                             </span>
                           )}

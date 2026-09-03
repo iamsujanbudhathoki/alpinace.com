@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative isolate flex min-h-[82vh] flex-col justify-end overflow-hidden bg-stone-950 text-white">
+    <section className="relative isolate flex min-h-[75vh] sm:min-h-[82vh] flex-col justify-end overflow-hidden bg-stone-950 text-white">
       {/* Background Video */}
       <video
         autoPlay
@@ -21,7 +21,7 @@ export function Hero() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 pb-12 sm:pb-16">
         <div className="max-w-2xl space-y-5">
           <span className="text-amber-400 text-xs sm:text-sm font-medium block">
             Local Himalayan Trekking &amp; Travel &bull; Kathmandu, Nepal

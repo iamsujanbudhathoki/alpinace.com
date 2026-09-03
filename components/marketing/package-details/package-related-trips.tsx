@@ -51,14 +51,14 @@ export function PackageRelatedTrips({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {trips.map((p) => (
             <Link key={p.id} href={`${categoryPath}/${p.slug}`} className="group block">
-              <div className="bg-white border border-stone-200 rounded-xl overflow-hidden group-hover:border-stone-400 group-hover:shadow-md transition-all">
-                <div className="aspect-16/10 w-full overflow-hidden bg-stone-100 relative">
+              <div className="bg-white border border-stone-200 rounded-sm overflow-hidden group-hover:border-stone-400 transition-all">
+                <div className="aspect-16/10 w-full overflow-hidden bg-stone-900 relative">
                   <img
                     src={p.image}
                     alt={p.title}
                     className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out"
                   />
-                  <div className="absolute top-2.5 left-2.5 bg-stone-950/80 backdrop-blur-xs text-white type-caption px-2 py-0.5 rounded-full border border-white/10">
+                  <div className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
                     {p.region ? `${p.region} • ` : ""}{p.durationDays} Days
                   </div>
                 </div>

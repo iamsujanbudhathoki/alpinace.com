@@ -227,24 +227,24 @@ export function BlogCatalogClient({
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug || post.id}`}
-                  className="bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-stone-300 transition-all duration-200 flex flex-col h-full cursor-pointer group"
+                  className="bg-white rounded-sm overflow-hidden border border-stone-200 hover:border-stone-400 transition-all duration-200 flex flex-col h-full cursor-pointer group"
                 >
                   {post.image ? (
-                    <div className="relative aspect-16/10 overflow-hidden bg-slate-100">
+                    <div className="relative aspect-16/10 overflow-hidden bg-stone-900">
                       <img
                         src={post.image}
                         alt={post.title}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
                       />
-                      <span className="absolute top-3.5 left-3.5 bg-slate-950/85 backdrop-blur-xs text-amber-400 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs">
+                      <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
                         {post.category}
                       </span>
                     </div>
                   ) : (
-                    <div className="relative aspect-16/10 bg-slate-100 flex items-center justify-center text-slate-400">
-                      <Mountain className="w-10 h-10 text-slate-300" />
-                      <span className="absolute top-3.5 left-3.5 bg-slate-950/85 text-amber-400 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md">
+                    <div className="relative aspect-16/10 bg-stone-900 flex items-center justify-center text-stone-400">
+                      <Mountain className="w-10 h-10 text-stone-300" />
+                      <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
                         {post.category}
                       </span>
                     </div>

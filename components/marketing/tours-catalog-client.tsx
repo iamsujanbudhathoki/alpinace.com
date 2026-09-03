@@ -469,7 +469,7 @@ export function ToursCatalogClient({
                 {filteredTours.map((tour) => (
                   <div
                     key={tour.id}
-                    className="bg-white rounded-md border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-400 transition-colors group"
+                    className="bg-white rounded-sm border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-400 transition-colors group"
                   >
                     <Link href={`/tours/${tour.slug}`} className="block flex-1 flex flex-col justify-between">
                       <div>
@@ -481,12 +481,12 @@ export function ToursCatalogClient({
                             className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 ease-out opacity-95 group-hover:opacity-100"
                           />
                           {tour.region && (
-                            <span className="absolute top-3 left-3 bg-stone-950/80 text-white text-[11px] font-medium px-2.5 py-0.5 rounded">
+                            <span className="absolute top-3 left-3 bg-stone-950/80 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm">
                               {tour.region}
                             </span>
                           )}
                           {tour.durationDays && (
-                            <span className="absolute top-3 right-3 bg-stone-900/80 text-amber-300 text-[11px] font-semibold px-2.5 py-0.5 rounded">
+                            <span className="absolute top-3 right-3 bg-stone-900/80 text-amber-300 text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
                               {tour.durationDays} Days
                             </span>
                           )}

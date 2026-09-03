@@ -2,12 +2,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function BlogCardSkeleton() {
   return (
-    <div className="bg-white rounded-xl overflow-hidden border border-stone-200 flex flex-col justify-between h-full shadow-2xs">
+    <div className="bg-white rounded-sm overflow-hidden border border-stone-200 flex flex-col justify-between h-full shadow-2xs">
       <div>
         {/* Image Frame Skeleton */}
         <div className="relative aspect-16/10 w-full overflow-hidden bg-stone-100">
           <Skeleton className="w-full h-full rounded-none bg-stone-200/60" />
-          <Skeleton className="absolute top-3.5 left-3.5 h-6 w-24 bg-stone-300/60 rounded-md" />
+          <Skeleton className="absolute top-3.5 left-3.5 h-6 w-24 bg-stone-300/60 rounded-xs" />
         </div>
 
         {/* Content Skeleton */}

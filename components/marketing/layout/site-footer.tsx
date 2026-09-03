@@ -32,7 +32,7 @@ export function SiteFooter() {
 
             <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-normal max-w-md">
               {settings.siteDescription ||
-                "Sherpa-owned trek and expedition agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang with certified leaders and authentic mountain teahouses."}
+                "Locally owned trekking agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang with local leaders and reliable logistics."}
             </p>
 
       

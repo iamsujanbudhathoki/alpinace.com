@@ -8,7 +8,7 @@ export function FinalCta() {
   const phone = (settings.whatsappNumber || "").replace(/\D/g, "");
   const whatsappUrl = phone
     ? `https://wa.me/${phone}?text=${encodeURIComponent(
-        "Hello Alpine Ace! I would like to plan my next adventure with you."
+        "Hello Alpine Ace! I would like to plan my trek with you."
       )}`
     : "#";
 
@@ -16,15 +16,15 @@ export function FinalCta() {
     <section className="py-16 sm:py-20 bg-gradient-to-b from-amber-50/70 via-stone-50 to-amber-100/30 border-t border-b border-amber-200/60 text-stone-900 text-center">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         <span className="text-amber-800 text-xs font-semibold uppercase tracking-wider block">
-          Travel with us
+          Plan your trip
         </span>
 
         <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight">
-          We&apos;d love to hear from you and help you plan your next adventure.
+          Ready to plan your trek? We&apos;re here to help you choose the right route.
         </h2>
 
         <p className="text-stone-600 text-sm sm:text-base font-normal leading-relaxed max-w-xl mx-auto">
-          Reach out to our team in Kathmandu for custom itineraries, trip advice, or private departure dates.
+          Reach out to our team in Kathmandu for custom itineraries, route advice, or trek bookings.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-4">

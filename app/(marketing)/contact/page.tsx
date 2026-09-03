@@ -97,7 +97,7 @@ export default function ContactView() {
         {/* Section Title */}
         <div className="text-center max-w-3xl mx-auto space-y-2">
           <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-            Plan Your Expedition
+            Plan Your Trek
           </h1>
           <p className="text-stone-600 text-sm max-w-xl mx-auto font-normal leading-relaxed">
             Contact our team in Thamel, Kathmandu to arrange permits, custom itineraries, flight connections, or route recommendations.
@@ -114,10 +114,10 @@ export default function ContactView() {
                   Direct Line &amp; Desk
                 </span>
                 <h3 className="font-heading text-xl font-bold text-zinc-900">
-                  Alpine Ace Concierge
+                  Alpine Ace Desk
                 </h3>
-                <p className="text-zinc-600 text-xs font-light leading-relaxed">
-                  Connect directly with our Kathmandu headquarters for expedition planning and instant travel advice.
+                <p className="text-zinc-600 text-xs font-normal leading-relaxed">
+                  Connect directly with our Kathmandu team for trek planning, route advice, and trip logistics.
                 </p>
               </div>
 

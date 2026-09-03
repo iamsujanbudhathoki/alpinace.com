@@ -182,7 +182,7 @@ export function FeaturedPackages({
               Featured Destinations
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
-              Himalayan Expeditions &amp; Routes
+              Himalayan Treks &amp; Routes
             </h2>
           </div>
 

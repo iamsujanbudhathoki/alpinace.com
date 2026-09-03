@@ -103,10 +103,10 @@ export function FaqsSection() {
                     aria-expanded={isOpen}
                     aria-controls={answerId}
                     onClick={() => toggleFaq(faq.id)}
-                    className="w-full py-4 text-left flex items-start justify-between gap-4 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/40 rounded-xs transition-colors"
+                    className="w-full py-3.5 text-left flex items-start justify-between gap-4 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/40 rounded-xs transition-colors"
                   >
                     <span
-                      className={`font-heading text-base sm:text-lg font-bold leading-snug transition-colors pr-2 ${
+                      className={`font-heading text-sm sm:text-base font-bold leading-snug transition-colors pr-2 ${
                         isOpen
                           ? "text-amber-900"
                           : "text-stone-900 group-hover:text-amber-800"
@@ -130,12 +130,12 @@ export function FaqsSection() {
                     aria-labelledby={questionId}
                     className={`grid transition-[grid-template-rows,opacity] duration-250 ease-out ${
                       isOpen
-                        ? "grid-rows-[1fr] opacity-100 pb-5"
+                        ? "grid-rows-[1fr] opacity-100 pb-4"
                         : "grid-rows-[0fr] opacity-0 pb-0"
                     }`}
                   >
                     <div className="overflow-hidden">
-                      <div className="text-stone-700 text-xs sm:text-sm leading-relaxed font-normal pr-6 sm:pr-8 space-y-2">
+                      <div className="text-stone-600 text-xs sm:text-[13px] leading-relaxed font-normal pr-6 sm:pr-8 space-y-2">
                         {typeof faq.answer === "string" ? (
                           faq.answer.split("\n\n").map((paragraph, pIdx) => (
                             <p key={pIdx}>{paragraph}</p>

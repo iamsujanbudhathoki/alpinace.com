@@ -62,39 +62,48 @@ export function PartnersAffiliationsSection() {
     setImgErrors((prev) => ({ ...prev, [id]: true }));
   };
 
+  // Duplicate the partner list 3 times to create a seamless infinite marquee loop
+  const marqueePartners = [
+    ...OFFICIAL_PARTNERS,
+    ...OFFICIAL_PARTNERS,
+    ...OFFICIAL_PARTNERS,
+  ];
+
   return (
-    <section className="py-10 sm:py-12 bg-stone-100/70 border-b border-stone-200/80 overflow-hidden select-none">
+    <section className="relative py-8 sm:py-10 bg-stone-100/70 border-b border-stone-200/80 overflow-hidden select-none">
       {/* Centered Section Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-5 sm:mb-6 text-center">
         <span className="text-stone-500 text-xs sm:text-sm font-semibold uppercase tracking-wider inline-block">
           Partners &amp; Affiliations
         </span>
       </div>
 
-      {/* Centered Responsive Grid/Flex Logos */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 md:gap-12">
-          {OFFICIAL_PARTNERS.map((partner) => {
+      {/* Infinite Auto-Scrolling Marquee Container */}
+      <div className="group relative w-full overflow-hidden py-2">
+        {/* Soft edge gradient masks for smooth entry and exit */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-24 md:w-32 bg-gradient-to-r from-stone-100/90 via-stone-100/60 to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-24 md:w-32 bg-gradient-to-l from-stone-100/90 via-stone-100/60 to-transparent z-10" />
+
+        {/* Scrolling Track */}
+        <div className="flex items-center animate-partner-marquee group-hover:[animation-play-state:paused]">
+          {marqueePartners.map((partner, index) => {
             const hasError = imgErrors[partner.id];
             const imgSrc = hasError ? partner.fallbackUrl : partner.logoUrl;
 
             return (
-              <a
-                key={partner.id}
-                href={partner.website}
-                target="_blank"
-                rel="noopener noreferrer"
+              <div
+                key={`${partner.id}-${index}`}
                 title={partner.name}
                 aria-label={partner.name}
-                className="flex items-center justify-center h-14 w-28 sm:w-36 md:w-40 p-2 group transition-all duration-300 rounded-lg hover:bg-stone-200/50"
+                className="flex items-center justify-center shrink-0 px-6 sm:px-10 md:px-12"
               >
                 <img
                   src={imgSrc}
                   alt={partner.name}
                   onError={() => handleImageError(partner.id)}
-                  className="max-h-11 sm:max-h-12 max-w-full object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+                  className="h-9 sm:h-11 md:h-12 w-auto max-w-[130px] sm:max-w-[160px] md:max-w-[180px] object-contain"
                 />
-              </a>
+              </div>
             );
           })}
         </div>

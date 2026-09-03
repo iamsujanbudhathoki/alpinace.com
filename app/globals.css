@@ -763,3 +763,9 @@
 .animate-partner-marquee:hover {
   animation-play-state: paused;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-partner-marquee {
+    animation: none;
+  }
+}

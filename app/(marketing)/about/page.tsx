@@ -183,7 +183,7 @@ export default async function AboutView() {
               )}
 
               {storyImage && (
-                <div className="rounded-xl overflow-hidden border border-stone-200 max-h-72 shadow-xs my-4">
+                <div className="rounded-sm overflow-hidden border border-stone-200 max-h-72 shadow-xs my-4">
                   <img
                     src={storyImage}
                     alt={storyTitle || "AlpineAce Story"}
@@ -251,7 +251,7 @@ export default async function AboutView() {
               {(missionHtml || visionHtml) && (
                 <div className="space-y-4 pt-4 border-t border-stone-200">
                   {missionHtml && (
-                    <div className="bg-stone-50 p-5 rounded-xl border border-stone-200 space-y-2">
+                    <div className="bg-stone-50 p-5 rounded-sm border border-stone-200 space-y-2">
                       <h3 className="font-heading text-sm font-bold text-stone-900">
                         Our Mission
                       </h3>
@@ -263,7 +263,7 @@ export default async function AboutView() {
                   )}
 
                   {visionHtml && (
-                    <div className="bg-stone-50 p-5 rounded-xl border border-stone-200 space-y-2">
+                    <div className="bg-stone-50 p-5 rounded-sm border border-stone-200 space-y-2">
                       <h3 className="font-heading text-sm font-bold text-stone-900">
                         Our Vision
                       </h3>
@@ -289,7 +289,7 @@ export default async function AboutView() {
                 Leadership
               </span>
               <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
-                The team behind your expedition
+                The team behind your trek
               </h2>
             </div>
 
@@ -297,7 +297,7 @@ export default async function AboutView() {
               {team.map((t, idx) => (
                 <div
                   key={idx}
-                  className="bg-white border border-slate-200 rounded-xl overflow-hidden flex flex-col h-full group shadow-xs"
+                  className="bg-white border border-stone-200 rounded-sm overflow-hidden flex flex-col h-full group shadow-xs"
                 >
                   <div className="relative aspect-square overflow-hidden bg-slate-100">
                     <img
@@ -306,7 +306,7 @@ export default async function AboutView() {
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <span className="absolute bottom-3 left-3 bg-slate-900/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
+                    <span className="absolute bottom-3 left-3 bg-slate-900/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-sm">
                       {t.badge}
                     </span>
                   </div>

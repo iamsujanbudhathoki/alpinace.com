@@ -176,14 +176,24 @@ export function FeaturedPackages({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Centered Editorial Section Header & Tab Navigation Links */}
-        <div className="text-center space-y-4 pb-4 border-b border-stone-200">
-          <div className="space-y-1 max-w-2xl mx-auto">
-            <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block">
-              Featured Destinations
-            </span>
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
-              Himalayan Treks &amp; Routes
-            </h2>
+        <div className="space-y-4 pb-4 border-b border-stone-200">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 text-center md:text-left">
+            <div className="space-y-1">
+              <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block">
+                Featured Destinations
+              </span>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
+                Himalayan Treks &amp; Routes
+              </h2>
+            </div>
+            {!loading && currentPackages.length > 0 && (
+              <Link
+                href={exploreInfo.href}
+                className="text-xs font-semibold text-amber-700 hover:underline shrink-0 self-center md:self-end"
+              >
+                {exploreInfo.label} &rarr;
+              </Link>
+            )}
           </div>
 
           {/* Centered Filter Navigation Links with Custom PNG Icons */}
@@ -386,17 +396,6 @@ export function FeaturedPackages({
             </div>
           )}
 
-          {/* Bottom Explore Link */}
-          {!loading && currentPackages.length > 0 && (
-            <div className="mt-8 flex justify-end">
-              <Link
-                href={exploreInfo.href}
-                className="text-xs font-semibold text-stone-800 hover:text-amber-700 transition-colors"
-              >
-                {exploreInfo.label} &rarr;
-              </Link>
-            </div>
-          )}
         </div>
       </div>
     </section>

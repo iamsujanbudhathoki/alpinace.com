@@ -194,18 +194,22 @@ export function FeaturedPackages({
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold pb-2 transition-all cursor-pointer whitespace-nowrap border-b-2 ${
-                    isActive
-                      ? "text-amber-900 border-amber-700 font-bold"
-                      : "text-stone-600 border-transparent hover:text-stone-900 hover:border-stone-300 font-medium"
-                  }`}
+                  className="inline-flex items-center gap-2.5 text-xs sm:text-sm cursor-pointer whitespace-nowrap group"
                 >
                   <img
                     src={tab.iconUrl}
                     alt={tab.label}
                     className="w-5 h-5 object-contain shrink-0"
                   />
-                  <span>{tab.label}</span>
+                  <span
+                    className={`pb-1.5 border-b-2 transition-all ${
+                      isActive
+                        ? "border-amber-700 text-amber-900 font-bold"
+                        : "border-transparent text-stone-600 group-hover:text-stone-900 group-hover:border-stone-300 font-medium"
+                    }`}
+                  >
+                    {tab.label}
+                  </span>
                 </button>
               );
             })}

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight, Footprints, MountainSnow, Landmark } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { apiClient } from "@/lib/services/api-client";
 import { TravelPackage } from "@/lib/home-data";
 import { PackageStatus } from "@/lib/admin-data";
@@ -165,10 +165,10 @@ export function FeaturedPackages({
 
   const exploreInfo = getExploreAllLink(activeTab);
 
-  const tabs: { key: FeaturedTab; label: string; icon: React.ElementType; iconColor: string }[] = [
-    { key: "treks", label: "Trekkings", icon: Footprints, iconColor: "text-amber-500" },
-    { key: "expeditions", label: "Peaks", icon: MountainSnow, iconColor: "text-emerald-600" },
-    { key: "tours", label: "Cultures", icon: Landmark, iconColor: "text-purple-600" },
+  const tabs: { key: FeaturedTab; label: string; iconUrl: string }[] = [
+    { key: "treks", label: "Trekkings", iconUrl: "/trekking.png" },
+    { key: "expeditions", label: "Peaks", iconUrl: "/peaks.png" },
+    { key: "tours", label: "Cultures", iconUrl: "/expeditions.png" },
   ];
 
   return (
@@ -186,22 +186,25 @@ export function FeaturedPackages({
             </h2>
           </div>
 
-          {/* Centered Filter Navigation Links with Vibrant Colored Icons */}
+          {/* Centered Filter Navigation Links with Custom PNG Icons */}
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 pt-2">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.key;
-              const Icon = tab.icon;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`inline-flex items-center gap-2 text-xs sm:text-sm font-bold pb-2 transition-all cursor-pointer whitespace-nowrap border-b-2 ${
+                  className={`inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold pb-2 transition-all cursor-pointer whitespace-nowrap border-b-2 ${
                     isActive
                       ? "text-amber-900 border-amber-700 font-bold"
                       : "text-stone-600 border-transparent hover:text-stone-900 hover:border-stone-300 font-medium"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${tab.iconColor} transition-transform group-hover:scale-110`} />
+                  <img
+                    src={tab.iconUrl}
+                    alt={tab.label}
+                    className="w-5 h-5 object-contain shrink-0"
+                  />
                   <span>{tab.label}</span>
                 </button>
               );

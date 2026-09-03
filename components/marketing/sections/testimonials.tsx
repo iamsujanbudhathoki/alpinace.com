@@ -156,14 +156,14 @@ export function TestimonialsSection() {
           ) : (
             /* Multiple Testimonials - Automatic Horizontal Embla Carousel */
             <div className="overflow-hidden cursor-grab active:cursor-grabbing" ref={emblaRef}>
-              <div className="flex gap-6">
+              <div className="flex -ml-6">
                 {displayItems.map((item, idx) => {
                   const avatarUrl = (item as any).avatar || (item as any).image;
 
                   return (
                     <div
                       key={`${item.id}-${idx}`}
-                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0"
+                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0 pl-6"
                     >
                       <div className="bg-stone-50 rounded-sm border border-stone-200 p-6 flex flex-col justify-between h-full">
                         <div className="space-y-4">

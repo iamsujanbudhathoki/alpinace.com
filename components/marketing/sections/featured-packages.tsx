@@ -310,14 +310,14 @@ export function FeaturedPackages({
           ) : (
             /* Multi-item Embla Carousel */
             <div className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y" ref={emblaRef}>
-              <div className="flex gap-6">
+              <div className="flex -ml-6">
                 {currentPackages.map((pkg) => {
                   const packageHref = getPackageLink(pkg, activeTab);
 
                   return (
                     <div
                       key={pkg.id}
-                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0"
+                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0 pl-6"
                     >
                       <Link
                         href={packageHref}

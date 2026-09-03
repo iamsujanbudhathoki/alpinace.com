@@ -194,21 +194,24 @@ export function FeaturedPackages({
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className="inline-flex items-center gap-2.5 text-xs sm:text-sm cursor-pointer whitespace-nowrap group"
+                  className="inline-flex items-center gap-2.5 text-xs sm:text-sm cursor-pointer whitespace-nowrap group pb-2"
                 >
                   <img
                     src={tab.iconUrl}
                     alt={tab.label}
                     className="w-5 h-5 object-contain shrink-0"
                   />
-                  <span
-                    className={`pb-1.5 border-b-2 transition-all ${
-                      isActive
-                        ? "border-amber-700 text-amber-900 font-bold"
-                        : "border-transparent text-stone-600 group-hover:text-stone-900 group-hover:border-stone-300 font-medium"
-                    }`}
-                  >
-                    {tab.label}
+                  <span className="relative inline-block">
+                    <span className={isActive ? "text-amber-900 font-bold" : "text-stone-600 group-hover:text-stone-900 font-medium"}>
+                      {tab.label}
+                    </span>
+                    <span
+                      className={`absolute left-0 right-0 -bottom-2 h-[2px] transition-all ${
+                        isActive
+                          ? "bg-amber-700"
+                          : "bg-transparent group-hover:bg-stone-300"
+                      }`}
+                    />
                   </span>
                 </button>
               );

@@ -64,6 +64,12 @@ export function TestimonialsSection() {
     }
   }, [items, emblaApi]);
 
+  // Ensure sufficient item sequence for seamless infinite loop scrolling
+  const displayItems =
+    items.length > 0 && items.length < 10
+      ? [...items, ...items, ...items]
+      : items;
+
   if (items.length === 0) return null;
 
   return (
@@ -151,7 +157,7 @@ export function TestimonialsSection() {
             /* Multiple Testimonials - Automatic Horizontal Embla Carousel */
             <div className="overflow-hidden cursor-grab active:cursor-grabbing" ref={emblaRef}>
               <div className="flex gap-6">
-                {items.map((item, idx) => {
+                {displayItems.map((item, idx) => {
                   const avatarUrl = (item as any).avatar || (item as any).image;
 
                   return (

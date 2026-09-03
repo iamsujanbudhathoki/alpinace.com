@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Footprints, MountainSnow, Landmark } from "lucide-react";
 import { apiClient } from "@/lib/services/api-client";
 import { TravelPackage } from "@/lib/home-data";
 import { PackageStatus } from "@/lib/admin-data";
@@ -165,20 +165,20 @@ export function FeaturedPackages({
 
   const exploreInfo = getExploreAllLink(activeTab);
 
-  const tabs: { key: FeaturedTab; label: string }[] = [
-    { key: "treks", label: "Trekking Circuits" },
-    { key: "expeditions", label: "Peak Expeditions" },
-    { key: "tours", label: "Cultural Tours" },
+  const tabs: { key: FeaturedTab; label: string; icon: React.ElementType; iconColor: string }[] = [
+    { key: "treks", label: "Trekkings", icon: Footprints, iconColor: "text-amber-500" },
+    { key: "expeditions", label: "Peaks", icon: MountainSnow, iconColor: "text-emerald-600" },
+    { key: "tours", label: "Cultures", icon: Landmark, iconColor: "text-purple-600" },
   ];
 
   return (
     <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Clean Travel Agency Header & Tab Controls */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-stone-200">
-          <div className="space-y-1">
-            <span className="text-amber-700 text-xs font-semibold block">
+        {/* Centered Editorial Section Header & Tab Navigation Links */}
+        <div className="text-center space-y-4 pb-4 border-b border-stone-200">
+          <div className="space-y-1 max-w-2xl mx-auto">
+            <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block">
               Featured Destinations
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
@@ -186,20 +186,23 @@ export function FeaturedPackages({
             </h2>
           </div>
 
-          {/* Minimalist Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none touch-pan-x">
+          {/* Centered Filter Navigation Links with Vibrant Colored Icons */}
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 pt-2">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.key;
+              const Icon = tab.icon;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`px-4 py-2.5 min-h-[42px] text-xs sm:text-sm font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap border ${isActive
-                      ? "bg-stone-900 text-white border-stone-900 shadow-xs"
-                      : "bg-white text-stone-700 border-stone-200 hover:border-stone-400"
-                    }`}
+                  className={`inline-flex items-center gap-2 text-xs sm:text-sm font-bold pb-2 transition-all cursor-pointer whitespace-nowrap border-b-2 ${
+                    isActive
+                      ? "text-amber-900 border-amber-700 font-bold"
+                      : "text-stone-600 border-transparent hover:text-stone-900 hover:border-stone-300 font-medium"
+                  }`}
                 >
-                  {tab.label}
+                  <Icon className={`w-4 h-4 ${tab.iconColor} transition-transform group-hover:scale-110`} />
+                  <span>{tab.label}</span>
                 </button>
               );
             })}

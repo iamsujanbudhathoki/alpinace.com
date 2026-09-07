@@ -499,7 +499,7 @@ export function TrekkingCatalogClient({
                 {filteredTreks.map((trk) => (
                   <div
                     key={trk.id}
-                    className="bg-white rounded-sm border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-400 transition-colors group"
+                    className="bg-white rounded-lg border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)] transition-all duration-300 ease-out group"
                   >
                     <Link href={`/trekking/${trk.slug}`} className="block flex-1 flex flex-col justify-between">
                       <div>
@@ -508,7 +508,7 @@ export function TrekkingCatalogClient({
                           <img
                             src={trk.image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800"}
                             alt={trk.title}
-                            className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 ease-out opacity-95 group-hover:opacity-100"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
                           />
                           {trk.region && (
                             <span className="absolute top-3 left-3 bg-stone-950/80 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm">

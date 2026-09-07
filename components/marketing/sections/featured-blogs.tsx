@@ -77,7 +77,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                 className="flex-[0_0_88%] sm:flex-[0_0_55%] md:flex-none min-w-0 pl-6 md:pl-0"
               >
                 <Link href={`/blog/${post.slug}`} className="block h-full">
-                  <div className="bg-white rounded-sm border border-stone-200 hover:border-stone-400 transition-all duration-200 flex flex-col h-full cursor-pointer group overflow-hidden">
+                  <div className="bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)] flex flex-col h-full cursor-pointer group">
                     {post.image && (
                       <div className="relative aspect-[16/10] overflow-hidden bg-stone-900">
                         <Image
@@ -85,7 +85,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                           alt={post.title}
                           fill
                           sizes="(max-width: 768px) 88vw, 33vw"
-                          className="object-cover group-hover:scale-103 transition-transform duration-500"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                         />
                         <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm">
                           {post.category}

@@ -48,15 +48,19 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
   useEffect(() => {
     async function loadActivities() {
       try {
-        const res = await ActivityService.getPublicAll({ limit: 12, isFeatured: true });
+        const res = await ActivityService.getPublicAll({ limit: 50 });
         const items = Array.isArray(res) ? res : [];
-        if (items.length > 0) {
-          setActivities(items);
-        } else {
-          // If no featured activities, fetch all active
-          const allRes = await ActivityService.getPublicAll({ limit: 12 });
-          const allItems = Array.isArray(allRes) ? allRes : [];
-          if (allItems.length > 0) setActivities(allItems);
+
+        // Sort featured activities first, then by menuOrder
+        const sorted = [...items].sort((a, b) => {
+          if (a.isFeatured !== b.isFeatured) {
+            return a.isFeatured ? -1 : 1;
+          }
+          return (a.menuOrder ?? 0) - (b.menuOrder ?? 0);
+        });
+
+        if (sorted.length > 0) {
+          setActivities(sorted);
         }
       } catch (e) {
         console.warn("Failed to load activities for homepage:", e);
@@ -99,6 +103,20 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
     }
   };
 
+  const getTripCountLabel = (act: ActivityItem) => {
+    const raw =
+      (act as any).itemCount ??
+      (act as any).tripCount ??
+      (act as any).totalTrips ??
+      (act as any).packagesCount ??
+      (act as any).count;
+
+    if (typeof raw === "number" && raw >= 0) {
+      return `${raw} ${raw === 1 ? "Trip" : "Trips"}`;
+    }
+    return "Trips & Expeditions";
+  };
+
   if (!loading && activities.length === 0) {
     return null;
   }
@@ -109,16 +127,13 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
         {/* Section Header */}
         <div className="flex flex-row items-end justify-between mb-8 gap-4 border-b border-stone-200 pb-4">
           <div className="space-y-1">
-            <span className="text-stone-500 text-xs font-medium uppercase tracking-wider block">
-              Curated Experiences
-            </span>
             <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight leading-snug">
-              Explore by Activity
+              Activities we offer
             </h2>
           </div>
           <Link
             href="/activities"
-            className="text-xs font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors shrink-0"
+            className="text-xs sm:text-sm font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors shrink-0"
           >
             View All Activities &rarr;
           </Link>
@@ -132,14 +147,14 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
               <button
                 onClick={scrollPrev}
                 aria-label="Previous Activity"
-                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-colors cursor-pointer"
+                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-all cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={scrollNext}
                 aria-label="Next Activity"
-                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-sm bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-colors cursor-pointer"
+                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-all cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -151,58 +166,50 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
-                  className="bg-white rounded-sm border border-stone-200 p-4 space-y-4 animate-pulse"
+                  className="bg-white rounded-lg border border-stone-200 p-0 overflow-hidden space-y-0 animate-pulse"
                 >
-                  <div className="h-52 bg-stone-100 rounded-sm w-full" />
-                  <div className="h-4 bg-stone-200 rounded w-1/3" />
-                  <div className="h-5 bg-stone-200 rounded w-3/4" />
+                  <div className="aspect-[16/11] bg-stone-200 w-full" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-5 bg-stone-200 rounded w-3/4" />
+                    <div className="h-4 bg-stone-100 rounded w-1/3" />
+                  </div>
                 </div>
               ))}
             </div>
           ) : activities.length === 1 ? (
             /* Single item clean layout */
-            <div className="max-w-md">
+            <div className="max-w-sm sm:max-w-md">
               {activities.map((act) => (
                 <Link
                   key={act.id}
                   href={`/activities/${act.slug}`}
-                  className="group flex flex-col bg-white rounded-sm border border-stone-200 hover:border-stone-400 transition-all duration-300 overflow-hidden"
+                  className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
                 >
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
+                  {/* Image Frame with contained zoom */}
+                  <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
                     <img
                       src={act.image || "/mountain-placeholder.jpg"}
                       alt={act.name}
-                      className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     />
-                    <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
-                      Activity Hub
-                    </span>
                   </div>
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div className="space-y-1.5">
-                      <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-600 transition-colors leading-snug line-clamp-1">
-                        {act.name}
-                      </h3>
-                      {act.description && (
-                        <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed font-normal">
-                          {act.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-                      <span className="text-[11px] text-stone-400 block font-medium">Explore Hub</span>
-                      <span className="text-xs font-medium text-stone-900 group-hover:underline">
-                        Explore Activity &rarr;
-                      </span>
-                    </div>
+
+                  {/* Card Content: Title & Trip Count Only */}
+                  <div className="p-4 sm:p-5 bg-white space-y-1 border-t border-stone-100">
+                    <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
+                      {act.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm font-medium text-stone-500">
+                      {getTripCountLabel(act)}
+                    </p>
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            /* Multi-item Embla Carousel with Mouse Drag & Hover Motion */
+            /* Multi-item Embla Carousel with Inertia Drag & Soft Downward Shadow */
             <div
-              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
+              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-3 -my-3"
               ref={emblaRef}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
@@ -217,45 +224,26 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                     <Link
                       href={`/activities/${act.slug}`}
                       onClick={handleCardClick}
-                      className="group flex flex-col h-full bg-white rounded-sm border border-stone-200 hover:border-stone-400 transition-all duration-300 overflow-hidden"
+                      className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
                     >
-                      {/* Image Frame */}
-                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
+                      {/* Image Frame with contained zoom */}
+                      <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
                         <img
                           src={act.image || "/mountain-placeholder.jpg"}
                           alt={act.name}
-                          className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                           draggable={false}
                         />
-                        <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
-                          Activity Hub
-                        </span>
                       </div>
 
-                      {/* Card Body */}
-                      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                        <div className="space-y-1.5">
-                          <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-600 transition-colors leading-snug line-clamp-1">
-                            {act.name}
-                          </h3>
-                          {act.description ? (
-                            <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed font-normal">
-                              {act.description}
-                            </p>
-                          ) : (
-                            <p className="text-xs text-stone-400 italic font-normal">
-                              Curated adventures, treks, and expeditions.
-                            </p>
-                          )}
-                        </div>
-
-                        {/* CTA */}
-                        <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-                          <span className="text-[11px] text-stone-400 block font-medium">Explore Hub</span>
-                          <span className="text-xs font-medium text-stone-900 group-hover:underline">
-                            Explore Activity &rarr;
-                          </span>
-                        </div>
+                      {/* Card Content: Title & Trip Count Only */}
+                      <div className="p-4 sm:p-5 bg-white space-y-1 border-t border-stone-100">
+                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
+                          {act.name}
+                        </h3>
+                        <p className="text-xs sm:text-sm font-medium text-stone-500">
+                          {getTripCountLabel(act)}
+                        </p>
                       </div>
                     </Link>
                   </div>
@@ -268,4 +256,5 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
     </section>
   );
 }
+
 

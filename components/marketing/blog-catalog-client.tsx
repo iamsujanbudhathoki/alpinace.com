@@ -227,7 +227,7 @@ export function BlogCatalogClient({
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug || post.id}`}
-                  className="bg-white rounded-sm overflow-hidden border border-stone-200 hover:border-stone-400 transition-all duration-200 flex flex-col h-full cursor-pointer group"
+                  className="bg-white rounded-lg overflow-hidden border border-stone-200 hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)] transition-all duration-300 ease-out flex flex-col h-full cursor-pointer group"
                 >
                   {post.image ? (
                     <div className="relative aspect-16/10 overflow-hidden bg-stone-900">
@@ -235,7 +235,7 @@ export function BlogCatalogClient({
                         src={post.image}
                         alt={post.title}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
                       <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
                         {post.category}

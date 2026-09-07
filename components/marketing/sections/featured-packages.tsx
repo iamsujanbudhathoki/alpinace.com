@@ -328,13 +328,13 @@ export function FeaturedPackages({
                   <Link
                     key={pkg.id}
                     href={packageHref}
-                    className="group flex flex-col bg-white rounded-sm border border-stone-200 hover:border-stone-400 transition-all duration-300 overflow-hidden"
+                    className="group flex flex-col bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
                   >
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
                       <img
                         src={pkg.image || "/mountain-placeholder.jpg"}
                         alt={pkg.title}
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                       />
                       {pkg.region && (
                         <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
@@ -373,7 +373,7 @@ export function FeaturedPackages({
           ) : (
             /* Multi-item Embla Carousel with Mouse Drag & Hover Motion */
             <div
-              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
+              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-3 -my-3"
               ref={emblaRef}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
@@ -391,14 +391,14 @@ export function FeaturedPackages({
                       <Link
                         href={packageHref}
                         onClick={handleCardClick}
-                        className="group flex flex-col h-full bg-white rounded-sm border border-stone-200 hover:border-stone-400 transition-all duration-300 overflow-hidden"
+                        className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
                       >
                         {/* Mountain Image Frame */}
                         <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
                           <img
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
-                            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             draggable={false}
                           />
 

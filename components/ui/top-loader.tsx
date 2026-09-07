@@ -7,7 +7,7 @@ export function TopLoaderProvider({ children }: { children: React.ReactNode }) {
   return (
     <ProgressProvider
       height="3px"
-      color="#d97706"
+      color="#0f172a"
       options={{ showSpinner: false }}
       shallowRouting
     >

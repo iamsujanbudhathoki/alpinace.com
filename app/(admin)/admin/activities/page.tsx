@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Plus, Search, Eye, Edit, Trash2, Sparkles, Image as ImageIcon, Maximize2, GitMerge } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, Sparkles, Image as ImageIcon, Maximize2, GitMerge, GripVertical, Save, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityItem, ActivityStatus } from "@/lib/admin-data";
 import { ActivityService } from "@/lib/services/admin-service";
@@ -45,6 +45,11 @@ export default function AdminActivitiesPage() {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Drag and Drop reorder states
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
+
   // Modal States
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -73,13 +78,15 @@ export default function AdminActivitiesPage() {
         limit,
       });
 
-      setActivities(data);
+      const items = Array.isArray(data) ? [...data] : [];
+      setActivities(items);
+
       if (data.pagination) {
         setTotalItems(data.pagination.count);
         setTotalPages(data.pagination.lastPage);
       } else {
-        setTotalItems(data.length);
-        setTotalPages(Math.max(1, Math.ceil(data.length / limit)));
+        setTotalItems(items.length);
+        setTotalPages(Math.max(1, Math.ceil(items.length / limit)));
       }
 
       // Calculate stats summary
@@ -118,6 +125,56 @@ export default function AdminActivitiesPage() {
   useEffect(() => {
     loadActivities();
   }, [debouncedSearch, selectedStatus, page, limit]);
+
+  // Drag & Drop Handlers
+  const handleDragStart = (idx: number) => {
+    setDraggedIndex(idx);
+  };
+
+  const handleDragOver = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== idx) {
+      setDragOverIndex(idx);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, dropIdx: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === dropIdx) return;
+
+    const list = [...activities];
+    const draggedItem = list[draggedIndex];
+    list.splice(draggedIndex, 1);
+    list.splice(dropIdx, 0, draggedItem);
+
+    setActivities(list);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+
+    // Save order automatically to backend
+    setIsSavingOrder(true);
+    try {
+      const payload = list.map((act, idx) => ({
+        id: act.id,
+        menuOrder: idx,
+      }));
+      const res = await ActivityService.reorder(payload);
+      if (res && res.success) {
+        toast.success("Activity position reordered successfully.");
+      } else {
+        toast.error(res?.message || "Failed to update activity position.");
+      }
+    } catch (err: any) {
+      toast.error("Failed to update activity order.");
+    } finally {
+      setIsSavingOrder(false);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
 
   const handleCreateNew = () => {
     setActiveActivity(null);
@@ -161,12 +218,12 @@ export default function AdminActivitiesPage() {
     <div className="space-y-6">
       <AdminPageHeader
         title="Activities Management"
-        description="Create and organize dynamic activity hubs (e.g. Activities in Pokhara, Helicopter Tours, Peak Climbing)."
+        description="Create, edit, and drag-and-drop reorder activity hubs (e.g. Activities in Pokhara, Helicopter Tours, Peak Climbing)."
       >
         <div className="flex items-center gap-2">
           <Link href="/admin/activities/ordering">
             <Button variant="outline" size="sm" className="text-xs gap-1.5 cursor-pointer">
-              <GitMerge className="w-3.5 h-3.5" /> Reorder Activities
+              <GitMerge className="w-3.5 h-3.5" /> Reorder Page View
             </Button>
           </Link>
           <Button
@@ -208,6 +265,11 @@ export default function AdminActivitiesPage() {
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
+          {isSavingOrder && (
+            <span className="text-xs text-amber-600 font-medium flex items-center gap-1.5">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving order...
+            </span>
+          )}
           <AdminFilterSelect
             label="Status:"
             value={selectedStatus}
@@ -226,6 +288,9 @@ export default function AdminActivitiesPage() {
         <AdminTable>
           <AdminTableHeader>
             <AdminTableRow>
+              <AdminTableHead className="w-10 text-center" title="Drag to reorder">
+                <GripVertical className="w-3.5 h-3.5 mx-auto text-stone-400" />
+              </AdminTableHead>
               <AdminTableHead className="w-14 text-center">Banner</AdminTableHead>
               <AdminTableHead>Name &amp; Slug</AdminTableHead>
               <AdminTableHead>Description</AdminTableHead>
@@ -237,10 +302,10 @@ export default function AdminActivitiesPage() {
 
           <AdminTableBody>
             {isLoading ? (
-              <AdminTableLoading colSpan={6} message="Loading activities..." />
+              <AdminTableLoading colSpan={7} message="Loading activities..." />
             ) : activities.length === 0 ? (
               <AdminTableEmpty
-                colSpan={6}
+                colSpan={7}
                 title="No activities found"
                 description={
                   debouncedSearch
@@ -249,81 +314,108 @@ export default function AdminActivitiesPage() {
                 }
               />
             ) : (
-              activities.map((act) => (
-                <AdminTableRow key={act.id} onClick={() => handleView(act)}>
-                  <AdminTableCell className="text-center">
-                    {act.image ? (
-                      <div className="relative w-9 h-9 mx-auto rounded overflow-hidden border border-stone-200 group/img bg-stone-100">
-                        <img src={act.image} alt={act.name} className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openSingleImage(act.image!, act.name);
-                          }}
-                          className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white"
-                        >
-                          <Maximize2 className="w-3 h-3" />
-                        </button>
+              activities.map((act, index) => {
+                const isDragging = draggedIndex === index;
+                const isDragOver = dragOverIndex === index;
+
+                return (
+                  <AdminTableRow
+                    key={act.id}
+                    draggable
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onClick={() => handleView(act)}
+                    className={`transition-colors ${
+                      isDragging
+                        ? "bg-amber-50 opacity-50"
+                        : isDragOver
+                        ? "bg-stone-100 border-t-2 border-stone-900"
+                        : ""
+                    }`}
+                  >
+                    <AdminTableCell
+                      className="text-center cursor-grab active:cursor-grabbing text-stone-400 hover:text-stone-700"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <GripVertical className="w-4 h-4 mx-auto" />
+                    </AdminTableCell>
+
+                    <AdminTableCell className="text-center">
+                      {act.image ? (
+                        <div className="relative w-9 h-9 mx-auto rounded overflow-hidden border border-stone-200 group/img bg-stone-100">
+                          <img src={act.image} alt={act.name} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openSingleImage(act.image!, act.name);
+                            }}
+                            className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white"
+                          >
+                            <Maximize2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="w-9 h-9 mx-auto rounded border border-stone-200 bg-stone-50 flex items-center justify-center text-stone-300">
+                          <Sparkles className="w-4 h-4" />
+                        </div>
+                      )}
+                    </AdminTableCell>
+
+                    <AdminTableCell>
+                      <div className="space-y-0.5">
+                        <div className="font-semibold text-stone-900 text-xs flex items-center gap-2">
+                          {act.name}
+                          {act.isFeatured && (
+                            <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] font-mono text-stone-400">/{act.slug}</div>
                       </div>
-                    ) : (
-                      <div className="w-9 h-9 mx-auto rounded border border-stone-200 bg-stone-50 flex items-center justify-center text-stone-300">
-                        <Sparkles className="w-4 h-4" />
-                      </div>
-                    )}
-                  </AdminTableCell>
+                    </AdminTableCell>
 
-                  <AdminTableCell>
-                    <div className="space-y-0.5">
-                      <div className="font-semibold text-stone-900 text-xs flex items-center gap-2">
-                        {act.name}
-                        {act.isFeatured && (
-                          <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">
-                            Featured
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[11px] font-mono text-stone-400">/{act.slug}</div>
-                    </div>
-                  </AdminTableCell>
+                    <AdminTableCell>
+                      <p className="text-xs text-stone-600 line-clamp-1 max-w-md">
+                        {act.description || "—"}
+                      </p>
+                    </AdminTableCell>
 
-                  <AdminTableCell>
-                    <p className="text-xs text-stone-600 line-clamp-1 max-w-md">
-                      {act.description || "—"}
-                    </p>
-                  </AdminTableCell>
+                    <AdminTableCell className="text-center">
+                      <span className="text-xs font-mono font-medium text-stone-600 bg-stone-100 px-2 py-0.5 rounded">
+                        #{index + 1}
+                      </span>
+                    </AdminTableCell>
 
-                  <AdminTableCell className="text-center">
-                    <span className="text-xs font-mono font-medium text-stone-600 bg-stone-100 px-2 py-0.5 rounded">
-                      #{act.menuOrder ?? 0}
-                    </span>
-                  </AdminTableCell>
+                    <AdminTableCell className="text-center">
+                      <AdminStatusBadge status={act.status} />
+                    </AdminTableCell>
 
-                  <AdminTableCell className="text-center">
-                    <AdminStatusBadge status={act.status} />
-                  </AdminTableCell>
-
-                  <AdminTableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                    <AdminTableActions>
-                      <AdminActionButton
-                        variant="view"
-                        title="View Details"
-                        onClick={() => handleView(act)}
-                      />
-                      <AdminActionButton
-                        variant="edit"
-                        title="Edit Activity"
-                        onClick={() => handleEdit(act)}
-                      />
-                      <AdminActionButton
-                        variant="delete"
-                        title="Delete Activity"
-                        onClick={() => handleDeletePrompt(act)}
-                      />
-                    </AdminTableActions>
-                  </AdminTableCell>
-                </AdminTableRow>
-              ))
+                    <AdminTableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      <AdminTableActions>
+                        <AdminActionButton
+                          variant="view"
+                          title="View Details"
+                          onClick={() => handleView(act)}
+                        />
+                        <AdminActionButton
+                          variant="edit"
+                          title="Edit Activity"
+                          onClick={() => handleEdit(act)}
+                        />
+                        <AdminActionButton
+                          variant="delete"
+                          title="Delete Activity"
+                          onClick={() => handleDeletePrompt(act)}
+                        />
+                      </AdminTableActions>
+                    </AdminTableCell>
+                  </AdminTableRow>
+                );
+              })
             )}
           </AdminTableBody>
         </AdminTable>
@@ -361,3 +453,4 @@ export default function AdminActivitiesPage() {
     </div>
   );
 }
+

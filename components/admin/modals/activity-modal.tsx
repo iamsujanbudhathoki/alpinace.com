@@ -192,7 +192,13 @@ export function ActivityFormModal({
               required={!isViewMode}
               placeholder="e.g. pokhara-activities"
               disabled={isViewMode}
-              {...register("slug", { required: "Slug is required" })}
+              {...register("slug", {
+                required: "Slug is required",
+                pattern: {
+                  value: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+                  message: "Slug must contain only lowercase letters, numbers, and hyphens",
+                },
+              })}
               error={errors.slug?.message}
             />
           </div>
@@ -209,12 +215,14 @@ export function ActivityFormModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AdminSelectField
               label="Status"
+              required={!isViewMode}
               disabled={isViewMode}
               options={[
                 { label: "Active", value: ActivityStatus.ACTIVE },
                 { label: "Draft", value: ActivityStatus.DRAFT },
               ]}
-              {...register("status")}
+              {...register("status", { required: "Status is required" })}
+              error={errors.status?.message}
             />
 
             <div className="flex items-center pt-6">

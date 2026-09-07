@@ -221,11 +221,7 @@ export default function AdminActivitiesPage() {
         description="Create, edit, and drag-and-drop reorder activity hubs (e.g. Activities in Pokhara, Helicopter Tours, Peak Climbing)."
       >
         <div className="flex items-center gap-2">
-          <Link href="/admin/activities/ordering">
-            <Button variant="outline" size="sm" className="text-xs gap-1.5 cursor-pointer">
-              <GitMerge className="w-3.5 h-3.5" /> Reorder Page View
-            </Button>
-          </Link>
+         
           <Button
             onClick={handleCreateNew}
             size="sm"

@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Edit, Loader2, Image as ImageIcon, Maximize2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityItem, ActivityStatus } from "@/lib/admin-data";
-import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
+import { AdminInputField, AdminSelectField } from "@/components/admin/forms/admin-form-fields";
+import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
@@ -49,6 +50,7 @@ export function ActivityFormModal({
     reset,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<ActivityFormValues>({
     defaultValues: {
@@ -203,14 +205,37 @@ export function ActivityFormModal({
             />
           </div>
 
-          <AdminTextareaField
-            label="Description"
-            rows={3}
-            placeholder="Brief overview of what travelers can experience in this activity hub..."
-            disabled={isViewMode}
-            {...register("description")}
-            error={errors.description?.message}
-          />
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-stone-900 block">
+              Activity Description (Rich Text)
+            </label>
+            {isViewMode ? (
+              <div
+                className="p-4 bg-stone-50 border border-stone-200 rounded-sm text-xs text-stone-800 prose prose-slate max-w-none max-h-60 overflow-y-auto"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    watch("description") ||
+                    "<p class='text-stone-400 italic'>No description provided.</p>",
+                }}
+              />
+            ) : (
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <AppRichTextEditor
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    placeholder="Write a detailed description, highlights, terrain insights, and activity guides..."
+                    height="220px"
+                  />
+                )}
+              />
+            )}
+            {errors.description && (
+              <p className="text-[11px] text-rose-500 font-semibold">{errors.description.message}</p>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AdminSelectField

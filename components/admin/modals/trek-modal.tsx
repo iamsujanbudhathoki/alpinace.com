@@ -6,6 +6,7 @@ import {
   AdminTextareaField,
 } from "@/components/admin/forms/admin-form-fields";
 import { AdminSearchableSelect } from "@/components/admin/forms/admin-searchable-select";
+import { AdminSearchableMultiSelect } from "@/components/admin/forms/admin-searchable-multiselect";
 import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import {
@@ -584,45 +585,27 @@ export function TrekFormModal({
                   />
                 </div>
 
-                {availableActivities.length > 0 && (
-                  <div className="sm:col-span-3 space-y-1.5 p-3.5 bg-stone-50 border border-stone-200 rounded-sm">
-                    <label className="text-xs font-semibold text-stone-900 block">
-                      Associated Activity Hubs (Multi-Select)
-                    </label>
-                    <p className="text-[11px] text-stone-500">
-                      Tag this trek to appear under specific activity landing pages (e.g. Activities in Pokhara, Helicopter Tours).
-                    </p>
-                    <div className="flex flex-wrap gap-3 pt-2">
-                      {availableActivities.map((act) => {
-                        const isChecked = watchActivityIds.includes(act.id);
-                        return (
-                          <label
-                            key={act.id}
-                            className={`inline-flex items-center gap-2 px-2.5 py-1 rounded border text-xs cursor-pointer select-none transition-colors ${
-                              isChecked
-                                ? "bg-stone-900 text-white border-stone-900"
-                                : "bg-white text-stone-700 border-stone-300 hover:border-stone-400"
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              disabled={!editingMode}
-                              onChange={(e) => {
-                                const updated = e.target.checked
-                                  ? [...watchActivityIds, act.id]
-                                  : watchActivityIds.filter((id) => id !== act.id);
-                                setValue("activityIds", updated, { shouldValidate: true });
-                              }}
-                              className="sr-only"
-                            />
-                            <span>{act.name}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                <div className="sm:col-span-3">
+                  <Controller
+                    name="activityIds"
+                    control={control}
+                    render={({ field }) => (
+                      <AdminSearchableMultiSelect
+                        label="Associated Activity Hubs (Multi-Select)"
+                        placeholder="Select activity hubs to link to this trek..."
+                        searchPlaceholder="Search available activities..."
+                        values={field.value || []}
+                        disabled={!editingMode}
+                        options={availableActivities.map((act) => ({
+                          value: act.id,
+                          label: act.name,
+                        }))}
+                        onChange={(newValues) => field.onChange(newValues)}
+                        error={errors.activityIds?.message}
+                      />
+                    )}
+                  />
+                </div>
 
                 <div>
                   <AdminInputField

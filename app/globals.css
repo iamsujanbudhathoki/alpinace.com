@@ -106,6 +106,10 @@
   --input: #e2e8f0;
   --ring: #0f172a;
   --radius: 0.15rem; /* Reduced radius for editorial feel */
+
+  /* Centralized Range Slider Color Tokens */
+  --slider-fill: #1c1917;
+  --slider-bg: #e7e5e4;
 }
 
 /* Infinite Marquee Animation for X-Axis Slider */

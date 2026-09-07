@@ -6,6 +6,7 @@ import {
   AdminTextareaField,
 } from "@/components/admin/forms/admin-form-fields";
 import { AdminSearchableSelect } from "@/components/admin/forms/admin-searchable-select";
+import { AdminSearchableMultiSelect } from "@/components/admin/forms/admin-searchable-multiselect";
 import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import {
@@ -34,7 +35,7 @@ import {
   PACKAGE_COUNTRIES,
 } from "@/lib/admin-data";
 import { TourFormValues, tourSchema } from "@/lib/admin-schemas";
-import { CategoryService, MediaService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService, ActivityService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 import { websiteDomain } from "@/lib/env.constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -108,6 +109,7 @@ export function TourFormModal({
     defaultValues: {
       title: "",
       categoryId: "",
+      activityIds: [],
       region: "",
       country: "",
       activity: "",
@@ -157,12 +159,13 @@ export function TourFormModal({
 
   const [tourCategories, setTourCategories] = useState<{ label: string; value: string }[]>([]);
   const [subcategories, setSubcategories] = useState<{ label: string; value: string }[]>([]);
+  const [availableActivities, setAvailableActivities] = useState<{ id: string; name: string }[]>([]);
   const [isLoadingSubcats, setIsLoadingSubcats] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const selectedCategoryId = watch("categoryId");
 
-  // Fetch Tour domain parent categories
+  // Fetch Tour domain parent categories & available activities
   useEffect(() => {
     if (isOpen) {
       CategoryService.getAdminParents(CategoryType.TOURS).then((cats) => {
@@ -172,6 +175,10 @@ export function TourFormModal({
         } else {
           setTourCategories([]);
         }
+      });
+      ActivityService.getAll({ limit: 100 }).then((res) => {
+        const items = Array.isArray(res) ? res : [];
+        setAvailableActivities(items.map((a: any) => ({ id: a.id, name: a.name })));
       });
     }
   }, [isOpen]);
@@ -203,6 +210,7 @@ export function TourFormModal({
         title: initialData.title,
         categoryId: initialData.categoryId || "",
         subcategoryId: initialData.subcategoryId || "",
+        activityIds: Array.isArray(initialData.activityIds) ? initialData.activityIds : [],
         region: initialData.region,
         country: initialData.country || "",
         activity: initialData.activity || "",
@@ -580,6 +588,28 @@ export function TourFormModal({
                       { label: "Other", value: TripActivity.OTHER },
                     ]}
                     {...register("activity")}
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <Controller
+                    name="activityIds"
+                    control={control}
+                    render={({ field }) => (
+                      <AdminSearchableMultiSelect
+                        label="Associated Activity Hubs (Multi-Select)"
+                        placeholder="Select activity hubs to link to this tour..."
+                        searchPlaceholder="Search available activities..."
+                        values={field.value || []}
+                        disabled={!editingMode}
+                        options={availableActivities.map((act) => ({
+                          value: act.id,
+                          label: act.name,
+                        }))}
+                        onChange={(newValues) => field.onChange(newValues)}
+                        error={errors.activityIds?.message}
+                      />
+                    )}
                   />
                 </div>
 

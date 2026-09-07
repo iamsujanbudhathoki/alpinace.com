@@ -363,7 +363,16 @@ export default function AdminActivitiesPage() {
                     <AdminTableCell>
                       <div className="space-y-0.5">
                         <div className="font-semibold text-stone-900 text-xs flex items-center gap-2">
-                          {act.name}
+                          <Link
+                            href={`/activities/${act.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="hover:underline hover:text-stone-600 transition-colors"
+                            title={`View public page for ${act.name}`}
+                          >
+                            {act.name}
+                          </Link>
                           {act.isFeatured && (
                             <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">
                               Featured

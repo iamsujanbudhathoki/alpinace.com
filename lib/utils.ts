@@ -19,3 +19,12 @@ export function formatDate(value: string | Date | undefined | null): string {
     year: "numeric",
   });
 }
+
+/**
+ * Generates a centralized gradient background style for range slider inputs using global CSS variables.
+ */
+export function getSliderFillStyle(fillPct: number): { background: string } {
+  return {
+    background: `linear-gradient(to right, var(--slider-fill, #1c1917) 0%, var(--slider-fill, #1c1917) ${fillPct}%, var(--slider-bg, #e7e5e4) ${fillPct}%, var(--slider-bg, #e7e5e4) 100%)`,
+  };
+}

@@ -1,18 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Mail, Phone, MapPin, ShieldCheck, Award } from "lucide-react";
+import { Mail, Phone, MapPin, ShieldCheck, Compass } from "lucide-react";
 import { useSettings } from "@/lib/settings-context";
 
 export function SiteFooter() {
   const { settings } = useSettings();
 
   return (
-    <footer className="relative z-20 bg-white text-zinc-900 pt-14 md:pt-18 pb-10 border-t border-stone-200 font-sans">
+    <footer className="relative z-20 bg-white text-stone-900 pt-12 sm:pt-16 pb-8 sm:pb-10 border-t border-stone-200 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 mb-12">
+        {/* Main Footer Content Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 mb-10 sm:mb-12">
           
-          {/* Column 1: Brand Info (lg:col-span-5) */}
+          {/* Column 1: Brand & About (lg:col-span-5) */}
           <div className="space-y-4 sm:col-span-2 lg:col-span-5">
             <Link href="/" className="flex items-center gap-3 group w-fit cursor-pointer">
               <img
@@ -21,10 +22,10 @@ export function SiteFooter() {
                 className="h-10 w-10 object-cover rounded-sm border border-stone-200"
               />
               <span className="flex flex-col leading-none">
-                <span className="font-heading text-base font-bold text-zinc-900 group-hover:text-amber-700 transition-colors">
+                <span className="font-heading text-base font-bold text-stone-900 group-hover:text-stone-600 transition-colors">
                   {settings.siteName || "Alpine Ace"}
                 </span>
-                <span className="text-xs font-medium text-zinc-500 mt-0.5">
+                <span className="text-xs font-medium text-stone-500 mt-0.5">
                   {settings.tagline || "Nepal Trekking & Expeditions"}
                 </span>
               </span>
@@ -35,10 +36,20 @@ export function SiteFooter() {
                 "Locally owned trekking agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang with local leaders and reliable logistics."}
             </p>
 
-      
+            {/* Trust Badges */}
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-semibold text-stone-600">
+              <span className="inline-flex items-center gap-1 bg-stone-100 border border-stone-200/80 px-2.5 py-1 rounded-sm">
+                <ShieldCheck className="w-3.5 h-3.5 text-stone-700" />
+                Govt. Licensed
+              </span>
+              <span className="inline-flex items-center gap-1 bg-stone-100 border border-stone-200/80 px-2.5 py-1 rounded-sm">
+                <Compass className="w-3.5 h-3.5 text-stone-700" />
+                Local Sherpa Guides
+              </span>
+            </div>
 
             {/* Social Links */}
-            <div className="flex items-center gap-2.5 pt-2">
+            <div className="flex items-center gap-2 pt-1">
               {settings.facebookUrl && (
                 <a
                   href={settings.facebookUrl}
@@ -94,68 +105,105 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {/* Column 2: Navigation Links (lg:col-span-3) */}
-          <div className="space-y-4 sm:col-span-1 lg:col-span-3">
-            <h3 className="font-heading text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">
-              Quick Links
-            </h3>
-            <ul className="space-y-1.5 text-xs sm:text-sm font-medium text-slate-700">
-              <li>
-                <Link href="/trekking" className="hover:text-amber-700 transition-colors inline-block py-1 cursor-pointer">
-                  Trekking
-                </Link>
-              </li>
-              <li>
-                <Link href="/tours" className="hover:text-amber-700 transition-colors inline-block py-1 cursor-pointer">
-                  Tours
-                </Link>
-              </li>
-              <li>
-                <Link href="/expeditions" className="hover:text-amber-700 transition-colors inline-block py-1 cursor-pointer">
-                  Expeditions
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="hover:text-amber-700 transition-colors inline-block py-1 cursor-pointer">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="hover:text-amber-700 transition-colors inline-block py-1 cursor-pointer">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-amber-700 transition-colors inline-block py-1 cursor-pointer">
-                  Contact
-                </Link>
-              </li>
-            </ul>
+          {/* Navigation Links Grid (2 columns on mobile, lg:col-span-4) */}
+          <div className="grid grid-cols-2 gap-6 sm:gap-8 sm:col-span-1 lg:col-span-4">
+            {/* Quick Links */}
+            <div className="space-y-3">
+              <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
+                Quick Links
+              </h3>
+              <ul className="space-y-2 text-xs sm:text-sm font-medium text-stone-700">
+                <li>
+                  <Link href="/trekking" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Trekking
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/tours" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Tours
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/expeditions" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Expeditions
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/blog" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Blog &amp; Guides
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Contact Us
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Popular Regions */}
+            <div className="space-y-3">
+              <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
+                Top Regions
+              </h3>
+              <ul className="space-y-2 text-xs sm:text-sm font-medium text-stone-700">
+                <li>
+                  <Link href="/trekking?category=everest" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Everest Region
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/trekking?category=annapurna" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Annapurna Region
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/trekking?category=manaslu" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Manaslu Circuit
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/trekking?category=langtang" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Langtang Valley
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/expeditions" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                    Peak Climbing
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          {/* Column 3: Contact Details (lg:col-span-4) */}
-          <div className="space-y-4 sm:col-span-1 lg:col-span-4">
-            <h3 className="font-heading text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">
+          {/* Column 3: Kathmandu Operations (lg:col-span-3) */}
+          <div className="space-y-3 sm:col-span-1 lg:col-span-3">
+            <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
               Kathmandu Operations
             </h3>
-            <ul className="space-y-3.5 text-xs sm:text-sm text-slate-700 font-medium">
+            <ul className="space-y-3 text-xs sm:text-sm text-stone-700 font-medium">
               {settings.companyAddress && (
-                <li className="flex items-start gap-3">
-                  <MapPin className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                  <span>{settings.companyAddress}</span>
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="h-4 w-4 text-stone-700 shrink-0 mt-0.5" />
+                  <span className="leading-snug">{settings.companyAddress}</span>
                 </li>
               )}
               {(settings.contactPhone || settings.emergencyPhone) && (
-                <li className="flex items-start gap-3">
-                  <Phone className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                  <div className="flex flex-col text-xs text-slate-900 font-bold gap-1">
+                <li className="flex items-start gap-2.5">
+                  <Phone className="h-4 w-4 text-stone-700 shrink-0 mt-0.5" />
+                  <div className="flex flex-col text-xs text-stone-900 font-bold gap-1">
                     {settings.contactPhone && (
-                      <a href={`tel:${settings.contactPhone.replace(/\s+/g, "")}`} className="hover:text-amber-700 transition-colors cursor-pointer">
+                      <a href={`tel:${settings.contactPhone.replace(/\s+/g, "")}`} className="hover:text-stone-600 transition-colors cursor-pointer">
                         {settings.contactPhone} (Office)
                       </a>
                     )}
                     {settings.emergencyPhone && (
-                      <a href={`tel:${settings.emergencyPhone.replace(/\s+/g, "")}`} className="hover:text-amber-700 transition-colors text-slate-600 cursor-pointer">
+                      <a href={`tel:${settings.emergencyPhone.replace(/\s+/g, "")}`} className="hover:text-stone-600 transition-colors text-stone-600 font-medium cursor-pointer">
                         Emergency: {settings.emergencyPhone}
                       </a>
                     )}
@@ -163,7 +211,7 @@ export function SiteFooter() {
                 </li>
               )}
               {settings.whatsappNumber && (
-                <li className="flex items-center gap-3">
+                <li className="flex items-center gap-2.5">
                   <svg className="w-4 h-4 fill-emerald-600 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.205 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
                   </svg>
@@ -173,18 +221,18 @@ export function SiteFooter() {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-slate-900 font-bold hover:text-emerald-700 transition-colors cursor-pointer"
+                    className="text-xs text-stone-900 font-bold hover:text-emerald-700 transition-colors cursor-pointer"
                   >
                     WhatsApp: +{settings.whatsappNumber.replace(/\D/g, "")}
                   </a>
                 </li>
               )}
               {settings.contactEmail && (
-                <li className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-amber-600 shrink-0" />
+                <li className="flex items-center gap-2.5">
+                  <Mail className="h-4 w-4 text-stone-700 shrink-0" />
                   <a
                     href={`mailto:${settings.contactEmail}`}
-                    className="text-xs text-slate-900 font-bold hover:text-amber-700 transition-colors break-all cursor-pointer"
+                    className="text-xs text-stone-900 font-bold hover:text-stone-600 transition-colors break-all cursor-pointer"
                   >
                     {settings.contactEmail}
                   </a>
@@ -195,15 +243,15 @@ export function SiteFooter() {
         </div>
 
         {/* Divider & Bottom Bar */}
-        <div className="border-t border-slate-100 pt-6 sm:pt-8 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 font-semibold text-center sm:text-left">
+        <div className="border-t border-stone-200 pt-6 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-600 font-semibold text-center sm:text-left">
           <div>
             &copy; {new Date().getFullYear()} {settings.siteName || "Alpine Ace Treks & Expeditions"}. All rights reserved.
           </div>
           <div className="flex flex-wrap justify-center gap-6">
-            <Link href="/privacy" className="hover:text-amber-700 transition-colors cursor-pointer">
+            <Link href="/privacy" className="hover:text-stone-900 hover:underline transition-colors cursor-pointer">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-amber-700 transition-colors cursor-pointer">
+            <Link href="/terms" className="hover:text-stone-900 hover:underline transition-colors cursor-pointer">
               Terms &amp; Conditions
             </Link>
           </div>

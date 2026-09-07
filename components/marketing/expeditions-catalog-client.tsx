@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Mountain } from "lucide-react";
+import { getSliderFillStyle } from "@/lib/utils";
 import { ExpeditionItem } from "@/lib/expedition-data";
 import { ExpeditionService, PackageFilterService, PackageFilterOptions, CategoryService } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
@@ -280,7 +281,7 @@ export function ExpeditionsCatalogClient({
               <label className="text-xs font-medium text-stone-700">
                 Max duration
               </label>
-              <span className="text-xs font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80">
+              <span className="text-xs font-semibold text-stone-900 bg-stone-100 px-2 py-0.5 rounded border border-stone-200/80">
                 {localMaxDuration} Days
               </span>
             </div>
@@ -295,10 +296,8 @@ export function ExpeditionsCatalogClient({
                 onTouchEnd={() => setAppliedMaxDuration(localMaxDuration)}
                 onKeyUp={() => setAppliedMaxDuration(localMaxDuration)}
                 onBlur={() => setAppliedMaxDuration(localMaxDuration)}
-                style={{
-                  background: `linear-gradient(to right, #92400e 0%, #92400e ${expFillPct}%, #e7e5e4 ${expFillPct}%, #e7e5e4 100%)`,
-                }}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-700/30 touch-none"
+                style={getSliderFillStyle(expFillPct)}
+                className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-700/30 touch-none"
               />
             </div>
             <div className="flex justify-between text-[10px] text-stone-500 font-medium">
@@ -350,7 +349,7 @@ export function ExpeditionsCatalogClient({
             onClick={() => setIsMobileFilterOpen(true)}
             className="flex items-center gap-2 text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 px-4 py-2.5 rounded-md transition-colors cursor-pointer min-h-[42px]"
           >
-            <SlidersHorizontal className="w-4 h-4 text-amber-800" />
+            <SlidersHorizontal className="w-4 h-4 text-stone-700" />
             <span>Filters {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
           </button>
 
@@ -391,7 +390,7 @@ export function ExpeditionsCatalogClient({
                 </button>
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="w-1/2 py-2.5 min-h-[44px] rounded-md bg-amber-800 text-white font-bold text-xs hover:bg-amber-900 cursor-pointer shadow-xs"
+                  className="w-1/2 py-2.5 min-h-[44px] rounded-md bg-stone-900 text-white font-bold text-xs hover:bg-stone-800 cursor-pointer shadow-xs"
                 >
                   Apply
                 </button>
@@ -410,7 +409,7 @@ export function ExpeditionsCatalogClient({
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-xs font-semibold text-amber-800 hover:underline cursor-pointer flex items-center gap-1"
+                  className="text-xs font-semibold text-stone-900 hover:underline cursor-pointer flex items-center gap-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset</span>
@@ -428,7 +427,7 @@ export function ExpeditionsCatalogClient({
               {activeFilterCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-xs font-semibold text-amber-800 hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-stone-900 hover:underline cursor-pointer"
                 >
                   Clear filters ({activeFilterCount})
                 </button>
@@ -440,7 +439,7 @@ export function ExpeditionsCatalogClient({
             ) : filteredExpeditions.length === 0 ? (
               <div className="bg-white border border-stone-200 rounded-md p-10 text-center space-y-3 max-w-md mx-auto my-4">
                 <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-500 flex items-center justify-center mx-auto">
-                  <Mountain className="w-5 h-5 text-amber-800" />
+                  <Mountain className="w-5 h-5 text-stone-700" />
                 </div>
                 <div className="space-y-1">
                   <h3 className="font-heading text-sm font-semibold text-stone-900">
@@ -488,7 +487,7 @@ export function ExpeditionsCatalogClient({
                               </span>
                             )}
                             {exp.durationDays && (
-                              <span className="absolute top-3 right-3 bg-stone-900/80 text-amber-300 text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
+                              <span className="absolute top-3 right-3 bg-stone-900/80 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
                                 {exp.durationDays} Days
                               </span>
                             )}
@@ -496,7 +495,7 @@ export function ExpeditionsCatalogClient({
 
                           {/* Scannable Card Body */}
                           <div className="p-4 space-y-2">
-                            <h3 className="font-heading text-base font-semibold text-stone-900 group-hover:text-amber-900 transition-colors line-clamp-1">
+                            <h3 className="font-heading text-base font-semibold text-stone-900 group-hover:text-stone-600 transition-colors line-clamp-1">
                               {exp.title}
                             </h3>
 
@@ -518,7 +517,7 @@ export function ExpeditionsCatalogClient({
                               </span>
                             </div>
 
-                            <span className="text-xs font-semibold text-amber-800 group-hover:underline flex items-center gap-1">
+                            <span className="text-xs font-semibold text-stone-900 group-hover:underline flex items-center gap-1">
                               <span>View Details</span>
                               <ArrowRight className="w-3.5 h-3.5" />
                             </span>

@@ -220,6 +220,7 @@ export interface PackageItem {
   category: string;
   categoryId?: string;
   subcategoryId?: string;
+  activityIds?: string[];
   categorySlug?: string;
   region: PackageRegion;
   durationDays: number;

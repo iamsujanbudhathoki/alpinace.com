@@ -176,11 +176,16 @@ export function Hero({
       />
 
       {/* Centered Content Container */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center text-center">
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">
+        {/* Top Tagline Badge */}
+      
+
         {/* Editorial Heading */}
-        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-normal text-stone-900 tracking-tight mb-8 max-w-3xl leading-tight">
+        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight mb-6 max-w-3xl leading-tight">
           Explore guided treks, tours &amp; expeditions.
         </h1>
+
+      
 
         {/* Floating Light Search Container */}
         <div
@@ -188,14 +193,16 @@ export function Hero({
           className="relative z-30 w-full max-w-2xl sm:max-w-3xl"
         >
           <div className="relative">
-            <div className="relative flex items-center bg-white/95 backdrop-blur-xl border border-stone-200 rounded-xl sm:rounded-2xl shadow-xl p-1.5 sm:p-2 transition-all duration-200 focus-within:border-stone-400 focus-within:ring-2 focus-within:ring-stone-400/20">
+            <div className="relative flex items-center bg-white/95 backdrop-blur-xl border border-stone-200/90 rounded-2xl shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] p-2 sm:p-2.5 transition-all duration-300 focus-within:border-stone-400 focus-within:ring-4 focus-within:ring-stone-900/5">
 
-              {/* Search Icon or Loading Spinner */}
-              <div className="pl-3 sm:pl-4 pr-2 text-stone-400 flex items-center justify-center">
+              {/* Location/Search Icon Badge */}
+              <div className="pl-3 sm:pl-4 pr-2 text-stone-500 flex items-center justify-center shrink-0">
                 {isSearching ? (
-                  <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-stone-600" />
+                  <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-stone-800" />
                 ) : (
-                  <Search className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-stone-700" />
+                  </div>
                 )}
               </div>
 
@@ -214,8 +221,8 @@ export function Hero({
                   }
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Search treks, tours, expeditions..."
-                className="w-full bg-transparent text-stone-900 placeholder-stone-400 text-base sm:text-lg font-normal px-2 py-2 sm:py-2.5 focus:outline-none"
+                placeholder="Where do you want to explore? (e.g. Everest, Annapurna...)"
+                className="w-full bg-transparent text-stone-900 placeholder-stone-400 text-sm sm:text-base font-normal px-2 py-2 sm:py-2.5 focus:outline-none"
                 aria-label="Search treks, tours, expeditions"
               />
 
@@ -228,14 +235,14 @@ export function Hero({
                     setIsOpen(false);
                     inputRef.current?.focus();
                   }}
-                  className="p-1.5 text-stone-400 hover:text-stone-700 transition-colors rounded-full hover:bg-stone-100 mr-1"
+                  className="p-1.5 text-stone-400 hover:text-stone-700 transition-colors rounded-full hover:bg-stone-100 mr-1.5 cursor-pointer"
                   aria-label="Clear search"
                 >
                   <X className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               )}
 
-              {/* Primary Search Submit Button */}
+              {/* Primary Search Submit Button with Icon */}
               <button
                 type="button"
                 onClick={() => {
@@ -244,17 +251,36 @@ export function Hero({
                     router.push(`/trekking?search=${encodeURIComponent(query.trim())}`);
                   }
                 }}
-                className="inline-flex items-center justify-center rounded-lg sm:rounded-xl bg-stone-900 hover:bg-stone-800 text-white px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-medium transition-all shadow-sm shrink-0 gap-1.5"
+                className="inline-flex items-center justify-center rounded-xl bg-stone-900 hover:bg-stone-800 text-white px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-medium transition-all shadow-md shrink-0 gap-2 cursor-pointer group"
               >
+                <Search className="h-4 w-4 sm:h-4 sm:w-4 text-stone-200 group-hover:scale-110 transition-transform" />
                 <span>Search</span>
-                <ChevronRight className="h-4 w-4 hidden sm:block opacity-70" />
               </button>
             </div>
           </div>
 
+          {/* Quick Search Suggestions / Destination Chips */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-stone-600">
+            <span className="font-medium text-stone-500">Popular:</span>
+            {["Everest Base Camp", "Annapurna Circuit", "Manaslu Trek", "Lobuche East"].map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => {
+                  setQuery(chip);
+                  setIsOpen(true);
+                  inputRef.current?.focus();
+                }}
+                className="bg-white/80 hover:bg-white text-stone-700 hover:text-stone-900 border border-stone-200/80 rounded-full px-3 py-1 font-medium transition-all shadow-xs hover:shadow-sm cursor-pointer"
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
+
           {/* Dynamic Search Suggestions Popover Dropdown */}
           {isOpen && query.trim().length >= 2 && (
-            <div className="absolute left-0 right-0 top-full mt-3 bg-white border border-stone-200 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in-50 slide-in-from-top-2 duration-150">
+            <div className="absolute left-0 right-0 top-full mt-3 bg-white border border-stone-200 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in-50 slide-in-from-top-2 duration-150 text-left">
 
               {/* Category Filter Tabs Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-stone-50 border-b border-stone-200 text-xs sm:text-sm">
@@ -270,10 +296,11 @@ export function Hero({
                         setActiveTab(tab);
                         setSelectedIndex(-1);
                       }}
-                      className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${activeTab === tab
+                      className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                        activeTab === tab
                           ? "bg-stone-900 text-white font-medium"
                           : "text-stone-600 hover:bg-stone-200/60 hover:text-stone-900"
-                        }`}
+                      }`}
                     >
                       {tab === "All" ? "All Experiences" : `${tab}s`}
                     </button>
@@ -296,10 +323,11 @@ export function Hero({
                         key={`${item.type}-${item.id}-${idx}`}
                         onClick={() => handleSelectResult(item)}
                         onMouseEnter={() => setSelectedIndex(idx)}
-                        className={`group p-3 sm:p-4 flex items-center justify-between cursor-pointer transition-colors text-left ${isSelected
+                        className={`group p-3 sm:p-4 flex items-center justify-between cursor-pointer transition-colors text-left ${
+                          isSelected
                             ? "bg-stone-100 text-stone-900"
                             : "hover:bg-stone-50 text-stone-800"
-                          }`}
+                        }`}
                       >
                         <div className="flex items-center gap-3 sm:gap-4 min-w-0 pr-3">
                           {/* Item Thumbnail / Featured Image */}

@@ -543,6 +543,7 @@ function cleanPackagePayload(data: any) {
   if (rest.addonsText !== undefined) payload.addonsText = rest.addonsText;
   if (rest.usefulInfoText !== undefined) payload.usefulInfoText = rest.usefulInfoText;
   if (Array.isArray(rest.departureDates)) payload.departureDates = rest.departureDates;
+  if (Array.isArray(rest.activityIds)) payload.activityIds = rest.activityIds;
 
   // Strict Media IDs handling (omits empty strings to avoid null type errors)
   if (Array.isArray(rest.galleryMediaIds)) {
@@ -591,6 +592,7 @@ export function formatBackendTrek(p: any): TrekItem {
     category: p.category,
     categoryId: p.categoryId,
     subcategoryId: p.subcategoryId,
+    activityIds: Array.isArray(p.activityIds) ? p.activityIds : [],
     rating: Number(p.rating),
     reviewsCount: Number(p.reviewsCount),
     image: p.image,
@@ -637,6 +639,7 @@ export function formatBackendPackage(p: any): PackageItem {
     category: p.categoryType || p.category,
     categoryId: p.categoryId,
     subcategoryId: p.subcategoryId,
+    activityIds: Array.isArray(p.activityIds) ? p.activityIds : [],
     rating: Number(p.rating),
     reviewsCount: Number(p.reviewsCount),
     image: p.image,

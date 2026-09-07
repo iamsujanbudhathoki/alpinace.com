@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
+import { ArrowRight } from "lucide-react";
 import { BlogPost } from "@/lib/home-data";
 import { BlogService } from "@/lib/services/admin-service";
 import { BlogStatus } from "@/lib/admin-data";
@@ -62,7 +63,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
           </div>
           <Link
             href="/blog"
-            className="text-xs font-medium text-stone-900 hover:underline shrink-0"
+            className="text-xs sm:text-sm font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors shrink-0"
           >
             Read All Articles &rarr;
           </Link>
@@ -87,7 +88,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                           sizes="(max-width: 768px) 88vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                         />
-                        <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm">
+                        <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-sm">
                           {post.category}
                         </span>
                       </div>
@@ -97,7 +98,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                         <span className="text-stone-500 text-xs font-medium block">
                           {post.date}{post.readTime && ` &bull; ${post.readTime}`}
                         </span>
-                        <h3 className="font-heading text-base font-normal text-stone-900 group-hover:text-stone-600 transition-colors leading-snug line-clamp-2">
+                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-600 group-hover:underline transition-colors leading-snug line-clamp-2">
                           {post.title}
                         </h3>
                         <p className="text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
@@ -105,8 +106,9 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                         </p>
                       </div>
 
-                      <span className="text-xs font-medium text-stone-900 group-hover:underline pt-2 block border-t border-stone-100">
-                        Read Article &rarr;
+                      <span className="text-xs font-semibold text-stone-900 group-hover:underline pt-2 border-t border-stone-100 flex items-center justify-end gap-1 text-right">
+                        <span>Read Article</span>
+                        <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                       </span>
                     </div>
                   </div>

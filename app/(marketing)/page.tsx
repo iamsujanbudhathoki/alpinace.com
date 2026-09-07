@@ -2,6 +2,7 @@ import { Hero } from "@/components/marketing/sections/hero";
 import { PartnersAffiliationsSection } from "@/components/marketing/sections/partners-affiliations";
 import { WhyChooseUs } from "@/components/marketing/sections/why-choose-us";
 import { FeaturedPackages } from "@/components/marketing/sections/featured-packages";
+import { ActivitiesSection } from "@/components/marketing/sections/activities-section";
 import { TestimonialsSection } from "@/components/marketing/sections/testimonials";
 import { FeaturedBlogs } from "@/components/marketing/sections/featured-blogs";
 import { FaqsSection } from "@/components/marketing/sections/faqs-section";
@@ -261,7 +262,11 @@ export default async function Home() {
       />
 
       {/* 1. Hero Section */}
-      <Hero />
+      <Hero
+        initialTreks={initialTreks}
+        initialTours={initialTours}
+        initialExpeditions={initialExpeditions}
+      />
 
       {/* 2. Featured Trekking & Expedition Packages */}
       <FeaturedPackages
@@ -270,13 +275,13 @@ export default async function Home() {
         initialExpeditions={initialExpeditions}
       />
 
-      {/* 3. Official Partners & Affiliations Trust Board */}
-      <PartnersAffiliationsSection />
+      {/* 3. Explore by Activity Hubs */}
+      <ActivitiesSection />
 
-      {/* 4. Discover the Difference - Why Alpine Ace? */}
+      {/* 3. Discover the Difference - Why Alpine Ace? */}
       <WhyChooseUs />
 
-      {/* 5. Traveler's Tales - Client Testimonials */}
+      {/* 4. Traveler's Tales - Client Testimonials */}
       <TestimonialsSection />
 
       {/* 5. Expedition Journal */}
@@ -285,7 +290,10 @@ export default async function Home() {
       {/* 6. FAQs Accordion */}
       <FaqsSection />
 
-      {/* 7. Pre-Footer Trip Consultation Banner */}
+      {/* 7. Official Partners & Affiliations Trust Board */}
+      <PartnersAffiliationsSection />
+
+      {/* 8. Pre-Footer Trip Consultation Banner */}
       <FinalCta />
     </div>
   );

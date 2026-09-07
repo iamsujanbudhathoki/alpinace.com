@@ -41,6 +41,7 @@ export interface TrekItem {
   category: string;
   categoryId?: string;
   subcategoryId?: string;
+  activityIds?: string[];
   categorySlug?: string;
   rating: number;
   reviewsCount: number;

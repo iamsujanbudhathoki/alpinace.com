@@ -352,7 +352,7 @@ export function SiteHeader() {
                         transition-colors duration-200 border-b-2 h-full flex items-center
                         ${
                           isActive
-                            ? "border-amber-700 text-amber-900 font-semibold"
+                            ? "border-stone-900 text-stone-900 font-medium"
                             : "border-transparent text-stone-500 hover:text-stone-800 hover:border-stone-300"
                         }
                       `}
@@ -494,7 +494,7 @@ export function SiteHeader() {
                                   key={subItem.href}
                                   href={subItem.href}
                                   onClick={() => setActiveDropdown(null)}
-                                  className="flex items-center justify-between p-2.5 rounded-md hover:bg-stone-50 transition-colors text-slate-900 hover:text-amber-700 font-semibold text-sm cursor-pointer"
+                                  className="flex items-center justify-between p-2.5 rounded-md hover:bg-stone-50 transition-colors text-slate-900 hover:text-stone-900 font-medium text-sm cursor-pointer"
                                 >
                                   <span>{subItem.label}</span>
                                   <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
@@ -619,7 +619,7 @@ export function SiteHeader() {
                                                   key={subCat.id}
                                                   href={getCategoryLink(link.href, subCat)}
                                                   onClick={() => setActiveDropdown(null)}
-                                                  className="p-3 rounded-md hover:bg-stone-50 text-slate-900 hover:text-amber-700 font-semibold text-sm flex items-center justify-between border border-stone-100 transition-colors"
+                                                  className="p-3 rounded-md hover:bg-stone-50 text-slate-900 hover:text-stone-900 font-medium text-sm flex items-center justify-between border border-stone-100 transition-colors"
                                                 >
                                                   <span className="truncate">{subCat.name}</span>
                                                   <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
@@ -728,7 +728,7 @@ export function SiteHeader() {
                         <Link
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="text-sm font-bold text-slate-950 hover:text-amber-700 transition-colors py-2 flex-1"
+                          className="text-sm font-bold text-slate-950 hover:text-stone-700 transition-colors py-2 flex-1"
                         >
                           {link.label}
                         </Link>
@@ -742,7 +742,7 @@ export function SiteHeader() {
                           >
                             <ChevronDown
                               className={`w-5 h-5 transition-transform duration-200 ${
-                                isExpanded ? "rotate-180 text-amber-700" : ""
+                                isExpanded ? "rotate-180 text-stone-700" : ""
                               }`}
                             />
                           </button>
@@ -751,7 +751,7 @@ export function SiteHeader() {
 
                       {/* Mobile Accordion Content */}
                       {hasDropdown && isExpanded && (
-                        <div className="mt-1 pl-3.5 space-y-1.5 border-l-2 border-amber-600/40 py-1">
+                        <div className="mt-1 pl-3.5 space-y-1.5 border-l-2 border-stone-300 py-1">
                           {link.items && link.items.length > 0 ? (
                             link.items.map((subItem) => (
                               <Link

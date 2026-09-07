@@ -53,16 +53,16 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-row items-end justify-between mb-8 gap-3 border-b border-stone-200 pb-5">
           <div className="space-y-1">
-            <span className="text-amber-700 text-xs font-bold block">
+            <span className="text-stone-500 text-xs font-medium uppercase tracking-wider block">
               Articles &amp; Guides
             </span>
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
+            <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight leading-snug">
               Latest Articles
             </h2>
           </div>
           <Link
             href="/blog"
-            className="text-xs font-semibold text-amber-700 hover:underline shrink-0"
+            className="text-xs font-medium text-stone-900 hover:underline shrink-0"
           >
             Read All Articles &rarr;
           </Link>
@@ -87,7 +87,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                           sizes="(max-width: 768px) 88vw, 33vw"
                           className="object-cover group-hover:scale-103 transition-transform duration-500"
                         />
-                        <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
+                        <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm">
                           {post.category}
                         </span>
                       </div>
@@ -97,7 +97,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                         <span className="text-stone-500 text-xs font-medium block">
                           {post.date}{post.readTime && ` &bull; ${post.readTime}`}
                         </span>
-                        <h3 className="font-heading text-base font-bold text-stone-900 group-hover:text-amber-700 transition-colors leading-snug line-clamp-2">
+                        <h3 className="font-heading text-base font-normal text-stone-900 group-hover:text-stone-600 transition-colors leading-snug line-clamp-2">
                           {post.title}
                         </h3>
                         <p className="text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
@@ -105,7 +105,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
                         </p>
                       </div>
 
-                      <span className="text-xs font-semibold text-amber-700 group-hover:underline pt-2 block border-t border-stone-100">
+                      <span className="text-xs font-medium text-stone-900 group-hover:underline pt-2 block border-t border-stone-100">
                         Read Article &rarr;
                       </span>
                     </div>

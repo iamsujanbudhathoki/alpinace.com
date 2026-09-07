@@ -121,6 +121,25 @@ export enum CategoryStatus {
   DRAFT = "draft",
 }
 
+export enum ActivityStatus {
+  ACTIVE = "active",
+  DRAFT = "draft",
+}
+
+export interface ActivityItem {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  status: ActivityStatus;
+  isFeatured: boolean;
+  menuOrder: number;
+  mediaId?: string | null;
+  image?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export enum FaqStatus {
   ACTIVE = "active",
   DRAFT = "draft",

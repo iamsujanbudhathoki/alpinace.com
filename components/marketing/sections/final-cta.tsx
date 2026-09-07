@@ -13,9 +13,9 @@ export function FinalCta() {
     : "#";
 
   return (
-    <section className="py-16 sm:py-20 bg-gradient-to-b from-amber-50/70 via-stone-50 to-amber-100/30 border-t border-b border-amber-200/60 text-stone-900 text-center">
+    <section className="py-16 sm:py-20 bg-stone-50 border-t border-b border-stone-200 text-stone-900 text-center">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-        <span className="text-amber-800 text-xs font-semibold uppercase tracking-wider block">
+        <span className="text-stone-500 text-xs font-medium uppercase tracking-wider block">
           Plan your trip
         </span>
 
@@ -30,7 +30,7 @@ export function FinalCta() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-4">
           <Link
             href="/contact"
-            className="w-full sm:w-auto bg-amber-800 hover:bg-amber-900 text-white font-semibold text-xs sm:text-sm px-7 py-3.5 rounded-md transition-colors shadow-sm"
+            className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white font-medium text-xs sm:text-sm px-7 py-3.5 rounded-md transition-colors shadow-sm"
           >
             Get in Touch &rarr;
           </Link>

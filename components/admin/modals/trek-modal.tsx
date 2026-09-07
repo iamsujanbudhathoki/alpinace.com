@@ -26,7 +26,7 @@ import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
 import { CategoryType, PackageStatus, TripDifficulty, TripActivity, PACKAGE_COUNTRIES } from "@/lib/admin-data";
 import { TrekFormValues, trekSchema } from "@/lib/admin-schemas";
-import { CategoryService, MediaService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService, ActivityService } from "@/lib/services/admin-service";
 import { TrekItem } from "@/lib/trek-data";
 import { openSingleImage } from "@/lib/utils/lightbox";
 import { websiteDomain } from "@/lib/env.constants";
@@ -147,12 +147,14 @@ export function TrekFormModal({
 
   const [trekCategories, setTrekCategories] = useState<{ label: string; value: string }[]>([]);
   const [subcategories, setSubcategories] = useState<{ label: string; value: string }[]>([]);
+  const [availableActivities, setAvailableActivities] = useState<{ id: string; name: string }[]>([]);
   const [isLoadingSubcats, setIsLoadingSubcats] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const selectedCategoryId = watch("categoryId");
+  const watchActivityIds = watch("activityIds") || [];
 
-  // Fetch Trekking domain parent categories
+  // Fetch Trekking domain parent categories and activities
   useEffect(() => {
     if (isOpen) {
       CategoryService.getAdminParents(CategoryType.TREKKING).then((cats) => {
@@ -162,6 +164,10 @@ export function TrekFormModal({
         } else {
           setTrekCategories([]);
         }
+      });
+      ActivityService.getAll({ limit: 100 }).then((res) => {
+        const items = Array.isArray(res) ? res : [];
+        setAvailableActivities(items.map((a: any) => ({ id: a.id, name: a.name })));
       });
     }
   }, [isOpen]);
@@ -193,6 +199,7 @@ export function TrekFormModal({
         title: initialData.title,
         categoryId: initialData.categoryId || "",
         subcategoryId: initialData.subcategoryId || "",
+        activityIds: Array.isArray(initialData.activityIds) ? initialData.activityIds : [],
         region: initialData.region,
         country: initialData.country || "",
         activity: initialData.activity || "",
@@ -562,7 +569,7 @@ export function TrekFormModal({
 
                 <div className="sm:col-span-1">
                   <AdminSelectField
-                    label="Activity"
+                    label="Activity Type"
                     required
                     error={errors.activity?.message}
                     options={[
@@ -576,6 +583,46 @@ export function TrekFormModal({
                     {...register("activity")}
                   />
                 </div>
+
+                {availableActivities.length > 0 && (
+                  <div className="sm:col-span-3 space-y-1.5 p-3.5 bg-stone-50 border border-stone-200 rounded-sm">
+                    <label className="text-xs font-semibold text-stone-900 block">
+                      Associated Activity Hubs (Multi-Select)
+                    </label>
+                    <p className="text-[11px] text-stone-500">
+                      Tag this trek to appear under specific activity landing pages (e.g. Activities in Pokhara, Helicopter Tours).
+                    </p>
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      {availableActivities.map((act) => {
+                        const isChecked = watchActivityIds.includes(act.id);
+                        return (
+                          <label
+                            key={act.id}
+                            className={`inline-flex items-center gap-2 px-2.5 py-1 rounded border text-xs cursor-pointer select-none transition-colors ${
+                              isChecked
+                                ? "bg-stone-900 text-white border-stone-900"
+                                : "bg-white text-stone-700 border-stone-300 hover:border-stone-400"
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              disabled={!editingMode}
+                              onChange={(e) => {
+                                const updated = e.target.checked
+                                  ? [...watchActivityIds, act.id]
+                                  : watchActivityIds.filter((id) => id !== act.id);
+                                setValue("activityIds", updated, { shouldValidate: true });
+                              }}
+                              className="sr-only"
+                            />
+                            <span>{act.name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <AdminInputField

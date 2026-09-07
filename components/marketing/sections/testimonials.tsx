@@ -78,10 +78,10 @@ export function TestimonialsSection() {
 
         {/* Section Header */}
         <div className="mb-8 space-y-1 pb-6 border-b border-stone-200">
-          <span className="text-amber-800 text-xs font-semibold block">
+          <span className="text-stone-500 text-xs font-medium uppercase tracking-wider block">
             Traveler&apos;s Tales
           </span>
-          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
+          <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight leading-snug">
             What Our Clients Say
           </h2>
         </div>
@@ -144,7 +144,7 @@ export function TestimonialsSection() {
                         </div>
                       </div>
                       {item.tripName && (
-                        <span className="text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-1 rounded border border-amber-200/80 shrink-0">
+                        <span className="text-xs font-medium text-stone-500 bg-stone-100 border-stone-200 shrink-0">
                           {item.tripName}
                         </span>
                       )}
@@ -196,7 +196,7 @@ export function TestimonialsSection() {
                           </div>
 
                           {item.tripName && (
-                            <span className="text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-1 rounded-sm border border-amber-200/80 shrink-0">
+                            <span className="text-xs font-medium text-stone-500 bg-amber-50 px-2.5 py-1 rounded-sm border border-amber-200/80 shrink-0">
                               {item.tripName}
                             </span>
                           )}

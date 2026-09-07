@@ -278,7 +278,12 @@ export function AdminActionButton({
       size="sm"
       onClick={onClick}
       title={title || label}
-      className={cn("h-7 w-7 p-0 cursor-pointer transition-colors rounded-md", styleClass, className)}
+      className={cn(
+        label ? "h-7 px-2 text-xs" : "h-7 w-7 p-0",
+        "cursor-pointer transition-colors rounded-md",
+        styleClass,
+        className
+      )}
     >
       {defaultIcon}
       {label && <span className="ml-1">{label}</span>}

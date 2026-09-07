@@ -27,7 +27,7 @@ export function WhyChooseUs() {
             </p>
             <Link
               href="/about"
-              className="inline-block text-xs font-semibold text-amber-800 hover:underline underline-offset-4 mt-2"
+              className="inline-block text-xs font-medium text-stone-900 hover:underline underline-offset-4 mt-2"
             >
               More about us →
             </Link>
@@ -37,7 +37,7 @@ export function WhyChooseUs() {
           <ul className="space-y-0 divide-y divide-stone-100">
             {reasons.map((reason, i) => (
               <li key={i} className="flex items-center gap-3 py-3">
-                <CheckCircle2 className="w-4 h-4 text-amber-800 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-stone-900 shrink-0" />
                 <span className="text-sm text-stone-700">{reason}</span>
               </li>
             ))}

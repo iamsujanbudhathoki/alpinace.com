@@ -1,4 +1,6 @@
 import {
+  ActivityItem,
+  ActivityStatus,
   BlogArticle,
   BlogStatus,
   Booking,
@@ -240,6 +242,115 @@ export const CategoryService = {
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
     return apiClient.delete<boolean>(`/admin/categories/${id}`);
+  },
+};
+
+export const ActivityService = {
+  async getPublicAll(params?: {
+    search?: string;
+    limit?: number;
+    page?: number;
+    isFeatured?: boolean;
+  }): Promise<PaginatedList<ActivityItem>> {
+    try {
+      const query = new URLSearchParams();
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      if (params?.isFeatured !== undefined) query.set("isFeatured", String(params.isFeatured));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<ActivityItem[]>(`/activities${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Public activities fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getBySlug(slug: string): Promise<ApiResponse<{
+    activity: ActivityItem;
+    treks: any[];
+    tours: any[];
+    expeditions: any[];
+  }>> {
+    return apiClient.get<{
+      activity: ActivityItem;
+      treks: any[];
+      tours: any[];
+      expeditions: any[];
+    }>(`/activities/${slug}`);
+  },
+
+  async getAll(params?: {
+    status?: ActivityStatus | string;
+    search?: string;
+    limit?: number;
+    page?: number;
+    isFeatured?: boolean;
+  }): Promise<PaginatedList<ActivityItem>> {
+    try {
+      const query = new URLSearchParams();
+      if (params?.status && params.status !== "All") query.set("status", params.status);
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      if (params?.isFeatured !== undefined) query.set("isFeatured", String(params.isFeatured));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<ActivityItem[]>(`/admin/activities${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Admin activities fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async getByIdOrSlug(idOrSlug: string): Promise<ApiResponse<ActivityItem>> {
+    return apiClient.get<ActivityItem>(`/admin/activities/${idOrSlug}`);
+  },
+
+  async create(data: Record<string, any>): Promise<ApiResponse<ActivityItem>> {
+    const payload: any = {
+      name: String(data.name || "").trim(),
+      slug: data.slug
+        ? String(data.slug).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+        : String(data.name || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
+      description: String(data.description || "").trim(),
+      status: data.status || ActivityStatus.ACTIVE,
+      isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : false,
+      menuOrder: data.menuOrder !== undefined ? Number(data.menuOrder) : 0,
+    };
+    if (data.mediaId && typeof data.mediaId === "string" && data.mediaId.trim()) {
+      payload.mediaId = data.mediaId.trim();
+    }
+    return apiClient.post<ActivityItem>("/admin/activities", payload);
+  },
+
+  async update(id: string, data: Record<string, any>): Promise<ApiResponse<ActivityItem>> {
+    const payload: Record<string, any> = {};
+    if (data.name !== undefined) payload.name = String(data.name).trim();
+    if (data.slug !== undefined) payload.slug = String(data.slug).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    if (data.description !== undefined) payload.description = String(data.description).trim();
+    if (data.status !== undefined) payload.status = data.status;
+    if (data.isFeatured !== undefined) payload.isFeatured = Boolean(data.isFeatured);
+    if (data.menuOrder !== undefined) payload.menuOrder = Number(data.menuOrder);
+    if (data.mediaId !== undefined) {
+      if (typeof data.mediaId === "string" && data.mediaId.trim()) payload.mediaId = data.mediaId.trim();
+      else payload.mediaId = null;
+    }
+
+    return apiClient.put<ActivityItem>(`/admin/activities/${id}`, payload);
+  },
+
+  async delete(id: string): Promise<ApiResponse<boolean>> {
+    return apiClient.delete<boolean>(`/admin/activities/${id}`);
+  },
+
+  async reorder(items: { id: string; menuOrder: number }[]): Promise<ApiResponse<boolean>> {
+    return apiClient.put<boolean>("/admin/activities/reorder", { items });
   },
 };
 
@@ -1571,6 +1682,27 @@ export const AdminSearchService = {
     }
   },
 };
+
+export const PublicSearchService = {
+  async search(query: string, type: string = "All", limit: number = 10): Promise<any> {
+    if (!query || query.trim().length < 2) {
+      return { query: "", totalResults: 0, results: [] };
+    }
+    try {
+      const params = new URLSearchParams({
+        q: query.trim(),
+        type,
+        limit: String(limit),
+      });
+      const res = await apiClient.get<any>(`/search?${params.toString()}`);
+      return res?.data || { query: query.trim(), totalResults: 0, results: [] };
+    } catch (e) {
+      console.warn("Public search API error:", e);
+      return null;
+    }
+  },
+};
+
 
 
 

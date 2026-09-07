@@ -331,7 +331,7 @@ export function ToursCatalogClient({
   return (
     <div className="bg-stone-50/60 min-h-screen pb-20 font-sans text-stone-900">
       {/* Clean Hero Banner Header */}
-      <section className="bg-amber-50/70 border-b border-stone-200 pt-24 pb-10 sm:pt-28 sm:pb-12 relative overflow-hidden">
+      <section className="bg-stone-100 border-b border-stone-200 pt-24 pb-10 sm:pt-28 sm:pb-12 relative overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
           <h1 className="font-heading text-2xl sm:text-4xl font-bold tracking-tight text-stone-900">
             Tour Packages

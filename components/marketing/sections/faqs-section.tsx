@@ -49,10 +49,10 @@ export function FaqsSection() {
     <section className="py-16 sm:py-20 bg-white border-b border-stone-200">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10 space-y-1 pb-6 border-b border-stone-200">
-          <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block">
+          <span className="text-stone-500 text-xs font-medium uppercase tracking-wider block">
             Trail Guidance &amp; Preparation
           </span>
-          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
+          <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight leading-snug">
             Frequently Asked Questions
           </h2>
           <p className="text-stone-600 text-sm font-normal pt-1">
@@ -67,7 +67,7 @@ export function FaqsSection() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`text-xs px-3 py-1.5 rounded-sm font-semibold transition-colors cursor-pointer border ${
+                className={`text-xs px-3 py-1.5 rounded-sm font-medium transition-colors cursor-pointer border ${
                   selectedCategory === cat
                     ? "bg-stone-900 text-white border-stone-900"
                     : "bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:text-stone-900"
@@ -81,7 +81,7 @@ export function FaqsSection() {
 
         {loading ? (
           <div className="flex items-center justify-center py-12 gap-2 text-stone-500">
-            <Loader2 className="w-4 h-4 animate-spin text-amber-700" />
+            <Loader2 className="w-4 h-4 animate-spin text-stone-600" />
             <span className="text-xs">Loading questions…</span>
           </div>
         ) : filteredFaqs.length === 0 ? (
@@ -103,13 +103,13 @@ export function FaqsSection() {
                     aria-expanded={isOpen}
                     aria-controls={answerId}
                     onClick={() => toggleFaq(faq.id)}
-                    className="w-full py-3.5 text-left flex items-start justify-between gap-4 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/40 rounded-xs transition-colors"
+                    className="w-full py-3.5 text-left flex items-start justify-between gap-4 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 rounded-xs transition-colors"
                   >
                     <span
-                      className={`font-heading text-sm sm:text-base font-bold leading-snug transition-colors pr-2 ${
+                      className={`font-heading text-sm sm:text-base font-normal leading-snug transition-colors pr-2 ${
                         isOpen
-                          ? "text-amber-900"
-                          : "text-stone-900 group-hover:text-amber-800"
+                          ? "text-stone-900 font-medium"
+                          : "text-stone-800 group-hover:text-stone-900"
                       }`}
                     >
                       {faq.question}
@@ -117,7 +117,7 @@ export function FaqsSection() {
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200 ${
                         isOpen
-                          ? "bg-amber-100 text-amber-900 rotate-180"
+                          ? "bg-stone-900 text-white rotate-180"
                           : "bg-stone-100 text-stone-500 group-hover:bg-stone-200 group-hover:text-stone-800"
                       }`}
                     >

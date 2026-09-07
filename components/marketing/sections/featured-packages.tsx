@@ -30,17 +30,25 @@ export function FeaturedPackages({
     initialTreks.length === 0 && initialTours.length === 0 && initialExpeditions.length === 0
   );
 
-  // Autoplay plugin configuration for smooth, continuous sliding
+  // Mouse drag & click prevention setup
+  const [isPointerDragging, setIsPointerDragging] = useState(false);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+
+
+
+  // Autoplay configuration
   const autoplay = useRef(
-    Autoplay({ delay: 3800, stopOnInteraction: false, stopOnMouseEnter: true })
+    Autoplay({ delay: 4200, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
+  // Embla Carousel with dragFree enabled for responsive inertia dragging
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       loop: true,
       align: "start",
       slidesToScroll: 1,
-      containScroll: "trimSnaps",
+      dragFree: true,
+      containScroll: false,
     },
     [autoplay.current]
   );
@@ -99,7 +107,7 @@ export function FeaturedPackages({
           category: p.categoryType || p.category || "Tour",
           region: p.region,
           durationDays: Number(p.durationDays || 0),
-          maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
+          maxAltitudeMeters: Number(p.maxAltitudeMeters || 0),
           difficulty: p.difficulty,
           priceUSD: Number(p.priceUSD || 0),
           rating: Number(p.rating || 5),
@@ -113,10 +121,10 @@ export function FeaturedPackages({
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: p.category,
+          category: p.categoryType || p.category || "Expedition",
           region: p.region,
           durationDays: Number(p.durationDays || 0),
-          maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
+          maxAltitudeMeters: Number(p.maxAltitudeMeters || 0),
           difficulty: p.difficulty,
           priceUSD: Number(p.priceUSD || 0),
           rating: Number(p.rating || 5),
@@ -130,20 +138,59 @@ export function FeaturedPackages({
         if (mappedTours.length > 0) setTours(mappedTours);
         if (mappedExpeditions.length > 0) setExpeditions(mappedExpeditions);
       } catch (e) {
-        console.warn("Failed to fetch featured packages from backend:", e);
+        console.warn("Error fetching featured routes:", e);
       } finally {
         setLoading(false);
       }
     }
+
     loadFeatured();
   }, []);
 
-  const currentPackages =
-    activeTab === "treks"
-      ? treks
-      : activeTab === "tours"
-        ? tours
-        : expeditions;
+  // Pointer drag tracking to differentiate click vs drag scroll
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    setIsPointerDragging(false);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!pointerStartRef.current) return;
+    const dx = Math.abs(e.clientX - pointerStartRef.current.x);
+    const dy = Math.abs(e.clientY - pointerStartRef.current.y);
+    if (dx > 5 || dy > 5) {
+      setIsPointerDragging(true);
+    }
+  };
+
+  const handlePointerUp = () => {
+    pointerStartRef.current = null;
+    setTimeout(() => {
+      setIsPointerDragging(false);
+    }, 60);
+  };
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (isPointerDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+
+
+  const getCurrentPackages = (): TravelPackage[] => {
+    switch (activeTab) {
+      case "tours":
+        return tours;
+      case "expeditions":
+        return expeditions;
+      case "treks":
+      default:
+        return treks;
+    }
+  };
+
+  const currentPackages = getCurrentPackages();
 
   const getPackageLink = (pkg: TravelPackage, tab: FeaturedTab) => {
     if (tab === "tours") return `/tours/${pkg.slug}`;
@@ -174,52 +221,36 @@ export function FeaturedPackages({
   return (
     <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Centered Editorial Section Header & Tab Navigation Links */}
-        <div className="space-y-4 pb-4 border-b border-stone-200">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 text-center md:text-left">
-            <div className="space-y-1">
-              <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block">
-                Featured Destinations
-              </span>
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
-                Himalayan Treks &amp; Routes
-              </h2>
-            </div>
-            {!loading && currentPackages.length > 0 && (
-              <Link
-                href={exploreInfo.href}
-                className="text-xs font-semibold text-amber-700 hover:underline shrink-0 self-center md:self-end"
-              >
-                {exploreInfo.label} &rarr;
-              </Link>
-            )}
-          </div>
-
-          {/* Centered Filter Navigation Links with Custom PNG Icons */}
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 pt-2">
+        {/* Centered Filter Navigation Links with Custom PNG Icons & View All CTA on Right */}
+        <div className="relative flex flex-col sm:flex-row items-center justify-center pb-4 border-b border-stone-200 min-h-[52px]">
+          {/* Centered Tabs */}
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.key;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className="inline-flex items-center gap-2.5 text-xs sm:text-sm cursor-pointer whitespace-nowrap group pb-2"
+                  className="inline-flex items-center gap-2.5 text-base sm:text-lg font-medium cursor-pointer whitespace-nowrap group pb-1"
                 >
                   <img
                     src={tab.iconUrl}
                     alt={tab.label}
-                    className="w-5 h-5 object-contain shrink-0"
+                    className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
                   />
                   <span className="relative inline-block">
-                    <span className={isActive ? "text-amber-900 font-bold" : "text-stone-600 group-hover:text-stone-900 font-medium"}>
+                    <span
+                      className={
+                        isActive
+                          ? "text-stone-900 font-bold"
+                          : "text-stone-500 group-hover:text-stone-900 font-medium transition-colors"
+                      }
+                    >
                       {tab.label}
                     </span>
                     <span
-                      className={`absolute left-0 right-0 -bottom-2 h-[2px] transition-all ${
-                        isActive
-                          ? "bg-amber-700"
-                          : "bg-transparent group-hover:bg-stone-300"
+                      className={`absolute left-0 right-0 -bottom-1 h-[2px] transition-all ${
+                        isActive ? "bg-stone-900" : "bg-transparent group-hover:bg-stone-300"
                       }`}
                     />
                   </span>
@@ -227,10 +258,22 @@ export function FeaturedPackages({
               );
             })}
           </div>
+
+          {/* View All Link Positioned on Right */}
+          {!loading && currentPackages.length > 0 && (
+            <div className="mt-2 sm:mt-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2">
+              <Link
+                href={exploreInfo.href}
+                className="text-[11px] sm:text-xs font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors"
+              >
+                {exploreInfo.label} &rarr;
+              </Link>
+            </div>
+          )}
         </div>
 
-        {/* Horizontal Showcase / Grid */}
-        <div className="relative pt-8 group/carousel">
+        {/* Horizontal Showcase / Carousel Container */}
+        <div className="relative pt-8 group/carousel select-none">
           {/* Navigation Arrows (Only if more than 1 item) */}
           {!loading && currentPackages.length > 1 && (
             <>
@@ -271,13 +314,13 @@ export function FeaturedPackages({
               </p>
               <Link
                 href={exploreInfo.href}
-                className="inline-block text-xs font-semibold text-amber-700 hover:underline"
+                className="inline-block text-xs font-semibold text-stone-900 hover:underline"
               >
                 {exploreInfo.label} &rarr;
               </Link>
             </div>
           ) : currentPackages.length === 1 ? (
-            /* Single item clean layout - static, no horizontal scrolling */
+            /* Single item clean layout */
             <div className="max-w-md">
               {currentPackages.map((pkg) => {
                 const packageHref = getPackageLink(pkg, activeTab);
@@ -307,7 +350,7 @@ export function FeaturedPackages({
                             <span>{pkg.maxAltitudeMeters.toLocaleString()}m altitude</span>
                           )}
                         </div>
-                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-amber-700 transition-colors leading-snug line-clamp-1">
+                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-600 transition-colors leading-snug line-clamp-1">
                           {pkg.title}
                         </h3>
                       </div>
@@ -318,7 +361,7 @@ export function FeaturedPackages({
                             ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
                           </span>
                         </div>
-                        <span className="text-xs font-semibold text-amber-700 group-hover:underline">
+                        <span className="text-xs font-semibold text-stone-900 group-hover:underline">
                           Explore Route &rarr;
                         </span>
                       </div>
@@ -328,8 +371,14 @@ export function FeaturedPackages({
               })}
             </div>
           ) : (
-            /* Multi-item Embla Carousel */
-            <div className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y" ref={emblaRef}>
+            /* Multi-item Embla Carousel with Mouse Drag & Hover Motion */
+            <div
+              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
+              ref={emblaRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+            >
               <div className="flex -ml-6">
                 {currentPackages.map((pkg) => {
                   const packageHref = getPackageLink(pkg, activeTab);
@@ -341,6 +390,7 @@ export function FeaturedPackages({
                     >
                       <Link
                         href={packageHref}
+                        onClick={handleCardClick}
                         className="group flex flex-col h-full bg-white rounded-sm border border-stone-200 hover:border-stone-400 transition-all duration-300 overflow-hidden"
                       >
                         {/* Mountain Image Frame */}
@@ -349,6 +399,7 @@ export function FeaturedPackages({
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
                             className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                            draggable={false}
                           />
 
                           {/* Region Tag */}
@@ -359,7 +410,7 @@ export function FeaturedPackages({
                           )}
                         </div>
 
-                        {/* Minimalist Destination Card Body */}
+                        {/* Destination Card Body */}
                         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
@@ -369,7 +420,7 @@ export function FeaturedPackages({
                               )}
                             </div>
 
-                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-amber-700 transition-colors leading-snug line-clamp-1">
+                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-600 transition-colors leading-snug line-clamp-1">
                               {pkg.title}
                             </h3>
                           </div>
@@ -379,11 +430,11 @@ export function FeaturedPackages({
                             <div>
                               <span className="text-[11px] text-stone-400 block font-medium">From</span>
                               <span className="text-base font-bold text-stone-900">
-                                ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
+                                ${pkg.priceUSD ? pkg.priceUSD.toLocaleString() : "0"} <span className="text-xs font-normal text-stone-500">USD</span>
                               </span>
                             </div>
 
-                            <span className="text-xs font-semibold text-amber-700 group-hover:underline">
+                            <span className="text-xs font-medium text-stone-900 group-hover:underline">
                               Explore Route &rarr;
                             </span>
                           </div>
@@ -395,7 +446,6 @@ export function FeaturedPackages({
               </div>
             </div>
           )}
-
         </div>
       </div>
     </section>

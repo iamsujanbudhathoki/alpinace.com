@@ -27,16 +27,16 @@
   --color-forest-100: #eaf2ed;
   --color-forest-50: #f4f8f5;
 
-  --color-gold-950: #211909;
-  --color-gold-900: #3f2f11;
-  --color-gold-800: #5e471a;
-  --color-gold-700: #8a7550;
-  --color-gold-600: #b48529;
-  --color-gold-500: #d4a338;
-  --color-gold-400: #e5b854;
-  --color-gold-300: #f0cd7d;
-  --color-gold-200: #f7e2aa;
-  --color-gold-100: #fdf8eb;
+  --color-gold-950: #0f172a;
+  --color-gold-900: #1e293b;
+  --color-gold-800: #334155;
+  --color-gold-700: #475569;
+  --color-gold-600: #1e293b;
+  --color-gold-500: #0f172a;
+  --color-gold-400: #475569;
+  --color-gold-300: #94a3b8;
+  --color-gold-200: #cbd5e1;
+  --color-gold-100: #f1f5f9;
 
   --color-offwhite-50: #fafaf9;
   --color-offwhite-100: #f1f5f9;
@@ -60,8 +60,8 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --color-accent: var(--color-gold-500);
-  --color-accent-foreground: var(--color-gold-950);
+  --color-accent: var(--color-primary-900);
+  --color-accent-foreground: var(--color-primary-950);
   --font-heading: var(--font-poppins), var(--font-sans);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);

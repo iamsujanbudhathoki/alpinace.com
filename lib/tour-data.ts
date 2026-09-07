@@ -35,6 +35,8 @@ export interface TourItem {
   itinerary?: TripItineraryDay[];
   faqs?: TripFaqItem[];
   categoryId?: string;
+  subcategoryId?: string;
+  activityIds?: string[];
   categorySlug?: string;
   metaTitle?: string;
   metaDescription?: string;

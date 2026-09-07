@@ -38,18 +38,21 @@ if (fs.existsSync(llmsPath)) {
   assert(llmsContent.includes("Accept: text/markdown"), "llms.txt explains Accept: text/markdown negotiation");
 }
 
-// 2. Middleware & API route file checks
-console.log("\n2. Checking Middleware & Agent Markdown Implementation...");
+// 2. Proxy & API route file checks
+console.log("\n2. Checking Proxy & Agent Markdown Implementation...");
+const proxyPath = path.join(projectRoot, "proxy.ts");
 const middlewarePath = path.join(projectRoot, "middleware.ts");
+const activePath = fs.existsSync(proxyPath) ? proxyPath : middlewarePath;
+const activeName = path.basename(activePath);
 const agentRoutePath = path.join(projectRoot, "app", "api", "agent-markdown", "route.ts");
 
-assert(fs.existsSync(middlewarePath), "middleware.ts exists");
+assert(fs.existsSync(activePath), `${activeName} exists`);
 assert(fs.existsSync(agentRoutePath), "app/api/agent-markdown/route.ts exists");
 
-if (fs.existsSync(middlewarePath)) {
-  const mwContent = fs.readFileSync(middlewarePath, "utf-8");
-  assert(mwContent.includes("Vary"), "middleware.ts sets Vary header");
-  assert(mwContent.includes("text/markdown"), "middleware.ts handles text/markdown negotiation");
+if (fs.existsSync(activePath)) {
+  const mwContent = fs.readFileSync(activePath, "utf-8");
+  assert(mwContent.includes("Vary"), `${activeName} sets Vary header`);
+  assert(mwContent.includes("text/markdown"), `${activeName} handles text/markdown negotiation`);
 }
 
 if (fs.existsSync(agentRoutePath)) {
@@ -82,8 +85,18 @@ if (fs.existsSync(pagePath)) {
   const pageContent = fs.readFileSync(pagePath, "utf-8");
   assert(pageContent.includes("initialTreks"), "page.tsx server-pre-renders initial package data");
   assert(pageContent.includes("organizationSchema"), "page.tsx embeds Organization schema");
-  assert(pageContent.includes("<h2>"), "page.tsx includes H2 headings");
-  assert(pageContent.includes("<h3>"), "page.tsx includes H3 headings");
+
+  const sectionsDir = path.join(projectRoot, "components", "marketing", "sections");
+  let fullMarketingCode = pageContent;
+  if (fs.existsSync(sectionsDir)) {
+    const files = fs.readdirSync(sectionsDir);
+    for (const f of files) {
+      fullMarketingCode += "\n" + fs.readFileSync(path.join(sectionsDir, f), "utf-8");
+    }
+  }
+
+  assert(fullMarketingCode.includes("<h2") || fullMarketingCode.includes("<h2>"), "marketing page/sections include H2 headings");
+  assert(fullMarketingCode.includes("<h3") || fullMarketingCode.includes("<h3>"), "marketing page/sections include H3 headings");
   assert(pageContent.length > 3000, "page.tsx provides extensive SSR content");
 }
 

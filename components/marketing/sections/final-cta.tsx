@@ -30,7 +30,7 @@ export function FinalCta() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-4">
           <Link
             href="/contact"
-            className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white font-medium text-xs sm:text-sm px-7 py-3.5 rounded-md transition-colors shadow-sm"
+            className="w-full sm:w-auto bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm px-7 py-3.5 rounded-md transition-colors shadow-xs"
           >
             Get in Touch &rarr;
           </Link>

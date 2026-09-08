@@ -1,6 +1,7 @@
 import { Hero } from "@/components/marketing/sections/hero";
 import { PartnersAffiliationsSection } from "@/components/marketing/sections/partners-affiliations";
 import { WhyChooseUs } from "@/components/marketing/sections/why-choose-us";
+import { WhyAceSection } from "@/components/marketing/sections/why-ace-section";
 import { FeaturedPackages } from "@/components/marketing/sections/featured-packages";
 import { ActivitiesSection } from "@/components/marketing/sections/activities-section";
 import { TestimonialsSection } from "@/components/marketing/sections/testimonials";
@@ -279,8 +280,11 @@ export default async function Home() {
       {/* 3. Explore by Activity Hubs */}
       <ActivitiesSection />
 
-      {/* 3. Discover the Difference - Why Alpine Ace? */}
+      {/* 4. Discover the Difference - About Alpine Ace */}
       <WhyChooseUs />
+
+      {/* 5. Why Choose AlpineAce Treks? */}
+      <WhyAceSection />
 
       {/* 4. Traveler's Tales - Client Testimonials */}
       <TestimonialsSection />

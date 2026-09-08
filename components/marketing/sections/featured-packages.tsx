@@ -252,9 +252,8 @@ export function FeaturedPackages({
                       {tab.label}
                     </span>
                     <span
-                      className={`absolute left-0 right-0 -bottom-1 h-[2px] transition-all ${
-                        isActive ? "bg-stone-900" : "bg-transparent group-hover:bg-stone-300"
-                      }`}
+                      className={`absolute left-0 right-0 -bottom-1 h-[2px] transition-all ${isActive ? "bg-stone-900" : "bg-transparent group-hover:bg-stone-300"
+                        }`}
                     />
                   </span>
                 </button>

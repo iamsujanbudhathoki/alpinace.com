@@ -19,12 +19,11 @@ export function WhyChooseUs() {
           <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
         </div>
 
-        {/* 2-Column Card Container */}
+        {/* 2-Column Card Container (About Us Video & Overview) */}
         <div className="max-w-6xl mx-auto bg-[#f8f8f8] border border-stone-200/80 rounded-2xl lg:rounded-3xl overflow-hidden shadow-xs">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[460px]">
             {/* Left Column: Image with Interactive Play Video Overlay */}
             <div className="relative lg:col-span-6 xl:col-span-5 min-h-[320px] sm:min-h-[380px] lg:min-h-full overflow-hidden bg-stone-900 group">
-              
               <Image
                 src="/about-everest-group.png"
                 alt="Alpine Ace Trekkers at Everest Base Camp"
@@ -46,7 +45,7 @@ export function WhyChooseUs() {
               </button>
             </div>
 
-            {/* Right Column: Rebranded Content Text */}
+            {/* Right Column: Content Text */}
             <div className="lg:col-span-6 xl:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6">
               <div className="space-y-4 text-stone-700 text-xs sm:text-sm lg:text-[15px] leading-relaxed font-normal">
                 <p>
@@ -102,4 +101,6 @@ export function WhyChooseUs() {
     </section>
   );
 }
+
+
 

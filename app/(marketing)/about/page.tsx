@@ -245,14 +245,14 @@ export default async function AboutView() {
       {team.length > 0 && (
         <section className="py-16 sm:py-20 bg-stone-50 border-t border-stone-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl mb-12">
+            <div className="text-center max-w-2xl mx-auto mb-12">
               <span className="text-stone-900 text-xs font-semibold uppercase tracking-wider block mb-2">
                 Leadership
               </span>
               <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
                 The team behind your trek
               </h2>
-              <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
+              <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

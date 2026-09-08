@@ -88,14 +88,14 @@ export function TestimonialsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="mb-8 space-y-1 pb-6 border-b border-stone-200">
+        <div className="text-center mb-8 space-y-1 pb-6 border-b border-stone-200 flex flex-col items-center justify-center">
           <span className="text-stone-500 text-xs font-medium block">
             Traveler Feedback
           </span>
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
             What our travelers say
           </h2>
-          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
+          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5 mx-auto" />
         </div>
 
         {/* Carousel Container */}

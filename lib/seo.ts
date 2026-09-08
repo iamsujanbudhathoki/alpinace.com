@@ -27,8 +27,8 @@ interface StaticMetadataParams {
  */
 export function normalizeImageUrl(imgUrl?: string | null): string {
   const baseUrl = siteConfig.url;
-  if (!imgUrl || !imgUrl.trim()) {
-    return `${baseUrl}/logo.jpg`;
+  if (!imgUrl || !imgUrl.trim() || imgUrl.includes("unsplash.com")) {
+    return `${baseUrl}/mountain-placeholder.jpg`;
   }
   const cleanUrl = imgUrl.trim();
   if (cleanUrl.startsWith("http://") || cleanUrl.startsWith("https://")) {

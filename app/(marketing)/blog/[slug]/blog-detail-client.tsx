@@ -267,7 +267,7 @@ export function BlogDetailClient({ initialPost, slug }: BlogDetailClientProps) {
 
           {/* Rendered HTML Rich-Text Body */}
           <div
-            className="prose prose-slate max-w-none 
+            className="prose prose-slate max-w-none overflow-x-auto break-words
               text-stone-800 text-base sm:text-lg leading-[1.85] font-normal
               [&_h1]:font-heading [&_h1]:text-3xl [&_h1]:sm:text-4xl [&_h1]:font-bold [&_h1]:text-stone-950 [&_h1]:mt-12 [&_h1]:mb-5
               [&_h2]:font-heading [&_h2]:text-2xl [&_h2]:sm:text-3xl [&_h2]:font-bold [&_h2]:text-stone-950 [&_h2]:mt-12 [&_h2]:mb-5 [&_h2]:pb-2.5 [&_h2]:border-b [&_h2]:border-stone-200
@@ -278,6 +278,7 @@ export function BlogDetailClient({ initialPost, slug }: BlogDetailClientProps) {
               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-6 [&_ol]:space-y-2.5 [&_ol]:marker:text-stone-900
               [&_li]:text-stone-800 [&_li]:leading-relaxed
               [&_img]:rounded-sm [&_img]:my-10 [&_img]:border [&_img]:border-stone-200 [&_img]:w-full [&_img]:object-cover
+              [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_pre]:overflow-x-auto
               [&_table]:w-full [&_table]:border-collapse [&_table]:my-8 [&_table]:rounded-sm [&_table]:overflow-hidden [&_table]:border [&_table]:border-stone-200
               [&_th]:bg-stone-100 [&_th]:border-b [&_th]:border-stone-200 [&_th]:p-3.5 [&_th]:text-sm [&_th]:font-bold [&_th]:text-stone-900 [&_th]:text-left
               [&_td]:p-3.5 [&_td]:border-b [&_td]:border-stone-100 [&_td]:text-sm [&_td]:text-stone-700

@@ -573,15 +573,15 @@ export function Hero({
                         </div>
 
                         {/* Category Badge & Price */}
-                        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-3 shrink-0">
                           {item.priceUSD ? (
-                            <span className="text-xs sm:text-sm font-medium text-stone-700 hidden sm:inline">
-                              ${item.priceUSD.toLocaleString()} USD
+                            <span className="text-xs sm:text-sm font-semibold text-stone-900">
+                              ${item.priceUSD.toLocaleString()} <span className="text-[10px] sm:text-xs text-stone-500 font-normal">USD</span>
                             </span>
                           ) : null}
 
                           {/* Minimal Neutral Type Badge */}
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-stone-100 text-stone-700 border border-stone-200">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200">
                             {item.type}
                           </span>
 

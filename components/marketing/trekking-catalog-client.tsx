@@ -395,8 +395,14 @@ export function TrekkingCatalogClient({
 
         {/* Mobile Filter Drawer */}
         {isMobileFilterOpen && (
-          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex justify-end lg:hidden">
-            <div className="bg-white w-full max-w-xs h-full p-5 overflow-y-auto flex flex-col justify-between shadow-2xl">
+          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex justify-end lg:hidden animate-in fade-in duration-200">
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0"
+              onClick={() => setIsMobileFilterOpen(false)}
+              aria-hidden="true"
+            />
+            <div className="relative z-10 bg-white w-full max-w-xs sm:max-w-sm h-full p-5 overflow-y-auto flex flex-col justify-between shadow-2xl animate-in slide-in-from-right duration-200">
               <div>
                 <div className="flex items-center justify-between pb-3 mb-5 border-b border-stone-200">
                   <h3 className="font-heading font-bold text-sm text-stone-900">
@@ -510,7 +516,7 @@ export function TrekkingCatalogClient({
                         {/* Clean Image Frame */}
                         <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-950">
                           <Image
-                            src={trk.image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800"}
+                            src={trk.image || "/mountain-placeholder.jpg"}
                             alt={trk.title}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

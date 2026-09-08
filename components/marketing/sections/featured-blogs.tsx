@@ -52,22 +52,24 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
   return (
     <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-row items-end justify-between mb-8 gap-3 border-b border-stone-200 pb-5">
-          <div className="space-y-1">
+        <div className="relative flex flex-col sm:flex-row items-center justify-center mb-8 pb-5 border-b border-stone-200 min-h-[52px]">
+          <div className="space-y-1 text-center flex flex-col items-center justify-center">
             <span className="text-stone-500 text-xs font-medium block">
               Articles &amp; Guides
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
               Latest from our journal
             </h2>
-            <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
+            <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5 mx-auto" />
           </div>
-          <Link
-            href="/blog"
-            className="text-xs sm:text-sm font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors shrink-0"
-          >
-            Read All Articles &rarr;
-          </Link>
+          <div className="mt-3 sm:mt-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2">
+            <Link
+              href="/blog"
+              className="text-xs sm:text-sm font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors shrink-0 whitespace-nowrap"
+            >
+              Read All Articles &rarr;
+            </Link>
+          </div>
         </div>
 
         {/* Mobile Swipeable Horizontal Carousel / Desktop 3-Column Grid */}

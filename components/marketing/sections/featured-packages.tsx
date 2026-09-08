@@ -62,27 +62,47 @@ export function FeaturedPackages({
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  // Re-init Embla when changing active category tab
+  // Re-init Embla when changing active category tab or when package items update
   useEffect(() => {
     if (emblaApi) {
       emblaApi.reInit();
       emblaApi.scrollTo(0);
     }
-  }, [activeTab, emblaApi]);
+  }, [activeTab, treks, tours, expeditions, emblaApi]);
 
   // Load featured items from backend API
   useEffect(() => {
     async function loadFeatured() {
       try {
         const [treksRes, toursRes, expeditionsRes] = await Promise.all([
-          apiClient.get<any[]>(`/treks?status=${PackageStatus.FEATURED}`),
-          apiClient.get<any[]>(`/tours?status=${PackageStatus.FEATURED}`),
-          apiClient.get<any[]>(`/expeditions?status=${PackageStatus.FEATURED}`),
+          apiClient.get<any[]>(`/treks?status=${PackageStatus.FEATURED}`).catch(() => null),
+          apiClient.get<any[]>(`/tours?status=${PackageStatus.FEATURED}`).catch(() => null),
+          apiClient.get<any[]>(`/expeditions?status=${PackageStatus.FEATURED}`).catch(() => null),
         ]);
 
-        const rawTreks = treksRes && treksRes.success && Array.isArray(treksRes.data) ? treksRes.data : [];
-        const rawTours = toursRes && toursRes.success && Array.isArray(toursRes.data) ? toursRes.data : [];
-        const rawExpeditions = expeditionsRes && expeditionsRes.success && Array.isArray(expeditionsRes.data) ? expeditionsRes.data : [];
+        let rawTreks = treksRes && treksRes.success && Array.isArray(treksRes.data) ? treksRes.data : [];
+        let rawTours = toursRes && toursRes.success && Array.isArray(toursRes.data) ? toursRes.data : [];
+        let rawExpeditions = expeditionsRes && expeditionsRes.success && Array.isArray(expeditionsRes.data) ? expeditionsRes.data : [];
+
+        // If no strictly FEATURED items found, fall back to fetching public items so all featured/active routes are displayed
+        if (rawTreks.length === 0) {
+          const fallback = await apiClient.get<any[]>("/treks?limit=50").catch(() => null);
+          if (fallback && fallback.success && Array.isArray(fallback.data)) {
+            rawTreks = fallback.data;
+          }
+        }
+        if (rawTours.length === 0) {
+          const fallback = await apiClient.get<any[]>("/tours?limit=50").catch(() => null);
+          if (fallback && fallback.success && Array.isArray(fallback.data)) {
+            rawTours = fallback.data;
+          }
+        }
+        if (rawExpeditions.length === 0) {
+          const fallback = await apiClient.get<any[]>("/expeditions?limit=50").catch(() => null);
+          if (fallback && fallback.success && Array.isArray(fallback.data)) {
+            rawExpeditions = fallback.data;
+          }
+        }
 
         const mappedTreks: TravelPackage[] = rawTreks.map((p) => ({
           id: p.id,
@@ -193,6 +213,12 @@ export function FeaturedPackages({
 
   const currentPackages = getCurrentPackages();
 
+  // Ensure sufficient item sequence for seamless infinite loop scrolling without slide detachment or line wrapping
+  const displayPackages =
+    currentPackages.length > 1 && currentPackages.length < 10
+      ? [...currentPackages, ...currentPackages, ...currentPackages]
+      : currentPackages;
+
   const getPackageLink = (pkg: TravelPackage, tab: FeaturedTab) => {
     if (tab === "tours") return `/tours/${pkg.slug}`;
     if (tab === "expeditions") return `/expeditions/${pkg.slug}`;
@@ -223,23 +249,23 @@ export function FeaturedPackages({
     <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Centered Filter Navigation Links with Custom PNG Icons & View All CTA on Right */}
-        <div className="relative flex flex-col sm:flex-row items-center justify-center pb-4 border-b border-stone-200 min-h-[52px]">
-          {/* Centered Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+        <div className="relative flex flex-col md:flex-row items-center justify-center pb-4 border-b border-stone-200 min-h-[52px]">
+          {/* Centered Single-Row Tabs */}
+          <div className="flex flex-nowrap items-center justify-center gap-3 sm:gap-6 md:gap-10 overflow-x-auto scrollbar-none max-w-full py-1">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.key;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className="inline-flex items-center gap-2.5 text-base sm:text-lg font-medium cursor-pointer whitespace-nowrap group pb-1"
+                  className="inline-flex items-center gap-1.5 sm:gap-2.5 text-sm sm:text-base md:text-lg font-medium cursor-pointer whitespace-nowrap shrink-0 group pb-1"
                 >
                   <Image
                     src={tab.iconUrl}
                     alt={tab.label}
                     width={28}
                     height={28}
-                    className="object-contain shrink-0"
+                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 object-contain shrink-0"
                   />
                   <span className="relative inline-block">
                     <span
@@ -263,10 +289,10 @@ export function FeaturedPackages({
 
           {/* View All Link Positioned on Right */}
           {!loading && currentPackages.length > 0 && (
-            <div className="mt-2 sm:mt-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2">
+            <div className="mt-2 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 shrink-0">
               <Link
                 href={exploreInfo.href}
-                className="text-[11px] sm:text-xs font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors"
+                className="text-[11px] sm:text-xs font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors whitespace-nowrap"
               >
                 {exploreInfo.label} &rarr;
               </Link>
@@ -383,14 +409,14 @@ export function FeaturedPackages({
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
             >
-              <div className="flex -ml-6">
-                {currentPackages.map((pkg) => {
+              <div className="flex flex-nowrap -ml-6">
+                {displayPackages.map((pkg, index) => {
                   const packageHref = getPackageLink(pkg, activeTab);
 
                   return (
                     <div
-                      key={pkg.id}
-                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0 pl-6"
+                      key={`${pkg.id}-${index}`}
+                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0 pl-6 shrink-0"
                     >
                       <Link
                         href={packageHref}

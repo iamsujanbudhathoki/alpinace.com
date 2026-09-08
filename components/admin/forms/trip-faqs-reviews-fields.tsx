@@ -168,23 +168,23 @@ interface TripReviewsManagerProps {
 const PRESET_AVATARS = [
   {
     name: "Elena",
-    url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
+    url: "/mountain-placeholder.jpg",
   },
   {
     name: "Marcus",
-    url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80",
+    url: "/about-everest-group.png",
   },
   {
     name: "Sophie",
-    url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80",
+    url: "/mountain-placeholder.jpg",
   },
   {
     name: "David",
-    url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80",
+    url: "/about-everest-group.png",
   },
   {
     name: "Hannah",
-    url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80",
+    url: "/mountain-placeholder.jpg",
   },
 ];
 

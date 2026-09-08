@@ -83,7 +83,7 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
             alt="Uploaded preview"
             className="w-full h-36 object-cover"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80";
+              (e.target as HTMLImageElement).src = "/mountain-placeholder.jpg";
             }}
           />
           <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -136,7 +136,7 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
             <LinkIcon className="w-4 h-4 absolute left-3 top-2.5 text-slate-900" />
             <Input
               type="text"
-              placeholder="https://images.unsplash.com/..."
+              placeholder="/mountain-placeholder.jpg or image URL..."
               value={value}
               onChange={(e) => onChange(e.target.value)}
               className="text-xs bg-slate-50 border-slate-300 text-slate-950 font-bold pl-9 focus:bg-white"

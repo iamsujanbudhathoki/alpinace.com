@@ -38,7 +38,8 @@ export default async function Home() {
 
     initialTreks = rawTreks
       .filter((p) => p.status === PackageStatus.FEATURED || p.status === PackageStatus.ACTIVE)
-      .slice(0, 6)
+      .sort((a, b) => (a.status === PackageStatus.FEATURED ? -1 : 1))
+      .slice(0, 20)
       .map((p) => ({
         id: p.id,
         title: p.title,
@@ -58,7 +59,8 @@ export default async function Home() {
 
     initialTours = rawTours
       .filter((p) => p.status === PackageStatus.FEATURED || p.status === PackageStatus.ACTIVE)
-      .slice(0, 6)
+      .sort((a, b) => (a.status === PackageStatus.FEATURED ? -1 : 1))
+      .slice(0, 20)
       .map((p) => ({
         id: p.id,
         title: p.title,
@@ -78,7 +80,8 @@ export default async function Home() {
 
     initialExpeditions = rawExpeditions
       .filter((p) => p.status === PackageStatus.FEATURED || p.status === PackageStatus.ACTIVE)
-      .slice(0, 6)
+      .sort((a, b) => (a.status === PackageStatus.FEATURED ? -1 : 1))
+      .slice(0, 20)
       .map((p) => ({
         id: p.id,
         title: p.title,

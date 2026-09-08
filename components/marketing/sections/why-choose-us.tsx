@@ -23,7 +23,7 @@ export function WhyChooseUs() {
         <div className="max-w-6xl mx-auto bg-[#f8f8f8] border border-stone-200/80 rounded-2xl lg:rounded-3xl overflow-hidden shadow-xs">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[460px]">
             {/* Left Column: Image with Interactive Play Video Overlay */}
-            <div className="relative lg:col-span-6 xl:col-span-5 min-h-[320px] sm:min-h-[380px] lg:min-h-full overflow-hidden bg-stone-900 group">
+            <div className="relative lg:col-span-6 xl:col-span-5 min-h-[250px] sm:min-h-[360px] lg:min-h-full overflow-hidden bg-stone-900 group">
               <Image
                 src="/about-everest-group.png"
                 alt="Alpine Ace Trekkers at Everest Base Camp"

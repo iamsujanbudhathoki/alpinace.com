@@ -132,7 +132,7 @@ export function PackageHighlightsGrid({
     <div
       className={`bg-stone-50 rounded-xl p-6 sm:p-7 border border-stone-200 ${className}`}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-3.5 sm:gap-x-8">
         {items.map((item, idx) => (
           <div key={idx} className="flex items-start gap-3.5">
             <div className="shrink-0 pt-0.5 text-stone-700">{item.icon}</div>

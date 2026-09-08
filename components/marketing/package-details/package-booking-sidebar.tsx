@@ -109,12 +109,12 @@ export function PackageBookingSidebar({
                 disabled={travelers <= 1}
                 onClick={() => onTravelersChange(Math.max(1, travelers - 1))}
                 aria-label="Decrease traveler count"
-                className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
+                className="w-10 h-10 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
               >
-                <Minus className="w-3.5 h-3.5" strokeWidth={2} />
+                <Minus className="w-4 h-4" strokeWidth={2} />
               </button>
 
-              <div className="flex-1 text-center type-heading-md text-stone-900">
+              <div className="flex-1 text-center type-heading-md text-stone-900 font-bold text-sm sm:text-base">
                 {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
               </div>
 
@@ -123,9 +123,9 @@ export function PackageBookingSidebar({
                 disabled={travelers >= 16}
                 onClick={() => onTravelersChange(Math.min(16, travelers + 1))}
                 aria-label="Increase traveler count"
-                className="w-8 h-8 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
+                className="w-10 h-10 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
               >
-                <Plus className="w-3.5 h-3.5" strokeWidth={2} />
+                <Plus className="w-4 h-4" strokeWidth={2} />
               </button>
             </div>
           </div>

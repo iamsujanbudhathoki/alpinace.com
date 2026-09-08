@@ -8,7 +8,7 @@ import { adminTeamsApi, TeamMemberItem } from "@/lib/services/admin-service";
 
 export function ExpertCtaSection() {
   const { settings } = useSettings();
-  const rawPhone = settings.whatsappNumber || "+9779851233710";
+  const rawPhone = settings.whatsappNumber || "+977 9764398491";
   const cleanPhone = rawPhone.replace(/\D/g, "");
   const whatsappUrl = cleanPhone
     ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
@@ -146,9 +146,17 @@ export function ExpertCtaSection() {
                 <span className="font-bold text-stone-900 text-sm sm:text-base flex items-center justify-center gap-1.5">
                   Sujan <span className="text-stone-400 font-normal">&bull;</span> Nepal 🇳🇵
                 </span>
-                <p className="text-stone-600 text-xs font-medium">
-                  WhatsApp <span className="font-semibold text-stone-900">{rawPhone}</span>
-                </p>
+                <div>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-stone-600 hover:text-stone-950 text-xs font-medium inline-flex items-center justify-center gap-1.5 hover:underline cursor-pointer transition-colors"
+                  >
+                    <span>WhatsApp</span>
+                    <span className="font-semibold text-stone-900">{rawPhone}</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

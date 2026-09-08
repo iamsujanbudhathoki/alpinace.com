@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Users,
-  ShieldCheck,
-  BadgeDollarSign,
-  Award,
-  HeartHandshake,
-  CalendarCheck,
-} from "lucide-react";
+import Image from "next/image";
 
 interface WhyAceFeature {
   title: string;
@@ -23,7 +16,15 @@ const whyAceFeatures: WhyAceFeature[] = [
     title: "Local Himalayan Experts",
     description:
       "Dedicated local professionals are based in Nepal and work exclusively for Alpine Ace to give you an authentic Himalayan experience.",
-    icon: <Users className="w-6 h-6" />,
+    icon: (
+      <Image
+        src="/icons/himalaya.png"
+        alt="Local Himalayan Experts"
+        width={32}
+        height={32}
+        className="w-8 h-8 object-contain"
+      />
+    ),
     badgeBg: "bg-blue-50/90",
     badgeBorder: "border-blue-100",
     iconColor: "text-blue-600",
@@ -32,7 +33,15 @@ const whyAceFeatures: WhyAceFeature[] = [
     title: "High Standard of Safety Prioritized",
     description:
       "Your safe and secure trip is our top priority. Fully health-trained Sherpa guides and medical-equipped staff take care of you throughout the journey.",
-    icon: <ShieldCheck className="w-6 h-6" />,
+    icon: (
+      <Image
+        src="/icons/safety.png"
+        alt="High Standard of Safety Prioritized"
+        width={32}
+        height={32}
+        className="w-8 h-8 object-contain"
+      />
+    ),
     badgeBg: "bg-rose-50/90",
     badgeBorder: "border-rose-100",
     iconColor: "text-rose-600",
@@ -41,7 +50,15 @@ const whyAceFeatures: WhyAceFeature[] = [
     title: "Unbeatable Value",
     description:
       "We at Alpine Ace carefully curate our itineraries with transparent pricing and the best possible services to guarantee your trip is true value for money.",
-    icon: <BadgeDollarSign className="w-6 h-6" />,
+    icon: (
+      <Image
+        src="/icons/value-proposition.png"
+        alt="Unbeatable Value"
+        width={32}
+        height={32}
+        className="w-8 h-8 object-contain"
+      />
+    ),
     badgeBg: "bg-slate-100/90",
     badgeBorder: "border-slate-200",
     iconColor: "text-slate-700",
@@ -50,7 +67,15 @@ const whyAceFeatures: WhyAceFeature[] = [
     title: "Top-Notch Service",
     description:
       "Well-experienced professional Sherpa guides and dedicated support team are at your service to deliver an exceptional quality trip experience.",
-    icon: <Award className="w-6 h-6" />,
+    icon: (
+      <Image
+        src="/icons/service-responsible.png"
+        alt="Top-Notch Service"
+        width={32}
+        height={32}
+        className="w-8 h-8 object-contain"
+      />
+    ),
     badgeBg: "bg-amber-50/90",
     badgeBorder: "border-amber-100",
     iconColor: "text-amber-600",
@@ -59,7 +84,15 @@ const whyAceFeatures: WhyAceFeature[] = [
     title: "Socially Responsible",
     description:
       "Alpine Ace believes in giving back to local mountain communities primarily through social initiatives and eco-friendly trekking practices across Nepal.",
-    icon: <HeartHandshake className="w-6 h-6" />,
+    icon: (
+      <Image
+        src="/icons/responsible.png"
+        alt="Socially Responsible"
+        width={32}
+        height={32}
+        className="w-8 h-8 object-contain"
+      />
+    ),
     badgeBg: "bg-emerald-50/90",
     badgeBorder: "border-emerald-100",
     iconColor: "text-emerald-600",
@@ -68,7 +101,15 @@ const whyAceFeatures: WhyAceFeature[] = [
     title: "Guaranteed Departures",
     description:
       "Our trips have guaranteed departure dates. Once your booking is confirmed, your trek is guaranteed to run irrespective of the group size.",
-    icon: <CalendarCheck className="w-6 h-6" />,
+    icon: (
+      <Image
+        src="/icons/departure.png"
+        alt="Guaranteed Departures"
+        width={32}
+        height={32}
+        className="w-8 h-8 object-contain"
+      />
+    ),
     badgeBg: "bg-sky-50/90",
     badgeBorder: "border-sky-100",
     iconColor: "text-sky-600",

@@ -51,7 +51,7 @@ export function FaqsSection() {
   return (
     <section className="py-16 sm:py-20 bg-white border-b border-stone-200">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10 pb-6 border-b border-stone-200">
+        <div className="text-center mb-8 sm:mb-10">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
             Frequently Asked Questions by Travelers
           </h2>

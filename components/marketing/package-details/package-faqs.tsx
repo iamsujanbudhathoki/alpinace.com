@@ -28,7 +28,7 @@ export function PackageFaqs({
   return (
     <div className="space-y-6 pb-6 sm:pb-10 font-sans">
       {/* Section Header */}
-      <div className="pb-4 border-b border-stone-200">
+      <div className="pb-2">
         <span className="text-stone-500 text-xs font-normal block">
           Trail guidance &amp; preparation
         </span>
@@ -44,7 +44,7 @@ export function PackageFaqs({
       </div>
 
       {/* Editorial Accordion List */}
-      <div className="divide-y divide-stone-200 border-b border-stone-200">
+      <div className="divide-y divide-stone-200 border-t border-b border-stone-200">
         {faqs.map((f, idx) => {
           const isOpen = activeFaq === idx;
           const questionId = `faq-q-${idx}`;

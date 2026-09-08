@@ -85,9 +85,10 @@ export function Hero({
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
-  // Dynamic Headline Animation State
+  // Dynamic Mask Reveal & Collapse Headline Animation State
+  type MaskAnimStep = "prep" | "entering" | "visible" | "exiting";
   const [phraseIndex, setPhraseIndex] = useState(0);
-  const [isFading, setIsFading] = useState(false);
+  const [animStep, setAnimStep] = useState<MaskAnimStep>("visible");
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -102,16 +103,23 @@ export function Hero({
   useEffect(() => {
     if (prefersReducedMotion) return;
 
-    const timer = setInterval(() => {
-      setIsFading(true);
-      setTimeout(() => {
-        setPhraseIndex((prev) => (prev + 1) % HERO_PHRASES.length);
-        setIsFading(false);
-      }, 500);
-    }, 2800);
+    let timer: NodeJS.Timeout;
 
-    return () => clearInterval(timer);
-  }, [prefersReducedMotion]);
+    if (animStep === "visible") {
+      timer = setTimeout(() => setAnimStep("exiting"), 2600);
+    } else if (animStep === "exiting") {
+      timer = setTimeout(() => {
+        setPhraseIndex((prev) => (prev + 1) % HERO_PHRASES.length);
+        setAnimStep("prep");
+      }, 500);
+    } else if (animStep === "prep") {
+      timer = setTimeout(() => setAnimStep("entering"), 30);
+    } else if (animStep === "entering") {
+      timer = setTimeout(() => setAnimStep("visible"), 600);
+    }
+
+    return () => clearTimeout(timer);
+  }, [animStep, prefersReducedMotion]);
 
   const parsedFilters = useMemo(() => {
     const priceOpt = PRICE_OPTIONS.find((p) => p.value === priceRange);
@@ -304,15 +312,19 @@ export function Hero({
 
       {/* Centered Content Container */}
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">
-        {/* Animated Editorial Motion Headline */}
+        {/* Animated Editorial Mask Reveal & Collapse Headline */}
         <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 sm:mb-8 max-w-4xl leading-[1.15] text-center drop-shadow-md">
           <span className="block text-white">Discover your</span>
-          <span className="relative block h-[1.25em] overflow-hidden">
+          <span className="relative block h-[1.3em] overflow-hidden align-middle">
             <span
-              className={`block text-[#eab308] font-bold transition-all duration-500 ease-out ${
-                isFading
-                  ? "opacity-0 -translate-y-2"
-                  : "opacity-100 translate-y-0"
+              className={`block text-[#eab308] font-bold ${
+                animStep === "prep"
+                  ? "translate-y-[110%] opacity-0 transition-none"
+                  : animStep === "entering"
+                  ? "translate-y-0 opacity-100 transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  : animStep === "visible"
+                  ? "translate-y-0 opacity-100 transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  : "-translate-y-[110%] opacity-0 transition-all duration-500 ease-[cubic-bezier(0.7,0,0.84,0)]"
               }`}
             >
               {HERO_PHRASES[phraseIndex]}

@@ -58,8 +58,9 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
               Articles &amp; Guides
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
-              Latest Articles
+              Latest from our journal
             </h2>
+            <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
           </div>
           <Link
             href="/blog"

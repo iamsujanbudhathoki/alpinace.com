@@ -35,6 +35,7 @@ export function PackageFaqs({
         <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900 mt-1">
           {title}
         </h2>
+        <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
         {subtitle && (
           <p className="text-stone-600 text-xs sm:text-sm font-normal leading-relaxed mt-1">
             {subtitle}

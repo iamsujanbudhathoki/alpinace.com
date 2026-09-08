@@ -99,6 +99,7 @@ export default function ContactView() {
           <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
             Plan Your Trek
           </h1>
+          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
           <p className="text-stone-600 text-sm max-w-xl mx-auto font-normal leading-relaxed">
             Contact our team in Thamel, Kathmandu to arrange permits, custom itineraries, flight connections, or route recommendations.
           </p>

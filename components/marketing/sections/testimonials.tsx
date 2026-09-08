@@ -95,6 +95,7 @@ export function TestimonialsSection() {
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
             What our travelers say
           </h2>
+          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
         </div>
 
         {/* Carousel Container */}

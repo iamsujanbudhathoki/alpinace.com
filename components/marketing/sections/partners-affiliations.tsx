@@ -89,8 +89,9 @@ export function PartnersAffiliationsSection() {
             Partners &amp; Affiliations
           </span>
           <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900 leading-snug">
-            Associated with
+            Recognized &amp; Certified by Leading Authorities
           </h2>
+          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
         </div>
 
         {/* Clean Static Showcase Cards without redirect links */}

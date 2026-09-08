@@ -133,9 +133,12 @@ export default async function AboutView() {
             {/* Story Column */}
             <div className="lg:col-span-6 space-y-5">
               {storyTitle && (
-                <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-tight">
-                  {storyTitle}
-                </h2>
+                <div>
+                  <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-tight">
+                    {storyTitle}
+                  </h2>
+                  <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
+                </div>
               )}
 
               {storyImage && (
@@ -249,6 +252,7 @@ export default async function AboutView() {
               <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
                 The team behind your trek
               </h2>
+              <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

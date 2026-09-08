@@ -16,6 +16,7 @@ export function WhyChooseUs() {
           <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900">
             Your Trusted Partner for Himalayan Treks &amp; Tours
           </h2>
+          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
         </div>
 
         {/* 2-Column Card Container */}

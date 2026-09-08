@@ -22,6 +22,7 @@ export function FinalCta() {
         <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900">
           Ready to start planning your Himalayan trek?
         </h2>
+        <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
 
         <p className="text-stone-600 text-sm sm:text-base font-normal leading-relaxed max-w-xl mx-auto">
           Reach out to our team in Kathmandu for custom itineraries, route advice, or trek bookings.

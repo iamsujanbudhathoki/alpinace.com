@@ -56,7 +56,7 @@ export function WhyChooseUs() {
                   We meet internationally recognized sustainability standards through independent assessment, reflecting our commitment to responsible tourism, environmental protection, and supporting local mountain communities in line with GSTC Criteria.
                 </p>
                 <p>
-                  With the highest number of positive reviews from travelers worldwide, Alpine Ace proudly stands as one of Nepal’s leading trekking and tour operators. We specialize in guided Himalayan treks, peak climbing, cultural tours, luxury holidays, and tailor-made adventure travel experiences across Nepal, Bhutan, and Tibet.
+                  With the highest number of positive reviews from travelers worldwide, Alpine Ace proudly stands as one of Nepal’s leading trekking and tour operators. We specialize in guided Himalayan treks, peak climbing, cultural tours, luxury holidays, and tailor-made adventure travel experiences all over Nepal.
                 </p>
               </div>
 

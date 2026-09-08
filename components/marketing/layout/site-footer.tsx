@@ -1,12 +1,30 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, ShieldCheck, Compass } from "lucide-react";
 import { useSettings } from "@/lib/settings-context";
+import { categoryCache } from "@/lib/services/category-cache";
+import { CategoryItem } from "@/lib/admin-data";
 
 export function SiteFooter() {
   const { settings } = useSettings();
+  const [featuredCategories, setFeaturedCategories] = useState<CategoryItem[]>([]);
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const categories = await categoryCache.getFeatured(6);
+        if (categories && categories.length > 0) {
+          setFeaturedCategories(categories);
+        }
+      } catch (err) {
+        console.error("Failed to load featured categories for footer:", err);
+      }
+    }
+    loadFeatured();
+  }, []);
 
   return (
     <footer className="relative z-20 bg-white text-stone-900 pt-12 sm:pt-16 pb-8 sm:pb-10 border-t border-stone-200 font-sans">
@@ -149,37 +167,57 @@ export function SiteFooter() {
               </ul>
             </div>
 
-            {/* Popular Regions */}
+            {/* Featured Categories Column */}
             <div className="space-y-3">
               <h3 className="font-heading text-xs font-bold text-stone-900 border-b border-stone-200 pb-2">
-                Top Regions
+                Featured Categories
               </h3>
               <ul className="space-y-2 text-xs sm:text-sm font-medium text-stone-700">
-                <li>
-                  <Link href="/trekking?category=everest" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
-                    Everest Region
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/trekking?category=annapurna" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
-                    Annapurna Region
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/trekking?category=manaslu" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
-                    Manaslu Circuit
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/trekking?category=langtang" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
-                    Langtang Valley
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/expeditions" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
-                    Peak Climbing
-                  </Link>
-                </li>
+                {featuredCategories.length > 0 ? (
+                  featuredCategories.map((cat) => {
+                    const href = cat.type
+                      ? `/${cat.type}?category=${encodeURIComponent(cat.slug || cat.id)}`
+                      : `/trekking?category=${encodeURIComponent(cat.slug || cat.id)}`;
+                    return (
+                      <li key={cat.id}>
+                        <Link
+                          href={href}
+                          className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer truncate"
+                        >
+                          {cat.name}
+                        </Link>
+                      </li>
+                    );
+                  })
+                ) : (
+                  <>
+                    <li>
+                      <Link href="/trekking?category=everest" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                        Everest Region
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/trekking?category=annapurna" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                        Annapurna Region
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/trekking?category=manaslu" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                        Manaslu Circuit
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/trekking?category=langtang" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                        Langtang Valley
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/expeditions" className="hover:text-stone-950 hover:underline transition-colors block py-0.5 cursor-pointer">
+                        Peak Climbing
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>

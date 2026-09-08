@@ -179,6 +179,17 @@ export const CategoryService = {
     }
   },
 
+  async getFeatured(limit = 6): Promise<CategoryItem[]> {
+    try {
+      const q = limit ? `?limit=${limit}` : "";
+      const res = await apiClient.get<CategoryItem[]>(`/categories/featured${q}`);
+      return Array.isArray(res?.data) ? res.data : [];
+    } catch (e) {
+      console.warn("Backend categories getFeatured error:", e);
+      return [];
+    }
+  },
+
   async getMenuOrderingStructure(domain: CategoryType): Promise<MenuCategoryDto[]> {
     try {
       const res = await apiClient.get<MenuCategoryDto[]>(`/admin/categories/menu-structure?domain=${domain}`);

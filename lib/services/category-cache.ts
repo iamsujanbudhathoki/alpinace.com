@@ -133,6 +133,38 @@ class CategoryCacheService {
   }
 
   /**
+   * Fetch featured categories for public footer display.
+   */
+  async getFeatured(limit = 6): Promise<CategoryItem[]> {
+    const cacheKey = `PUBLIC_FEATURED_CATEGORIES_${limit}`;
+    const cached = this.getCached(cacheKey);
+    if (cached) return cached;
+
+    if (this.inFlight.has(cacheKey)) {
+      return this.inFlight.get(cacheKey)!;
+    }
+
+    const fetchPromise = (async () => {
+      try {
+        const data = await CategoryService.getFeatured(limit);
+        this.cache.set(cacheKey, {
+          data: data || [],
+          timestamp: Date.now(),
+        });
+        return data || [];
+      } catch (err) {
+        console.warn("[CategoryCache] Failed to fetch featured categories:", err);
+        return [];
+      } finally {
+        this.inFlight.delete(cacheKey);
+      }
+    })();
+
+    this.inFlight.set(cacheKey, fetchPromise);
+    return fetchPromise;
+  }
+
+  /**
    * Clear cache for testing or on mutation
    */
   clear(type?: CategoryType | string) {

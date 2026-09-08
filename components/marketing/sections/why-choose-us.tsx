@@ -63,9 +63,9 @@ export function WhyChooseUs() {
               <div className="pt-2">
                 <Link
                   href="/about"
-                  className="inline-flex items-center justify-center font-semibold text-stone-950 bg-[#eab308] hover:bg-[#d97706] text-xs sm:text-sm px-6 py-3 rounded-md transition-colors shadow-xs"
+                  className="inline-flex items-center justify-center font-bold text-stone-950 bg-[#eab308] hover:bg-yellow-400 text-xs sm:text-sm px-6 py-3 rounded-md transition-colors shadow-xs"
                 >
-                  Read more
+                  Read more &rarr;
                 </Link>
               </div>
             </div>

@@ -408,24 +408,7 @@ export function Hero({
             )}
           </div>
 
-          {/* Quick Search Suggestions / Popular Destination Chips */}
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-stone-600">
-            <span className="font-medium text-stone-500">Popular:</span>
-            {["Everest Base Camp", "Annapurna Circuit", "Manaslu Trek", "Lobuche East"].map((chip) => (
-              <button
-                key={chip}
-                type="button"
-                onClick={() => {
-                  setQuery(chip);
-                  setIsOpen(true);
-                  inputRef.current?.focus();
-                }}
-                className="bg-white/80 hover:bg-white text-stone-700 hover:text-stone-900 border border-stone-200/80 rounded-full px-3 py-1 font-medium transition-all shadow-xs hover:shadow-sm cursor-pointer"
-              >
-                {chip}
-              </button>
-            ))}
-          </div>
+
 
           {/* Dynamic Search Suggestions Popover Dropdown */}
           {isOpen && (query.trim().length >= 2 || isAnyFilterActive) && (

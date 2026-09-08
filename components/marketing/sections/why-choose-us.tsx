@@ -53,7 +53,7 @@ export function WhyChooseUs() {
                   <strong className="text-stone-900 font-semibold">Alpine Ace</strong> is a premier trekking and adventure travel company in Nepal, founded by former mountain guides with a passion for creating safe, authentic, and unforgettable Himalayan journeys. Renowned for top-notch service at affordable prices, highly experienced guides, and exceptional safety standards, we proudly maintain an impressive 97.4% trek success rate.
                 </p>
                 <p>
-                  As a Travelife Certified company, we meet internationally recognized sustainability standards through independent assessment, reflecting our commitment to responsible tourism, environmental protection, and supporting local mountain communities in line with GSTC Criteria.
+                  We meet internationally recognized sustainability standards through independent assessment, reflecting our commitment to responsible tourism, environmental protection, and supporting local mountain communities in line with GSTC Criteria.
                 </p>
                 <p>
                   With the highest number of positive reviews from travelers worldwide, Alpine Ace proudly stands as one of Nepal’s leading trekking and tour operators. We specialize in guided Himalayan treks, peak climbing, cultural tours, luxury holidays, and tailor-made adventure travel experiences across Nepal, Bhutan, and Tibet.

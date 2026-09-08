@@ -51,36 +51,12 @@ export function FaqsSection() {
   return (
     <section className="py-16 sm:py-20 bg-white border-b border-stone-200">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 space-y-1 pb-6 border-b border-stone-200">
-          <span className="text-stone-500 text-xs font-medium block">
-            Trail guidance &amp; preparation
-          </span>
+        <div className="text-center mb-10 pb-6 border-b border-stone-200">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
-            Frequently Asked Questions
+            Frequently Asked Questions by Travelers
           </h2>
-          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
-          <p className="text-stone-600 text-sm font-normal pt-1">
-            Direct answers on high-altitude safety, permit processing, guide credentials, and packing.
-          </p>
+          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
         </div>
-
-        {/* Category Trigger Buttons */}
-        {categories.length > 1 && (
-          <div className="flex flex-wrap items-center gap-2 mb-8">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`text-xs px-3 py-1.5 rounded-sm font-medium transition-colors cursor-pointer border ${selectedCategory === cat
-                    ? "bg-stone-900 text-white border-stone-900"
-                    : "bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:text-stone-900"
-                  }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
 
         {loading ? (
           <div className="flex items-center justify-center py-12 gap-2 text-stone-500">

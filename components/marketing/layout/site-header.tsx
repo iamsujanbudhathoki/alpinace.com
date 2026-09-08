@@ -418,7 +418,7 @@ export function SiteHeader() {
             </Link>
 
             {/* 2. CENTER: Main Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 relative justify-center">
+            <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 relative justify-center">
               {navLinks.map((link) => {
                 const isActive =
                   link.href === "/"
@@ -444,17 +444,21 @@ export function SiteHeader() {
                     <Link
                       href={link.href}
                       onClick={() => setActiveDropdown(null)}
-                      className={`relative px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 rounded-md cursor-pointer ${
+                      className={`relative px-3 py-1.5 text-sm transition-colors flex items-center gap-1 rounded-md cursor-pointer ${
                         isActive
-                          ? "text-slate-950 font-bold bg-stone-100"
-                          : "text-slate-700 hover:text-slate-950 hover:bg-stone-50"
+                          ? "bg-slate-950 text-white font-semibold shadow-2xs"
+                          : "text-slate-700 font-medium hover:text-slate-950 hover:bg-stone-100"
                       }`}
                     >
                       <span>{link.label}</span>
                       {hasDropdown && (
                         <ChevronDown
-                          className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-500 group-hover:text-slate-950 ${
-                            isDropdownOpen ? "rotate-180 text-slate-950" : ""
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                            isActive
+                              ? "text-white"
+                              : isDropdownOpen
+                              ? "rotate-180 text-slate-950"
+                              : "text-stone-400"
                           }`}
                         />
                       )}

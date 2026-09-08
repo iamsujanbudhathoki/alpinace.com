@@ -148,7 +148,7 @@ export function PackageInquiryModal({
                   className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                     formErrors.name
                       ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                      : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
+                      : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
                   }`}
                 />
                 {formErrors.name && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.name}</p>}
@@ -169,7 +169,7 @@ export function PackageInquiryModal({
                   className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                     formErrors.email
                       ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                      : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
+                      : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
                   }`}
                 />
                 {formErrors.email && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.email}</p>}
@@ -193,7 +193,7 @@ export function PackageInquiryModal({
                   className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                     formErrors.phone
                       ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                      : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
+                      : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
                   }`}
                 />
                 {formErrors.phone && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.phone}</p>}
@@ -206,7 +206,7 @@ export function PackageInquiryModal({
                 <select
                   value={inquiryCountry}
                   onChange={(e) => setInquiryCountry(e.target.value)}
-                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white font-medium transition-all cursor-pointer"
+                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white font-medium transition-all cursor-pointer"
                 >
                   <option value="">Select Country...</option>
                   {COUNTRY_OPTIONS.map((c) => (
@@ -234,7 +234,7 @@ export function PackageInquiryModal({
                 className={`w-full text-xs px-3.5 py-2.5 rounded-xl border focus:outline-none resize-none transition-all font-medium ${
                   formErrors.message
                     ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                    : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white"
+                    : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
                 }`}
               />
               {formErrors.message && <p className="text-[11px] font-semibold text-rose-600 mt-1">{formErrors.message}</p>}
@@ -260,7 +260,7 @@ export function PackageInquiryModal({
               <Button
                 type="submit"
                 disabled={isSubmitting || !turnstileToken}
-                className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
+                className="bg-[#eab308] hover:bg-[#ca8a04] text-stone-950 font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-1.5">

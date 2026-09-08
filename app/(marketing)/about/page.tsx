@@ -285,7 +285,7 @@ export default async function AboutView() {
         <section className="py-16 sm:py-20 bg-stone-50 border-t border-stone-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mb-12">
-              <span className="text-amber-800 text-xs font-semibold uppercase tracking-wider block mb-2">
+              <span className="text-stone-900 text-xs font-semibold uppercase tracking-wider block mb-2">
                 Leadership
               </span>
               <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
@@ -314,7 +314,7 @@ export default async function AboutView() {
                     <h3 className="font-heading text-sm font-bold text-slate-900 mb-0.5">
                       {t.name}
                     </h3>
-                    <span className="text-amber-800 text-xs font-medium block mb-3">
+                    <span className="text-stone-900 text-xs font-semibold block mb-3">
                       {t.role}
                     </span>
                     <p className="text-slate-600 text-xs leading-relaxed font-normal">

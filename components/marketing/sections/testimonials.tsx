@@ -196,7 +196,7 @@ export function TestimonialsSection() {
                           </div>
 
                           {item.tripName && (
-                            <span className="text-xs font-medium text-stone-500 bg-amber-50 px-2.5 py-1 rounded-sm border border-amber-200/80 shrink-0">
+                            <span className="text-xs font-semibold text-stone-900 bg-yellow-400/10 px-2.5 py-1 rounded-sm border border-yellow-400/20 shrink-0">
                               {item.tripName}
                             </span>
                           )}

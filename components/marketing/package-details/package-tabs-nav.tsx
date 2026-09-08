@@ -77,7 +77,7 @@ export function PackageTabsNav({
                 relative px-3.5 sm:px-5 py-3 sm:py-3.5 text-xs sm:text-sm whitespace-nowrap shrink-0 cursor-pointer min-h-[44px] flex items-center justify-center
                 transition-colors duration-200 border-b-2 font-medium
                 ${isActive
-                  ? "border-amber-700 text-amber-900 font-bold"
+                  ? "border-stone-900 text-stone-900 font-bold"
                   : "border-transparent text-stone-500 hover:text-stone-800 hover:border-stone-300"
                 }
               `}

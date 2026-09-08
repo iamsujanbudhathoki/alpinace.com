@@ -773,7 +773,7 @@ export function SiteHeader() {
                                 <Link
                                   href={getCategoryLink(link.href, cat)}
                                   onClick={() => setMobileMenuOpen(false)}
-                                  className="block text-xs font-bold text-slate-900 hover:text-amber-700 py-1.5 min-h-[36px] flex items-center"
+                                  className="block text-xs font-bold text-slate-900 hover:text-yellow-600 py-1.5 min-h-[36px] flex items-center"
                                 >
                                   {cat.name}
                                 </Link>

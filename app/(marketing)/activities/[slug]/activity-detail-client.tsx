@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { TravelPackage } from "@/lib/home-data";
-import { Mountain, Compass, MapPin } from "lucide-react";
 
 interface ActivityDetailClientProps {
   activityName: string;
@@ -120,8 +119,12 @@ export function ActivityDetailClient({
       {treks.length > 0 && (
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-stone-700" />
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/trekking.png"
+                alt="Trekking"
+                className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
+              />
               <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900">
                 Trekking Packages ({treks.length})
               </h2>
@@ -141,8 +144,12 @@ export function ActivityDetailClient({
       {tours.length > 0 && (
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-            <div className="flex items-center gap-2">
-              <Compass className="w-5 h-5 text-stone-700" />
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/peaks.png"
+                alt="Tours"
+                className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
+              />
               <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900">
                 Tour Packages ({tours.length})
               </h2>
@@ -162,8 +169,12 @@ export function ActivityDetailClient({
       {expeditions.length > 0 && (
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-            <div className="flex items-center gap-2">
-              <Mountain className="w-5 h-5 text-stone-700" />
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/expeditions.png"
+                alt="Expeditions"
+                className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
+              />
               <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900">
                 Expedition Packages ({expeditions.length})
               </h2>

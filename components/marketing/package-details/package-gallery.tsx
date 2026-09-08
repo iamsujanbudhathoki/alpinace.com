@@ -47,7 +47,7 @@ export function PackageGallery({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-end justify-between p-3.5 sm:p-4">
           <span className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/95 text-stone-900 px-3 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold shadow-md backdrop-blur-xs">
-            <Maximize2 className="w-3.5 h-3.5 text-amber-800" strokeWidth={2} />
+            <Maximize2 className="w-3.5 h-3.5 text-stone-900" strokeWidth={2} />
             <span>Fullscreen ({images.length} photos)</span>
           </span>
         </div>

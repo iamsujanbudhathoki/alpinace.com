@@ -68,7 +68,7 @@ export function PackageItinerary({
           return (
             <article key={idx} className="relative group">
               {/* Timeline Marker Dot */}
-              <div className="absolute -left-[25px] sm:-left-[33px] top-3.5 w-2.5 h-2.5 rounded-full bg-amber-700 ring-4 ring-white" />
+              <div className="absolute -left-[25px] sm:-left-[33px] top-3.5 w-2.5 h-2.5 rounded-full bg-[#eab308] ring-4 ring-white" />
 
               {/* Day Header */}
               <button
@@ -77,10 +77,10 @@ export function PackageItinerary({
                 className="w-full text-left cursor-pointer group flex items-center justify-between gap-3 py-2 min-h-[44px]"
               >
                 <div className="space-y-0.5 min-w-0">
-                  <span className="type-caption text-amber-800 font-bold block">
+                  <span className="type-caption text-stone-900 font-bold block">
                     {formattedDayLabel}
                   </span>
-                  <h3 className="type-heading-md text-stone-900 group-hover:text-amber-800 transition-colors">
+                  <h3 className="type-heading-md text-stone-900 group-hover:underline transition-colors">
                     {day.title || `Day ${dayNum} Schedule`}
                   </h3>
                 </div>

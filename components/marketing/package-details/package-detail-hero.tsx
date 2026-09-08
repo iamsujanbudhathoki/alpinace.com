@@ -107,7 +107,7 @@ export function PackageDetailHero({
                 <button
                   type="button"
                   onClick={onBookClick}
-                  className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm px-4.5 py-2.5 rounded-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
+                  className="bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-stone-950 font-bold text-xs sm:text-sm px-4.5 py-2.5 rounded-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
                 >
                   <span>{bookButtonLabel}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />

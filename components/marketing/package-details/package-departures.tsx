@@ -13,7 +13,7 @@ interface PackageDeparturesProps {
 const STATUS_BADGES: Record<string, { label: string; bg: string }> = {
   guaranteed: { label: "Guaranteed", bg: "bg-emerald-50 text-emerald-800 border-emerald-200" },
   available: { label: "Available", bg: "bg-blue-50 text-blue-800 border-blue-200" },
-  limited: { label: "Limited Seats", bg: "bg-amber-50 text-amber-800 border-amber-200" },
+  limited: { label: "Limited Seats", bg: "bg-yellow-50 text-stone-900 border-yellow-300 font-semibold" },
   full: { label: "Full", bg: "bg-rose-50 text-rose-800 border-rose-200" },
 };
 
@@ -73,7 +73,7 @@ export function PackageDepartures({
                     <span>{item.seatsAvailable} seats remaining</span>
                   )}
                   {item.notes && (
-                    <span className="text-amber-800">
+                    <span className="text-stone-900 font-medium">
                       Note: {item.notes}
                     </span>
                   )}

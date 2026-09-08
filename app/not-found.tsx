@@ -15,7 +15,7 @@ export default function NotFound() {
 
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16">
         <div className="max-w-md w-full space-y-5 mx-auto">
-          <p className="text-4xl font-extrabold text-amber-500 tracking-tight">404</p>
+          <p className="text-4xl font-extrabold text-[#eab308] tracking-tight">404</p>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Page Not Found
           </h1>
@@ -45,10 +45,10 @@ export default function NotFound() {
           <div className="pt-6 border-t border-slate-100 text-xs text-slate-500 space-y-2">
             <p className="font-semibold text-slate-700">Looking for something specific?</p>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-slate-700 font-medium">
-              <Link href="/trekking" className="hover:text-amber-700 transition-colors">Trekking</Link>
-              <Link href="/tours" className="hover:text-amber-700 transition-colors">Tours</Link>
-              <Link href="/expeditions" className="hover:text-amber-700 transition-colors">Expeditions</Link>
-              <Link href="/contact" className="hover:text-amber-700 transition-colors">Contact</Link>
+              <Link href="/trekking" className="hover:text-yellow-600 transition-colors">Trekking</Link>
+              <Link href="/tours" className="hover:text-yellow-600 transition-colors">Tours</Link>
+              <Link href="/expeditions" className="hover:text-yellow-600 transition-colors">Expeditions</Link>
+              <Link href="/contact" className="hover:text-yellow-600 transition-colors">Contact</Link>
             </div>
           </div>
         </div>

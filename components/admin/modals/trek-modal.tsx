@@ -101,6 +101,8 @@ export function TrekFormModal({
     defaultValues: {
       title: "",
       categoryId: "",
+      subcategoryId: "",
+      activityIds: [],
       region: "",
       country: "",
       activity: "",
@@ -239,6 +241,7 @@ export function TrekFormModal({
         title: "",
         categoryId: "",
         subcategoryId: "",
+        activityIds: [],
         region: "",
         durationDays: 0,
         maxAltitudeMeters: undefined,
@@ -295,6 +298,7 @@ export function TrekFormModal({
         category: initialData?.category || "Trekking",
         categoryId: values.categoryId && values.categoryId.trim() !== "" ? values.categoryId : undefined,
         subcategoryId: values.subcategoryId && values.subcategoryId.trim() !== "" ? values.subcategoryId : undefined,
+        activityIds: values.activityIds || [],
         region: (values.region as any) || (initialData?.region as any) || "Everest",
         durationDays: Number(values.durationDays) || 0,
         maxAltitudeMeters: Number(values.maxAltitudeMeters) || 0,
@@ -1131,6 +1135,23 @@ export function TrekFormModal({
               <span className="text-slate-900 font-bold truncate block">{initialData?.meals || "Breakfast, Lunch & Dinner"}</span>
             </div>
           </div>
+
+          {/* Linked Activity Hubs */}
+          {initialData?.activityIds && initialData.activityIds.length > 0 && (
+            <div className="space-y-1">
+              <span className="font-bold text-slate-900 block text-xs">Associated Activity Hubs:</span>
+              <div className="flex flex-wrap gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                {initialData.activityIds.map((actId) => {
+                  const actName = availableActivities.find((a) => a.id === actId)?.name || actId;
+                  return (
+                    <span key={actId} className="inline-flex items-center gap-1 bg-stone-900 text-white text-[11px] font-semibold px-2.5 py-1 rounded-md">
+                      {actName}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Short Overview Description */}
           {initialData?.shortDesc && (

@@ -145,8 +145,8 @@ export function PackageReviews({
         {/* Rating Summary & Controls */}
         <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
           <div className="flex items-center gap-1.5">
-            <div className="flex items-center gap-0.5 text-amber-500">
-              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+            <div className="flex items-center gap-0.5 text-[#eab308]">
+              <Star className="w-3.5 h-3.5 fill-[#eab308] text-[#eab308]" />
             </div>
             <div className="text-xs font-semibold text-stone-900">
               <span>{overallRating.toFixed(1)}</span>
@@ -214,7 +214,7 @@ export function PackageReviews({
                       className="w-8 h-8 rounded-full object-cover ring-1 ring-stone-200 shrink-0"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-amber-800 text-amber-50 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-stone-900 text-[#eab308] flex items-center justify-center font-bold text-xs shrink-0">
                       {getInitials(rev.author)}
                     </div>
                   )}
@@ -235,13 +235,13 @@ export function PackageReviews({
               </div>
 
               {/* Star Rating */}
-              <div className="flex items-center gap-0.5 text-amber-500">
+              <div className="flex items-center gap-0.5 text-[#eab308]">
                 {Array.from({ length: 5 }).map((_, s) => (
                   <Star
                     key={s}
                     className={`w-3 h-3 ${
                       s < (rev.rating || 5)
-                        ? "fill-amber-500 text-amber-500"
+                        ? "fill-[#eab308] text-[#eab308]"
                         : "text-stone-200"
                     }`}
                   />

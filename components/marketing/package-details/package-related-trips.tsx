@@ -32,7 +32,7 @@ export function PackageRelatedTrips({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between gap-4 mb-6 pb-3 border-b border-stone-200">
           <div>
-            <span className="type-caption text-amber-800 font-bold block mb-0.5">
+            <span className="type-caption text-stone-900 font-bold block mb-0.5">
               Explore More
             </span>
             <h2 className="type-heading-xl">
@@ -63,7 +63,7 @@ export function PackageRelatedTrips({
                   </div>
                 </div>
                 <div className="p-4 space-y-1.5">
-                  <h3 className="type-heading-md text-stone-900 line-clamp-1 group-hover:text-amber-800 transition-colors">
+                  <h3 className="type-heading-md text-stone-900 line-clamp-1 group-hover:underline transition-colors">
                     {p.title}
                   </h3>
                   {p.shortDesc && (

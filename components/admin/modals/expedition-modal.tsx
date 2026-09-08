@@ -253,6 +253,7 @@ export function ExpeditionFormModal({
         title: "",
         categoryId: "",
         subcategoryId: "",
+        activityIds: [],
         region: "Everest",
         peakHeightM: 8848,
         maxAltitudeMeters: 8848,
@@ -316,6 +317,7 @@ export function ExpeditionFormModal({
         category: initialData?.category || "Expeditions",
         categoryId: values.categoryId && values.categoryId.trim() !== "" ? values.categoryId : undefined,
         subcategoryId: values.subcategoryId && values.subcategoryId.trim() !== "" ? values.subcategoryId : undefined,
+        activityIds: values.activityIds || [],
         region: (values.region as any) || "Everest",
         peakHeightM: alt,
         maxAltitudeMeters: alt,
@@ -1018,6 +1020,23 @@ export function ExpeditionFormModal({
               </div>
             </div>
           </div>
+
+          {/* Linked Activity Hubs */}
+          {initialData?.activityIds && initialData.activityIds.length > 0 && (
+            <div className="space-y-1">
+              <span className="font-bold text-slate-900 block text-xs">Associated Activity Hubs:</span>
+              <div className="flex flex-wrap gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                {initialData.activityIds.map((actId) => {
+                  const actName = availableActivities.find((a) => a.id === actId)?.name || actId;
+                  return (
+                    <span key={actId} className="inline-flex items-center gap-1 bg-stone-900 text-white text-[11px] font-semibold px-2.5 py-1 rounded-md">
+                      {actName}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {initialData?.shortDesc && (
             <div className="space-y-1">

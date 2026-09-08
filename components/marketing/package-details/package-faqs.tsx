@@ -29,7 +29,7 @@ export function PackageFaqs({
     <div className="space-y-6 pb-6 sm:pb-10 font-sans">
       {/* Section Header */}
       <div className="pb-4 border-b border-stone-200">
-        <span className="text-amber-800 text-xs font-semibold uppercase tracking-wider block">
+        <span className="text-stone-900 text-xs font-semibold uppercase tracking-wider block">
           Trail Guidance &amp; Preparation
         </span>
         <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight mt-1">
@@ -57,13 +57,13 @@ export function PackageFaqs({
                 aria-expanded={isOpen}
                 aria-controls={answerId}
                 onClick={() => setActiveFaq(isOpen ? null : idx)}
-                className="w-full text-left flex items-start justify-between gap-4 py-3.5 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/40 rounded-xs transition-colors"
+                className="w-full text-left flex items-start justify-between gap-4 py-3.5 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/40 rounded-xs transition-colors"
               >
                 <span
-                  className={`font-heading text-sm sm:text-base font-bold leading-snug transition-colors pr-2 ${
+                  className={`font-heading text-base sm:text-lg font-bold leading-snug transition-colors ${
                     isOpen
-                      ? "text-amber-900"
-                      : "text-stone-900 group-hover:text-amber-800"
+                      ? "text-stone-950"
+                      : "text-stone-900 group-hover:underline"
                   }`}
                 >
                   {f.question}
@@ -71,8 +71,8 @@ export function PackageFaqs({
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200 ${
                     isOpen
-                      ? "bg-amber-100 text-amber-900 rotate-180"
-                      : "bg-stone-100 text-stone-500 group-hover:bg-stone-200 group-hover:text-stone-800"
+                      ? "bg-stone-900 text-white rotate-180"
+                      : "bg-stone-100 text-stone-600 group-hover:bg-stone-200 group-hover:text-stone-900"
                   }`}
                 >
                   <ChevronDown className="w-4 h-4 stroke-[2.2]" />

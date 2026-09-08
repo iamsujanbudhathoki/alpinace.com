@@ -110,7 +110,7 @@ export function SearchableCategorySelect({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={placeholder}
-                className="w-full text-xs bg-slate-50 border border-slate-200 rounded-md pl-7 pr-2.5 py-1.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-amber-600 transition-all"
+                className="w-full text-xs bg-slate-50 border border-slate-200 rounded-md pl-7 pr-2.5 py-1.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-stone-900 transition-all"
                 autoFocus
               />
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2 top-2" />
@@ -146,13 +146,13 @@ export function SearchableCategorySelect({
                       }}
                       className={`w-full text-left text-xs px-2.5 py-1.5 rounded-md transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? "bg-amber-50 text-amber-900 font-bold"
+                          ? "bg-yellow-400/20 text-stone-900 font-bold"
                           : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
                       }`}
                     >
                       <span className="truncate pr-1">{cat.label}</span>
                       {isSelected && (
-                        <Check className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-stone-900 shrink-0" />
                       )}
                     </button>
                   );

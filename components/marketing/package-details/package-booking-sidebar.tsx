@@ -70,9 +70,9 @@ export function PackageBookingSidebar({
     <aside className="w-full">
       <div className="bg-white border border-stone-200 rounded-sm shadow-md overflow-hidden">
         {/* Pricing Header */}
-        <div className="bg-amber-50/90 border-b border-amber-200/80 p-4.5 sm:p-5 relative overflow-hidden">
+        <div className="bg-yellow-400/10 border-b border-yellow-400/20 p-4.5 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="type-caption text-amber-800 font-bold uppercase tracking-wider">
+            <span className="type-caption text-stone-900 font-bold uppercase tracking-wider">
               Trip Rate
             </span>
             <span className="type-caption text-stone-600 font-medium">
@@ -223,7 +223,7 @@ export function PackageBookingSidebar({
               <button
                 type="button"
                 onClick={onBookClick}
-                className="w-full bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                className="w-full bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-stone-950 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span>{bookButtonLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
@@ -232,16 +232,16 @@ export function PackageBookingSidebar({
 
             {/* 2. INQUIRY BUTTON OR INQUIRY CONFIRMATION */}
             {isInquired ? (
-              <div className="p-4 rounded-sm bg-amber-50 border border-amber-200/80 space-y-2.5 animate-in fade-in duration-200">
+              <div className="p-4 rounded-sm bg-yellow-50 border border-yellow-200 space-y-2.5 animate-in fade-in duration-200">
                 <div className="flex items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-amber-700 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                    <Check className="w-4 h-4" strokeWidth={2.5} />
+                  <div className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                    <Check className="w-4 h-4 text-yellow-400" strokeWidth={2.5} />
                   </div>
                   <div className="space-y-0.5 min-w-0">
-                    <h4 className="text-xs sm:text-sm font-bold text-amber-950 leading-snug">
+                    <h4 className="text-xs sm:text-sm font-bold text-stone-900 leading-snug">
                       Thank you for your inquiry!
                     </h4>
-                    <p className="text-xs text-amber-900 leading-relaxed font-medium">
+                    <p className="text-xs text-stone-700 leading-relaxed font-medium">
                       We’ll get back to you shortly.
                     </p>
                   </div>
@@ -250,7 +250,7 @@ export function PackageBookingSidebar({
                   <button
                     type="button"
                     onClick={onResetInquired}
-                    className="text-[11px] font-semibold text-amber-900 hover:text-amber-950 underline cursor-pointer pt-1 block"
+                    className="text-[11px] font-semibold text-stone-900 hover:underline cursor-pointer pt-1 block"
                   >
                     Send another question or inquiry
                   </button>
@@ -311,7 +311,7 @@ export function PackageBookingSidebar({
           <button
             type="button"
             onClick={onBookClick}
-            className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-bold text-xs py-2 px-4 rounded-md shadow-xs transition-all cursor-pointer min-h-[42px] flex items-center gap-1.5"
+            className="bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-stone-950 font-bold text-xs py-2 px-4 rounded-md shadow-xs transition-all cursor-pointer min-h-[42px] flex items-center gap-1.5"
           >
             <span>{bookButtonLabel}</span>
             <ArrowRight className="w-3.5 h-3.5 shrink-0" />

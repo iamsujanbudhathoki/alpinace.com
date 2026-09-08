@@ -252,7 +252,7 @@ export function PublicBookingModal({
         <div className="overflow-y-auto max-h-[calc(90vh-70px)] p-5 sm:p-7 space-y-4">
           {showExitConfirm ? (
             <div className="text-center space-y-4 py-2">
-            <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center justify-center mx-auto">
+            <div className="w-11 h-11 rounded-full bg-yellow-50 text-stone-900 border border-yellow-200 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-5 h-5" strokeWidth={2} />
             </div>
             <div className="space-y-1">
@@ -302,7 +302,7 @@ export function PublicBookingModal({
                 <span className="font-semibold text-stone-500 uppercase tracking-wider text-[11px]">
                   Booking Reference
                 </span>
-                <span className="font-mono font-bold text-amber-900 bg-amber-100/80 px-2.5 py-1 rounded-md border border-amber-200/80">
+                <span className="font-mono font-bold text-stone-900 bg-yellow-400/20 px-2.5 py-1 rounded-md border border-yellow-400/30">
                   {confirmedBooking.reference}
                 </span>
               </div>
@@ -326,22 +326,22 @@ export function PublicBookingModal({
                 </div>
                 <div className="flex items-center justify-between border-t border-stone-200 pt-2 font-bold text-stone-900">
                   <span>Estimated Total</span>
-                  <span className="text-sm font-bold text-amber-900">
+                  <span className="text-sm font-bold text-stone-900">
                     ${Number(confirmedBooking.totalAmountUSD || totalPriceUSD).toLocaleString()} USD
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-amber-50/70 border border-amber-200/70 rounded-xl p-3.5 text-xs text-stone-700 leading-relaxed">
-              <p className="font-semibold text-amber-950 mb-1">What Happens Next?</p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3.5 text-xs text-stone-700 leading-relaxed">
+              <p className="font-semibold text-stone-900 mb-1">What Happens Next?</p>
               We are checking lodge rooms and permits for your dates. Our team will email you within 12 hours to confirm your reservation details.
             </div>
 
             <Button
               type="button"
               onClick={forceClose}
-              className="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs py-3 rounded-xl cursor-pointer shadow-xs transition-colors"
+              className="w-full bg-[#eab308] hover:bg-[#ca8a04] text-stone-950 font-bold text-xs py-3 rounded-xl cursor-pointer shadow-xs transition-colors"
             >
               Done
             </Button>
@@ -372,7 +372,7 @@ export function PublicBookingModal({
                     className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                       formErrors.startDate
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                        : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
                     }`}
                   />
                   {formErrors.startDate ? (
@@ -429,7 +429,7 @@ export function PublicBookingModal({
                     className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                       formErrors.guestName
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                        : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
                     }`}
                   />
                   {formErrors.guestName && (
@@ -452,7 +452,7 @@ export function PublicBookingModal({
                     className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                       formErrors.guestEmail
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                        : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
                     }`}
                   />
                   {formErrors.guestEmail && (
@@ -478,7 +478,7 @@ export function PublicBookingModal({
                     className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
                       formErrors.guestPhone
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                        : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
                     }`}
                   />
                   {formErrors.guestPhone && (
@@ -499,7 +499,7 @@ export function PublicBookingModal({
                     className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all cursor-pointer ${
                       formErrors.country
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
-                        : "border-stone-300 focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900"
+                        : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
                     }`}
                   >
                     <option value="">Select Country...</option>
@@ -525,7 +525,7 @@ export function PublicBookingModal({
                   rows={2}
                   value={specialRequests}
                   onChange={(e) => setSpecialRequests(e.target.value)}
-                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800 bg-white text-stone-900 resize-none font-medium transition-all"
+                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900 resize-none font-medium transition-all"
                 />
               </div>
 
@@ -537,7 +537,7 @@ export function PublicBookingModal({
                 </div>
                 <div className="flex items-center justify-between border-t border-stone-200 pt-2 text-sm font-bold text-stone-900">
                   <span>Estimated Total</span>
-                  <span className="text-amber-900">${totalPriceUSD.toLocaleString()} USD</span>
+                  <span className="text-stone-900 font-bold">${totalPriceUSD.toLocaleString()} USD</span>
                 </div>
                 <p className="text-[11px] text-stone-500 font-medium pt-0.5">
                   No upfront charge required. A 25% deposit (${depositUSD.toLocaleString()} USD) secures your trip once permits are verified.
@@ -564,7 +564,7 @@ export function PublicBookingModal({
                 <Button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken}
-                  className="bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
+                  className="bg-[#eab308] hover:bg-[#ca8a04] text-stone-950 font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-1.5">

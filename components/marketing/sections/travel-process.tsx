@@ -27,7 +27,7 @@ export function TravelProcess() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 border-b border-stone-200 pb-6">
           <div className="space-y-1">
-            <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block">
+            <span className="text-stone-900 text-xs font-bold uppercase tracking-wider block">
               Trip Preparation &amp; Logistics
             </span>
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
@@ -36,7 +36,7 @@ export function TravelProcess() {
           </div>
           <Link
             href="/contact"
-            className="text-xs font-semibold text-amber-700 hover:underline"
+            className="text-xs font-bold text-stone-900 hover:underline"
           >
             Start a Trip Consultation &rarr;
           </Link>
@@ -45,7 +45,7 @@ export function TravelProcess() {
         {/* Clean 4-Stage Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {processSteps.map((item, idx) => (
-            <div key={idx} className="space-y-2 border-l-2 border-amber-700/40 pl-4 py-1">
+            <div key={idx} className="space-y-2 border-l-2 border-[#eab308] pl-4 py-1">
               <h3 className="font-heading text-base font-bold text-stone-900 leading-snug">
                 {item.phase}
               </h3>

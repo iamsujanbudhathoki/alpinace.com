@@ -136,6 +136,7 @@ export interface ActivityItem {
   menuOrder: number;
   mediaId?: string | null;
   image?: string | null;
+  tripCount?: number;
   createdAt?: string;
   updatedAt?: string;
 }

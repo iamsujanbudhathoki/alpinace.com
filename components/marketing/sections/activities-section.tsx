@@ -105,17 +105,11 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
   };
 
   const getTripCountLabel = (act: ActivityItem) => {
-    const raw =
-      (act as any).itemCount ??
-      (act as any).tripCount ??
-      (act as any).totalTrips ??
-      (act as any).packagesCount ??
-      (act as any).count;
-
-    if (typeof raw === "number" && raw >= 0) {
-      return `${raw} ${raw === 1 ? "Trip" : "Trips"}`;
+    const count = act.tripCount ?? (act as any).itemCount ?? (act as any).packagesCount;
+    if (typeof count === "number" && count >= 0) {
+      return `${count} ${count === 1 ? "Trip" : "Trips"}`;
     }
-    return "Trips & Expeditions";
+    return null;
   };
 
   if (!loading && activities.length === 0) {
@@ -173,34 +167,45 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
           ) : activities.length === 1 ? (
             /* Single item clean layout */
             <div className="max-w-sm sm:max-w-md">
-              {activities.map((act) => (
-                <Link
-                  key={act.id}
-                  href={`/activities/${act.slug}`}
-                  className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
-                >
-                  {/* Image Frame with contained zoom */}
-                  <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
-                    <Image
-                      src={act.image || "/mountain-placeholder.jpg"}
-                      alt={act.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                    />
-                  </div>
+              {activities.map((act) => {
+                const tripLabel = getTripCountLabel(act);
+                return (
+                  <Link
+                    key={act.id}
+                    href={`/activities/${act.slug}`}
+                    className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
+                  >
+                    {/* Image Frame with contained zoom */}
+                    <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
+                      <Image
+                        src={act.image || "/mountain-placeholder.jpg"}
+                        alt={act.name}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                      />
+                      {/* Trip Count Badge */}
+                      {tripLabel && (
+                        <span className="absolute top-2.5 right-2.5 bg-[#eab308] text-stone-950 text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-md shadow-xs leading-tight">
+                          {tripLabel}
+                        </span>
+                      )}
+                    </div>
 
-                  {/* Card Content: Title & Trip Count Only */}
-                  <div className="p-4 sm:p-5 bg-white space-y-1 border-t border-stone-100">
-                    <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
-                      {act.name}
-                    </h3>
-                    <p className="text-xs sm:text-sm font-medium text-stone-500">
-                      {getTripCountLabel(act)}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                    {/* Card Content: Title & Trip Count Only */}
+                    <div className="p-4 sm:p-5 bg-white space-y-1 border-t border-stone-100">
+                      <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
+                        {act.name}
+                      </h3>
+                      {tripLabel && (
+                        <p className="text-xs sm:text-sm font-medium text-stone-500">
+                          {tripLabel}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             /* Multi-item Embla Carousel with Inertia Drag & Soft Downward Shadow */
@@ -212,40 +217,51 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
               onPointerUp={handlePointerUp}
             >
               <div className="flex -ml-6">
-                {activities.map((act) => (
-                  <div
-                    key={act.id}
-                    className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0 pl-6"
-                  >
-                    <Link
-                      href={`/activities/${act.slug}`}
-                      onClick={handleCardClick}
-                      className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
+                {activities.map((act) => {
+                  const tripLabel = getTripCountLabel(act);
+                  return (
+                    <div
+                      key={act.id}
+                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0 pl-6"
                     >
-                      {/* Image Frame with contained zoom */}
-                      <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
-                        <Image
-                          src={act.image || "/mountain-placeholder.jpg"}
-                          alt={act.name}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                          draggable={false}
-                        />
-                      </div>
+                      <Link
+                        href={`/activities/${act.slug}`}
+                        onClick={handleCardClick}
+                        className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
+                      >
+                        {/* Image Frame with contained zoom */}
+                        <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
+                          <Image
+                            src={act.image || "/mountain-placeholder.jpg"}
+                            alt={act.name}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                            draggable={false}
+                          />
+                          {/* Trip Count Badge */}
+                          {tripLabel && (
+                            <span className="absolute top-2.5 right-2.5 bg-[#eab308] text-stone-950 text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-md shadow-xs leading-tight pointer-events-none">
+                              {tripLabel}
+                            </span>
+                          )}
+                        </div>
 
-                      {/* Card Content: Title & Trip Count Only */}
-                      <div className="p-4 sm:p-5 bg-white space-y-1 border-t border-stone-100">
-                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
-                          {act.name}
-                        </h3>
-                        <p className="text-xs sm:text-sm font-medium text-stone-500">
-                          {getTripCountLabel(act)}
-                        </p>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
+                        {/* Card Content: Title & Trip Count Only */}
+                        <div className="p-4 sm:p-5 bg-white space-y-1 border-t border-stone-100">
+                          <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
+                            {act.name}
+                          </h3>
+                          {tripLabel && (
+                            <p className="text-xs sm:text-sm font-medium text-stone-500">
+                              {tripLabel}
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

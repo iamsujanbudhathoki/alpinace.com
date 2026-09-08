@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Quote,
 } from "lucide-react";
+import Image from "next/image";
 
 export interface ReviewItemProp {
   id?: string;
@@ -207,10 +208,11 @@ export function PackageReviews({
               <div className="flex items-start justify-between gap-2.5">
                 <div className="flex items-center gap-2.5">
                   {rev.avatar ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={rev.avatar}
                       alt={rev.author}
+                      width={32}
+                      height={32}
                       className="w-8 h-8 rounded-full object-cover ring-1 ring-stone-200 shrink-0"
                     />
                   ) : (

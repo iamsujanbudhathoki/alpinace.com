@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Compass } from "lucide-react";
 import { getSliderFillStyle } from "@/lib/utils";
@@ -504,10 +505,12 @@ export function TrekkingCatalogClient({
                       <div>
                         {/* Clean Image Frame */}
                         <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-950">
-                          <img
+                          <Image
                             src={trk.image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800"}
                             alt={trk.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
                           />
                           {trk.region && (
                             <span className="absolute top-3 left-3 bg-stone-950/80 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm">

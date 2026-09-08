@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import { adminTestimonialsApi, SettingService, TestimonialItem } from "@/lib/services/admin-service";
 import { Testimonial } from "@/lib/home-data";
 
@@ -124,9 +125,11 @@ export function TestimonialsSection() {
                     <div className="pt-4 border-t border-stone-200 flex items-center justify-between mt-6">
                       <div className="flex items-center gap-3">
                         {avatarUrl ? (
-                          <img
+                          <Image
                             src={avatarUrl}
                             alt={item.author}
+                            width={40}
+                            height={40}
                             className="w-10 h-10 rounded-full object-cover border border-stone-300 shrink-0"
                           />
                         ) : (
@@ -175,9 +178,11 @@ export function TestimonialsSection() {
                         <div className="pt-4 border-t border-stone-200 flex items-center justify-between mt-6">
                           <div className="flex items-center gap-3">
                             {avatarUrl ? (
-                              <img
+                              <Image
                                 src={avatarUrl}
                                 alt={item.author}
+                                width={40}
+                                height={40}
                                 className="w-10 h-10 rounded-full object-cover border border-stone-300 shrink-0"
                               />
                             ) : (

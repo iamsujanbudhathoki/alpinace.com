@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Maximize2 } from "lucide-react";
 import { openLightbox } from "@/lib/utils/lightbox";
 
@@ -40,10 +41,12 @@ export function PackageGallery({
         className={`relative ${aspectRatioClass} w-full rounded-2xl overflow-hidden bg-stone-950 border border-stone-200 cursor-pointer group shadow-2xs`}
         title="Click to view full screen gallery"
       >
-        <img
+        <Image
           src={activePhoto}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-103"
+          fill
+          sizes="(max-width: 1024px) 100vw, 66vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-103"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-end justify-between p-3.5 sm:p-4">
           <span className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/95 text-stone-900 px-3 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold shadow-md backdrop-blur-xs">
@@ -67,10 +70,12 @@ export function PackageGallery({
                   : "opacity-70 hover:opacity-100 hover:scale-102"
               }`}
             >
-              <img
+              <Image
                 src={photo}
                 alt={`Thumbnail ${i + 1}`}
-                className="w-full h-full object-cover"
+                fill
+                sizes="120px"
+                className="object-cover"
               />
             </button>
           ))}

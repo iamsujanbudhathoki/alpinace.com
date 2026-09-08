@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeft,
   Calendar,
@@ -236,12 +237,13 @@ export function BlogDetailClient({ initialPost, slug }: BlogDetailClientProps) {
             className="relative aspect-16/9 sm:aspect-21/9 w-full rounded-sm overflow-hidden bg-stone-900 border border-stone-200 mb-10 group cursor-pointer"
             title="Click to view full screen"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={post.image}
               alt={post.title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-104"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 800px"
+              className="object-cover transition-transform duration-500 group-hover:scale-104"
             />
             <div className="absolute inset-0 bg-stone-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <span className="inline-flex items-center gap-2 bg-white/95 text-stone-900 px-4 py-2 rounded-sm text-xs font-bold shadow-lg backdrop-blur-xs transform translate-y-2 group-hover:translate-y-0 transition-transform">
@@ -338,11 +340,12 @@ export function BlogDetailClient({ initialPost, slug }: BlogDetailClientProps) {
                 >
                   <div className="relative aspect-16/10 w-full overflow-hidden bg-stone-900">
                     {related.image ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
+                      <Image
                         src={related.image}
                         alt={related.title}
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover group-hover:scale-104 transition-transform duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-stone-600">

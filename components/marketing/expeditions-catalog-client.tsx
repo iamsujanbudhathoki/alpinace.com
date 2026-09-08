@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Mountain } from "lucide-react";
 import { getSliderFillStyle } from "@/lib/utils";
@@ -476,10 +477,12 @@ export function ExpeditionsCatalogClient({
                         <div>
                           {/* Clean Image Frame */}
                           <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-950">
-                            <img
+                            <Image
                               src={exp.image || "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=800"}
                               alt={exp.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                              fill
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
                             />
                             {altitudeDisplay && (
                               <span className="absolute top-3 left-3 bg-stone-950/80 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { ActivityService } from "@/lib/services/admin-service";
@@ -110,10 +111,13 @@ export default async function ActivityDetailPage({ params }: ActivityDetailPageP
       {/* Hero Section - Image Only */}
       <div className="relative w-full h-[320px] sm:h-[420px] lg:h-[480px] bg-stone-900 overflow-hidden">
         {activity.image ? (
-          <img
+          <Image
             src={activity.image}
             alt={activity.name}
-            className="w-full h-full object-cover"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 flex items-center justify-center">

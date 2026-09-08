@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, Phone, MapPin, ShieldCheck, Compass } from "lucide-react";
 import { useSettings } from "@/lib/settings-context";
 
@@ -16,9 +17,11 @@ export function SiteFooter() {
           {/* Column 1: Brand & About (lg:col-span-5) */}
           <div className="space-y-4 sm:col-span-2 lg:col-span-5">
             <Link href="/" className="flex items-center gap-3 group w-fit cursor-pointer">
-              <img
+              <Image
                 src={settings.siteLogo || "/logo.jpg"}
                 alt={settings.siteName || "AlpineAce Logo"}
+                width={40}
+                height={40}
                 className="h-10 w-10 object-cover rounded-sm border border-stone-200"
               />
               <span className="flex flex-col leading-none">

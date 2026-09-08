@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 export interface RelatedTripItem {
@@ -53,10 +54,12 @@ export function PackageRelatedTrips({
             <Link key={p.id} href={`${categoryPath}/${p.slug}`} className="group block">
               <div className="bg-white border border-stone-200 rounded-sm overflow-hidden group-hover:border-stone-400 transition-all">
                 <div className="aspect-16/10 w-full overflow-hidden bg-stone-900 relative">
-                  <img
+                  <Image
                     src={p.image}
                     alt={p.title}
-                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 ease-out"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-104 transition-transform duration-500 ease-out"
                   />
                   <div className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
                     {p.region ? `${p.region} • ` : ""}{p.durationDays} Days

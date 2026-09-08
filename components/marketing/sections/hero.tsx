@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -181,7 +182,7 @@ export function Hero({
       
 
         {/* Editorial Heading */}
-        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight mb-6 max-w-3xl leading-tight">
+        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl  text-stone-900 tracking-tight mb-6 max-w-3xl leading-tight">
           Explore guided treks, tours &amp; expeditions.
         </h1>
 
@@ -333,10 +334,12 @@ export function Hero({
                           {/* Item Thumbnail / Featured Image */}
                           <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-lg bg-stone-100 border border-stone-200 overflow-hidden flex items-center justify-center shrink-0 relative">
                             {item.image && !failedImages[item.id] ? (
-                              <img
+                              <Image
                                 src={item.image}
                                 alt={item.title}
-                                className="h-full w-full object-cover"
+                                fill
+                                sizes="48px"
+                                className="object-cover"
                                 onError={() => {
                                   setFailedImages((prev) => ({ ...prev, [item.id]: true }));
                                 }}

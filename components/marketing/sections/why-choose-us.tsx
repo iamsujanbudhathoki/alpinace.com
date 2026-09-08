@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Play, X } from "lucide-react";
 
 export function WhyChooseUs() {
@@ -23,10 +24,12 @@ export function WhyChooseUs() {
             {/* Left Column: Image with Interactive Play Video Overlay */}
             <div className="relative lg:col-span-6 xl:col-span-5 min-h-[320px] sm:min-h-[380px] lg:min-h-full overflow-hidden bg-stone-900 group">
               
-              <img
+              <Image
                 src="/about-everest-group.png"
                 alt="Alpine Ace Trekkers at Everest Base Camp"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                fill
+                sizes="(max-width: 1024px) 100vw, 42vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent" />
 

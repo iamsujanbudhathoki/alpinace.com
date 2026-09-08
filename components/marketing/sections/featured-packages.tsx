@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -233,10 +234,12 @@ export function FeaturedPackages({
                   onClick={() => setActiveTab(tab.key)}
                   className="inline-flex items-center gap-2.5 text-base sm:text-lg font-medium cursor-pointer whitespace-nowrap group pb-1"
                 >
-                  <img
+                  <Image
                     src={tab.iconUrl}
                     alt={tab.label}
-                    className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
+                    width={28}
+                    height={28}
+                    className="object-contain shrink-0"
                   />
                   <span className="relative inline-block">
                     <span
@@ -331,10 +334,12 @@ export function FeaturedPackages({
                     className="group flex flex-col bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
                   >
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
-                      <img
+                      <Image
                         src={pkg.image || "/mountain-placeholder.jpg"}
                         alt={pkg.title}
-                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                       />
                       {pkg.region && (
                         <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
@@ -395,10 +400,12 @@ export function FeaturedPackages({
                       >
                         {/* Mountain Image Frame */}
                         <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
-                          <img
+                          <Image
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
-                            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             draggable={false}
                           />
 

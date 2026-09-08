@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Search, Loader2, BookOpen, Mountain, X, ArrowRight } from "lucide-react";
 import { BlogPost } from "@/lib/home-data";
@@ -225,11 +226,12 @@ export function BlogCatalogClient({
                       {/* Image Frame */}
                       <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
                         {post.image ? (
-                          <img
+                          <Image
                             src={post.image}
                             alt={post.title}
-                            referrerPolicy="no-referrer"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-stone-400">

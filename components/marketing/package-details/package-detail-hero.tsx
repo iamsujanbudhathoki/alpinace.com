@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 export interface HeroBadge {
@@ -39,10 +40,13 @@ export function PackageDetailHero({
     <section className="relative min-h-[360px] sm:h-[380px] lg:h-[420px] w-full overflow-hidden bg-stone-950 flex flex-col justify-between">
       {/* Background Image & Editorial Gradient */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src={image}
           alt={title}
-          className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 ease-out"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center transform scale-105 transition-transform duration-1000 ease-out"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/60 to-stone-950/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-stone-950/80 via-transparent to-transparent" />

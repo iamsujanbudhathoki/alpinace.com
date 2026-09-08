@@ -1,6 +1,7 @@
 import { generateStaticMetadata, normalizeImageUrl } from "@/lib/seo";
 import { AboutUsData, AboutUsService, adminTeamsApi } from "@/lib/services/admin-service";
 import type { Metadata } from "next";
+import Image from "next/image";
 
 export async function generateMetadata(): Promise<Metadata> {
   const aboutData: AboutUsData | null = await AboutUsService.getPublic();
@@ -150,11 +151,13 @@ export default async function AboutView() {
       {/* Page Hero */}
       <section className="py-16 sm:py-20 bg-slate-950 text-white relative overflow-hidden">
         <div className="absolute inset-0">
-          <img
+          <Image
             src={heroBgImage}
             alt={heroTitle}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover opacity-25"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-25"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent" />
         </div>
@@ -183,11 +186,13 @@ export default async function AboutView() {
               )}
 
               {storyImage && (
-                <div className="rounded-sm overflow-hidden border border-stone-200 max-h-72 shadow-xs my-4">
-                  <img
+                <div className="relative rounded-sm overflow-hidden border border-stone-200 aspect-[16/10] w-full shadow-xs my-4">
+                  <Image
                     src={storyImage}
                     alt={storyTitle || "AlpineAce Story"}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
                   />
                 </div>
               )}
@@ -300,11 +305,12 @@ export default async function AboutView() {
                   className="bg-white border border-stone-200 rounded-sm overflow-hidden flex flex-col h-full group shadow-xs"
                 >
                   <div className="relative aspect-square overflow-hidden bg-slate-100">
-                    <img
+                    <Image
                       src={t.image}
                       alt={t.name}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <span className="absolute bottom-3 left-3 bg-slate-900/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-sm">
                       {t.badge}

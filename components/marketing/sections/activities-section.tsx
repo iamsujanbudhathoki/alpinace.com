@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -187,10 +188,12 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                 >
                   {/* Image Frame with contained zoom */}
                   <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
-                    <img
+                    <Image
                       src={act.image || "/mountain-placeholder.jpg"}
                       alt={act.name}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     />
                   </div>
 
@@ -228,10 +231,12 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                     >
                       {/* Image Frame with contained zoom */}
                       <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
-                        <img
+                        <Image
                           src={act.image || "/mountain-placeholder.jpg"}
                           alt={act.name}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                           draggable={false}
                         />
                       </div>

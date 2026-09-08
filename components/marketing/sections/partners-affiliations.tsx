@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface Partner {
   id: string;
@@ -97,9 +98,11 @@ export function PartnersAffiliationsSection() {
                 aria-label={partner.name}
                 className="flex items-center justify-center shrink-0 px-6 sm:px-10 md:px-12"
               >
-                <img
+                <Image
                   src={imgSrc}
                   alt={partner.name}
+                  width={160}
+                  height={48}
                   onError={() => handleImageError(partner.id)}
                   className="h-9 sm:h-11 md:h-12 w-auto max-w-[130px] sm:max-w-[160px] md:max-w-[180px] object-contain"
                 />

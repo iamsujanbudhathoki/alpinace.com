@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { TravelPackage } from "@/lib/home-data";
 
 interface ActivityDetailClientProps {
@@ -59,10 +60,12 @@ export function ActivityDetailClient({
                 <div>
                   {/* Image Frame */}
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
-                    <img
+                    <Image
                       src={pkg.image || "/mountain-placeholder.jpg"}
                       alt={pkg.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
                     />
                     {pkg.region && (
                       <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-sm">
@@ -120,10 +123,12 @@ export function ActivityDetailClient({
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
             <div className="flex items-center gap-2.5">
-              <img
+              <Image
                 src="/trekking.png"
                 alt="Trekking"
-                className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
+                width={28}
+                height={28}
+                className="object-contain shrink-0"
               />
               <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900">
                 Trekking Packages ({treks.length})
@@ -145,10 +150,12 @@ export function ActivityDetailClient({
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
             <div className="flex items-center gap-2.5">
-              <img
+              <Image
                 src="/peaks.png"
                 alt="Tours"
-                className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
+                width={28}
+                height={28}
+                className="object-contain shrink-0"
               />
               <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900">
                 Tour Packages ({tours.length})
@@ -170,10 +177,12 @@ export function ActivityDetailClient({
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
             <div className="flex items-center gap-2.5">
-              <img
+              <Image
                 src="/expeditions.png"
                 alt="Expeditions"
-                className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0"
+                width={28}
+                height={28}
+                className="object-contain shrink-0"
               />
               <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900">
                 Expedition Packages ({expeditions.length})

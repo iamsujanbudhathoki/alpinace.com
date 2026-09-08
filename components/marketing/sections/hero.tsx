@@ -58,6 +58,13 @@ const DURATION_OPTIONS = [
   { value: "22-plus", label: "22+ days", minDuration: 22, maxDuration: undefined },
 ];
 
+const HERO_PHRASES = [
+  "next adventure.",
+  "next trek.",
+  "next expedition.",
+  "next journey.",
+];
+
 export function Hero({
   initialTreks = [],
   initialTours = [],
@@ -77,6 +84,34 @@ export function Hero({
   const [searchResults, setSearchResults] = useState<HeroSearchItem[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+
+  // Dynamic Headline Animation State
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [isFading, setIsFading] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    const handleChange = () => setPrefersReducedMotion(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+
+    const timer = setInterval(() => {
+      setIsFading(true);
+      setTimeout(() => {
+        setPhraseIndex((prev) => (prev + 1) % HERO_PHRASES.length);
+        setIsFading(false);
+      }, 500);
+    }, 2800);
+
+    return () => clearInterval(timer);
+  }, [prefersReducedMotion]);
 
   const parsedFilters = useMemo(() => {
     const priceOpt = PRICE_OPTIONS.find((p) => p.value === priceRange);
@@ -263,15 +298,26 @@ export function Hero({
 
       {/* Minimal Overlay for Maximum Video Detail */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-stone-950/15 via-transparent to-stone-950/30 pointer-events-none"
+        className="absolute inset-0 bg-gradient-to-b from-stone-950/40 via-stone-950/20 to-stone-950/50 pointer-events-none"
         aria-hidden="true"
       />
 
       {/* Centered Content Container */}
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">
-        {/* Editorial Heading */}
-        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl text-stone-900 mb-6 max-w-3xl leading-tight">
-          Explore guided treks, tours &amp; expeditions.
+        {/* Animated Editorial Motion Headline */}
+        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 sm:mb-8 max-w-4xl leading-[1.15] text-center drop-shadow-md">
+          <span className="block text-white">Discover your</span>
+          <span className="relative block h-[1.25em] overflow-hidden">
+            <span
+              className={`block text-[#eab308] font-bold transition-all duration-500 ease-out ${
+                isFading
+                  ? "opacity-0 -translate-y-2"
+                  : "opacity-100 translate-y-0"
+              }`}
+            >
+              {HERO_PHRASES[phraseIndex]}
+            </span>
+          </span>
         </h1>
 
         {/* Floating Search & Filter Bar */}

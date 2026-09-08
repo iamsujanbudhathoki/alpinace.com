@@ -5,6 +5,64 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import { FaqService } from "@/lib/services/admin-service";
 import { FaqItem, FaqStatus } from "@/lib/admin-data";
 
+const DEFAULT_FAQS: FaqItem[] = [
+  {
+    id: "faq-1",
+    question: "What permits are required for trekking in Nepal?",
+    answer:
+      "Most treks in Nepal require a TIMS (Trekker's Information Management System) card and specific Conservation Area or National Park Entry Permits (e.g., Sagarmatha National Park Permit for Everest, ACAP for Annapurna). Restricted regions like Upper Mustang or Manaslu require special limited permits. Alpine Ace manages all permit documentation for our guests prior to arrival.",
+    category: "Permits & Logistics",
+    status: FaqStatus.ACTIVE,
+    order: 1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "faq-2",
+    question: "How do you handle high altitude sickness and emergency evacuations?",
+    answer:
+      "Safety is our single highest priority. Our itineraries feature gradual ascent schedules and built-in acclimatization days. Guides are certified Wilderness First Aid responders equipped with pulse oximeters, emergency oxygen, and satellite communications. If acute altitude sickness occurs, we initiate prompt descent and helicopter evacuation, coordinated directly with your travel insurance.",
+    category: "Safety & Medical",
+    status: FaqStatus.ACTIVE,
+    order: 2,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "faq-3",
+    question: "What physical fitness level is required for high-altitude treks?",
+    answer:
+      "Moderate treks require a baseline of cardiovascular fitness achievable with regular hiking or jogging. High-altitude treks like Everest Base Camp or Annapurna Circuit require good endurance for walking 5–7 hours daily with a daypack. We recommend starting aerobic and leg-strengthening exercises 6–8 weeks before your trip.",
+    category: "Preparation & Fitness",
+    status: FaqStatus.ACTIVE,
+    order: 3,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "faq-4",
+    question: "What is included in the tea house accommodation and meals?",
+    answer:
+      "Teahouse accommodations provide twin-share rooms with clean beds, blankets, and communal dining areas heated by wood stoves. Meals are freshly cooked and include local staples like Dal Bhat, noodle soups, momos, porridge, eggs, and hot beverage choices.",
+    category: "Accommodation & Meals",
+    status: FaqStatus.ACTIVE,
+    order: 4,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "faq-5",
+    question: "When is the best season for trekking in Nepal?",
+    answer:
+      "The prime trekking seasons are Autumn (September to November) and Spring (March to May). Autumn brings crisp, clear mountain skies and stable weather after the monsoons. Spring brings warmer temperatures and vibrant blooming rhododendron forests across the valleys.",
+    category: "Best Seasons",
+    status: FaqStatus.ACTIVE,
+    order: 5,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+
 export function FaqsSection() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,11 +73,20 @@ export function FaqsSection() {
     async function loadFaqs() {
       try {
         const liveFaqs = await FaqService.getPublicAll(FaqStatus.ACTIVE);
-        if (liveFaqs && Array.isArray(liveFaqs)) {
-          setFaqs(liveFaqs);
+        const faqList = Array.isArray(liveFaqs)
+          ? liveFaqs
+          : Array.isArray((liveFaqs as any)?.items)
+          ? (liveFaqs as any).items
+          : [];
+
+        if (faqList.length > 0) {
+          setFaqs(faqList);
+        } else {
+          setFaqs(DEFAULT_FAQS);
         }
       } catch (err) {
         console.warn("Failed to load live FAQs from backend:", err);
+        setFaqs(DEFAULT_FAQS);
       } finally {
         setLoading(false);
       }

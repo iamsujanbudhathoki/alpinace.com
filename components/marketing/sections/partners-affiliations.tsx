@@ -83,10 +83,15 @@ export function PartnersAffiliationsSection() {
   return (
     <section className="py-10 sm:py-14 bg-white border-b border-stone-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading */}
-        <h2 className="text-center font-heading text-stone-500 text-xs sm:text-sm font-semibold tracking-normal mb-6 sm:mb-8">
-          Associated with
-        </h2>
+        {/* Section Heading matching website design system */}
+        <div className="text-center space-y-1 mb-6 sm:mb-8">
+          <span className="text-stone-500 text-xs font-medium block">
+            Partners &amp; Affiliations
+          </span>
+          <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900 leading-snug">
+            Associated with
+          </h2>
+        </div>
 
         {/* Clean Static Showcase Cards without redirect links */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-5xl mx-auto">

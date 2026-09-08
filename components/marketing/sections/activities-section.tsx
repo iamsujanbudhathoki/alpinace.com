@@ -126,19 +126,11 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
     <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-row items-end justify-between mb-8 gap-4 border-b border-stone-200 pb-4">
-          <div className="space-y-1">
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
-              Activities we offer
-            </h2>
-            <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
-          </div>
-          <Link
-            href="/activities"
-            className="text-xs sm:text-sm font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors shrink-0"
-          >
-            View All Activities &rarr;
-          </Link>
+        <div className="text-center mb-8 border-b border-stone-200 pb-4">
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
+            Activities we offer
+          </h2>
+          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
         </div>
 
         {/* Carousel / Cards Showcase */}

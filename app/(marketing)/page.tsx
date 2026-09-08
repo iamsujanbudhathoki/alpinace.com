@@ -4,6 +4,7 @@ import { WhyChooseUs } from "@/components/marketing/sections/why-choose-us";
 import { FeaturedPackages } from "@/components/marketing/sections/featured-packages";
 import { ActivitiesSection } from "@/components/marketing/sections/activities-section";
 import { TestimonialsSection } from "@/components/marketing/sections/testimonials";
+import { ExpertCtaSection } from "@/components/marketing/sections/expert-cta-section";
 import { FeaturedBlogs } from "@/components/marketing/sections/featured-blogs";
 import { FaqsSection } from "@/components/marketing/sections/faqs-section";
 import { FinalCta } from "@/components/marketing/sections/final-cta";
@@ -284,7 +285,10 @@ export default async function Home() {
       {/* 4. Traveler's Tales - Client Testimonials */}
       <TestimonialsSection />
 
-      {/* 5. Expedition Journal */}
+      {/* 5. Speak to an Expert CTA */}
+      <ExpertCtaSection />
+
+      {/* 6. Expedition Journal */}
       <FeaturedBlogs initialPosts={initialBlogs} />
 
       {/* 6. FAQs Accordion */}

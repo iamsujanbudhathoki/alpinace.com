@@ -29,10 +29,10 @@ export function PackageFaqs({
     <div className="space-y-6 pb-6 sm:pb-10 font-sans">
       {/* Section Header */}
       <div className="pb-4 border-b border-stone-200">
-        <span className="text-stone-900 text-xs font-semibold uppercase tracking-wider block">
-          Trail Guidance &amp; Preparation
+        <span className="text-stone-500 text-xs font-normal block">
+          Trail guidance &amp; preparation
         </span>
-        <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight mt-1">
+        <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900 mt-1">
           {title}
         </h2>
         {subtitle && (
@@ -60,10 +60,10 @@ export function PackageFaqs({
                 className="w-full text-left flex items-start justify-between gap-4 py-3.5 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/40 rounded-xs transition-colors"
               >
                 <span
-                  className={`font-heading text-base sm:text-lg font-bold leading-snug transition-colors ${
+                  className={`text-sm sm:text-base font-medium leading-snug transition-colors pr-2 ${
                     isOpen
-                      ? "text-stone-950"
-                      : "text-stone-900 group-hover:underline"
+                      ? "text-stone-950 font-semibold"
+                      : "text-stone-800 group-hover:text-stone-950"
                   }`}
                 >
                   {f.question}
@@ -72,10 +72,10 @@ export function PackageFaqs({
                   className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200 ${
                     isOpen
                       ? "bg-stone-900 text-white rotate-180"
-                      : "bg-stone-100 text-stone-600 group-hover:bg-stone-200 group-hover:text-stone-900"
+                      : "bg-stone-100 text-stone-500 group-hover:bg-stone-200 group-hover:text-stone-800"
                   }`}
                 >
-                  <ChevronDown className="w-4 h-4 stroke-[2.2]" />
+                  <ChevronDown className="w-4 h-4 stroke-[2]" />
                 </div>
               </button>
 

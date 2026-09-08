@@ -108,10 +108,11 @@ export function FaqsSection() {
                     className="w-full py-3.5 text-left flex items-start justify-between gap-4 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 rounded-xs transition-colors"
                   >
                     <span
-                      className={`font-heading text-sm sm:text-base font-normal leading-snug transition-colors pr-2 ${isOpen
-                          ? "text-stone-900 font-medium"
-                          : "text-stone-800 group-hover:text-stone-900"
-                        }`}
+                      className={`text-sm sm:text-base font-medium leading-snug transition-colors pr-2 ${
+                        isOpen
+                          ? "text-stone-950 font-semibold"
+                          : "text-stone-800 group-hover:text-stone-950"
+                      }`}
                     >
                       {faq.question}
                     </span>

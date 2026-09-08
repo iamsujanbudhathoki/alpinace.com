@@ -31,11 +31,14 @@ export function ExpeditionsCatalogClient({
   // Filter States
   const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
   const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const defaultMaxDuration = initialFilterOptions?.maxDuration || 60;
-  const [localMaxDuration, setLocalMaxDuration] = useState<number>(defaultMaxDuration);
-  const [appliedMaxDuration, setAppliedMaxDuration] = useState<number>(defaultMaxDuration);
+  const searchParam = searchParams.get("search") || "";
+  const maxDurationParam = searchParams.get("maxDuration");
+  const initialMaxDuration = maxDurationParam ? parseInt(maxDurationParam, 10) : (initialFilterOptions?.maxDuration || 60);
+
+  const [searchQuery, setSearchQuery] = useState(searchParam);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchParam);
+  const [localMaxDuration, setLocalMaxDuration] = useState<number>(initialMaxDuration);
+  const [appliedMaxDuration, setAppliedMaxDuration] = useState<number>(initialMaxDuration);
   const [sortBy, setSortBy] = useState<string>("rating");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 

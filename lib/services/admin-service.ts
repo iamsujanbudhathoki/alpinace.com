@@ -1687,18 +1687,41 @@ export const AdminSearchService = {
 };
 
 export const PublicSearchService = {
-  async search(query: string, type: string = "All", limit: number = 10): Promise<any> {
-    if (!query || query.trim().length < 2) {
+  async search(
+    query: string,
+    type: string = "All",
+    limit: number = 10,
+    filters?: {
+      minPrice?: number;
+      maxPrice?: number;
+      minDuration?: number;
+      maxDuration?: number;
+    }
+  ): Promise<any> {
+    const trimmedQuery = (query || "").trim();
+    const hasFilters =
+      filters &&
+      (filters.minPrice !== undefined ||
+        filters.maxPrice !== undefined ||
+        filters.minDuration !== undefined ||
+        filters.maxDuration !== undefined ||
+        (type && type !== "All"));
+
+    if (trimmedQuery.length < 2 && !hasFilters) {
       return { query: "", totalResults: 0, results: [] };
     }
     try {
-      const params = new URLSearchParams({
-        q: query.trim(),
-        type,
-        limit: String(limit),
-      });
+      const params = new URLSearchParams();
+      if (trimmedQuery) params.set("q", trimmedQuery);
+      if (type) params.set("type", type);
+      if (limit) params.set("limit", String(limit));
+      if (filters?.minPrice !== undefined) params.set("minPrice", String(filters.minPrice));
+      if (filters?.maxPrice !== undefined) params.set("maxPrice", String(filters.maxPrice));
+      if (filters?.minDuration !== undefined) params.set("minDuration", String(filters.minDuration));
+      if (filters?.maxDuration !== undefined) params.set("maxDuration", String(filters.maxDuration));
+
       const res = await apiClient.get<any>(`/search?${params.toString()}`);
-      return res?.data || { query: query.trim(), totalResults: 0, results: [] };
+      return res?.data || { query: trimmedQuery, totalResults: 0, results: [] };
     } catch (e) {
       console.warn("Public search API error:", e);
       return null;

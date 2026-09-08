@@ -3,7 +3,8 @@
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { SlidersHorizontal, X, Search, RotateCcw, ArrowRight, Mountain } from "lucide-react";
 import { getSliderFillStyle } from "@/lib/utils";
 import { ExpeditionItem } from "@/lib/expedition-data";

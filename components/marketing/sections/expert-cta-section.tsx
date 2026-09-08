@@ -85,7 +85,7 @@ export function ExpertCtaSection() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm px-6 py-3 rounded-lg inline-flex items-center gap-2.5 transition-all shadow-xs cursor-pointer"
+                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm px-6 py-3 rounded-md transition-colors shadow-2xs inline-flex items-center justify-center gap-2.5 cursor-pointer"
                 >
                   <PhoneCall className="w-4 h-4 text-stone-950" />
                   <span>Schedule a Call</span>

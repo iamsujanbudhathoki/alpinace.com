@@ -54,10 +54,10 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-row items-end justify-between mb-8 gap-3 border-b border-stone-200 pb-5">
           <div className="space-y-1">
-            <span className="text-stone-500 text-xs font-medium uppercase tracking-wider block">
+            <span className="text-stone-500 text-xs font-medium block">
               Articles &amp; Guides
             </span>
-            <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight leading-snug">
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
               Latest Articles
             </h2>
           </div>

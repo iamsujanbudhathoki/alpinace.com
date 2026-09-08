@@ -27,49 +27,6 @@ export interface PackageReviewsProps {
   overallRating?: number;
 }
 
-const DEFAULT_VERIFIED_REVIEWS: ReviewItemProp[] = [
-  {
-    id: "vr-1",
-    author: "Elena Rostova",
-    country: "Switzerland",
-    date: "Autumn 2025",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
-    rating: 5,
-    content:
-      "An extraordinary journey with AlpineAce. The Sherpa crew and logistics were flawless from start to finish. Acclimatization days were perfectly paced and the high passes offered once-in-a-lifetime views.",
-  },
-  {
-    id: "vr-2",
-    author: "Marcus Vance",
-    country: "United States",
-    date: "Spring 2025",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80",
-    rating: 5,
-    content:
-      "The level of professionalism, safety orientation, and authentic hospitality blew our group away. The lodge selections and food quality exceeded all our expectations.",
-  },
-  {
-    id: "vr-3",
-    author: "Sophie Laurent",
-    country: "France",
-    date: "October 2025",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80",
-    rating: 5,
-    content:
-      "Incredible vistas, caring mountain guides, and seamless coordination. Even when the weather shifted, the expedition leader adapted the schedule safely without missing a single highlight.",
-  },
-  {
-    id: "vr-4",
-    author: "David & Maya Chen",
-    country: "Singapore",
-    date: "November 2025",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80",
-    rating: 5,
-    content:
-      "From the early preparation packing lists to the final return flight, everything was handled with utmost care. A true hallmark of luxury Himalayan mountaineering.",
-  },
-];
-
 export function PackageReviews({
   reviews = [],
   title = "Traveler Reviews & Experiences",
@@ -80,7 +37,7 @@ export function PackageReviews({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const activeReviews = reviews.length > 0 ? reviews : DEFAULT_VERIFIED_REVIEWS;
+  const activeReviews = reviews;
 
   const updateScrollState = useCallback(() => {
     if (!scrollRef.current) return;
@@ -193,11 +150,16 @@ export function PackageReviews({
       </div>
 
       {/* Reviews Slider */}
-      <div
-        ref={scrollRef}
-        onScroll={updateScrollState}
-        className="flex gap-4 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth focus:outline-hidden scrollbar-none"
-      >
+      {activeReviews.length === 0 ? (
+        <div className="text-center py-10 px-4 rounded-xl border border-dashed border-stone-200 bg-stone-50 text-stone-500 text-xs">
+          No traveler reviews submitted for this package yet.
+        </div>
+      ) : (
+        <div
+          ref={scrollRef}
+          onScroll={updateScrollState}
+          className="flex gap-4 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth focus:outline-hidden scrollbar-none"
+        >
         {activeReviews.map((rev, idx) => (
           <div
             key={rev.id || idx}
@@ -258,6 +220,7 @@ export function PackageReviews({
           </div>
         ))}
       </div>
+      )}
     </section>
   );
 }

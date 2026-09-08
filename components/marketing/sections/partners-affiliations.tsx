@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { SettingService } from "@/lib/services/admin-service";
 
 interface Partner {
   id: string;
   name: string;
-  website: string;
+  website?: string;
   logoUrl: string;
-  fallbackUrl: string;
+  fallbackUrl?: string;
 }
 
 const OFFICIAL_PARTNERS: Partner[] = [
@@ -57,55 +58,82 @@ const OFFICIAL_PARTNERS: Partner[] = [
 ];
 
 export function PartnersAffiliationsSection() {
+  const [partners, setPartners] = useState<Partner[]>(OFFICIAL_PARTNERS);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    async function loadPartners() {
+      try {
+        const settings = await SettingService.getPublicAll();
+        if (settings && (settings as any).partners) {
+          const parsed = typeof (settings as any).partners === "string"
+            ? JSON.parse((settings as any).partners)
+            : (settings as any).partners;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setPartners(parsed);
+          }
+        }
+      } catch (e) {
+        // Fall back gracefully
+      }
+    }
+    loadPartners();
+  }, []);
 
   const handleImageError = (id: string) => {
     setImgErrors((prev) => ({ ...prev, [id]: true }));
   };
 
-  // Duplicate the partner list 3 times to create a seamless infinite marquee loop
-  const marqueePartners = [
-    ...OFFICIAL_PARTNERS,
-    ...OFFICIAL_PARTNERS,
-    ...OFFICIAL_PARTNERS,
-  ];
+  if (!partners || partners.length === 0) return null;
 
   return (
-    <section className="relative py-8 sm:py-10 bg-stone-100/70 border-b border-stone-200/80 overflow-hidden select-none">
-      {/* Centered Section Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-5 sm:mb-6 text-center">
-        <span className="text-stone-500 text-xs sm:text-sm font-semibold uppercase tracking-wider inline-block">
-          Partners &amp; Affiliations
-        </span>
-      </div>
+    <section className="py-12 sm:py-16 bg-white border-b border-stone-200/80">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Heading: Clean, crisp, centered matching reference image */}
+        <h2 className="text-center font-heading text-stone-600 text-xs sm:text-sm font-semibold tracking-normal mb-8 sm:mb-10">
+          Associated with
+        </h2>
 
-      {/* Infinite Auto-Scrolling Marquee Container */}
-      <div className="group relative w-full overflow-hidden py-2">
-        {/* Soft edge gradient masks for smooth entry and exit */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-24 md:w-32 bg-gradient-to-r from-stone-100/90 via-stone-100/60 to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-24 md:w-32 bg-gradient-to-l from-stone-100/90 via-stone-100/60 to-transparent z-10" />
-
-        {/* Scrolling Track */}
-        <div className="flex items-center animate-partner-marquee group-hover:[animation-play-state:paused]">
-          {marqueePartners.map((partner, index) => {
+        {/* Logo Grid Cards: Static, equal width & height cards with subtle rounded borders */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-5xl mx-auto">
+          {partners.map((partner) => {
             const hasError = imgErrors[partner.id];
-            const imgSrc = hasError ? partner.fallbackUrl : partner.logoUrl;
+            const imgSrc = hasError && partner.fallbackUrl ? partner.fallbackUrl : partner.logoUrl;
 
-            return (
+            const card = (
               <div
-                key={`${partner.id}-${index}`}
+                className="w-36 sm:w-40 md:w-44 h-16 sm:h-20 bg-white border border-stone-200 rounded-lg p-3 flex items-center justify-center transition-all duration-300 hover:border-stone-400 hover:shadow-2xs group cursor-pointer"
                 title={partner.name}
-                aria-label={partner.name}
-                className="flex items-center justify-center shrink-0 px-6 sm:px-10 md:px-12"
               >
                 <Image
                   src={imgSrc}
                   alt={partner.name}
-                  width={160}
+                  width={140}
                   height={48}
                   onError={() => handleImageError(partner.id)}
-                  className="h-9 sm:h-11 md:h-12 w-auto max-w-[130px] sm:max-w-[160px] md:max-w-[180px] object-contain"
+                  className="max-h-10 sm:max-h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 />
+              </div>
+            );
+
+            if (partner.website) {
+              return (
+                <a
+                  key={partner.id}
+                  href={partner.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={partner.name}
+                  className="focus:outline-none focus:ring-2 focus:ring-stone-400 rounded-lg shrink-0"
+                >
+                  {card}
+                </a>
+              );
+            }
+
+            return (
+              <div key={partner.id} className="shrink-0">
+                {card}
               </div>
             );
           })}

@@ -15,12 +15,12 @@ export function FinalCta() {
   return (
     <section className="py-16 sm:py-20 bg-stone-50 border-t border-b border-stone-200 text-stone-900 text-center">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-        <span className="text-stone-500 text-xs font-medium uppercase tracking-wider block">
-          Plan your trip
+        <span className="text-stone-500 text-xs font-medium block">
+          Plan your journey
         </span>
 
-        <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight">
-          Ready to plan your trek? We&apos;re here to help you choose the right route.
+        <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900">
+          Ready to start planning your Himalayan trek?
         </h2>
 
         <p className="text-stone-600 text-sm sm:text-base font-normal leading-relaxed max-w-xl mx-auto">

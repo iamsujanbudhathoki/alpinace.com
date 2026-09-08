@@ -182,7 +182,7 @@ export function Hero({
       
 
         {/* Editorial Heading */}
-        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl  text-stone-900 tracking-tight mb-6 max-w-3xl leading-tight">
+        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl text-stone-900 mb-6 max-w-3xl leading-tight">
           Explore guided treks, tours &amp; expeditions.
         </h1>
 

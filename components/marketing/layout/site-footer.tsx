@@ -112,7 +112,7 @@ export function SiteFooter() {
           <div className="grid grid-cols-2 gap-6 sm:gap-8 sm:col-span-1 lg:col-span-4">
             {/* Quick Links */}
             <div className="space-y-3">
-              <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
+              <h3 className="font-heading text-xs font-bold text-stone-900 border-b border-stone-200 pb-2">
                 Quick Links
               </h3>
               <ul className="space-y-2 text-xs sm:text-sm font-medium text-stone-700">
@@ -151,7 +151,7 @@ export function SiteFooter() {
 
             {/* Popular Regions */}
             <div className="space-y-3">
-              <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
+              <h3 className="font-heading text-xs font-bold text-stone-900 border-b border-stone-200 pb-2">
                 Top Regions
               </h3>
               <ul className="space-y-2 text-xs sm:text-sm font-medium text-stone-700">
@@ -186,7 +186,7 @@ export function SiteFooter() {
 
           {/* Column 3: Kathmandu Operations (lg:col-span-3) */}
           <div className="space-y-3 sm:col-span-1 lg:col-span-3">
-            <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
+            <h3 className="font-heading text-xs font-bold text-stone-900 border-b border-stone-200 pb-2">
               Kathmandu Operations
             </h3>
             <ul className="space-y-3 text-xs sm:text-sm text-stone-700 font-medium">

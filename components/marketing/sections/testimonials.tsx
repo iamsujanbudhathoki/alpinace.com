@@ -37,16 +37,26 @@ export function TestimonialsSection() {
     async function loadTestimonials() {
       try {
         const fetched = await adminTestimonialsApi.getPublicAll({ status: "active" });
-        if (fetched && fetched.length > 0) {
-          if (isMounted) setItems(fetched);
+        const list = Array.isArray(fetched)
+          ? fetched
+          : Array.isArray((fetched as any)?.items)
+          ? (fetched as any).items
+          : [];
+
+        if (list.length > 0) {
+          if (isMounted) setItems(list);
           return;
         }
 
         const settings = await SettingService.getPublicAll();
         if (settings && settings.testimonials) {
-          const parsed = JSON.parse(settings.testimonials);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            if (isMounted) setItems(parsed);
+          try {
+            const parsed = JSON.parse(settings.testimonials);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              if (isMounted) setItems(parsed);
+            }
+          } catch (e) {
+            // Ignore parse error
           }
         }
       } catch (e) {
@@ -79,11 +89,11 @@ export function TestimonialsSection() {
 
         {/* Section Header */}
         <div className="mb-8 space-y-1 pb-6 border-b border-stone-200">
-          <span className="text-stone-500 text-xs font-medium uppercase tracking-wider block">
-            Traveler&apos;s Tales
+          <span className="text-stone-500 text-xs font-medium block">
+            Traveler Feedback
           </span>
-          <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight leading-snug">
-            What Our Clients Say
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
+            What our travelers say
           </h2>
         </div>
 

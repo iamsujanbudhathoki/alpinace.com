@@ -55,45 +55,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return meta;
 }
 
-const DEFAULT_TEAM = [
-  {
-    name: "Chhewang Sherpa",
-    role: "Co-Founder & Lead Expedition Guide",
-    desc: "Nine Everest summits, two K2 ascents, twelve Ama Dablam routes. IFMGA-certified and ropes coordinator for all technical expeditions.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150",
-    badge: "IFMGA Guide",
-  },
-  {
-    name: "Pasang Lhamu Sherpa",
-    role: "Operations & Logistics Director",
-    desc: "Manages permits, helicopter charters, lodge bookings, and client itineraries across Khumbu and Annapurna. 12 years coordinating Himalayan operations.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
-    badge: "Operations Lead",
-  },
-  {
-    name: "Dr. Rajesh Thapa",
-    role: "Chief Medical Officer",
-    desc: "Specialist in high-altitude physiology and emergency medicine. Oversees all medical safety protocols, acclimatization planning, and basecamp health monitoring.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=150",
-    badge: "MD, Altitude Medicine",
-  },
-];
-
-const DEFAULT_VALUES = [
-  {
-    title: "Sherpa-owned and operated",
-    desc: "100% of our leadership and field staff are local Sherpas. Profits from every expedition go back into Sherpa villages — supporting schools, solar infrastructure, and micro-hydro projects.",
-  },
-  {
-    title: "Environmental responsibility",
-    desc: "All waste is packed out from campsites. We cook with LPG gas instead of firewood, and apply carbon offsets to helicopter flights. Porters are paid fair wages that exceed industry standards.",
-  },
-  {
-    title: "Quality over volume",
-    desc: "We run a maximum of 30 expeditions per year. That limit exists so we can maintain genuine standards on guide prep, equipment quality, kitchen hygiene, and client communication.",
-  },
-];
-
 export default async function AboutView() {
   let aboutData: AboutUsData | null = null;
   try {
@@ -102,44 +63,36 @@ export default async function AboutView() {
     console.warn("Failed to fetch public about us content:", e);
   }
 
-  let team = DEFAULT_TEAM;
+  let team: { name: string; role: string; desc: string; image: string; badge: string }[] = [];
   try {
     const res = await adminTeamsApi.getPublicAll({ status: "active" });
-    if (Array.isArray(res) && res.length > 0) {
-      team = res.map((m) => ({
+    const teamList = Array.isArray(res)
+      ? res
+      : Array.isArray((res as any)?.items)
+      ? (res as any).items
+      : [];
+
+    if (teamList.length > 0) {
+      team = teamList.map((m: any) => ({
         name: m.name,
         role: m.role,
-        desc: m.bio || "Experienced Himalayan expedition specialist.",
-        image: m.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150",
-        badge: m.experience || "Sherpa Team",
+        desc: m.bio || "",
+        image: m.avatar || "",
+        badge: m.experience || "Team Member",
       }));
     }
   } catch (e) {
     console.warn("Failed to fetch team members for about page:", e);
   }
 
-  const values =
-    Array.isArray(aboutData?.values) && aboutData.values.length > 0
-      ? aboutData.values
-      : DEFAULT_VALUES;
+  const values = Array.isArray(aboutData?.values) ? aboutData.values : [];
+  const stats = Array.isArray(aboutData?.stats) ? aboutData.stats : [];
 
-  const stats =
-    Array.isArray(aboutData?.stats) && aboutData.stats.length > 0
-      ? aboutData.stats
-      : [
-          { number: "100%", label: "Sherpa owned & operated" },
-          { number: "25+", label: "Active IFMGA guides" },
-        ];
+  const heroTitle = aboutData?.heroTitle || "";
+  const heroSubtitle = aboutData?.heroSubtitle || "";
+  const heroBgImage = aboutData?.heroImage || "";
 
-  const heroTitle = aboutData?.heroTitle || "Sherpa-guided treks planned from Kathmandu.";
-  const heroSubtitle =
-    aboutData?.heroSubtitle ||
-    "AlpineAce was founded in Thamel in 2012 with a clear commitment: deliver high-altitude Himalayan expeditions that combine certified mountain guides with safety logistics and authentic local hospitality.";
-  const heroBgImage =
-    aboutData?.heroImage ||
-    "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=1600";
-
-  const storyTitle = aboutData?.storyTitle || "Twelve years of guided expeditions";
+  const storyTitle = aboutData?.storyTitle || "";
   const storyContentHtml = aboutData?.storyContent || "";
   const storyImage = aboutData?.storyImage;
 

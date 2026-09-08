@@ -128,7 +128,7 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
         {/* Section Header */}
         <div className="flex flex-row items-end justify-between mb-8 gap-4 border-b border-stone-200 pb-4">
           <div className="space-y-1">
-            <h2 className="font-heading text-2xl sm:text-4xl font-bold text-stone-900 tracking-tight leading-snug">
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
               Activities we offer
             </h2>
           </div>

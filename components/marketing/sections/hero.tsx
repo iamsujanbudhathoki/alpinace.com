@@ -280,11 +280,15 @@ export function Hero({
           className="relative z-30 w-full max-w-4xl"
         >
           <div className="relative">
-            <div className="bg-white/95 backdrop-blur-xl border border-stone-200/90 rounded-2xl sm:rounded-3xl shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2 transition-all duration-300 focus-within:border-stone-400">
+            <div className="bg-white/95 backdrop-blur-xl border border-stone-200/90 rounded-2xl shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] p-2.5 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2.5 transition-all duration-300">
 
-              {/* Keyword Text Input */}
-              <div className="flex-1 min-w-[200px] flex items-center bg-stone-50/80 rounded-xl border border-stone-200/60 px-3 py-1.5 focus-within:bg-white focus-within:border-stone-400 transition-colors">
-                <MapPin className="h-4 w-4 text-stone-500 shrink-0 mr-2" />
+              {/* Generous Keyword Text Input */}
+              <div className="flex-[2.5] md:flex-[3] sm:min-w-[260px] md:min-w-[300px] flex items-center bg-stone-50/70 hover:border-stone-300 focus-within:bg-white focus-within:border-stone-400 border border-stone-200/70 rounded-xl px-3.5 py-2.5 transition-all">
+                {isSearching ? (
+                  <Loader2 className="h-4 sm:h-5 w-4 sm:w-5 animate-spin text-stone-600 shrink-0 mr-2.5" />
+                ) : (
+                  <Search className="h-4 sm:h-5 w-4 sm:w-5 text-stone-500 shrink-0 mr-2.5" />
+                )}
                 <input
                   ref={inputRef}
                   type="text"
@@ -300,7 +304,7 @@ export function Hero({
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="Where do you want to explore?"
-                  className="w-full bg-transparent text-stone-900 placeholder-stone-400 text-xs sm:text-sm font-normal py-1 focus:outline-none"
+                  className="w-full bg-transparent text-stone-900 placeholder-stone-400 text-xs sm:text-sm md:text-base font-normal focus:outline-none"
                   aria-label="Search destination or trip"
                 />
                 {query && (
@@ -310,7 +314,7 @@ export function Hero({
                       setQuery("");
                       inputRef.current?.focus();
                     }}
-                    className="p-1 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+                    className="p-1 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0"
                     aria-label="Clear keyword"
                   >
                     <X className="h-3.5 w-3.5" />
@@ -319,7 +323,7 @@ export function Hero({
               </div>
 
               {/* Category Select Dropdown */}
-              <div className="relative min-w-[130px] flex items-center bg-stone-50/80 rounded-xl border border-stone-200/60 px-3 py-1.5 focus-within:bg-white focus-within:border-stone-400 transition-colors">
+              <div className="relative flex-1 min-w-[130px] sm:min-w-[140px] flex items-center bg-stone-50/70 hover:border-stone-300 focus-within:bg-white focus-within:border-stone-400 border border-stone-200/70 rounded-xl px-3 py-2.5 transition-all">
                 <Compass className="h-4 w-4 text-stone-500 shrink-0 mr-2" />
                 <select
                   value={selectedCategory}
@@ -327,7 +331,7 @@ export function Hero({
                     setSelectedCategory(e.target.value as any);
                     setSelectedIndex(-1);
                   }}
-                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-normal py-1 focus:outline-none cursor-pointer appearance-none pr-4"
+                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-normal py-0.5 focus:outline-none cursor-pointer appearance-none pr-4"
                   aria-label="Filter by Category"
                 >
                   <option value="All">All Categories</option>
@@ -339,15 +343,15 @@ export function Hero({
               </div>
 
               {/* Price Range Select Dropdown */}
-              <div className="relative min-w-[120px] flex items-center bg-stone-50/80 rounded-xl border border-stone-200/60 px-3 py-1.5 focus-within:bg-white focus-within:border-stone-400 transition-colors">
-                <DollarSign className="h-4 w-4 text-stone-500 shrink-0 mr-1" />
+              <div className="relative flex-1 min-w-[120px] sm:min-w-[130px] flex items-center bg-stone-50/70 hover:border-stone-300 focus-within:bg-white focus-within:border-stone-400 border border-stone-200/70 rounded-xl px-3 py-2.5 transition-all">
+                <DollarSign className="h-4 w-4 text-stone-500 shrink-0 mr-1.5" />
                 <select
                   value={priceRange}
                   onChange={(e) => {
                     setPriceRange(e.target.value);
                     setSelectedIndex(-1);
                   }}
-                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-normal py-1 focus:outline-none cursor-pointer appearance-none pr-4"
+                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-normal py-0.5 focus:outline-none cursor-pointer appearance-none pr-4"
                   aria-label="Filter by Price"
                 >
                   {PRICE_OPTIONS.map((opt) => (
@@ -360,7 +364,7 @@ export function Hero({
               </div>
 
               {/* Duration Range Select Dropdown */}
-              <div className="relative min-w-[120px] flex items-center bg-stone-50/80 rounded-xl border border-stone-200/60 px-3 py-1.5 focus-within:bg-white focus-within:border-stone-400 transition-colors">
+              <div className="relative flex-1 min-w-[120px] sm:min-w-[130px] flex items-center bg-stone-50/70 hover:border-stone-300 focus-within:bg-white focus-within:border-stone-400 border border-stone-200/70 rounded-xl px-3 py-2.5 transition-all">
                 <Clock className="h-4 w-4 text-stone-500 shrink-0 mr-1.5" />
                 <select
                   value={durationRange}
@@ -368,7 +372,7 @@ export function Hero({
                     setDurationRange(e.target.value);
                     setSelectedIndex(-1);
                   }}
-                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-normal py-1 focus:outline-none cursor-pointer appearance-none pr-4"
+                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-normal py-0.5 focus:outline-none cursor-pointer appearance-none pr-4"
                   aria-label="Filter by Duration"
                 >
                   {DURATION_OPTIONS.map((opt) => (
@@ -380,27 +384,13 @@ export function Hero({
                 <ChevronDown className="h-3.5 w-3.5 text-stone-400 pointer-events-none absolute right-3" />
               </div>
 
-              {/* Primary Search Submit Button */}
-              <button
-                type="button"
-                onClick={handleSearchSubmit}
-                className="inline-flex items-center justify-center rounded-xl bg-stone-900 hover:bg-stone-800 text-white px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-all shadow-md shrink-0 gap-2 cursor-pointer group"
-              >
-                {isSearching ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-stone-300" />
-                ) : (
-                  <Search className="h-4 w-4 text-stone-200 group-hover:scale-110 transition-transform" />
-                )}
-                <span>Search</span>
-              </button>
-
               {/* Reset Filters Button */}
               {isAnyFilterActive && (
                 <button
                   type="button"
                   onClick={handleResetFilters}
                   title="Reset filters"
-                  className="inline-flex items-center justify-center p-2.5 text-stone-400 hover:text-stone-800 hover:bg-stone-100 rounded-xl transition-colors cursor-pointer shrink-0"
+                  className="inline-flex items-center justify-center p-2.5 text-stone-400 hover:text-stone-800 hover:bg-stone-100 border border-stone-200/70 rounded-xl transition-all cursor-pointer shrink-0"
                   aria-label="Reset filters"
                 >
                   <RotateCcw className="h-4 w-4" />

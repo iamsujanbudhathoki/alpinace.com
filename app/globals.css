@@ -100,8 +100,8 @@
   --primary-foreground: #ffffff;
   --secondary: #f4f8f5;
   --secondary-foreground: #111a15;
-  --accent: #0f172a;
-  --accent-foreground: #ffffff;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
   --destructive: oklch(0.577 0.245 27.325);
   --input: #e2e8f0;
   --ring: #0f172a;

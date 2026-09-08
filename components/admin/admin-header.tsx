@@ -339,7 +339,7 @@ export function AdminHeader({
 
               <DropdownMenuItem
                 onClick={() => router.push("/admin/settings")}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-700 hover:text-slate-900 focus:text-slate-900 focus:bg-slate-100 hover:bg-slate-100 rounded-lg"
               >
                 <Settings className="w-3.5 h-3.5 text-slate-500" />
                 <span>Account Settings</span>
@@ -347,7 +347,7 @@ export function AdminHeader({
 
               <DropdownMenuItem
                 onClick={() => window.open("/", "_blank")}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold cursor-pointer text-slate-700 hover:text-slate-900 focus:text-slate-900 focus:bg-slate-100 hover:bg-slate-100 rounded-lg"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
                 <span>Visit Marketing Site</span>
@@ -356,10 +356,11 @@ export function AdminHeader({
               <DropdownMenuSeparator className="bg-slate-100" />
 
               <DropdownMenuItem
+                variant="destructive"
                 onClick={() => setShowLogoutConfirm(true)}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-bold cursor-pointer text-rose-600 hover:bg-rose-50 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-bold cursor-pointer text-rose-600 focus:bg-rose-50 focus:text-rose-600 hover:bg-rose-50 hover:text-rose-600 rounded-lg"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-3.5 h-3.5 text-rose-600" />
                 <span>Sign Out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>

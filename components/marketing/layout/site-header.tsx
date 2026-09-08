@@ -329,7 +329,7 @@ export function SiteHeader() {
     <>
       <header
         ref={headerRef}
-        className="fixed inset-x-0 top-0 z-50 bg-white border-b border-stone-200 shadow-2xs py-3.5 sm:py-4 transition-all duration-200"
+        className="fixed inset-x-0 top-0 z-50 bg-slate-950 border-b border-stone-800/90 shadow-md py-3.5 sm:py-4 transition-all duration-200"
       >
         {showDetailNav && detailNav ? (
           /* CONTEXTUAL DETAIL TAB NAVIGATION */
@@ -352,8 +352,8 @@ export function SiteHeader() {
                         transition-colors duration-150
                         ${
                           isActive
-                            ? "bg-stone-900 text-white font-semibold"
-                            : "text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+                            ? "bg-stone-800 text-white font-semibold border border-stone-700/80"
+                            : "text-stone-400 hover:text-white hover:bg-stone-900"
                         }
                       `}
                     >
@@ -367,10 +367,10 @@ export function SiteHeader() {
             <div className="shrink-0 flex items-center gap-3">
               {detailNav.priceUSD !== undefined && (
                 <div className="text-right hidden sm:block">
-                  <span className="type-caption text-stone-500 block text-[10px] font-medium">
+                  <span className="type-caption text-stone-400 block text-[10px] font-medium">
                     From
                   </span>
-                  <span className="type-heading-md text-stone-950 block leading-tight font-bold">
+                  <span className="type-heading-md text-white block leading-tight font-bold">
                     ${detailNav.priceUSD.toLocaleString()} USD
                   </span>
                 </div>
@@ -388,7 +388,7 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-stone-700 hover:text-stone-950 lg:hidden rounded-md cursor-pointer transition-colors"
+                className="p-2 text-stone-300 hover:text-white lg:hidden rounded-md cursor-pointer transition-colors"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-menu-panel"
@@ -398,7 +398,7 @@ export function SiteHeader() {
             </div>
           </div>
         ) : (
-          /* STANDARD THREE-PART TRAVEL NAVBAR: Logo (Left) -> Nav (Center) -> WhatsApp CTA (Right) */
+          /* STANDARD THREE-PART SOLID BLACK TRAVEL NAVBAR: Logo (Left) -> Nav (Center) -> WhatsApp CTA (Right) */
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 sm:gap-8 px-4 sm:px-6 md:px-8">
             
             {/* 1. LEFT: Brand Logo Visual Anchor */}
@@ -410,9 +410,9 @@ export function SiteHeader() {
                 height={44}
                 priority
                 unoptimized={Boolean(settings.siteLogo && (settings.siteLogo.startsWith("http") || settings.siteLogo.startsWith("data:")))}
-                className="h-10 w-10 sm:h-11 sm:w-11 object-cover rounded-md border border-stone-200 shrink-0"
+                className="h-10 w-10 sm:h-11 sm:w-11 object-cover rounded-md border border-stone-700 bg-white shrink-0"
               />
-              <span className="font-heading text-base sm:text-lg font-bold text-slate-950 transition-colors truncate tracking-tight">
+              <span className="font-heading text-base sm:text-lg font-bold text-white transition-colors truncate tracking-tight">
                 {settings.siteName || "Alpine Ace"}
               </span>
             </Link>
@@ -446,8 +446,8 @@ export function SiteHeader() {
                       onClick={() => setActiveDropdown(null)}
                       className={`relative px-3 py-1.5 text-sm transition-colors flex items-center gap-1 rounded-md cursor-pointer ${
                         isActive
-                          ? "bg-slate-950 text-white font-semibold shadow-2xs"
-                          : "text-slate-700 font-medium hover:text-slate-950 hover:bg-stone-100"
+                          ? "bg-stone-800 text-white font-semibold border border-stone-700/80 shadow-2xs"
+                          : "text-stone-300 font-medium hover:text-white hover:bg-stone-900"
                       }`}
                     >
                       <span>{link.label}</span>
@@ -457,8 +457,8 @@ export function SiteHeader() {
                             isActive
                               ? "text-white"
                               : isDropdownOpen
-                              ? "rotate-180 text-slate-950"
-                              : "text-stone-400"
+                              ? "rotate-180 text-white"
+                              : "text-stone-400 group-hover:text-white"
                           }`}
                         />
                       )}
@@ -482,7 +482,7 @@ export function SiteHeader() {
                         }`}
                       >
                         <div
-                          className={`bg-white rounded-xl shadow-xl border border-stone-200 p-5 overflow-hidden ${
+                          className={`bg-white text-slate-950 rounded-xl shadow-2xl border border-stone-200 p-5 overflow-hidden ${
                             link.items && link.items.length > 0
                               ? "w-[260px]"
                               : "w-[680px] sm:w-[740px]"
@@ -684,7 +684,7 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-stone-700 hover:text-stone-950 lg:hidden rounded-md cursor-pointer transition-colors"
+                className="p-2 text-stone-300 hover:text-white lg:hidden rounded-md cursor-pointer transition-colors"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-menu-panel"
@@ -708,17 +708,17 @@ export function SiteHeader() {
         >
           {/* Backdrop Overlay */}
           <div
-            className="absolute inset-0 bg-slate-950/50 transition-opacity duration-200"
+            className="absolute inset-0 bg-slate-950/70 transition-opacity duration-200"
             onClick={() => setMobileMenuOpen(false)}
             onTouchMove={(e) => e.preventDefault()}
             aria-hidden="true"
           />
 
           {/* Menu Panel Content */}
-          <div className="relative z-10 bg-white w-full h-full overflow-y-auto overscroll-contain flex flex-col justify-between p-5 sm:p-6 shadow-xl border-t border-stone-200">
+          <div className="relative z-10 bg-slate-950 text-white w-full h-full overflow-y-auto overscroll-contain flex flex-col justify-between p-5 sm:p-6 shadow-xl border-t border-stone-800">
             <div className="space-y-4">
               {/* Mobile Header Logo */}
-              <div className="flex items-center gap-3 pb-3 border-b border-stone-200">
+              <div className="flex items-center gap-3 pb-3 border-b border-stone-800">
                 <Image
                   src={settings.siteLogo || "/logo.jpg"}
                   alt={settings.siteName || "AlpineAce Logo"}
@@ -726,9 +726,9 @@ export function SiteHeader() {
                   height={36}
                   priority
                   unoptimized={Boolean(settings.siteLogo && (settings.siteLogo.startsWith("http") || settings.siteLogo.startsWith("data:")))}
-                  className="h-9 w-9 object-cover rounded-md border border-stone-200"
+                  className="h-9 w-9 object-cover rounded-md border border-stone-700 bg-white"
                 />
-                <span className="font-heading text-base font-bold text-slate-950">
+                <span className="font-heading text-base font-bold text-white">
                   {settings.siteName || "Alpine Ace"}
                 </span>
               </div>
@@ -746,12 +746,12 @@ export function SiteHeader() {
                   const isLoading = !!loadingMap[catType] && categories.length === 0;
 
                   return (
-                    <div key={link.label} className="border-b border-stone-100 py-1">
+                    <div key={link.label} className="border-b border-stone-800/70 py-1">
                       <div className="flex items-center justify-between min-h-[44px]">
                         <Link
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="text-sm font-semibold text-slate-900 hover:text-yellow-600 transition-colors py-2 flex-1"
+                          className="text-sm font-semibold text-stone-200 hover:text-yellow-400 transition-colors py-2 flex-1"
                         >
                           {link.label}
                         </Link>
@@ -759,13 +759,13 @@ export function SiteHeader() {
                           <button
                             type="button"
                             onClick={() => handleMobileToggle(link)}
-                            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-slate-900 cursor-pointer -mr-2"
+                            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-stone-400 hover:text-white cursor-pointer -mr-2"
                             aria-label={`Toggle ${link.label} subcategories`}
                             aria-expanded={isExpanded}
                           >
                             <ChevronDown
                               className={`w-5 h-5 transition-transform duration-200 ${
-                                isExpanded ? "rotate-180 text-slate-900" : ""
+                                isExpanded ? "rotate-180 text-white" : ""
                               }`}
                             />
                           </button>
@@ -774,40 +774,40 @@ export function SiteHeader() {
 
                       {/* Mobile Accordion Content */}
                       {hasDropdown && isExpanded && (
-                        <div className="mt-1 pl-3.5 space-y-1.5 border-l-2 border-stone-200 py-1">
+                        <div className="mt-1 pl-3.5 space-y-1.5 border-l-2 border-stone-800 py-1">
                           {link.items && link.items.length > 0 ? (
                             link.items.map((subItem) => (
                               <Link
                                 key={subItem.href}
                                 href={subItem.href}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block text-xs font-semibold text-slate-700 hover:text-slate-950 py-2 min-h-[40px] flex items-center"
+                                className="block text-xs font-semibold text-stone-300 hover:text-white py-2 min-h-[40px] flex items-center"
                               >
                                 {subItem.label}
                               </Link>
                             ))
                           ) : isLoading ? (
-                            <div className="text-xs text-slate-400 py-2">Loading categories...</div>
+                            <div className="text-xs text-stone-400 py-2">Loading categories...</div>
                           ) : categories.length === 0 ? (
-                            <div className="text-xs text-slate-400 py-2">No categories available</div>
+                            <div className="text-xs text-stone-400 py-2">No categories available</div>
                           ) : (
                             categories.map((cat) => (
                               <div key={cat.id} className="space-y-1">
                                 <Link
                                   href={getCategoryLink(link.href, cat)}
                                   onClick={() => setMobileMenuOpen(false)}
-                                  className="block text-xs font-bold text-slate-900 hover:text-yellow-600 py-1.5 min-h-[36px] flex items-center"
+                                  className="block text-xs font-bold text-stone-100 hover:text-yellow-400 py-1.5 min-h-[36px] flex items-center"
                                 >
                                   {cat.name}
                                 </Link>
                                 {Array.isArray(cat.children) && cat.children.length > 0 && (
-                                  <div className="pl-3 space-y-1 border-l border-stone-200 my-1">
+                                  <div className="pl-3 space-y-1 border-l border-stone-800 my-1">
                                     {cat.children.map((subCat) => (
                                       <Link
                                         key={subCat.id}
                                         href={getCategoryLink(link.href, subCat)}
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="block text-[11px] font-medium text-slate-600 hover:text-slate-950 py-1 min-h-[32px] flex items-center"
+                                        className="block text-[11px] font-medium text-stone-400 hover:text-white py-1 min-h-[32px] flex items-center"
                                       >
                                         {subCat.name}
                                       </Link>
@@ -826,7 +826,7 @@ export function SiteHeader() {
             </div>
 
             {/* Mobile Footer WhatsApp Action CTA */}
-            <div className="pt-4 border-t border-stone-200 mt-6 shrink-0 space-y-2">
+            <div className="pt-4 border-t border-stone-800 mt-6 shrink-0 space-y-2">
               <a
                 href={whatsappUrl}
                 target="_blank"

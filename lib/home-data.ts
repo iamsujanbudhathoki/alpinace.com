@@ -1,10 +1,11 @@
-import { TripDifficulty, PackageStatus } from "./admin-data";
+import { TripDifficulty, PackageStatus, CategoryType } from "./admin-data";
 
 export interface TravelPackage {
   id: string;
   title: string;
   slug: string;
   category: string;
+  categoryType?: CategoryType;
   region: string;
   durationDays: number;
   maxAltitudeMeters: number;

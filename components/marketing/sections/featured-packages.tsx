@@ -5,37 +5,38 @@ import Link from "next/link";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame } from "lucide-react";
 import { apiClient } from "@/lib/services/api-client";
 import { TravelPackage } from "@/lib/home-data";
-import { PackageStatus } from "@/lib/admin-data";
+import { PackageStatus, CategoryType } from "@/lib/admin-data";
 
-type FeaturedTab = "treks" | "tours" | "expeditions";
+type FeaturedTab = "popular" | "treks" | "tours" | "expeditions";
 
 interface FeaturedPackagesProps {
+  initialPopular?: TravelPackage[];
   initialTreks?: TravelPackage[];
   initialTours?: TravelPackage[];
   initialExpeditions?: TravelPackage[];
 }
 
 export function FeaturedPackages({
+  initialPopular = [],
   initialTreks = [],
   initialTours = [],
   initialExpeditions = [],
 }: FeaturedPackagesProps) {
-  const [activeTab, setActiveTab] = useState<FeaturedTab>("treks");
+  const [activeTab, setActiveTab] = useState<FeaturedTab>("popular");
+  const [popular, setPopular] = useState<TravelPackage[]>(initialPopular);
   const [treks, setTreks] = useState<TravelPackage[]>(initialTreks);
   const [tours, setTours] = useState<TravelPackage[]>(initialTours);
   const [expeditions, setExpeditions] = useState<TravelPackage[]>(initialExpeditions);
   const [loading, setLoading] = useState(
-    initialTreks.length === 0 && initialTours.length === 0 && initialExpeditions.length === 0
+    initialPopular.length === 0 && initialTreks.length === 0 && initialTours.length === 0 && initialExpeditions.length === 0
   );
 
   // Mouse drag & click prevention setup
   const [isPointerDragging, setIsPointerDragging] = useState(false);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
-
-
 
   // Autoplay configuration
   const autoplay = useRef(
@@ -68,21 +69,35 @@ export function FeaturedPackages({
       emblaApi.reInit();
       emblaApi.scrollTo(0);
     }
-  }, [activeTab, treks, tours, expeditions, emblaApi]);
+  }, [activeTab, popular, treks, tours, expeditions, emblaApi]);
 
-  // Load featured items from backend API
+  // Load featured & popular items from backend API
   useEffect(() => {
     async function loadFeatured() {
       try {
-        const [treksRes, toursRes, expeditionsRes] = await Promise.all([
+        const [
+          treksRes,
+          toursRes,
+          expeditionsRes,
+          popTreksRes,
+          popToursRes,
+          popExpeditionsRes,
+        ] = await Promise.all([
           apiClient.get<any[]>(`/treks?isFeatured=true`).catch(() => null),
           apiClient.get<any[]>(`/tours?isFeatured=true`).catch(() => null),
           apiClient.get<any[]>(`/expeditions?isFeatured=true`).catch(() => null),
+          apiClient.get<any[]>(`/treks?isPopular=true`).catch(() => null),
+          apiClient.get<any[]>(`/tours?isPopular=true`).catch(() => null),
+          apiClient.get<any[]>(`/expeditions?isPopular=true`).catch(() => null),
         ]);
 
         let rawTreks = treksRes && treksRes.success && Array.isArray(treksRes.data) ? treksRes.data : [];
         let rawTours = toursRes && toursRes.success && Array.isArray(toursRes.data) ? toursRes.data : [];
         let rawExpeditions = expeditionsRes && expeditionsRes.success && Array.isArray(expeditionsRes.data) ? expeditionsRes.data : [];
+
+        let rawPopTreks = popTreksRes && popTreksRes.success && Array.isArray(popTreksRes.data) ? popTreksRes.data : [];
+        let rawPopTours = popToursRes && popToursRes.success && Array.isArray(popToursRes.data) ? popToursRes.data : [];
+        let rawPopExpeditions = popExpeditionsRes && popExpeditionsRes.success && Array.isArray(popExpeditionsRes.data) ? popExpeditionsRes.data : [];
 
         // If no strictly FEATURED items found, fall back to fetching public items so all featured/active routes are displayed
         if (rawTreks.length === 0) {
@@ -104,11 +119,12 @@ export function FeaturedPackages({
           }
         }
 
-        const mappedTreks: TravelPackage[] = rawTreks.map((p) => ({
+        const mapRawToPackage = (p: any, defaultCategory: string, catType: CategoryType): TravelPackage => ({
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: p.categoryType || p.category || "Trekking",
+          category: p.categoryType || p.category || defaultCategory,
+          categoryType: catType,
           region: p.region,
           durationDays: Number(p.durationDays || 0),
           maxAltitudeMeters: Number(p.maxAltitudeMeters || 0),
@@ -119,42 +135,20 @@ export function FeaturedPackages({
           image: p.image,
           shortDesc: p.shortDesc,
           status: p.status,
-        }));
+          isPopular: p.isPopular,
+        });
 
-        const mappedTours: TravelPackage[] = rawTours.map((p) => ({
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          category: p.categoryType || p.category || "Tour",
-          region: p.region,
-          durationDays: Number(p.durationDays || 0),
-          maxAltitudeMeters: Number(p.maxAltitudeMeters || 0),
-          difficulty: p.difficulty,
-          priceUSD: Number(p.priceUSD || 0),
-          rating: Number(p.rating || 5),
-          reviewsCount: Number(p.reviewsCount || 0),
-          image: p.image,
-          shortDesc: p.shortDesc,
-          status: p.status,
-        }));
+        const mappedPopular: TravelPackage[] = [
+          ...rawPopTreks.map((p) => mapRawToPackage(p, "Trekking", CategoryType.TREKKING)),
+          ...rawPopTours.map((p) => mapRawToPackage(p, "Tour", CategoryType.TOURS)),
+          ...rawPopExpeditions.map((p) => mapRawToPackage(p, "Expedition", CategoryType.EXPEDITIONS)),
+        ];
 
-        const mappedExpeditions: TravelPackage[] = rawExpeditions.map((p) => ({
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          category: p.categoryType || p.category || "Expedition",
-          region: p.region,
-          durationDays: Number(p.durationDays || 0),
-          maxAltitudeMeters: Number(p.maxAltitudeMeters || 0),
-          difficulty: p.difficulty,
-          priceUSD: Number(p.priceUSD || 0),
-          rating: Number(p.rating || 5),
-          reviewsCount: Number(p.reviewsCount || 0),
-          image: p.image,
-          shortDesc: p.shortDesc,
-          status: p.status,
-        }));
+        const mappedTreks: TravelPackage[] = rawTreks.map((p) => mapRawToPackage(p, "Trekking", CategoryType.TREKKING));
+        const mappedTours: TravelPackage[] = rawTours.map((p) => mapRawToPackage(p, "Tour", CategoryType.TOURS));
+        const mappedExpeditions: TravelPackage[] = rawExpeditions.map((p) => mapRawToPackage(p, "Expedition", CategoryType.EXPEDITIONS));
 
+        if (mappedPopular.length > 0) setPopular(mappedPopular);
         if (mappedTreks.length > 0) setTreks(mappedTreks);
         if (mappedTours.length > 0) setTours(mappedTours);
         if (mappedExpeditions.length > 0) setExpeditions(mappedExpeditions);
@@ -201,6 +195,8 @@ export function FeaturedPackages({
 
   const getCurrentPackages = (): TravelPackage[] => {
     switch (activeTab) {
+      case "popular":
+        return popular;
       case "tours":
         return tours;
       case "expeditions":
@@ -220,13 +216,20 @@ export function FeaturedPackages({
       : currentPackages;
 
   const getPackageLink = (pkg: TravelPackage, tab: FeaturedTab) => {
-    if (tab === "tours") return `/tours/${pkg.slug}`;
-    if (tab === "expeditions") return `/expeditions/${pkg.slug}`;
+    if (tab === "tours" || pkg.categoryType === CategoryType.TOURS) return `/tours/${pkg.slug}`;
+    if (tab === "expeditions" || pkg.categoryType === CategoryType.EXPEDITIONS) return `/expeditions/${pkg.slug}`;
+    if (tab === "treks" || pkg.categoryType === CategoryType.TREKKING) return `/trekking/${pkg.slug}`;
+
+    const cat = (pkg.category || "").toLowerCase();
+    if (cat.includes("tour")) return `/tours/${pkg.slug}`;
+    if (cat.includes("expedition") || cat.includes("peak") || cat.includes("climb")) return `/expeditions/${pkg.slug}`;
     return `/trekking/${pkg.slug}`;
   };
 
   const getExploreAllLink = (tab: FeaturedTab) => {
     switch (tab) {
+      case "popular":
+        return { href: "/trekking", label: "View All Popular Packages" };
       case "tours":
         return { href: "/tours", label: "View All Tours" };
       case "expeditions":
@@ -239,7 +242,8 @@ export function FeaturedPackages({
 
   const exploreInfo = getExploreAllLink(activeTab);
 
-  const tabs: { key: FeaturedTab; label: string; iconUrl: string }[] = [
+  const tabs: { key: FeaturedTab; label: string; iconUrl?: string; icon?: React.ReactNode }[] = [
+    { key: "popular", label: "Popular", icon: <Flame className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-amber-500 fill-amber-500/20 shrink-0" /> },
     { key: "treks", label: "Trekkings", iconUrl: "/trekking.png" },
     { key: "tours", label: "Tours", iconUrl: "/peaks.png" },
     { key: "expeditions", label: "Expeditions", iconUrl: "/expeditions.png" },
@@ -260,13 +264,17 @@ export function FeaturedPackages({
                   onClick={() => setActiveTab(tab.key)}
                   className="inline-flex items-center gap-1.5 sm:gap-2.5 text-sm sm:text-base md:text-lg font-medium cursor-pointer whitespace-nowrap shrink-0 group pb-1"
                 >
-                  <Image
-                    src={tab.iconUrl}
-                    alt={tab.label}
-                    width={28}
-                    height={28}
-                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 object-contain shrink-0"
-                  />
+                  {tab.iconUrl ? (
+                    <Image
+                      src={tab.iconUrl}
+                      alt={tab.label}
+                      width={28}
+                      height={28}
+                      className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 object-contain shrink-0"
+                    />
+                  ) : (
+                    tab.icon
+                  )}
                   <span className="relative inline-block">
                     <span
                       className={
@@ -338,7 +346,9 @@ export function FeaturedPackages({
           ) : currentPackages.length === 0 ? (
             <div className="bg-white rounded-sm p-8 sm:p-12 text-center space-y-3 border border-stone-200">
               <p className="text-sm text-stone-600">
-                No featured routes in this category currently.
+                {activeTab === "popular"
+                  ? "No popular packages available currently."
+                  : "No featured routes in this category currently."}
               </p>
               <Link
                 href={exploreInfo.href}

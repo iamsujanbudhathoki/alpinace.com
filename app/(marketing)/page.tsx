@@ -16,13 +16,14 @@ import {
   ExpeditionService,
   BlogService,
 } from "@/lib/services/admin-service";
-import { BlogStatus, PackageStatus } from "@/lib/admin-data";
+import { BlogStatus, PackageStatus, CategoryType } from "@/lib/admin-data";
 import { TravelPackage, BlogPost } from "@/lib/home-data";
 
 export const revalidate = 3600; // revalidate hourly
 
 export default async function Home() {
   // Fetch initial featured data on the server for instant SSR HTML rendering
+  let initialPopular: TravelPackage[] = [];
   let initialTreks: TravelPackage[] = [];
   let initialTours: TravelPackage[] = [];
   let initialExpeditions: TravelPackage[] = [];
@@ -45,6 +46,7 @@ export default async function Home() {
         title: p.title,
         slug: p.slug,
         category: p.category,
+        categoryType: CategoryType.TREKKING,
         region: p.region,
         durationDays: p.durationDays ?? 0,
         maxAltitudeMeters: p.maxAltitudeMeters ?? 0,
@@ -55,6 +57,7 @@ export default async function Home() {
         image: p.image || "",
         shortDesc: p.shortDesc || "",
         status: (p.status as PackageStatus) || PackageStatus.ACTIVE,
+        isPopular: p.isPopular,
       }));
 
     initialTours = rawTours
@@ -66,6 +69,7 @@ export default async function Home() {
         title: p.title,
         slug: p.slug,
         category: p.category,
+        categoryType: CategoryType.TOURS,
         region: p.region,
         durationDays: p.durationDays ?? 0,
         maxAltitudeMeters: p.maxAltitudeMeters ?? 0,
@@ -76,6 +80,7 @@ export default async function Home() {
         image: p.image || "",
         shortDesc: p.shortDesc || "",
         status: (p.status as PackageStatus) || PackageStatus.ACTIVE,
+        isPopular: p.isPopular,
       }));
 
     initialExpeditions = rawExpeditions
@@ -87,6 +92,7 @@ export default async function Home() {
         title: p.title,
         slug: p.slug,
         category: p.category,
+        categoryType: CategoryType.EXPEDITIONS,
         region: p.region,
         durationDays: p.durationDays ?? 0,
         maxAltitudeMeters: p.maxAltitudeMeters ?? 0,
@@ -97,7 +103,14 @@ export default async function Home() {
         image: p.image || "",
         shortDesc: p.shortDesc || "",
         status: (p.status as PackageStatus) || PackageStatus.ACTIVE,
+        isPopular: p.isPopular,
       }));
+
+    initialPopular = [
+      ...initialTreks.filter((p) => p.isPopular),
+      ...initialTours.filter((p) => p.isPopular),
+      ...initialExpeditions.filter((p) => p.isPopular),
+    ];
 
     initialBlogs = rawBlogs.slice(0, 3).map((b: any) => ({
       id: b.id,
@@ -275,6 +288,7 @@ export default async function Home() {
 
       {/* 2. Featured Trekking & Expedition Packages */}
       <FeaturedPackages
+        initialPopular={initialPopular}
         initialTreks={initialTreks}
         initialTours={initialTours}
         initialExpeditions={initialExpeditions}

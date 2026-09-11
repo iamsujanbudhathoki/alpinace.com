@@ -334,7 +334,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
           {/* Main Editorial Column */}
-          <div className="lg:col-span-8 space-y-10 sm:space-y-12 w-full min-w-0">
+          <div className="lg:col-span-8 space-y-12 sm:space-y-16 w-full min-w-0">
             {/* Photo Gallery Showcase */}
             {gallery.length > 0 && (
               <PackageGallery title={tour.title} images={gallery} />
@@ -352,46 +352,27 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             )}
 
             {/* SECTION: OVERVIEW */}
-            <section id="overview" className="scroll-mt-24 space-y-5">
-              <div className="pb-3 border-b border-stone-200">
-                <h2 className="type-heading-xl">
-                  Tour Overview
-                </h2>
-              </div>
+            {tour.shortDesc && (
+              <section id="overview" className="scroll-mt-24 space-y-4">
+                <div className="pb-3 border-b border-stone-200">
+                  <h2 className="type-heading-xl">
+                    Overview
+                  </h2>
+                </div>
 
-              {tour.shortDesc && (
                 <div
                   className="prose-editorial max-w-none"
                   dangerouslySetInnerHTML={{ __html: tour.shortDesc }}
                 />
-              )}
-
-              {/* Tour Key Specs Typographic Grid */}
-              {(tour.transportation ||
-                tour.startEndLocation ||
-                tour.groupSizeRange) && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 py-3.5 border-y border-stone-200">
-                  {tour.transportation && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Transportation
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {tour.transportation}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </section>
+              </section>
+            )}
 
             {/* SECTION: ITINERARY */}
             {tour.itinerary && tour.itinerary.length > 0 && (
               <section id="itinerary" className="scroll-mt-24">
                 <PackageItinerary
                   days={tour.itinerary}
-                  title="Day-by-Day Sightseeing Itinerary"
-                  subtitle={`${tour.itinerary.length} Days luxury tour across ${tour.region}`}
+                  title="Detailed Itinerary"
                 />
               </section>
             )}

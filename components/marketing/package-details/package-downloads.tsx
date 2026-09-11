@@ -26,15 +26,9 @@ export function PackageDownloads({ files = [] }: PackageDownloadsProps) {
   return (
     <div className="space-y-6">
       <div className="pb-3 border-b border-stone-200">
-        <span className="type-caption text-stone-900 font-bold block mb-0.5">
-          Trip Dossiers
-        </span>
         <h2 className="type-heading-xl">
-          Official Documents &amp; Downloads
+          Downloads
         </h2>
-        <p className="type-body-sm mt-0.5">
-          Download official brochures, route profiles, equipment checklists, and trip documentation.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

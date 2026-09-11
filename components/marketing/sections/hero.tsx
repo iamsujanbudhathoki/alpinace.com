@@ -7,12 +7,15 @@ import {
   Search,
   X,
   Compass,
+  Layers,
+  LayoutGrid,
   Mountain,
   MapPin,
   ChevronRight,
   ChevronDown,
   Loader2,
   DollarSign,
+  Tag,
   Clock,
   RotateCcw,
 } from "lucide-react";
@@ -313,9 +316,9 @@ export function Hero({
       {/* Centered Content Container */}
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">
         {/* Animated Editorial Mask Reveal & Collapse Headline */}
-        <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 sm:mb-8 max-w-4xl leading-[1.15] text-center drop-shadow-md">
-          <span className="block text-white">Discover your</span>
-          <span className="relative block h-[1.3em] overflow-hidden align-middle">
+        <h1 className="font-heading font-bold text-white mb-6 sm:mb-8 max-w-4xl leading-[1.15] text-center drop-shadow-md">
+          <span className="block text-2xl sm:text-4xl lg:text-5xl text-white/95 font-medium tracking-tight">Discover your</span>
+          <span className="relative block h-[1.3em] overflow-hidden align-middle text-4xl sm:text-6xl lg:text-7xl xl:text-8xl mt-1.5 sm:mt-2">
             <span
               className={`block text-accent font-bold ${
                 animStep === "prep"
@@ -386,15 +389,28 @@ export function Hero({
             {/* Visually Secondary Refinement Filters Bar */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-0.5">
               {/* Category Select Dropdown */}
-              <div className="relative flex items-center bg-stone-100/60 hover:bg-stone-100 border border-stone-200/70 rounded-xl px-3.5 py-2 sm:py-2.5 transition-all">
-                <Compass className="h-4 w-4 text-stone-400 shrink-0 mr-2" />
+              <div
+                className={`group relative flex items-center rounded-xl px-3.5 py-2.5 transition-all border ${
+                  selectedCategory !== "All"
+                    ? "bg-stone-900/5 border-stone-400 text-stone-950 font-semibold shadow-2xs"
+                    : "bg-stone-100/70 hover:bg-stone-100 border-stone-200/80 hover:border-stone-300 text-stone-700"
+                }`}
+              >
+                <LayoutGrid
+                  className={`h-4 w-4 shrink-0 mr-2.5 transition-colors ${
+                    selectedCategory !== "All"
+                      ? "text-stone-950"
+                      : "text-stone-500 group-hover:text-stone-800"
+                  }`}
+                  strokeWidth={1.75}
+                />
                 <select
                   value={selectedCategory}
                   onChange={(e) => {
                     setSelectedCategory(e.target.value as any);
                     setSelectedIndex(-1);
                   }}
-                  className="w-full bg-transparent text-stone-800 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-5"
+                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-6"
                   aria-label="Filter by Category"
                 >
                   <option value="All">All Categories</option>
@@ -402,19 +418,39 @@ export function Hero({
                   <option value="Tour">Tours</option>
                   <option value="Expedition">Expeditions</option>
                 </select>
-                <ChevronDown className="h-3.5 w-3.5 text-stone-400 pointer-events-none absolute right-3" />
+                <ChevronDown
+                  className={`h-4 w-4 pointer-events-none absolute right-3 transition-colors ${
+                    selectedCategory !== "All"
+                      ? "text-stone-950"
+                      : "text-stone-400 group-hover:text-stone-600"
+                  }`}
+                  strokeWidth={1.75}
+                />
               </div>
 
               {/* Price Range Select Dropdown */}
-              <div className="relative flex items-center bg-stone-100/60 hover:bg-stone-100 border border-stone-200/70 rounded-xl px-3.5 py-2 sm:py-2.5 transition-all">
-                <DollarSign className="h-4 w-4 text-stone-400 shrink-0 mr-1.5" />
+              <div
+                className={`group relative flex items-center rounded-xl px-3.5 py-2.5 transition-all border ${
+                  priceRange !== "all"
+                    ? "bg-stone-900/5 border-stone-400 text-stone-950 font-semibold shadow-2xs"
+                    : "bg-stone-100/70 hover:bg-stone-100 border-stone-200/80 hover:border-stone-300 text-stone-700"
+                }`}
+              >
+                <Tag
+                  className={`h-4 w-4 shrink-0 mr-2.5 transition-colors ${
+                    priceRange !== "all"
+                      ? "text-stone-950"
+                      : "text-stone-500 group-hover:text-stone-800"
+                  }`}
+                  strokeWidth={1.75}
+                />
                 <select
                   value={priceRange}
                   onChange={(e) => {
                     setPriceRange(e.target.value);
                     setSelectedIndex(-1);
                   }}
-                  className="w-full bg-transparent text-stone-800 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-5"
+                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-6"
                   aria-label="Filter by Price"
                 >
                   {PRICE_OPTIONS.map((opt) => (
@@ -423,19 +459,39 @@ export function Hero({
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="h-3.5 w-3.5 text-stone-400 pointer-events-none absolute right-3" />
+                <ChevronDown
+                  className={`h-4 w-4 pointer-events-none absolute right-3 transition-colors ${
+                    priceRange !== "all"
+                      ? "text-stone-950"
+                      : "text-stone-400 group-hover:text-stone-600"
+                  }`}
+                  strokeWidth={1.75}
+                />
               </div>
 
               {/* Duration Range Select Dropdown */}
-              <div className="relative flex items-center bg-stone-100/60 hover:bg-stone-100 border border-stone-200/70 rounded-xl px-3.5 py-2 sm:py-2.5 transition-all">
-                <Clock className="h-4 w-4 text-stone-400 shrink-0 mr-1.5" />
+              <div
+                className={`group relative flex items-center rounded-xl px-3.5 py-2.5 transition-all border ${
+                  durationRange !== "all"
+                    ? "bg-stone-900/5 border-stone-400 text-stone-950 font-semibold shadow-2xs"
+                    : "bg-stone-100/70 hover:bg-stone-100 border-stone-200/80 hover:border-stone-300 text-stone-700"
+                }`}
+              >
+                <Clock
+                  className={`h-4 w-4 shrink-0 mr-2.5 transition-colors ${
+                    durationRange !== "all"
+                      ? "text-stone-950"
+                      : "text-stone-500 group-hover:text-stone-800"
+                  }`}
+                  strokeWidth={1.75}
+                />
                 <select
                   value={durationRange}
                   onChange={(e) => {
                     setDurationRange(e.target.value);
                     setSelectedIndex(-1);
                   }}
-                  className="w-full bg-transparent text-stone-800 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-5"
+                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-6"
                   aria-label="Filter by Duration"
                 >
                   {DURATION_OPTIONS.map((opt) => (
@@ -444,7 +500,14 @@ export function Hero({
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="h-3.5 w-3.5 text-stone-400 pointer-events-none absolute right-3" />
+                <ChevronDown
+                  className={`h-4 w-4 pointer-events-none absolute right-3 transition-colors ${
+                    durationRange !== "all"
+                      ? "text-stone-950"
+                      : "text-stone-400 group-hover:text-stone-600"
+                  }`}
+                  strokeWidth={1.75}
+                />
               </div>
             </div>
 

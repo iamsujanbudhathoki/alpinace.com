@@ -18,7 +18,6 @@ export interface PackageFaqsProps {
 export function PackageFaqs({
   faqs,
   title = "Frequently Asked Questions",
-  subtitle = "Essential details regarding preparation, route logistics, safety, and booking policies.",
 }: PackageFaqsProps) {
   // First item open by default for immediate preview, null if collapsed
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
@@ -26,21 +25,12 @@ export function PackageFaqs({
   if (!faqs || faqs.length === 0) return null;
 
   return (
-    <div className="space-y-6 pb-6 sm:pb-10 font-sans">
+    <div className="space-y-6">
       {/* Section Header */}
-      <div className="pb-2">
-        <span className="text-stone-500 text-xs font-normal block">
-          Trail guidance &amp; preparation
-        </span>
-        <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900 mt-1">
+      <div className="pb-3 border-b border-stone-200">
+        <h2 className="type-heading-xl">
           {title}
         </h2>
-        <div className="section-accent-line" />
-        {subtitle && (
-          <p className="text-stone-600 text-xs sm:text-sm font-normal leading-relaxed mt-1">
-            {subtitle}
-          </p>
-        )}
       </div>
 
       {/* Editorial Accordion List */}

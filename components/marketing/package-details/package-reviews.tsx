@@ -37,8 +37,7 @@ function getReviewHeadline(content: string): string {
 
 export function PackageReviews({
   reviews = [],
-  title = "Traveler Reviews & Experiences",
-  subtitle = "Direct feedback from mountaineers and adventurers who climbed this route with us",
+  title = "Traveler Reviews",
   overallRating = 5.0,
 }: PackageReviewsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -92,20 +91,11 @@ export function PackageReviews({
 
   return (
     <section className="space-y-6">
-      {/* Header: Title, Trust Badge, Rating & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-3 border-b border-stone-200">
-        <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="type-heading-xl">
-              {title}
-            </h2>
-          </div>
-          {subtitle && (
-            <p className="type-body-sm mt-0.5">
-              {subtitle}
-            </p>
-          )}
-        </div>
+      {/* Header: Title, Rating & Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
+        <h2 className="type-heading-xl">
+          {title}
+        </h2>
 
         {/* Rating Summary & Controls */}
         <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
@@ -194,9 +184,11 @@ export function PackageReviews({
                     <h3 className="font-heading text-xs sm:text-sm font-bold text-stone-900 truncate">
                       {rev.author}
                     </h3>
-                    <p className="text-[11px] text-stone-500 font-medium truncate">
-                      {rev.country || "Verified Traveler"} {rev.date ? `• ${rev.date}` : ""}
-                    </p>
+                    {(rev.country || rev.date) && (
+                      <p className="text-[11px] text-stone-500 font-medium truncate">
+                        {[rev.country, rev.date].filter(Boolean).join(" • ")}
+                      </p>
+                    )}
                   </div>
                 </div>
 

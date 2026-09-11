@@ -128,17 +128,21 @@ export function PackageHighlightsGrid({
     },
   ];
 
+  const validItems = items.filter((item) => Boolean(item.value && String(item.value).trim()));
+
+  if (validItems.length === 0) return null;
+
   return (
     <div
-      className={`bg-stone-50 rounded-xl p-6 sm:p-7 border border-stone-200 ${className}`}
+      className={`bg-stone-50/80 rounded-xl p-5 sm:p-6 border border-stone-200 ${className}`}
     >
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-3.5 sm:gap-x-8">
-        {items.map((item, idx) => (
-          <div key={idx} className="flex items-start gap-3.5">
+        {validItems.map((item, idx) => (
+          <div key={idx} className="flex items-start gap-3">
             <div className="shrink-0 pt-0.5 text-stone-700">{item.icon}</div>
-            <div className="space-y-0.5">
+            <div className="space-y-0.5 min-w-0">
               <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold text-stone-600">
+                <span className="text-xs font-medium text-stone-500">
                   {item.label}
                 </span>
                 {item.hasTooltip && (
@@ -152,8 +156,8 @@ export function PackageHighlightsGrid({
                   </div>
                 )}
               </div>
-              <p className="text-sm font-bold text-stone-900 capitalize">
-                {item.value || "—"}
+              <p className="text-sm font-semibold text-stone-900 capitalize truncate">
+                {item.value}
               </p>
             </div>
           </div>

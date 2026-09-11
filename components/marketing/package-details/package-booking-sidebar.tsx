@@ -88,9 +88,6 @@ export function PackageBookingSidebar({
               USD / person
             </span>
           </div>
-          <p className="type-body-sm text-stone-600 mt-0.5 font-medium">
-            Includes all guided logistics, permits, and accommodations
-          </p>
         </div>
 
         {/* Booking Console Body */}

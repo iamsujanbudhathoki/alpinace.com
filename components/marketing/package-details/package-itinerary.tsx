@@ -32,15 +32,10 @@ export function PackageItinerary({
   return (
     <div className="space-y-6">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-3 border-b border-stone-200">
-        <div>
-          <h2 className="type-heading-xl">
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="type-body-sm mt-0.5">{subtitle}</p>
-          )}
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
+        <h2 className="type-heading-xl">
+          {title}
+        </h2>
 
         <button
           type="button"

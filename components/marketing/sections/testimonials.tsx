@@ -155,10 +155,6 @@ export function TestimonialsSection() {
           <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-stone-900 tracking-tight">
             What Our Travelers Say
           </h2>
-          <div className="section-accent-line mx-auto" />
-          <p className="text-stone-600 text-xs sm:text-sm max-w-xl mx-auto font-normal leading-relaxed">
-            Real stories and unedited reviews from mountain enthusiasts who trekked the Himalayas with AlpineAce Sherpa guides.
-          </p>
         </div>
 
         {/* Carousel Container */}
@@ -217,9 +213,11 @@ export function TestimonialsSection() {
                               <h3 className="font-heading text-sm font-bold text-stone-900 truncate">
                                 {item.author}
                               </h3>
-                              <p className="text-xs text-stone-500 font-medium truncate">
-                                {item.country || "Verified Traveler"}
-                              </p>
+                              {item.country && (
+                                <p className="text-xs text-stone-500 font-medium truncate">
+                                  {item.country}
+                                </p>
+                              )}
                             </div>
                           </div>
 
@@ -242,23 +240,14 @@ export function TestimonialsSection() {
                         </p>
                       </div>
 
-                      {/* Card Footer: Trip Name Pill & Verification Indicator */}
-                      <div className="pt-4 mt-6 border-t border-stone-100 flex items-center justify-between text-xs gap-2">
-                        {item.tripName ? (
-                          <span className="font-semibold text-stone-900 bg-stone-100 border border-stone-200/90 px-3 py-1 rounded-full text-xs truncate max-w-[200px]">
+                      {/* Card Footer: Trip Name Pill */}
+                      {item.tripName && (
+                        <div className="pt-4 mt-6 border-t border-stone-100 flex items-center justify-between text-xs gap-2">
+                          <span className="font-semibold text-stone-900 bg-stone-100 border border-stone-200/90 px-3 py-1 rounded-full text-xs truncate max-w-[240px]">
                             {item.tripName}
                           </span>
-                        ) : (
-                          <span className="font-semibold text-stone-700 bg-stone-100/70 border border-stone-200/80 px-2.5 py-1 rounded-full text-xs">
-                            Himalayan Trek
-                          </span>
-                        )}
-
-                        <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold text-xs shrink-0">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>Verified</span>
-                        </span>
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

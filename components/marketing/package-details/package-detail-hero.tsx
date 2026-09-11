@@ -58,7 +58,7 @@ export function PackageDetailHero({
           className="group inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white/85 hover:text-white transition-colors py-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/50 rounded-sm"
         >
           <ArrowLeft className="h-4 w-4 text-white/85 group-hover:text-white group-hover:-translate-x-1 transition-transform" strokeWidth={2.2} />
-          <span>{backLabel}</span>
+          <span className="group-hover:underline">{backLabel}</span>
         </Link>
       </div>
 

@@ -33,7 +33,6 @@ export function PackageInclusions({
   inclusionsText,
   exclusionsText,
   title = "What's Included & Excluded",
-  subtitle = "Transparent pricing with zero hidden operational costs",
   inclusionsTitle = "Included in Package",
   exclusionsTitle = "Not Included",
 }: PackageInclusionsProps) {
@@ -57,18 +56,14 @@ export function PackageInclusions({
       {/* Header */}
       <div className="pb-3 border-b border-stone-200">
         <h2 className="type-heading-xl">{title}</h2>
-        {subtitle && <p className="type-body-sm mt-0.5">{subtitle}</p>}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10">
         {/* Inclusions Column */}
         {showInclusions && (
           <div className="space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+            <div className="pb-2 border-b border-stone-200">
               <h3 className="type-heading-md">{inclusionsTitle}</h3>
-              {!hasInclusionsHtml && (
-                <span className="type-caption">{parsedInclusions.length} items</span>
-              )}
             </div>
 
             {hasInclusionsHtml ? (
@@ -95,11 +90,8 @@ export function PackageInclusions({
         {/* Exclusions Column */}
         {showExclusions && (
           <div className="space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+            <div className="pb-2 border-b border-stone-200">
               <h3 className="type-heading-md">{exclusionsTitle}</h3>
-              {!hasExclusionsHtml && (
-                <span className="type-caption">{parsedExclusions.length} items</span>
-              )}
             </div>
 
             {hasExclusionsHtml ? (

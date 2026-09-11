@@ -43,9 +43,6 @@ export function PackageDepartures({
         <h2 className="type-heading-xl">
           Scheduled Departure Dates
         </h2>
-        <p className="type-body-sm mt-0.5">
-          Choose a guaranteed departure slot or request custom group dates.
-        </p>
       </div>
 
       <div className="divide-y divide-stone-200">

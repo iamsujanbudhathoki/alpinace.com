@@ -24,7 +24,7 @@ export interface PackageRelatedTripsProps {
 export function PackageRelatedTrips({
   trips,
   categoryPath,
-  title = "Other Recommended Himalayan Journeys",
+  title = "Related Trips",
 }: PackageRelatedTripsProps) {
   if (!trips || trips.length === 0) return null;
 
@@ -33,9 +33,6 @@ export function PackageRelatedTrips({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between gap-4 mb-6 pb-3 border-b border-stone-200">
           <div>
-            <span className="type-caption text-stone-900 font-bold block mb-0.5">
-              Explore More
-            </span>
             <h2 className="type-heading-xl">
               {title}
             </h2>

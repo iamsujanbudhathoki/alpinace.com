@@ -17,11 +17,8 @@ export function PackageTrekMap({ mapImage, title }: PackageTrekMapProps) {
       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-3 border-b border-stone-200">
         <div>
           <h2 className="type-heading-xl">
-            Route Map &amp; Elevation Profile
+            Route Map
           </h2>
-          <p className="type-body-sm mt-0.5">
-            Topographical route trajectory for {title}.
-          </p>
         </div>
 
         <button

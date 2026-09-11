@@ -364,7 +364,7 @@ export function ExpeditionDetailClient({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
           {/* Main Editorial Column */}
-          <div className="lg:col-span-8 space-y-10 sm:space-y-12 w-full min-w-0">
+          <div className="lg:col-span-8 space-y-12 sm:space-y-16 w-full min-w-0">
             {/* Gallery Showcase */}
             {gallery.length > 0 && (
               <PackageGallery title={expedition.title} images={gallery} />
@@ -385,7 +385,7 @@ export function ExpeditionDetailClient({
             <section id="overview" className="scroll-mt-24 space-y-5">
               <div className="pb-3 border-b border-stone-200">
                 <h2 className="type-heading-xl">
-                  Expedition Overview &amp; Summit Logistics
+                  Overview
                 </h2>
               </div>
 
@@ -395,58 +395,6 @@ export function ExpeditionDetailClient({
                   dangerouslySetInnerHTML={{ __html: expedition.shortDesc }}
                 />
               )}
-
-              {/* Key Specs Typographic Grid */}
-              {(expedition.startEndLocation ||
-                expedition.meals ||
-                expedition.groupSizeRange ||
-                expedition.accommodation) && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-3.5 border-y border-stone-200">
-                  {expedition.startEndLocation && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Basecamp
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {expedition.startEndLocation}
-                      </p>
-                    </div>
-                  )}
-
-                  {expedition.accommodation && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        High Camps
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {expedition.accommodation}
-                      </p>
-                    </div>
-                  )}
-
-                  {expedition.meals && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Kitchen
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {expedition.meals}
-                      </p>
-                    </div>
-                  )}
-
-                  {expedition.groupSizeRange && (
-                    <div className="space-y-0.5">
-                      <span className="type-caption block">
-                        Team Size
-                      </span>
-                      <p className="type-heading-md text-stone-900">
-                        {expedition.groupSizeRange}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
             </section>
 
             {/* SECTION: CLIMBING ITINERARY */}
@@ -454,8 +402,7 @@ export function ExpeditionDetailClient({
               <section id="itinerary" className="scroll-mt-24">
                 <PackageItinerary
                   days={expedition.itinerary}
-                  title="Detailed Itinerary"
-                  subtitle={`${expedition.itinerary.length} Days expedition schedule for ${expedition.title}`}
+                  title="Itinerary"
                 />
               </section>
             )}

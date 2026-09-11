@@ -303,7 +303,7 @@ export function generatePackageJsonLd({
       "@type": "Review",
       author: {
         "@type": "Person",
-        name: rev.author || "Verified Traveler",
+        name: rev.author || "Traveler",
       },
       reviewRating: {
         "@type": "Rating",

@@ -68,7 +68,7 @@ export function PackageItinerary({
           return (
             <article key={idx} className="relative group">
               {/* Timeline Marker Dot */}
-              <div className="absolute -left-[25px] sm:-left-[33px] top-3.5 w-2.5 h-2.5 rounded-full bg-[#eab308] ring-4 ring-white" />
+              <div className="absolute -left-6 sm:-left-8 top-3.5 w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-white" />
 
               {/* Day Header */}
               <button

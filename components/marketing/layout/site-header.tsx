@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronDown, ChevronRight, FolderTree } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, ChevronLeft, FolderTree } from "lucide-react";
 import { navLinks, NavLink } from "@/lib/site-config";
 import { useSettings } from "@/lib/settings-context";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { categoryCache } from "@/lib/services/category-cache";
 import { CategoryItem, CategoryType } from "@/lib/admin-data";
+import { PackageTabsNav } from "@/components/marketing/package-details/package-tabs-nav";
+import { ContextualDetailHeader } from "./contextual-detail-header";
 
 export function SiteHeader() {
   const { settings } = useSettings();
@@ -22,7 +24,6 @@ export function SiteHeader() {
   const [headerHeight, setHeaderHeight] = useState(64);
 
   const headerRef = useRef<HTMLElement>(null);
-  const detailTabsContainerRef = useRef<HTMLDivElement>(null);
   const scrollPosRef = useRef<number>(0);
 
   // WhatsApp setup
@@ -144,27 +145,6 @@ export function SiteHeader() {
     window.addEventListener("resize", updateHeaderHeight, { passive: true });
     return () => window.removeEventListener("resize", updateHeaderHeight);
   }, [isScrolled, mobileMenuOpen, showDetailNav]);
-
-  // Auto-scroll active tab into view in detail tab row
-  useEffect(() => {
-    if (showDetailNav && detailNav?.activeTab && detailTabsContainerRef.current) {
-      const activeBtn = detailTabsContainerRef.current.querySelector<HTMLElement>(
-        `[data-tab-key="${detailNav.activeTab}"]`
-      );
-      if (activeBtn) {
-        const container = detailTabsContainerRef.current;
-        const buttonLeft = activeBtn.offsetLeft;
-        const buttonWidth = activeBtn.offsetWidth;
-        const containerWidth = container.offsetWidth;
-        const scrollLeft = buttonLeft - containerWidth / 2 + buttonWidth / 2;
-
-        container.scrollTo({
-          left: Math.max(0, scrollLeft),
-          behavior: "smooth",
-        });
-      }
-    }
-  }, [showDetailNav, detailNav?.activeTab]);
 
   // Load category tree on mount
   useEffect(() => {
@@ -329,93 +309,21 @@ export function SiteHeader() {
     <>
       <header
         ref={headerRef}
-        className="fixed inset-x-0 top-0 z-50 bg-black/95 backdrop-blur-md border-b border-stone-800/90 shadow-md py-4 sm:py-4.5 md:py-5 transition-all duration-200"
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-200 ${
+          showDetailNav
+            ? "bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-2xs py-2.5 sm:py-3"
+            : "bg-black/95 backdrop-blur-md border-b border-stone-800/90 shadow-md py-4 sm:py-4.5 md:py-5"
+        }`}
       >
         {showDetailNav && detailNav ? (
-          /* CONTEXTUAL DETAIL TAB NAVIGATION */
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 w-full animate-in fade-in duration-200">
-            {/* Brand Logo Visual Anchor for Detail Nav */}
-            <Link href="/" className="flex items-center gap-2 group shrink-0 min-w-0 mr-1 sm:mr-2 cursor-pointer">
-              <Image
-                src={settings.siteLogo || "/logo.jpg"}
-                alt={settings.siteName || "AlpineAce Logo"}
-                width={36}
-                height={36}
-                priority
-                unoptimized={Boolean(settings.siteLogo && (settings.siteLogo.startsWith("http") || settings.siteLogo.startsWith("data:")))}
-                className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-md border border-stone-700 bg-white shrink-0"
-              />
-              <span className="hidden sm:inline font-heading text-xs sm:text-sm font-bold text-white transition-colors truncate tracking-tight">
-                {settings.siteName || "Alpine Ace"}
-              </span>
-            </Link>
-
-            <div
-              ref={detailTabsContainerRef}
-              className="flex-1 min-w-0 flex items-center overflow-x-auto scrollbar-none touch-pan-x self-stretch"
-            >
-              <div className="flex items-stretch h-full gap-2 sm:gap-4">
-                {detailNav.tabs.map((tab) => {
-                  const isActive = detailNav.activeTab === tab.key;
-                  return (
-                    <button
-                      key={tab.key}
-                      data-tab-key={tab.key}
-                      type="button"
-                      onClick={() => handleDetailTabClick(tab.key)}
-                      className={`
-                        relative px-2.5 sm:px-3 py-2 text-xs sm:text-sm whitespace-nowrap shrink-0 cursor-pointer
-                        transition-colors duration-150 flex items-center font-medium
-                        ${
-                          isActive
-                            ? "text-yellow-400 font-semibold"
-                            : "text-stone-400 hover:text-white"
-                        }
-                      `}
-                    >
-                      <span>{tab.label}</span>
-                      {isActive && (
-                        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-yellow-400" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="shrink-0 flex items-center gap-3">
-              {detailNav.priceUSD !== undefined && (
-                <div className="text-right hidden sm:block">
-                  <span className="type-caption text-stone-400 block text-[10px] font-medium">
-                    From
-                  </span>
-                  <span className="type-heading-md text-white block leading-tight font-bold">
-                    ${detailNav.priceUSD.toLocaleString()} USD
-                  </span>
-                </div>
-              )}
-              {detailNav.onBookClick && (
-                <button
-                  type="button"
-                  onClick={detailNav.onBookClick}
-                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-md transition-colors cursor-pointer shrink-0 shadow-2xs"
-                >
-                  <span className="hidden sm:inline">{detailNav.bookButtonLabel || "Book Now"}</span>
-                  <span className="sm:hidden">Book</span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-stone-300 hover:text-white lg:hidden rounded-md cursor-pointer transition-colors"
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                aria-expanded={mobileMenuOpen}
-                aria-controls="mobile-menu-panel"
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
+          /* CONTEXTUAL DETAIL TAB NAVIGATION COMPONENT */
+          <ContextualDetailHeader
+            settings={settings}
+            detailNav={detailNav}
+            onTabChange={handleDetailTabClick}
+            mobileMenuOpen={mobileMenuOpen}
+            onMobileMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+          />
         ) : (
           /* STANDARD THREE-PART SOLID BLACK TRAVEL NAVBAR: Logo (Left) -> Nav (Center) -> WhatsApp CTA (Right) */
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 sm:gap-8 px-4 sm:px-6 md:px-8">
@@ -578,7 +486,7 @@ export function SiteHeader() {
                                               }
                                               className={`px-3 py-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-between ${
                                                 isSelected
-                                                  ? "bg-stone-100 text-black font-extrabold border-l-3 border-[#eab308]"
+                                                  ? "bg-stone-100 text-black font-extrabold border-l-3 border-accent"
                                                   : "hover:bg-stone-50 text-black font-semibold hover:text-black"
                                               }`}
                                             >
@@ -594,7 +502,7 @@ export function SiteHeader() {
                                               <ChevronRight
                                                 className={`w-4 h-4 shrink-0 transition-opacity ${
                                                   isSelected
-                                                    ? "text-[#eab308] opacity-100"
+                                                    ? "text-accent opacity-100"
                                                     : "text-black opacity-0"
                                                 }`}
                                               />
@@ -630,7 +538,7 @@ export function SiteHeader() {
                                                     className="object-cover group-hover/tile:scale-105 transition-transform duration-300 ease-out opacity-85"
                                                     sizes="300px"
                                                   />
-                                                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent group-hover/tile:from-black/80 transition-colors duration-300 flex items-end p-2.5 sm:p-3 text-left">
+                                                  <div className="absolute inset-0 bg-black/60 group-hover/tile:bg-black/50 transition-colors duration-300 flex items-end p-2.5 sm:p-3 text-left">
                                                     <span className="text-xs sm:text-sm font-bold text-white leading-tight drop-shadow-sm block w-full line-clamp-2">
                                                       {subCat.name}
                                                     </span>
@@ -654,7 +562,7 @@ export function SiteHeader() {
                                               <Link
                                                 href={getCategoryLink(link.href, selectedParent)}
                                                 onClick={() => setActiveDropdown(null)}
-                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-950 text-white text-xs font-semibold hover:bg-slate-800 transition-colors shadow-2xs mt-1"
+                                                className="btn-primary text-xs mt-1"
                                               >
                                                 <span>View {selectedParent.name}</span>
                                                 <ChevronRight className="w-3.5 h-3.5" />
@@ -774,7 +682,7 @@ export function SiteHeader() {
                         >
                           <span>{link.label}</span>
                           {isActive && (
-                            <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-yellow-400" />
+                            <span className="absolute bottom-0 left-0 w-8 h-0.5 bg-accent" />
                           )}
                         </Link>
                         {hasDropdown && (

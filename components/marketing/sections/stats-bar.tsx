@@ -17,7 +17,7 @@ export function StatsBar() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {stats.map((s, index) => (
             <div key={index} className="space-y-1">
-              <span className="font-heading text-2xl sm:text-3xl font-bold text-[#eab308] block leading-none">
+              <span className="font-heading text-2xl sm:text-3xl font-bold text-accent block leading-none">
                 {s.number}
               </span>
               <span className="font-heading text-xs font-semibold text-stone-200 block tracking-wide">

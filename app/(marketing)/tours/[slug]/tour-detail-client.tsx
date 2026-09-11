@@ -334,7 +334,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
           {/* Main Editorial Column */}
-          <div className="lg:col-span-8 space-y-10 sm:space-y-12">
+          <div className="lg:col-span-8 space-y-10 sm:space-y-12 w-full min-w-0">
             {/* Photo Gallery Showcase */}
             {gallery.length > 0 && (
               <PackageGallery title={tour.title} images={gallery} />
@@ -342,7 +342,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
 
             {/* Inline Navigation Tabs (Visible before reaching sticky top) */}
             {availableTabs.length > 1 && (
-              <div id="detail-page-tabs-bar">
+              <div id="detail-page-tabs-bar" className="w-full min-w-0">
                 <PackageTabsNav
                   tabs={availableTabs}
                   activeTab={activeTab}
@@ -505,7 +505,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       )}
 
       {/* 5. MOBILE STICKY BOOKING ACTION BAR (< 1024px) */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-stone-200 py-2 px-4 z-30 shadow-lg flex items-center justify-between gap-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-stone-200 py-2 px-4 z-30 shadow-lg flex items-center justify-between gap-3 pb-3">
         <div className="min-w-0">
           <span className="type-caption text-stone-700 font-semibold block truncate">
             Estimated Rate ({tour.durationDays} Days)
@@ -526,7 +526,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
           <button
             type="button"
             onClick={() => setIsBookingModalOpen(true)}
-            className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+            className="btn-accent text-xs px-3.5 py-2 shrink-0"
           >
             Book Tour
           </button>

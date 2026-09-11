@@ -16,11 +16,11 @@ export function WhyChooseUs() {
           <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900">
             Your Trusted Partner for Himalayan Treks &amp; Tours
           </h2>
-          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
+          <div className="section-accent-line mx-auto" />
         </div>
 
         {/* 2-Column Card Container (About Us Video & Overview) */}
-        <div className="max-w-6xl mx-auto bg-[#f8f8f8] border border-stone-200/80 rounded-2xl lg:rounded-3xl overflow-hidden shadow-xs">
+        <div className="max-w-6xl mx-auto bg-stone-100/70 border border-stone-200 rounded-2xl lg:rounded-3xl overflow-hidden shadow-xs">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[460px]">
             {/* Left Column: Image with Interactive Play Video Overlay */}
             <div className="relative lg:col-span-6 xl:col-span-5 min-h-[250px] sm:min-h-[360px] lg:min-h-full overflow-hidden bg-stone-900 group">
@@ -31,7 +31,7 @@ export function WhyChooseUs() {
                 sizes="(max-width: 1024px) 100vw, 42vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-stone-950/30" />
 
               {/* Play Video Button */}
               <button
@@ -47,7 +47,7 @@ export function WhyChooseUs() {
 
             {/* Right Column: Content Text */}
             <div className="lg:col-span-6 xl:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6">
-              <div className="space-y-4 text-stone-700 text-xs sm:text-sm lg:text-[15px] leading-relaxed font-normal">
+              <div className="space-y-4 text-stone-700 text-xs sm:text-sm leading-relaxed font-normal">
                 <p>
                   <strong className="text-stone-900 font-semibold">Alpine Ace</strong> is a premier trekking and adventure travel company in Nepal, founded by former mountain guides with a passion for creating safe, authentic, and unforgettable Himalayan journeys. Renowned for top-notch service at affordable prices, highly experienced guides, and exceptional safety standards, we proudly maintain an impressive 97.4% trek success rate.
                 </p>
@@ -63,7 +63,7 @@ export function WhyChooseUs() {
               <div className="pt-2">
                 <Link
                   href="/about"
-                  className="inline-flex items-center justify-center font-bold text-stone-950 bg-[#eab308] hover:bg-yellow-400 text-xs sm:text-sm px-6 py-3 rounded-md transition-colors shadow-xs"
+                  className="btn-accent text-xs sm:text-sm inline-flex items-center justify-center"
                 >
                   Read more &rarr;
                 </Link>

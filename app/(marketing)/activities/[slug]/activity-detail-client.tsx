@@ -54,7 +54,7 @@ export function ActivityDetailClient({
           return (
             <div
               key={pkg.id}
-              className="bg-white rounded-lg border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)] transition-all duration-300 ease-out group"
+              className="bg-white rounded-lg border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-stone-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 ease-out group"
             >
               <Link href={href} className="block flex-1 flex flex-col justify-between h-full">
                 <div>
@@ -68,11 +68,11 @@ export function ActivityDetailClient({
                       className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-95 group-hover:opacity-100"
                     />
                     {pkg.region && (
-                      <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-sm">
+                      <span className="absolute top-3 left-3 badge-muted text-xs">
                         {pkg.region}
                       </span>
                     )}
-                    <span className="absolute top-3 right-3 bg-white/90 text-stone-900 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm backdrop-blur-xs">
+                    <span className="absolute top-3 right-3 bg-white/90 text-stone-900 text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm backdrop-blur-xs">
                       {pkg.category}
                     </span>
                   </div>

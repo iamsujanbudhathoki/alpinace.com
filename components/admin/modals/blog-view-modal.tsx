@@ -75,7 +75,7 @@ export function BlogViewModal({
               alt={article.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
+            <div className="absolute inset-0 bg-slate-950/60" />
 
             <div className="absolute bottom-4 left-4 right-4 text-white">
               <div className="flex items-center gap-2 mb-2">

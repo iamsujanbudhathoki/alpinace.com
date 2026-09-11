@@ -306,7 +306,7 @@ export function Hero({
 
       {/* Minimal Overlay for Maximum Video Detail */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-stone-950/40 via-stone-950/20 to-stone-950/50 pointer-events-none"
+        className="absolute inset-0 bg-stone-950/40 pointer-events-none"
         aria-hidden="true"
       />
 
@@ -317,7 +317,7 @@ export function Hero({
           <span className="block text-white">Discover your</span>
           <span className="relative block h-[1.3em] overflow-hidden align-middle">
             <span
-              className={`block text-[#eab308] font-bold ${
+              className={`block text-accent font-bold ${
                 animStep === "prep"
                   ? "translate-y-[110%] opacity-0 transition-none"
                   : animStep === "entering"

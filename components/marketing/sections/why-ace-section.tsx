@@ -125,7 +125,7 @@ export function WhyAceSection() {
           <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900">
             Why AlpineAce Treks?
           </h2>
-          <div className="h-0.5 w-12 bg-[#eab308] rounded-full mx-auto mt-3 mb-5" />
+          <div className="section-accent-line mx-auto mb-5" />
           <p className="text-stone-600 text-sm sm:text-base leading-relaxed font-normal">
             We have been helping travelers explore the Nepalese Himalayas with dedicated local experts across Nepal, promoting eco-friendly and responsible tourism for your unforgettable mountain adventure.
           </p>

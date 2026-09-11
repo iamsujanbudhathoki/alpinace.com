@@ -99,7 +99,7 @@ export default function ContactView() {
           <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
             Plan Your Trek
           </h1>
-          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
+          <div className="section-accent-line mx-auto" />
           <p className="text-stone-600 text-sm max-w-xl mx-auto font-normal leading-relaxed">
             Contact our team in Thamel, Kathmandu to arrange permits, custom itineraries, flight connections, or route recommendations.
           </p>
@@ -142,7 +142,7 @@ export default function ContactView() {
                     </div>
                     <div>
                       <span className="font-bold block text-zinc-900">Phone &amp; WhatsApp Desk</span>
-                      <a href={`tel:${settings.contactPhone}`} className="font-medium text-stone-900 hover:text-[#eab308] hover:underline">
+                      <a href={`tel:${settings.contactPhone}`} className="font-medium text-stone-900 hover:text-accent hover:underline">
                         {settings.contactPhone}
                       </a>
                     </div>
@@ -156,7 +156,7 @@ export default function ContactView() {
                     </div>
                     <div>
                       <span className="font-bold block text-zinc-900">Email Inquiry Desk</span>
-                      <a href={`mailto:${settings.contactEmail}`} className="font-medium text-stone-900 hover:text-[#eab308] hover:underline">
+                      <a href={`mailto:${settings.contactEmail}`} className="font-medium text-stone-900 hover:text-accent hover:underline">
                         {settings.contactEmail}
                       </a>
                     </div>
@@ -175,7 +175,7 @@ export default function ContactView() {
                       href={settings.googleMapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-medium text-stone-900 hover:text-[#eab308] transition-colors flex items-center gap-1"
+                      className="text-xs font-medium text-stone-900 hover:text-accent transition-colors flex items-center gap-1"
                     >
                       <span>Open in Google Maps</span>
                       <span>&rarr;</span>
@@ -224,7 +224,7 @@ export default function ContactView() {
                 </div>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-5 py-2.5 rounded-md transition-colors cursor-pointer"
+                  className="btn-accent text-xs px-5 py-2.5"
                 >
                   Send another inquiry
                 </button>
@@ -253,7 +253,7 @@ export default function ContactView() {
                       )}
                     />
                     {errors.fullName && (
-                      <p className="text-[11px] font-semibold text-rose-600 mt-1">{errors.fullName.message}</p>
+                      <p className="text-xs font-semibold text-rose-600 mt-1">{errors.fullName.message}</p>
                     )}
                   </div>
 
@@ -271,7 +271,7 @@ export default function ContactView() {
                       )}
                     />
                     {errors.email && (
-                      <p className="text-[11px] font-semibold text-rose-600 mt-1">{errors.email.message}</p>
+                      <p className="text-xs font-semibold text-rose-600 mt-1">{errors.email.message}</p>
                     )}
                   </div>
 
@@ -289,7 +289,7 @@ export default function ContactView() {
                       )}
                     />
                     {errors.phone && (
-                      <p className="text-[11px] font-semibold text-rose-600 mt-1">{errors.phone.message}</p>
+                      <p className="text-xs font-semibold text-rose-600 mt-1">{errors.phone.message}</p>
                     )}
                   </div>
 
@@ -364,7 +364,7 @@ export default function ContactView() {
                     )}
                   />
                   {errors.message && (
-                    <p className="text-[11px] font-semibold text-rose-600 mt-1">{errors.message.message}</p>
+                    <p className="text-xs font-semibold text-rose-600 mt-1">{errors.message.message}</p>
                   )}
                 </div>
 
@@ -377,7 +377,7 @@ export default function ContactView() {
                 <button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken}
-                  className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-heading text-sm font-bold py-3.5 rounded-md shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
+                  className="btn-accent w-full text-sm py-3.5 flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Send className="h-4 w-4 text-stone-950" />
                   <span>{isSubmitting ? 'Sending...' : 'Send Inquiry'}</span>

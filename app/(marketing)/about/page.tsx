@@ -112,7 +112,7 @@ export default async function AboutView() {
             sizes="100vw"
             className="object-cover opacity-25"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent" />
+          <div className="absolute inset-0 bg-slate-950/70" />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left space-y-3">
           <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
@@ -137,7 +137,7 @@ export default async function AboutView() {
                   <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-tight">
                     {storyTitle}
                   </h2>
-                  <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
+                  <div className="section-accent-line" />
                 </div>
               )}
 
@@ -252,7 +252,7 @@ export default async function AboutView() {
               <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
                 The team behind your trek
               </h2>
-              <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
+              <div className="section-accent-line mx-auto" />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -269,7 +269,7 @@ export default async function AboutView() {
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <span className="absolute bottom-3 left-3 bg-slate-900/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-sm">
+                    <span className="absolute bottom-3 left-3 badge-muted text-xs">
                       {t.badge}
                     </span>
                   </div>

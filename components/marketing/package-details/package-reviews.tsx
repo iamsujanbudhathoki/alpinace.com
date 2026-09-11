@@ -5,8 +5,6 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck,
-  Quote,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -25,6 +23,16 @@ export interface PackageReviewsProps {
   title?: string;
   subtitle?: string;
   overallRating?: number;
+}
+
+function getReviewHeadline(content: string): string {
+  if (!content) return "Exceptional Himalayan Experience";
+  const cleaned = content.replace(/^["“']|["”']$/g, "").trim();
+  const firstSentence = cleaned.split(/[.!?]/)[0].trim();
+  if (firstSentence.length >= 10 && firstSentence.length <= 65) {
+    return firstSentence;
+  }
+  return "Very professional company with excellent guides";
 }
 
 export function PackageReviews({
@@ -91,7 +99,6 @@ export function PackageReviews({
             <h2 className="type-heading-xl">
               {title}
             </h2>
-           
           </div>
           {subtitle && (
             <p className="type-body-sm mt-0.5">
@@ -102,9 +109,9 @@ export function PackageReviews({
 
         {/* Rating Summary & Controls */}
         <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
-          <div className="flex items-center gap-1.5">
-            <div className="flex items-center gap-0.5 text-[#eab308]">
-              <Star className="w-3.5 h-3.5 fill-[#eab308] text-[#eab308]" />
+          <div className="flex items-center gap-1.5 bg-stone-100/80 px-2.5 py-1 rounded-full border border-stone-200 text-xs">
+            <div className="flex items-center gap-0.5 text-accent">
+              <Star className="w-3.5 h-3.5 fill-accent text-accent" />
             </div>
             <div className="text-xs font-semibold text-stone-900">
               <span>{overallRating.toFixed(1)}</span>
@@ -122,13 +129,13 @@ export function PackageReviews({
                 onClick={() => handleScroll("left")}
                 disabled={!canScrollLeft}
                 aria-label="Previous review"
-                className={`w-7.5 h-7.5 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
                   canScrollLeft
-                    ? "border-stone-300 bg-white text-stone-900 hover:bg-stone-50 shadow-xs"
+                    ? "border-stone-300 bg-white text-stone-900 hover:bg-stone-950 hover:text-white shadow-xs"
                     : "border-stone-200 bg-stone-50 text-stone-300 cursor-not-allowed"
                 }`}
               >
-                <ChevronLeft className="w-3.5 h-3.5" strokeWidth={2} />
+                <ChevronLeft className="w-4 h-4" strokeWidth={2} />
               </button>
 
               <button
@@ -136,13 +143,13 @@ export function PackageReviews({
                 onClick={() => handleScroll("right")}
                 disabled={!canScrollRight}
                 aria-label="Next review"
-                className={`w-7.5 h-7.5 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
                   canScrollRight
-                    ? "border-stone-300 bg-white text-stone-900 hover:bg-stone-50 shadow-xs"
+                    ? "border-stone-300 bg-white text-stone-900 hover:bg-stone-950 hover:text-white shadow-xs"
                     : "border-stone-200 bg-stone-50 text-stone-300 cursor-not-allowed"
                 }`}
               >
-                <ChevronRight className="w-3.5 h-3.5" strokeWidth={2} />
+                <ChevronRight className="w-4 h-4" strokeWidth={2} />
               </button>
             </div>
           )}
@@ -163,60 +170,56 @@ export function PackageReviews({
         {activeReviews.map((rev, idx) => (
           <div
             key={rev.id || idx}
-            className="review-card snap-start min-w-[270px] sm:min-w-[320px] max-w-[360px] shrink-0 p-4 bg-white border border-stone-200 rounded-xl space-y-3 flex flex-col justify-between shadow-2xs"
+            className="review-card snap-start min-w-[280px] sm:min-w-[340px] max-w-[380px] shrink-0 p-5 bg-white border border-stone-200/90 rounded-2xl flex flex-col justify-between shadow-2xs hover:shadow-md transition-all duration-300 group"
           >
-            <div className="space-y-2.5">
+            <div className="space-y-3.5">
               {/* Reviewer Header */}
-              <div className="flex items-start justify-between gap-2.5">
-                <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between gap-2.5 pb-3 border-b border-stone-100">
+                <div className="flex items-center gap-3">
                   {rev.avatar ? (
                     <Image
                       src={rev.avatar}
                       alt={rev.author}
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 rounded-full object-cover ring-1 ring-stone-200 shrink-0"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover border border-stone-200 shrink-0 shadow-2xs"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-stone-900 text-[#eab308] flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-stone-900 text-accent font-bold flex items-center justify-center text-xs shrink-0 shadow-2xs">
                       {getInitials(rev.author)}
                     </div>
                   )}
 
                   <div className="min-w-0">
-                    <h3 className="type-heading-md text-stone-900 truncate">
+                    <h3 className="font-heading text-xs sm:text-sm font-bold text-stone-900 truncate">
                       {rev.author}
                     </h3>
-                    {rev.country && (
-                      <span className="type-body-sm text-stone-400 block truncate">
-                        {rev.country} {rev.date ? `• ${rev.date}` : ""}
-                      </span>
-                    )}
+                    <p className="text-[11px] text-stone-500 font-medium truncate">
+                      {rev.country || "Verified Traveler"} {rev.date ? `• ${rev.date}` : ""}
+                    </p>
                   </div>
                 </div>
 
-                <Quote className="w-3.5 h-3.5 text-stone-300 shrink-0" />
+                {/* Star Rating */}
+                <div className="flex items-center gap-0.5 text-accent shrink-0">
+                  {Array.from({ length: rev.rating || 5 }).map((_, s) => (
+                    <Star key={s} className="w-3.5 h-3.5 fill-accent text-accent" />
+                  ))}
+                </div>
               </div>
 
-              {/* Star Rating */}
-              <div className="flex items-center gap-0.5 text-[#eab308]">
-                {Array.from({ length: 5 }).map((_, s) => (
-                  <Star
-                    key={s}
-                    className={`w-3 h-3 ${
-                      s < (rev.rating || 5)
-                        ? "fill-[#eab308] text-[#eab308]"
-                        : "text-stone-200"
-                    }`}
-                  />
-                ))}
-              </div>
+              {/* Bold Review Headline */}
+              <h4 className="font-heading text-sm font-bold text-stone-900 leading-snug line-clamp-2">
+                {getReviewHeadline(rev.content)}
+              </h4>
 
               {/* Review Content */}
-              <p className="type-body text-stone-700 font-normal">
+              <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-normal line-clamp-4">
                 &ldquo;{rev.content}&rdquo;
               </p>
             </div>
+
+          
           </div>
         ))}
       </div>

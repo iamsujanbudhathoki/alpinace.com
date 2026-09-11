@@ -261,7 +261,7 @@ export function AdminImageUpload({
               title="Click to view full image"
             />
             {/* Dark gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-slate-950/60 pointer-events-none" />
 
             {/* Top Lightbox Button */}
             <button

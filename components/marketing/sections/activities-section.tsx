@@ -124,7 +124,7 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
             Activities we offer
           </h2>
-          <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mx-auto mt-2.5" />
+          <div className="section-accent-line mx-auto" />
         </div>
 
         {/* Carousel / Cards Showcase */}
@@ -186,7 +186,7 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                       />
                       {/* Trip Count Badge */}
                       {tripLabel && (
-                        <span className="absolute top-2.5 right-2.5 bg-[#eab308] text-stone-950 text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-md shadow-xs leading-tight">
+                        <span className="absolute top-2.5 right-2.5 badge-accent text-xs shadow-xs pointer-events-none">
                           {tripLabel}
                         </span>
                       )}
@@ -241,7 +241,7 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                           />
                           {/* Trip Count Badge */}
                           {tripLabel && (
-                            <span className="absolute top-2.5 right-2.5 bg-[#eab308] text-stone-950 text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-md shadow-xs leading-tight pointer-events-none">
+                            <span className="absolute top-2.5 right-2.5 badge-accent text-xs shadow-xs pointer-events-none">
                               {tripLabel}
                             </span>
                           )}

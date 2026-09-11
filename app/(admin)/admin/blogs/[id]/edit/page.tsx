@@ -62,7 +62,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+      <div className="flex flex-col items-center justify-center min-h-96 gap-3">
         <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
         <p className="text-xs font-semibold text-slate-600">Loading blog article content...</p>
       </div>

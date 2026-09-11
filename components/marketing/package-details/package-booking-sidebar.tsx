@@ -223,7 +223,7 @@ export function PackageBookingSidebar({
               <button
                 type="button"
                 onClick={onBookClick}
-                className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-md shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                className="btn-accent w-full text-xs sm:text-sm flex items-center justify-center gap-2 group"
               >
                 <span>{bookButtonLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
@@ -303,15 +303,15 @@ export function PackageBookingSidebar({
             type="button"
             onClick={() => setIsInquiryModalOpen(true)}
             aria-label="Ask a question"
-            className="bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-xs py-2 px-3 rounded-md transition-colors border border-stone-200 cursor-pointer min-h-[42px] flex items-center gap-1"
+            className="bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-xs py-2 px-3 rounded-md transition-colors border border-stone-200 cursor-pointer min-h-10 flex items-center gap-1"
           >
-            <MessageSquare className="w-4 h-4 text-stone-700 shrink-0" />
+            <MessageSquare className="w-3.5 h-3.5 text-stone-700 shrink-0" />
             <span className="hidden sm:inline">Inquire</span>
           </button>
           <button
             type="button"
             onClick={onBookClick}
-            className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs py-2 px-4 rounded-md shadow-xs transition-all cursor-pointer min-h-[42px] flex items-center gap-1.5"
+            className="btn-accent text-xs py-2 px-4 min-h-10 flex items-center gap-1.5"
           >
             <span>{bookButtonLabel}</span>
             <ArrowRight className="w-3.5 h-3.5 shrink-0" />

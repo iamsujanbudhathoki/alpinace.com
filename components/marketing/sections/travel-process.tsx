@@ -33,7 +33,7 @@ export function TravelProcess() {
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
               From Inquiry to Trailhead
             </h2>
-            <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5" />
+            <div className="section-accent-line" />
           </div>
           <Link
             href="/contact"
@@ -46,7 +46,7 @@ export function TravelProcess() {
         {/* Clean 4-Stage Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {processSteps.map((item, idx) => (
-            <div key={idx} className="space-y-2 border-l-2 border-[#eab308] pl-4 py-1">
+            <div key={idx} className="space-y-2 border-l-2 border-accent pl-4 py-1">
               <h3 className="font-heading text-base font-bold text-stone-900 leading-snug">
                 {item.phase}
               </h3>

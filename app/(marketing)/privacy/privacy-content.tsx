@@ -74,7 +74,7 @@ export function PrivacyPolicyContent() {
           prose-headings:font-heading prose-headings:text-zinc-900 prose-headings:font-bold
           prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg
           prose-p:text-zinc-700 prose-p:leading-relaxed
-          prose-a:text-stone-900 prose-a:underline hover:prose-a:text-[#eab308]
+          prose-a:text-stone-900 prose-a:underline hover:prose-a:text-accent
           prose-strong:text-zinc-900 prose-strong:font-semibold
           prose-ul:list-disc prose-ul:pl-5 prose-ul:space-y-1
           prose-ol:list-decimal prose-ol:pl-5 prose-ol:space-y-1

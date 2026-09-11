@@ -60,7 +60,7 @@ export function FeaturedBlogs({ initialPosts = [] }: FeaturedBlogsProps) {
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
               Latest from our journal
             </h2>
-            <div className="h-0.5 w-10 sm:w-12 bg-[#eab308] rounded-full mt-2.5 mx-auto" />
+            <div className="section-accent-line mx-auto" />
           </div>
           <div className="mt-3 sm:mt-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2">
             <Link

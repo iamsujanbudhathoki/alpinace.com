@@ -109,7 +109,7 @@ export default async function ActivityDetailPage({ params }: ActivityDetailPageP
   return (
     <div className="bg-stone-50/60 min-h-screen text-stone-900 font-sans pb-20">
       {/* Hero Section - Image Only */}
-      <div className="relative w-full h-[320px] sm:h-[420px] lg:h-[480px] bg-stone-900 overflow-hidden">
+      <div className="relative w-full h-80 sm:h-96 lg:h-[30rem] bg-stone-900 overflow-hidden">
         {activity.image ? (
           <Image
             src={activity.image}

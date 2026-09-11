@@ -48,17 +48,16 @@ export function PackageDetailHero({
           sizes="100vw"
           className="object-cover object-center transform scale-105 transition-transform duration-1000 ease-out"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/60 to-stone-950/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-stone-950/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-stone-950/60" />
       </div>
 
       {/* Breadcrumb Navigation */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 w-full">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-white/90 hover:text-white transition-all bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3.5 py-2 rounded-md border border-white/15 min-h-[38px]"
+          className="group inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white/85 hover:text-white transition-colors py-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/50 rounded-sm"
         >
-          <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
+          <ArrowLeft className="h-4 w-4 text-white/85 group-hover:text-white group-hover:-translate-x-1 transition-transform" strokeWidth={2.2} />
           <span>{backLabel}</span>
         </Link>
       </div>
@@ -111,7 +110,7 @@ export function PackageDetailHero({
                 <button
                   type="button"
                   onClick={onBookClick}
-                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm px-4.5 py-2.5 rounded-md shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
+                  className="btn-accent text-xs sm:text-sm flex items-center gap-2 group"
                 >
                   <span>{bookButtonLabel}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />

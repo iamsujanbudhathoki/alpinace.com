@@ -224,7 +224,7 @@ export default function ContactView() {
                 </div>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-5 py-2.5 rounded-xl transition-colors cursor-pointer"
+                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-5 py-2.5 rounded-md transition-colors cursor-pointer"
                 >
                   Send another inquiry
                 </button>
@@ -246,7 +246,7 @@ export default function ContactView() {
                       placeholder="e.g. Alexander Wright"
                       {...register("fullName")}
                       className={cn(
-                        "w-full bg-stone-50/80 border text-xs rounded-xl px-4 py-3 focus:outline-none transition-colors font-medium",
+                        "w-full bg-stone-50/80 border text-xs rounded-md px-4 py-3 focus:outline-none transition-colors font-medium",
                         errors.fullName
                           ? "border-rose-400 focus:border-rose-500 bg-rose-50/20 text-rose-950"
                           : "border-stone-200 focus:border-stone-900 bg-white"
@@ -264,7 +264,7 @@ export default function ContactView() {
                       placeholder="e.g. alexander@example.com"
                       {...register("email")}
                       className={cn(
-                        "w-full bg-stone-50/80 border text-xs rounded-xl px-4 py-3 focus:outline-none transition-colors font-medium",
+                        "w-full bg-stone-50/80 border text-xs rounded-md px-4 py-3 focus:outline-none transition-colors font-medium",
                         errors.email
                           ? "border-rose-400 focus:border-rose-500 bg-rose-50/20 text-rose-950"
                           : "border-stone-200 focus:border-stone-900 bg-white"
@@ -282,7 +282,7 @@ export default function ContactView() {
                       placeholder="e.g. +1 (555) 019-2834"
                       {...register("phone")}
                       className={cn(
-                        "w-full bg-stone-50/80 border text-xs rounded-xl px-4 py-3 focus:outline-none transition-colors font-medium",
+                        "w-full bg-stone-50/80 border text-xs rounded-md px-4 py-3 focus:outline-none transition-colors font-medium",
                         errors.phone
                           ? "border-rose-400 focus:border-rose-500 bg-rose-50/20 text-rose-950"
                           : "border-stone-200 focus:border-stone-900 bg-white"
@@ -299,7 +299,7 @@ export default function ContactView() {
                     </FormLabel>
                     <select
                       {...register("country")}
-                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
+                      className="w-full bg-white border border-stone-200 text-xs rounded-md px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
                     >
                       <option value="">Select Country...</option>
                       {COUNTRY_OPTIONS.map((c) => (
@@ -316,7 +316,7 @@ export default function ContactView() {
                     </FormLabel>
                     <select
                       {...register("destination")}
-                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
+                      className="w-full bg-white border border-stone-200 text-xs rounded-md px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
                     >
                       <option value="Everest Region (Khumbu)">Everest Region (Khumbu)</option>
                       <option value="Annapurna Region">Annapurna Region</option>
@@ -332,7 +332,7 @@ export default function ContactView() {
                     </FormLabel>
                     <select
                       {...register("travelers")}
-                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
+                      className="w-full bg-white border border-stone-200 text-xs rounded-md px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
                     >
                       <option value="1">1 Traveler (Solo)</option>
                       <option value="2">2 Travelers (Couple / Duo)</option>
@@ -357,7 +357,7 @@ export default function ContactView() {
                     placeholder="Describe your desired altitude goals, physical preparation level, or questions..."
                     {...register("message")}
                     className={cn(
-                      "w-full bg-stone-50/80 border text-xs rounded-xl px-4 py-3 focus:outline-none resize-none leading-relaxed transition-colors font-medium",
+                      "w-full bg-stone-50/80 border text-xs rounded-md px-4 py-3 focus:outline-none resize-none leading-relaxed transition-colors font-medium",
                       errors.message
                         ? "border-rose-400 focus:border-rose-500 bg-rose-50/20 text-rose-950"
                         : "border-stone-200 focus:border-stone-900 bg-white"
@@ -377,7 +377,7 @@ export default function ContactView() {
                 <button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken}
-                  className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-heading text-sm font-bold py-3.5 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
+                  className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-heading text-sm font-bold py-3.5 rounded-md shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
                 >
                   <Send className="h-4 w-4 text-stone-950" />
                   <span>{isSubmitting ? 'Sending...' : 'Send Inquiry'}</span>

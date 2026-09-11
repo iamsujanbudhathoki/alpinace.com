@@ -236,7 +236,7 @@ export function PublicBookingModal({
       <DialogContent
         showCloseButton
         onCloseClick={requestClose}
-        className="sm:max-w-xl md:max-w-2xl w-[96vw] sm:w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white rounded-xl sm:rounded-2xl shadow-xl border border-stone-200"
+        className="sm:max-w-xl md:max-w-2xl w-[96vw] sm:w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white rounded-lg sm:rounded-xl shadow-xl border border-stone-200"
       >
         {/* Header */}
         <div className="bg-stone-50 border-b border-stone-200 px-5 sm:px-7 py-4 sm:py-4.5 pr-12 shrink-0">
@@ -268,36 +268,34 @@ export function PublicBookingModal({
                 type="button"
                 variant="outline"
                 onClick={() => setShowExitConfirm(false)}
-                className="text-xs font-semibold py-2.5 px-5 rounded-xl border-stone-300 hover:bg-stone-50 text-stone-700"
+                className="text-xs font-semibold py-2.5 px-5 rounded-md border-stone-300 hover:bg-stone-50 text-stone-700"
               >
                 Continue Editing
               </Button>
               <Button
                 type="button"
                 onClick={forceClose}
-                className="bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs py-2.5 px-5 rounded-xl cursor-pointer"
+                className="bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs py-2.5 px-5 rounded-md cursor-pointer"
               >
                 Discard & Leave
               </Button>
             </div>
           </div>
         ) : confirmedBooking ? (
-          <div className="space-y-5">
+          <div className="space-y-5 animate-in fade-in duration-200">
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-6 h-6" strokeWidth={2.5} />
+              <div className="w-12 h-12 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full flex items-center justify-center mx-auto shadow-xs">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600" />
               </div>
               <h3 className="font-heading text-lg font-bold text-stone-900">
-                Booking Request Submitted!
+                Booking Request Received
               </h3>
-              <p className="text-xs text-stone-600 max-w-sm mx-auto leading-relaxed">
-                Thank you for choosing Alpine Ace! We&apos;ve received your request for{" "}
-                <strong className="text-stone-900">{trip.title}</strong>. A confirmation copy has been sent to{" "}
-                <strong className="text-stone-900">{confirmedBooking.guestEmail || guestEmail}</strong>.
+              <p className="text-xs text-stone-600 leading-relaxed max-w-md mx-auto">
+                Thank you, <strong className="text-stone-900">{confirmedBooking.guestName}</strong>! Your high-altitude trek reservation has been submitted.
               </p>
             </div>
 
-            <div className="bg-stone-50 border border-stone-200 rounded-xl p-4.5 space-y-3 text-xs">
+            <div className="bg-stone-50 border border-stone-200 rounded-md p-4.5 space-y-3 text-xs">
               <div className="flex items-center justify-between border-b border-dashed border-stone-200 pb-3">
                 <span className="font-semibold text-stone-500 uppercase tracking-wider text-[11px]">
                   Booking Reference
@@ -333,7 +331,7 @@ export function PublicBookingModal({
               </div>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3.5 text-xs text-stone-700 leading-relaxed">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3.5 text-xs text-stone-700 leading-relaxed">
               <p className="font-semibold text-stone-900 mb-1">What Happens Next?</p>
               We are checking lodge rooms and permits for your dates. Our team will email you within 12 hours to confirm your reservation details.
             </div>
@@ -341,7 +339,7 @@ export function PublicBookingModal({
             <Button
               type="button"
               onClick={forceClose}
-              className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs py-3 rounded-xl cursor-pointer shadow-xs transition-colors"
+              className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs py-3 rounded-md cursor-pointer shadow-xs transition-colors"
             >
               Done
             </Button>
@@ -349,7 +347,7 @@ export function PublicBookingModal({
         ) : (
           <div>
             {errorMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
+              <div className="mb-4 p-3 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
                 {errorMessage}
               </div>
             )}
@@ -369,7 +367,7 @@ export function PublicBookingModal({
                       setStartDate(e.target.value);
                       if (formErrors.startDate) setFormErrors((prev) => ({ ...prev, startDate: undefined }));
                     }}
-                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-md border font-medium focus:outline-none transition-all ${
                       formErrors.startDate
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
@@ -393,18 +391,18 @@ export function PublicBookingModal({
                       type="button"
                       disabled={travelers <= 1}
                       onClick={() => setTravelers((prev) => Math.max(1, prev - 1))}
-                      className="w-10 h-[38px] flex items-center justify-center rounded-xl border border-stone-300 text-stone-800 font-bold text-base hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
+                      className="w-10 h-[38px] flex items-center justify-center rounded-md border border-stone-300 text-stone-800 font-bold text-base hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                     >
                       -
                     </button>
-                    <div className="flex-1 h-[38px] flex items-center justify-center rounded-xl border border-stone-300 bg-stone-50 text-xs font-semibold text-stone-800">
+                    <div className="flex-1 h-[38px] flex items-center justify-center rounded-md border border-stone-300 bg-stone-50 text-xs font-semibold text-stone-800">
                       {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
                     </div>
                     <button
                       type="button"
                       disabled={travelers >= 12}
                       onClick={() => setTravelers((prev) => Math.min(12, prev + 1))}
-                      className="w-10 h-[38px] flex items-center justify-center rounded-xl border border-stone-300 text-stone-800 font-bold text-base hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
+                      className="w-10 h-[38px] flex items-center justify-center rounded-md border border-stone-300 text-stone-800 font-bold text-base hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                     >
                       +
                     </button>
@@ -426,7 +424,7 @@ export function PublicBookingModal({
                       setGuestName(e.target.value);
                       if (formErrors.guestName) setFormErrors((prev) => ({ ...prev, guestName: undefined }));
                     }}
-                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-md border font-medium focus:outline-none transition-all ${
                       formErrors.guestName
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
@@ -449,7 +447,7 @@ export function PublicBookingModal({
                       setGuestEmail(e.target.value);
                       if (formErrors.guestEmail) setFormErrors((prev) => ({ ...prev, guestEmail: undefined }));
                     }}
-                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-md border font-medium focus:outline-none transition-all ${
                       formErrors.guestEmail
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
@@ -475,7 +473,7 @@ export function PublicBookingModal({
                       setGuestPhone(e.target.value);
                       if (formErrors.guestPhone) setFormErrors((prev) => ({ ...prev, guestPhone: undefined }));
                     }}
-                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-md border font-medium focus:outline-none transition-all ${
                       formErrors.guestPhone
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
@@ -496,7 +494,7 @@ export function PublicBookingModal({
                       setCountry(e.target.value);
                       if (formErrors.country) setFormErrors((prev) => ({ ...prev, country: undefined }));
                     }}
-                    className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all cursor-pointer ${
+                    className={`w-full text-xs px-3.5 py-2.5 rounded-md border font-medium focus:outline-none transition-all cursor-pointer ${
                       formErrors.country
                         ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                         : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900"
@@ -525,12 +523,12 @@ export function PublicBookingModal({
                   rows={2}
                   value={specialRequests}
                   onChange={(e) => setSpecialRequests(e.target.value)}
-                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900 resize-none font-medium transition-all"
+                  className="w-full text-xs px-3.5 py-2.5 rounded-md border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white text-stone-900 resize-none font-medium transition-all"
                 />
               </div>
 
               {/* Price Summary */}
-              <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 space-y-2 text-xs">
+              <div className="bg-stone-50 border border-stone-200 rounded-md p-4 space-y-2 text-xs">
                 <div className="flex items-center justify-between text-stone-600 font-medium">
                   <span>{travelers} × ${baseCostPerPerson.toLocaleString()} USD</span>
                   <span className="text-stone-900 font-semibold">${totalPriceUSD.toLocaleString()} USD</span>
@@ -557,14 +555,14 @@ export function PublicBookingModal({
                   variant="outline"
                   onClick={requestClose}
                   disabled={isSubmitting}
-                  className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-xl border-stone-300 hover:bg-stone-50 text-stone-700"
+                  className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-md border-stone-300 hover:bg-stone-50 text-stone-700"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken}
-                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
+                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-6 py-2.5 rounded-md cursor-pointer shadow-xs transition-colors disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-1.5">

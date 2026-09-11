@@ -223,7 +223,7 @@ export function PackageBookingSidebar({
               <button
                 type="button"
                 onClick={onBookClick}
-                className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-md shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span>{bookButtonLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
@@ -232,7 +232,7 @@ export function PackageBookingSidebar({
 
             {/* 2. INQUIRY BUTTON OR INQUIRY CONFIRMATION */}
             {isInquired ? (
-              <div className="p-4 rounded-sm bg-yellow-50 border border-yellow-200 space-y-2.5 animate-in fade-in duration-200">
+              <div className="p-4 rounded-md bg-yellow-50 border border-yellow-200 space-y-2.5 animate-in fade-in duration-200">
                 <div className="flex items-start gap-2.5">
                   <div className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     <Check className="w-4 h-4 text-yellow-400" strokeWidth={2.5} />
@@ -260,7 +260,7 @@ export function PackageBookingSidebar({
               <button
                 type="button"
                 onClick={() => setIsInquiryModalOpen(true)}
-                className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
               >
                 <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
                 <span>Ask a Question / Custom Dates</span>

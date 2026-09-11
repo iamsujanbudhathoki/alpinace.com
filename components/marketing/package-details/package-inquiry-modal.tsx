@@ -112,7 +112,7 @@ export function PackageInquiryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent showCloseButton onCloseClick={onClose} className="sm:max-w-lg w-[96vw] sm:w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white rounded-xl sm:rounded-2xl shadow-xl border border-stone-200">
+      <DialogContent showCloseButton onCloseClick={onClose} className="sm:max-w-lg w-[96vw] sm:w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white rounded-lg sm:rounded-xl shadow-xl border border-stone-200">
         {/* Header */}
         <div className="bg-stone-50 border-b border-stone-200 px-5 sm:px-7 py-4 sm:py-4.5 pr-12 shrink-0">
           <DialogTitle className="font-heading text-base sm:text-lg font-bold text-stone-900">
@@ -125,7 +125,7 @@ export function PackageInquiryModal({
 
         <div className="p-5 sm:p-7 overflow-y-auto max-h-[calc(92vh-70px)]">
           {errorMessage && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
+            <div className="mb-4 p-3 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
               {errorMessage}
             </div>
           )}
@@ -145,7 +145,7 @@ export function PackageInquiryModal({
                     setInquiryName(e.target.value);
                     if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: undefined }));
                   }}
-                  className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                  className={`w-full text-xs px-3.5 py-2.5 rounded-md border font-medium focus:outline-none transition-all ${
                     formErrors.name
                       ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                       : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
@@ -166,7 +166,7 @@ export function PackageInquiryModal({
                     setInquiryEmail(e.target.value);
                     if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: undefined }));
                   }}
-                  className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                  className={`w-full text-xs px-3.5 py-2.5 rounded-md border font-medium focus:outline-none transition-all ${
                     formErrors.email
                       ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                       : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
@@ -190,7 +190,7 @@ export function PackageInquiryModal({
                     setInquiryPhone(e.target.value);
                     if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: undefined }));
                   }}
-                  className={`w-full text-xs px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none transition-all ${
+                  className={`w-full text-xs px-3.5 py-2.5 rounded-md border font-medium focus:outline-none transition-all ${
                     formErrors.phone
                       ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                       : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
@@ -206,7 +206,7 @@ export function PackageInquiryModal({
                 <select
                   value={inquiryCountry}
                   onChange={(e) => setInquiryCountry(e.target.value)}
-                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white font-medium transition-all cursor-pointer"
+                  className="w-full text-xs px-3.5 py-2.5 rounded-md border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white font-medium transition-all cursor-pointer"
                 >
                   <option value="">Select Country...</option>
                   {COUNTRY_OPTIONS.map((c) => (
@@ -231,7 +231,7 @@ export function PackageInquiryModal({
                   setInquiryMessage(e.target.value);
                   if (formErrors.message) setFormErrors((prev) => ({ ...prev, message: undefined }));
                 }}
-                className={`w-full text-xs px-3.5 py-2.5 rounded-xl border focus:outline-none resize-none transition-all font-medium ${
+                className={`w-full text-xs px-3.5 py-2.5 rounded-md border focus:outline-none resize-none transition-all font-medium ${
                   formErrors.message
                     ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:ring-1 focus:ring-rose-500"
                     : "border-stone-300 focus:ring-1 focus:ring-stone-900 focus:border-stone-900 bg-white"
@@ -241,7 +241,7 @@ export function PackageInquiryModal({
             </div>
 
             {errorMessage && (
-              <p className="text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-2.5 text-center">
+              <p className="text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-md p-2.5 text-center">
                 {errorMessage}
               </p>
             )}
@@ -254,13 +254,13 @@ export function PackageInquiryModal({
 
             {/* Action Buttons */}
             <div className="pt-2 flex items-center justify-end gap-3">
-              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-xl">
+              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-md">
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting || !turnstileToken}
-                className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
+                className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-6 py-2.5 rounded-md cursor-pointer shadow-xs transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-1.5">

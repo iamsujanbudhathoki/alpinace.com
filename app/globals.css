@@ -10,43 +10,24 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-poppins), var(--font-sans);
 
-  /* Palette */
+  /* AlpineAce Core Brand Palette */
+  --color-brand-black: #000000;
+  --color-brand-yellow: #eab308;
+  --color-brand-gold: #eab308;
+  --color-brand-gray: #E5E5E5;
+  --color-brand-white: #FFFFFF;
+
+  /* Tailwind Color Mappings to Core Palette */
   --color-primary-950: #000000;
-  --color-primary-900: #0f172a;
-  --color-primary-800: #1e293b;
-  --color-primary-700: #334155;
-  --color-primary-600: #475569;
-  --color-primary-500: #64748b;
-  --color-primary-400: #94a3b8;
+  --color-primary-900: #0a0a0a;
+  --color-primary-800: #171717;
+  --color-primary-700: #262626;
 
-  --color-forest-950: #0a100c;
-  --color-forest-900: #111a15;
-  --color-forest-800: #18241d;
-  --color-forest-700: #22382b;
-  --color-forest-600: #2d4536;
-  --color-forest-100: #eaf2ed;
-  --color-forest-50: #f4f8f5;
+  --color-forest-950: #000000;
+  --color-forest-900: #0a0a0a;
 
-  --color-gold-950: #0f172a;
-  --color-gold-900: #1e293b;
-  --color-gold-800: #334155;
-  --color-gold-700: #475569;
-  --color-gold-600: #1e293b;
-  --color-gold-500: #0f172a;
-  --color-gold-400: #475569;
-  --color-gold-300: #94a3b8;
-  --color-gold-200: #cbd5e1;
-  --color-gold-100: #f1f5f9;
-
-  --color-offwhite-50: #fafaf9;
-  --color-offwhite-100: #f1f5f9;
-  --color-offwhite-200: #e2e8f0;
-  --color-offwhite-300: #cbd5e1;
-
-  --color-charcoal-950: #020617;
-  --color-charcoal-900: #0f172a;
-  --color-charcoal-800: #1e293b;
-  --color-charcoal-700: #334155;
+  --color-charcoal-950: #000000;
+  --color-charcoal-900: #0a0a0a;
 
   /* Radius scale */
   --radius-sm: 0.25rem;
@@ -60,8 +41,8 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --color-accent: var(--color-primary-900);
-  --color-accent-foreground: var(--color-primary-950);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
   --font-heading: var(--font-poppins), var(--font-sans);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -85,31 +66,36 @@
   --color-card: var(--card);
 }
 
-/* Light theme (default) - Natural editorial contrast */
+/* Light theme (default) - AlpineAce Core Palette */
 :root {
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --border: #e2e8f0;
-  --background: #fafaf9;
-  --foreground: #1e293b;
-  --card: #ffffff;
-  --card-foreground: #1e293b;
-  --popover: #ffffff;
-  --popover-foreground: #1e293b;
-  --primary: #0f172a;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f8f5;
-  --secondary-foreground: #111a15;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  --brand-black: #000000;
+  --brand-yellow: #eab308;
+  --brand-light-gray: #E5E5E5;
+  --brand-white: #FFFFFF;
+
+  --muted: #E5E5E5;
+  --muted-foreground: #525252;
+  --border: #E5E5E5;
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --card: #FFFFFF;
+  --card-foreground: #000000;
+  --popover: #FFFFFF;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E5E5E5;
+  --secondary-foreground: #000000;
+  --accent: #eab308;
+  --accent-foreground: #000000;
   --destructive: oklch(0.577 0.245 27.325);
-  --input: #e2e8f0;
-  --ring: #0f172a;
-  --radius: 0.15rem; /* Reduced radius for editorial feel */
+  --input: #E5E5E5;
+  --ring: #eab308;
+  --radius: 0.15rem;
 
   /* Centralized Range Slider Color Tokens */
-  --slider-fill: #1c1917;
-  --slider-bg: #e7e5e4;
+  --slider-fill: #eab308;
+  --slider-bg: #E5E5E5;
 }
 
 /* Infinite Marquee Animation for X-Axis Slider */

@@ -25,9 +25,9 @@ const whyAceFeatures: WhyAceFeature[] = [
         className="w-8 h-8 object-contain"
       />
     ),
-    badgeBg: "bg-blue-50/90",
-    badgeBorder: "border-blue-100",
-    iconColor: "text-blue-600",
+    badgeBg: "bg-stone-100",
+    badgeBorder: "border-stone-200",
+    iconColor: "text-stone-800",
   },
   {
     title: "High Standard of Safety Prioritized",
@@ -42,9 +42,9 @@ const whyAceFeatures: WhyAceFeature[] = [
         className="w-8 h-8 object-contain"
       />
     ),
-    badgeBg: "bg-rose-50/90",
-    badgeBorder: "border-rose-100",
-    iconColor: "text-rose-600",
+    badgeBg: "bg-stone-100",
+    badgeBorder: "border-stone-200",
+    iconColor: "text-stone-800",
   },
   {
     title: "Unbeatable Value",
@@ -59,9 +59,9 @@ const whyAceFeatures: WhyAceFeature[] = [
         className="w-8 h-8 object-contain"
       />
     ),
-    badgeBg: "bg-slate-100/90",
-    badgeBorder: "border-slate-200",
-    iconColor: "text-slate-700",
+    badgeBg: "bg-stone-100",
+    badgeBorder: "border-stone-200",
+    iconColor: "text-stone-800",
   },
   {
     title: "Top-Notch Service",
@@ -76,9 +76,9 @@ const whyAceFeatures: WhyAceFeature[] = [
         className="w-8 h-8 object-contain"
       />
     ),
-    badgeBg: "bg-amber-50/90",
-    badgeBorder: "border-amber-100",
-    iconColor: "text-amber-600",
+    badgeBg: "bg-stone-100",
+    badgeBorder: "border-stone-200",
+    iconColor: "text-stone-800",
   },
   {
     title: "Socially Responsible",
@@ -93,9 +93,9 @@ const whyAceFeatures: WhyAceFeature[] = [
         className="w-8 h-8 object-contain"
       />
     ),
-    badgeBg: "bg-emerald-50/90",
-    badgeBorder: "border-emerald-100",
-    iconColor: "text-emerald-600",
+    badgeBg: "bg-stone-100",
+    badgeBorder: "border-stone-200",
+    iconColor: "text-stone-800",
   },
   {
     title: "Guaranteed Departures",
@@ -110,9 +110,9 @@ const whyAceFeatures: WhyAceFeature[] = [
         className="w-8 h-8 object-contain"
       />
     ),
-    badgeBg: "bg-sky-50/90",
-    badgeBorder: "border-sky-100",
-    iconColor: "text-sky-600",
+    badgeBg: "bg-stone-100",
+    badgeBorder: "border-stone-200",
+    iconColor: "text-stone-800",
   },
 ];
 
@@ -136,11 +136,11 @@ export function WhyAceSection() {
           {whyAceFeatures.map((feature, idx) => (
             <div
               key={idx}
-              className="bg-white border border-stone-200/80 rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xs hover:shadow-md hover:border-amber-200/80 transition-all duration-300 group"
+              className="bg-white border border-stone-200/80 rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center shadow-xs hover:shadow-md hover:border-stone-300 hover:-translate-y-0.5 transition-all duration-300 group"
             >
               {/* Icon Container */}
               <div
-                className={`w-14 h-14 rounded-2xl ${feature.badgeBg} border ${feature.badgeBorder} ${feature.iconColor} flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 shadow-2xs`}
+                className={`w-14 h-14 rounded-2xl ${feature.badgeBg} border ${feature.badgeBorder} ${feature.iconColor} flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-105 shadow-2xs`}
               >
                 {feature.icon}
               </div>

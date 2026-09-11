@@ -143,9 +143,7 @@ export default async function ActivityDetailPage({ params }: ActivityDetailPageP
           </nav>
 
           <div className="space-y-2">
-            <span className="inline-block bg-stone-100 text-stone-700 text-xs font-semibold px-3 py-1 rounded-sm uppercase tracking-wider border border-stone-200">
-              Activity &amp; Experience
-            </span>
+            
             <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-stone-900 leading-tight">
               {activity.name}
             </h1>

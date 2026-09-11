@@ -77,15 +77,15 @@ export type NavLink = {
 
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "Trekking", href: "/trekking", categoryType: CategoryType.TREKKING },
-  { label: "Tours", href: "/tours", categoryType: CategoryType.TOURS },
+  { label: "TREKKINGS", href: "/trekking", categoryType: CategoryType.TREKKING },
+  { label: "TOURS", href: "/tours", categoryType: CategoryType.TOURS },
   {
-    label: "Expeditions",
+    label: "EXPEDITIONS",
     href: "/expeditions",
     categoryType: CategoryType.EXPEDITIONS,
   },
   {
-    label: "Resources",
+    label: "RESOURCES",
     href: "/blog",
     items: [
       {

@@ -13,7 +13,7 @@ export function generateMetadata(): Metadata {
   return generateStaticMetadata({
     title: "Himalayan Peak Expeditions | Island Peak, Mera Peak & Ama Dablam",
     description:
-      "Guided mountaineering expeditions across Island Peak, Mera Peak, Lobuche East, and 8000m summits led by IFMGA Certified Guides with 1:1 ratio safety support.",
+      "Guided mountaineering expeditions across Island Peak, Mera Peak, Lobuche East, and 8000m summits led by Certified Mountain Guides with 1:1 ratio safety support.",
     path: "/expeditions",
     keywords: [
       "Himalayan peak expeditions",

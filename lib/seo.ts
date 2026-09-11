@@ -132,7 +132,7 @@ export function generatePackageMetadata({
   const description =
     item.metaDescription?.trim() ||
     cleanShortDesc ||
-    `Experience ${item.title} (${item.durationDays || 0} Days). Guided by certified IFMGA/NNMGA mountain guides with luxury mountain lodge hospitality. Book with AlpineAce.`;
+    `Experience ${item.title} (${item.durationDays || 0} Days). Guided by certified mountain guides with luxury mountain lodge hospitality. Book with AlpineAce.`;
 
   const rawKeywords = item.keywords
     ? item.keywords.split(",").map((s: string) => s.trim()).filter(Boolean)

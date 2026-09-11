@@ -801,7 +801,7 @@ export function ExpeditionFormModal({
                       <AppRichTextEditor
                         value={field.value || ""}
                         onChange={field.onChange}
-                        placeholder="e.g. Summit Climbing Royalty Fee, 1:1 IFMGA Lead Guide, Summit Oxygen Bottles & Regulator..."
+                        placeholder="e.g. Summit Climbing Royalty Fee, 1:1 Personal Lead Guide, Summit Oxygen Bottles & Regulator..."
                         height="200px"
                       />
                     )}
@@ -956,7 +956,7 @@ export function ExpeditionFormModal({
                     {watchMetaTitle?.trim() || `${watchTitle || "Expedition Package"} | AlpineAce`}
                   </div>
                   <div className="text-[11px] text-slate-600 font-medium line-clamp-2">
-                    {watchMetaDesc?.trim() || watchShortDesc?.trim() || "Summit Himalayan peaks with AlpineAce IFMGA lead guides."}
+                    {watchMetaDesc?.trim() || watchShortDesc?.trim() || "Summit Himalayan peaks with AlpineAce lead guides."}
                   </div>
                 </div>
 

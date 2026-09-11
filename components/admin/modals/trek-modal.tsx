@@ -809,7 +809,7 @@ export function TrekFormModal({
                       <AppRichTextEditor
                         value={field.value || ""}
                         onChange={field.onChange}
-                        placeholder="e.g. IFMGA Certified Mountain Guide, Luxury Teahouse Lodges, Domestic Flights, All Government Permits..."
+                        placeholder="e.g. Certified Mountain Guide, Luxury Teahouse Lodges, Domestic Flights, All Government Permits..."
                         height="200px"
                       />
                     )}

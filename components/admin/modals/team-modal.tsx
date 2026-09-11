@@ -182,7 +182,7 @@ export function TeamModal({
             type="text"
             value={formData.experience || ""}
             onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-            placeholder="e.g. IFMGA Guide • 12 yrs"
+            placeholder="e.g. Lead Guide • 12 yrs"
           />
         </div>
 

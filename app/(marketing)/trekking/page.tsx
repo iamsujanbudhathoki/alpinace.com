@@ -12,7 +12,7 @@ export function generateMetadata(): Metadata {
   return generateStaticMetadata({
     title: "Nepal Trekking Packages | Guided Himalayan Routes & Circuits",
     description:
-      "Explore iconic Everest Base Camp, Annapurna Circuit, Manaslu, and Langtang trekking packages guided by certified IFMGA Mountain Guides.",
+      "Explore iconic Everest Base Camp, Annapurna Circuit, Manaslu, and Langtang trekking packages guided by certified Mountain Guides.",
     path: "/trekking",
     keywords: [
       "Nepal trekking packages",

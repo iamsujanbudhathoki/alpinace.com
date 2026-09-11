@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
         "About AlpineAce",
         "Locally owned trek company",
         "Kathmandu trekking agency",
-        "IFMGA mountain guides",
+        "Certified mountain guides",
         "Himalayan trekking team",
       ];
 

@@ -68,7 +68,7 @@ export async function GET() {
 
 ## About Our Company & Credentials
 
-${siteName} (alpineacetreks.com) is a premier locally owned trek and expedition agency based in Kathmandu, Nepal. Operating directly from our headquarters in Thamel, we specialize in certified IFMGA/NNMGA guide-led Himalayan trekking, technical peak climbing, luxury mountain lodge safaris, and customized private itineraries.
+${siteName} (alpineacetreks.com) is a premier locally owned trek and expedition agency based in Kathmandu, Nepal. Operating directly from our headquarters in Thamel, we specialize in certified guide-led Himalayan trekking, technical peak climbing, luxury mountain lodge safaris, and customized private itineraries.
 
 ### Verified Company Information
 - **Legal Entity**: AlpineAce Treks & Expeditions Pvt. Ltd.

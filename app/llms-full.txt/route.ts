@@ -94,7 +94,7 @@ export async function GET() {
 - **Primary Inquiry Email**: ${contactEmail}
 - **Support Email**: ${siteConfig.supportEmail}
 - **Office Hours**: ${officeHours}
-- **Ownership & Leadership**: Locally owned and operated by multi-summit Everest and K2 leaders and IFMGA-certified guides.
+- **Ownership & Leadership**: Locally owned and operated by multi-summit Everest and K2 leaders and certified mountain guides.
 
 ## Detailed Package Catalog & Itineraries
 

@@ -76,14 +76,14 @@ export function PartnersAffiliationsSection() {
   return (
     <section className="py-8 bg-white border-b border-stone-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6">
-          {/* Section Heading in one line */}
-          <h2 className="font-heading text-base sm:text-lg font-bold text-stone-900 shrink-0 whitespace-nowrap">
+        <div className="flex flex-col items-center justify-center gap-4 sm:gap-6">
+          {/* Section Heading centered on top */}
+          <h2 className="font-heading text-base sm:text-lg font-bold text-stone-900 shrink-0 whitespace-nowrap text-center">
             Associated with
           </h2>
 
-          {/* Partner Logos in one horizontal line */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-end gap-3 sm:gap-4">
+          {/* Partner Logos centered on the next line */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             {partners.map((partner) => {
               if (imgErrors[partner.id]) return null;
 

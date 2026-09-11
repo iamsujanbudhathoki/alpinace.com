@@ -20,7 +20,7 @@ export function generateMetadata(): Metadata {
       "Everest climbing guides",
       "Himalayan travel guides",
       "Trekking gear list Nepal",
-      "Sherpa guides blog",
+      "Mountain guides blog",
     ],
   });
 }

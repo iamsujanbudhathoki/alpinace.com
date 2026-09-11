@@ -450,7 +450,7 @@ export function TripItineraryManager({
                       </label>
                       <textarea
                         rows={3}
-                        placeholder="Detail the day's route, trail conditions, mountain viewpoints, Sherpa support, or acclimatization schedule..."
+                        placeholder="Detail the day's route, trail conditions, mountain viewpoints, guide support, or acclimatization schedule..."
                         value={dayItem.description || ""}
                         onChange={(e) => handleUpdateDay(index, "description", e.target.value)}
                         className={`w-full text-xs bg-white border rounded-lg p-2.5 text-slate-900 font-medium focus:outline-none focus:ring-2 leading-relaxed ${

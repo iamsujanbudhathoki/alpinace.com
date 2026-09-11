@@ -590,8 +590,8 @@ export function BookingFormModal({
             />
 
             <AdminInputField
-              label="Assigned Sherpa Guide"
-              placeholder="e.g. Lakpa Tenzing Sherpa"
+              label="Assigned Mountain Guide"
+              placeholder="e.g. Lakpa Tenzing Tamang"
               error={errors.assignedGuide?.message}
               {...register("assignedGuide")}
             />
@@ -663,7 +663,7 @@ export function BookingFormModal({
             </div>
 
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
-              <span className="text-slate-500 font-semibold block">Assigned Sherpa</span>
+              <span className="text-slate-500 font-semibold block">Assigned Guide</span>
               <div className="font-medium text-slate-800">
                 {initialData?.assignedGuide || "Unassigned"}
               </div>

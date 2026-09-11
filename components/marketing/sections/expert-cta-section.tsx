@@ -40,7 +40,7 @@ export function ExpertCtaSection() {
   // Display avatars (up to 5 team members or fallback images)
   const defaultAvatars = [
     { name: "Sujan Budhathoki", image: "/about-everest-group.png" },
-    { name: "Lakpa Sherpa", image: "/logo.jpg" },
+    { name: "Lakpa Tamang", image: "/logo.jpg" },
     { name: "Mingma Norbu", image: "/about-alpineace-group.png" },
     { name: "Pasang Tenzing", image: "/logo.jpg" },
   ];

@@ -335,7 +335,7 @@ export default function AdminBookingsPage() {
       {/* Header */}
       <AdminPageHeader
         title="Bookings & Reservations"
-        description="Manage guest reservations, expedition permits, and Sherpa guide assignments."
+        description="Manage guest reservations, expedition permits, and mountain guide assignments."
       >
         <Button
           variant="outline"

@@ -15,7 +15,7 @@ const processSteps = [
   },
   {
     phase: "4. Kathmandu Arrival & Trailhead",
-    desc: "Airport greeting, boutique Kathmandu hotel check-in, final gear check with your assigned Sherpa leader, and seamless departure to the mountains.",
+    desc: "Airport greeting, boutique Kathmandu hotel check-in, final gear check with your assigned lead guide, and seamless departure to the mountains.",
   },
 ];
 

@@ -43,14 +43,14 @@ export const siteConfig = {
   title: `${SITE_SHORT_NAME} | Nepal Trekking, Historical Tours & Peak Expeditions`,
   tagline: SITE_TAGLINE,
   description:
-    "Sherpa-guided trekking, cultural tours, and mountaineering expeditions in Nepal. Planned directly from our Kathmandu office with certified guides, comfortable teahouses, and safety-first logistics.",
+    "Expert-guided trekking, cultural tours, and mountaineering expeditions in Nepal. Planned directly from our Kathmandu office with certified guides, comfortable teahouses, and safety-first logistics.",
   keywords: [
     "AlpineAce",
     "AlpineAce Treks",
     "Alpine Ace",
     "Nepal trekking",
     "peak expeditions",
-    "Sherpa guides",
+    "mountain guides",
     "historical tours Nepal",
     "luxury mountain lodges",
     "Everest Base Camp trek",
@@ -92,7 +92,7 @@ export const navLinks: NavLink[] = [
         label: "Blogs & Articles",
         href: "/blog",
         description:
-          "Expedition preparation guides, packing lists & Sherpa stories.",
+          "Expedition preparation guides, packing lists & mountain stories.",
       },
       {
         label: "Contact & Inquiries",

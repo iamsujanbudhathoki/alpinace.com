@@ -27,7 +27,7 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
     tripName: "Annapurna Circuit Trek",
     rating: 5,
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-    content: "AlpineAce made our dream trek seamlessly comfortable and completely safe. The tea house selection was great, and the 1:1 attention from our Sherpa guide gave us total confidence over Thorong La Pass.",
+    content: "AlpineAce made our dream trek seamlessly comfortable and completely safe. The tea house selection was great, and the 1:1 attention from our mountain guide gave us total confidence over Thorong La Pass.",
   },
   {
     id: "default-3",
@@ -47,7 +47,7 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
     tripName: "Langtang Valley Trek",
     rating: 5,
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-    content: "From our first inquiry down to Kathmandu hotel drop-offs, the attention to detail was top tier. Warm local Sherpa hospitality, clear communication, and incredible mountain vistas throughout.",
+    content: "From our first inquiry down to Kathmandu hotel drop-offs, the attention to detail was top tier. Warm Himalayan hospitality, clear communication, and incredible mountain vistas throughout.",
   },
 ];
 

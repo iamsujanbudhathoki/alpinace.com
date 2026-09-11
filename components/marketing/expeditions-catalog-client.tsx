@@ -341,7 +341,7 @@ export function ExpeditionsCatalogClient({
             Expedition Packages
           </h1>
           <p className="text-stone-600 text-sm font-normal leading-relaxed max-w-2xl">
-            Guided 6000m, 7000m, and 8000m Himalayan climbing expeditions led by Sherpa mountaineers.
+            Guided 6000m, 7000m, and 8000m Himalayan climbing expeditions led by expert high-altitude mountain leaders.
           </p>
         </div>
       </section>

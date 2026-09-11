@@ -32,7 +32,7 @@ const whyAceFeatures: WhyAceFeature[] = [
   {
     title: "High Standard of Safety Prioritized",
     description:
-      "Your safe and secure trip is our top priority. Fully health-trained Sherpa guides and medical-equipped staff take care of you throughout the journey.",
+      "Your safe and secure trip is our top priority. Fully health-trained mountain guides and medical-equipped staff take care of you throughout the journey.",
     icon: (
       <Image
         src="/icons/safety.png"
@@ -66,7 +66,7 @@ const whyAceFeatures: WhyAceFeature[] = [
   {
     title: "Top-Notch Service",
     description:
-      "Well-experienced professional Sherpa guides and dedicated support team are at your service to deliver an exceptional quality trip experience.",
+      "Well-experienced professional mountain guides and dedicated support team are at your service to deliver an exceptional quality trip experience.",
     icon: (
       <Image
         src="/icons/service-responsible.png"

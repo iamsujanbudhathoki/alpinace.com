@@ -401,30 +401,30 @@ export function FeaturedPackages({
               })}
             </div>
           ) : (
-            /* Multi-item Embla Carousel with Mouse Drag & Hover Motion */
+            /* Multi-item Embla Carousel with Substantial 3-Card Desktop Grid */
             <div
-              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-3 -my-3"
+              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-4 -my-4"
               ref={emblaRef}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
             >
-              <div className="flex flex-nowrap -ml-6">
+              <div className="flex flex-nowrap -ml-6 sm:-ml-7 lg:-ml-8">
                 {displayPackages.map((pkg, index) => {
                   const packageHref = getPackageLink(pkg, activeTab);
 
                   return (
                     <div
                       key={`${pkg.id}-${index}`}
-                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0 pl-6 shrink-0"
+                      className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] min-w-0 pl-6 sm:pl-7 lg:pl-8 shrink-0"
                     >
                       <Link
                         href={packageHref}
                         onClick={handleCardClick}
-                        className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
+                        className="group flex flex-col h-full bg-white rounded-2xl border border-stone-200/90 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
                       >
-                        {/* Mountain Image Frame */}
-                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
+                        {/* Taller Mountain Image Frame */}
+                        <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-900">
                           <Image
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
@@ -436,14 +436,14 @@ export function FeaturedPackages({
 
                           {/* Region Tag */}
                           {pkg.region && (
-                            <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
+                            <span className="absolute top-3.5 left-3.5 bg-stone-900/90 text-white text-xs font-medium px-3 py-1 rounded-md tracking-wide shadow-xs">
                               {pkg.region}
                             </span>
                           )}
                         </div>
 
                         {/* Destination Card Body */}
-                        <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
                               <span>{pkg.durationDays} Days</span>
@@ -452,22 +452,24 @@ export function FeaturedPackages({
                               )}
                             </div>
 
-                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-600 transition-colors leading-snug line-clamp-1">
+                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-700 transition-colors leading-snug line-clamp-1">
                               {pkg.title}
                             </h3>
                           </div>
 
                           {/* Pricing & CTA */}
-                          <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                          <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between">
                             <div>
                               <span className="text-[11px] text-stone-400 block font-medium">From</span>
-                              <span className="text-base font-bold text-stone-900">
-                                ${pkg.priceUSD ? pkg.priceUSD.toLocaleString() : "0"} <span className="text-xs font-normal text-stone-500">USD</span>
+                              <span className="text-base sm:text-lg font-bold text-stone-900">
+                                ${pkg.priceUSD ? pkg.priceUSD.toLocaleString() : "0"}{" "}
+                                <span className="text-xs font-normal text-stone-500">USD</span>
                               </span>
                             </div>
 
-                            <span className="text-xs font-medium text-stone-900 group-hover:underline">
-                              Explore Route &rarr;
+                            <span className="text-xs sm:text-sm font-semibold text-stone-900 group-hover:underline inline-flex items-center gap-1">
+                              <span>Explore Route</span>
+                              <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                             </span>
                           </div>
                         </div>

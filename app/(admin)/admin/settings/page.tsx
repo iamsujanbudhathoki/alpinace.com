@@ -186,7 +186,7 @@ export default function AdminSettingsPage() {
                 rows={3}
                 value={formData.siteDescription || ""}
                 onChange={(e) => handleChange("siteDescription", e.target.value)}
-                placeholder="e.g. Sherpa-owned trek and expedition agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang..."
+                placeholder="e.g. Locally-owned trek and expedition agency based in Thamel, Kathmandu. Guided routes across Everest, Annapurna, Manaslu, and Langtang..."
                 className="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-medium focus:bg-white focus:outline-none resize-y"
               />
             </div>
@@ -371,7 +371,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={formData.metaKeywords}
                 onChange={(e) => handleChange("metaKeywords", e.target.value)}
-                placeholder="Nepal trekking, Everest Base Camp, peak climbing, Sherpa guides, luxury lodges"
+                placeholder="Nepal trekking, Everest Base Camp, peak climbing, mountain guides, luxury lodges"
                 className="text-xs"
               />
             </div>

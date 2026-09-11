@@ -81,42 +81,38 @@ export function PartnersAffiliationsSection() {
   if (!partners || partners.length === 0) return null;
 
   return (
-    <section className="py-10 sm:py-14 bg-white border-b border-stone-200/80">
+    <section className="py-8 bg-white border-b border-stone-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading matching website design system */}
-        <div className="text-center space-y-1 mb-6 sm:mb-8">
-          <span className="text-stone-500 text-xs font-medium block">
-            Partners &amp; Affiliations
-          </span>
-          <h2 className="font-heading text-xl sm:text-2xl font-bold text-stone-900 leading-snug">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6">
+          {/* Section Heading in one line */}
+          <h2 className="font-heading text-base sm:text-lg font-bold text-stone-900 shrink-0 whitespace-nowrap">
             Associated with
           </h2>
-          <div className="section-accent-line mx-auto" />
-        </div>
 
-        {/* Clean Static Showcase Cards without redirect links */}
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-5xl mx-auto">
-          {partners.map((partner) => {
-            const hasError = imgErrors[partner.id];
-            const imgSrc = hasError && partner.fallbackUrl ? partner.fallbackUrl : partner.logoUrl;
+          {/* Partner Logos in one horizontal line */}
+          <div className="flex flex-wrap items-center justify-center lg:justify-end gap-3 sm:gap-4">
+            {partners.map((partner) => {
+              const hasError = imgErrors[partner.id];
+              const imgSrc = hasError && partner.fallbackUrl ? partner.fallbackUrl : partner.logoUrl;
 
-            return (
-              <div
-                key={partner.id}
-                title={partner.name}
-                className="w-32 sm:w-36 md:w-40 h-16 sm:h-18 bg-white border border-stone-200/80 rounded-md p-3 flex items-center justify-center shrink-0 transition-all duration-200 hover:border-stone-300 shadow-2xs"
-              >
-                <Image
-                  src={imgSrc}
-                  alt={partner.name}
-                  width={130}
-                  height={44}
-                  onError={() => handleImageError(partner.id)}
-                  className="max-h-9 sm:max-h-11 w-auto object-contain"
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={partner.id}
+                  title={partner.name}
+                  className="w-28 sm:w-32 md:w-36 h-12 sm:h-14 bg-white border border-stone-200/80 rounded-md p-2.5 flex items-center justify-center shrink-0 transition-all duration-200 hover:border-stone-300 shadow-2xs"
+                >
+                  <Image
+                    src={imgSrc}
+                    alt={partner.name}
+                    width={120}
+                    height={40}
+                    onError={() => handleImageError(partner.id)}
+                    className="max-h-7 sm:max-h-9 w-auto object-contain"
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

@@ -9,20 +9,20 @@ export async function generateMetadata(): Promise<Metadata> {
   const title =
     aboutData?.metaTitle?.trim() ||
     aboutData?.heroTitle?.trim() ||
-    "About AlpineAce | Our Team, Sherpa Heritage & Values";
+    "About AlpineAce | Our Team & Values";
 
   const description =
     aboutData?.metaDescription?.trim() ||
     aboutData?.heroSubtitle?.trim() ||
-    "AlpineAce is a Sherpa-owned trekking and expedition company based in Thamel, Kathmandu. Founded in 2012 to combine local Sherpa expertise with international safety standards.";
+    "AlpineAce is a premier trekking and expedition company based in Thamel, Kathmandu. Founded in 2012 to combine local mountain expertise with international safety standards.";
 
   const keywords = aboutData?.metaKeywords
     ? aboutData.metaKeywords.split(",").map((s) => s.trim()).filter(Boolean)
     : [
         "About AlpineAce",
-        "Sherpa owned trek company",
+        "Locally owned trek company",
         "Kathmandu trekking agency",
-        "IFMGA Sherpa guides",
+        "IFMGA mountain guides",
         "Himalayan trekking team",
       ];
 
@@ -164,7 +164,7 @@ export default async function AboutView() {
                     When we started, most operators in Nepal were either budget teahouse companies or foreign-owned luxury brands that subcontracted local guides. Neither worked well for serious travelers who wanted both comfort and real local knowledge.
                   </p>
                   <p>
-                    We built AlpineAce around a direct model: Sherpa guides who lead every expedition, long-standing mountain lodge partnerships, and clear safety protocols. The result is a company focused entirely on trip quality and trekker safety.
+                    We built AlpineAce around a direct model: experienced mountain guides who lead every expedition, long-standing mountain lodge partnerships, and clear safety protocols. The result is a company focused entirely on trip quality and trekker safety.
                   </p>
                 </div>
               )}

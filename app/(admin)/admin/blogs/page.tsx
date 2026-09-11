@@ -38,7 +38,7 @@ const STATUS_OPTIONS: InlineSelectOption[] = [
 const DEFAULT_BLOG_CATEGORIES: InlineSelectOption[] = [
   { value: "Trekking Guides", label: "Trekking Guides" },
   { value: "Expedition Prep", label: "Expedition Prep" },
-  { value: "Sherpa Culture", label: "Sherpa Culture" },
+  { value: "Mountain Culture", label: "Mountain Culture" },
   { value: "Travel Tips", label: "Travel Tips" },
   { value: "Gear & Equipment", label: "Gear & Equipment" },
   { value: "Safety & Acclimatization", label: "Safety & Acclimatization" },
@@ -215,7 +215,7 @@ export default function AdminBlogsPage() {
     <div className="space-y-6">
       <AdminPageHeader
         title="Blogs & Articles Management"
-        description="Publish expedition preparation guides, packing lists, and Sherpa stories."
+        description="Publish expedition preparation guides, packing lists, and mountain stories."
       >
         <Link href="/admin/blogs/new">
           <Button>

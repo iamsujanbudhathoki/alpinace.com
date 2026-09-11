@@ -286,7 +286,7 @@ export default function AdminAboutUsPage() {
                 <AdminInputField
                   label="Hero Heading (H1)"
                   required={true}
-                  placeholder="e.g. Sherpa-guided treks planned from Kathmandu."
+                  placeholder="e.g. Expert-guided treks planned from Kathmandu."
                   value={formData.heroTitle || ""}
                   onChange={(e) => handleChange("heroTitle", e.target.value)}
                   error={errors.heroTitle}
@@ -422,7 +422,7 @@ export default function AdminAboutUsPage() {
                     Key Highlights &amp; Statistics
                   </h2>
                   <p className="text-[11px] text-slate-500 font-medium">
-                    Highlight statistics displayed alongside the story (e.g. 100% Sherpa owned).
+                    Highlight statistics displayed alongside the story (e.g. 100% Locally owned).
                   </p>
                 </div>
                 <Button
@@ -463,7 +463,7 @@ export default function AdminAboutUsPage() {
                       <AdminInputField
                         label="Stat Label"
                         required={true}
-                        placeholder="e.g. Sherpa owned & operated"
+                        placeholder="e.g. Locally owned & operated"
                         value={stat.label}
                         onChange={(e) => updateStat(idx, "label", e.target.value)}
                         error={errors[`stats.${idx}.label`]}
@@ -578,12 +578,12 @@ export default function AdminAboutUsPage() {
                 {formData.metaTitle?.trim() ||
                   (formData.heroTitle
                     ? `${formData.heroTitle} | AlpineAce`
-                    : "About AlpineAce | Our Team, Sherpa Heritage & Values")}
+                    : "About AlpineAce | Our Team & Values")}
               </div>
               <div className="text-xs text-slate-600 font-normal line-clamp-2 leading-relaxed">
                 {formData.metaDescription?.trim() ||
                   formData.heroSubtitle?.trim() ||
-                  "AlpineAce is a Sherpa-owned trekking and expedition company based in Thamel, Kathmandu."}
+                  "AlpineAce is a premier trekking and expedition company based in Thamel, Kathmandu."}
               </div>
             </div>
 
@@ -604,7 +604,7 @@ export default function AdminAboutUsPage() {
                   </span>
                 </div>
                 <AdminInputField
-                  placeholder="e.g. About AlpineAce | Our Team, Sherpa Heritage & Values"
+                  placeholder="e.g. About AlpineAce | Our Team & Values"
                   value={formData.metaTitle || ""}
                   onChange={(e) => handleChange("metaTitle", e.target.value)}
                   error={errors.metaTitle}
@@ -637,7 +637,7 @@ export default function AdminAboutUsPage() {
 
               <AdminInputField
                 label="Focus Keywords (comma separated)"
-                placeholder="e.g. About AlpineAce, Sherpa owned trek company, Kathmandu agency"
+                placeholder="e.g. About AlpineAce, Locally owned trek company, Kathmandu agency"
                 value={formData.metaKeywords || ""}
                 onChange={(e) => handleChange("metaKeywords", e.target.value)}
                 error={errors.metaKeywords}

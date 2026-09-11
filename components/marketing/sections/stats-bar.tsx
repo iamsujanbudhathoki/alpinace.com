@@ -5,7 +5,7 @@ export function StatsBar() {
     HOME_STATS.length > 0
       ? HOME_STATS
       : [
-          { number: "100%", label: "Sherpa Owned", desc: "Based in Thamel, Kathmandu" },
+          { number: "100%", label: "Locally Owned", desc: "Based in Thamel, Kathmandu" },
           { number: "25+", label: "IFMGA Guides", desc: "Certified high-altitude leaders" },
           { number: "12+", label: "Years Operating", desc: "Guiding Himalayan circuits" },
           { number: "100%", label: "Safety Protocols", desc: "Oximeters & hyperbaric readiness" },

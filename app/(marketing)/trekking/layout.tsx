@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: "Himalayan Trekking in Nepal | Everest, Annapurna & Remote Trails",
   description:
-    "Explore iconic trekking routes in Nepal with AlpineAce. From Everest Base Camp and Annapurna Circuit to remote off-the-beaten-path trails with certified Sherpa guides and luxury lodges.",
+    "Explore iconic trekking routes in Nepal with AlpineAce. From Everest Base Camp and Annapurna Circuit to remote off-the-beaten-path trails with certified mountain guides and luxury lodges.",
   keywords: [
     "Nepal trekking packages",
     "Everest Base Camp trek",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "Manaslu Circuit trek",
     "Langtang Valley trek",
     "luxury trekking Nepal",
-    "Sherpa guides Nepal",
+    "Mountain guides Nepal",
   ],
   alternates: {
     canonical: `${siteConfig.url}/trekking`,
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Himalayan Trekking in Nepal | AlpineAce",
     description:
-      "Explore iconic trekking routes in Nepal with AlpineAce. Certified Sherpa leaders, small groups, and luxury mountain lodges.",
+      "Explore iconic trekking routes in Nepal with AlpineAce. Certified mountain leaders, small groups, and luxury mountain lodges.",
     url: `${siteConfig.url}/trekking`,
     siteName: siteConfig.name,
     type: "website",

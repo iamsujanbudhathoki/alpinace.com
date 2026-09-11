@@ -144,7 +144,7 @@ export function TeamModal({
       isOpen={isOpen}
       onClose={handleClose}
       title={memberToEdit ? "Edit Team Member" : "Create New Team Member"}
-      description="Manage Sherpa guide credentials, role titles, and avatar photos."
+      description="Manage mountain guide credentials, role titles, and avatar photos."
       footer={footer}
       maxWidth="lg"
       fixedHeight={false}
@@ -163,7 +163,7 @@ export function TeamModal({
           type="text"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="e.g. Chhewang Sherpa"
+          placeholder="e.g. Chhewang Tamang"
         />
 
         {/* Role & Experience */}

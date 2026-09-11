@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: "Peak Climbing & Mountaineering Expeditions in Nepal | 6,000m to 8,000m",
   description:
-    "Climb the highest peaks in the Himalayas with AlpineAce. Island Peak, Mera Peak, Ama Dablam, Manaslu & Everest expeditions with 1:1 Sherpa guide ratios and advanced safety oxygen infrastructure.",
+    "Climb the highest peaks in the Himalayas with AlpineAce. Island Peak, Mera Peak, Ama Dablam, Manaslu & Everest expeditions with 1:1 guide ratios and advanced safety oxygen infrastructure.",
   keywords: [
     "Nepal mountaineering expeditions",
     "Island Peak climbing",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "Ama Dablam expedition",
     "Everest expedition Nepal",
     "8000m peaks climbing",
-    "Sherpa guides mountaineering",
+    "Mountain guides mountaineering",
   ],
   alternates: {
     canonical: `${siteConfig.url}/expeditions`,
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Peak Climbing & Mountaineering Expeditions | AlpineAce",
     description:
-      "Climb 6,000m to 8,000m peaks with multi-summit Sherpa master guides, fixed-rope safety, and high-altitude medical support.",
+      "Climb 6,000m to 8,000m peaks with multi-summit master guides, fixed-rope safety, and high-altitude medical support.",
     url: `${siteConfig.url}/expeditions`,
     siteName: siteConfig.name,
     type: "website",

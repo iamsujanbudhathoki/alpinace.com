@@ -220,7 +220,7 @@ export default function AdminTeamsPage() {
       {/* Page Header */}
       <AdminPageHeader
         title="Team Members & Leadership"
-        description="Manage Sherpa guides, expedition leaders, and executive staff displayed on the marketing website."
+        description="Manage mountain guides, expedition leaders, and executive staff displayed on the marketing website."
       >
         <Button onClick={handleOpenCreateModal}>
           <Plus className="w-4 h-4" />

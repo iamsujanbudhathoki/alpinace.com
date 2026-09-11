@@ -114,7 +114,7 @@ export function ExpeditionFormModal({
       peakHeightM: 8848,
       maxAltitudeMeters: 8848,
       climbingGrade: ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-      sherpaGuideRatio: "1:1 Sherpa Guide Ratio",
+      sherpaGuideRatio: "1:1 Personal Guide Ratio",
       oxygenRequired: true,
       difficulty: TripDifficulty.EXTREME,
       bestSeason: "",
@@ -217,7 +217,7 @@ export function ExpeditionFormModal({
         peakHeightM: initialData.peakHeightM || initialData.maxAltitudeMeters || 8000,
         maxAltitudeMeters: initialData.maxAltitudeMeters || initialData.peakHeightM || 8000,
         climbingGrade: initialData.climbingGrade || ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-        sherpaGuideRatio: initialData.sherpaGuideRatio || "1:1 Sherpa Guide Ratio",
+        sherpaGuideRatio: initialData.sherpaGuideRatio || "1:1 Personal Guide Ratio",
         oxygenRequired: initialData.oxygenRequired !== undefined ? initialData.oxygenRequired : true,
         difficulty: initialData.difficulty || TripDifficulty.EXTREME,
         bestSeason: initialData.bestSeason || "",
@@ -258,7 +258,7 @@ export function ExpeditionFormModal({
         peakHeightM: 8848,
         maxAltitudeMeters: 8848,
         climbingGrade: ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-        sherpaGuideRatio: "1:1 Sherpa Guide Ratio",
+        sherpaGuideRatio: "1:1 Personal Guide Ratio",
         oxygenRequired: true,
         difficulty: TripDifficulty.EXTREME,
         bestSeason: "",
@@ -322,7 +322,7 @@ export function ExpeditionFormModal({
         peakHeightM: alt,
         maxAltitudeMeters: alt,
         climbingGrade: values.climbingGrade || ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-        sherpaGuideRatio: values.sherpaGuideRatio || "1:1 Sherpa Guide Ratio",
+        sherpaGuideRatio: values.sherpaGuideRatio || "1:1 Personal Guide Ratio",
         oxygenRequired: values.oxygenRequired !== undefined ? values.oxygenRequired : true,
         durationDays: Number(values.durationDays) || 0,
         difficulty: values.difficulty || TripDifficulty.EXTREME,
@@ -633,8 +633,8 @@ export function ExpeditionFormModal({
 
                 <div>
                   <AdminInputField
-                    label="Sherpa Guide Ratio"
-                    placeholder="e.g. 1:1 Personal Sherpa Guide Ratio"
+                    label="Guide Ratio"
+                    placeholder="e.g. 1:1 Personal Mountain Guide Ratio"
                     {...register("sherpaGuideRatio")}
                   />
                 </div>
@@ -725,7 +725,7 @@ export function ExpeditionFormModal({
                       <AppRichTextEditor
                         value={field.value || ""}
                         onChange={field.onChange}
-                        placeholder="Detailed expedition summary, summit logistics, Sherpa support, oxygen systems, and safety protocols..."
+                        placeholder="Detailed expedition summary, summit logistics, guide support, oxygen systems, and safety protocols..."
                         height="220px"
                       />
                     )}
@@ -801,7 +801,7 @@ export function ExpeditionFormModal({
                       <AppRichTextEditor
                         value={field.value || ""}
                         onChange={field.onChange}
-                        placeholder="e.g. Summit Climbing Royalty Fee, 1:1 IFMGA Sherpa Leader, Summit Oxygen Bottles & Regulator..."
+                        placeholder="e.g. Summit Climbing Royalty Fee, 1:1 IFMGA Lead Guide, Summit Oxygen Bottles & Regulator..."
                         height="200px"
                       />
                     )}
@@ -956,7 +956,7 @@ export function ExpeditionFormModal({
                     {watchMetaTitle?.trim() || `${watchTitle || "Expedition Package"} | AlpineAce`}
                   </div>
                   <div className="text-[11px] text-slate-600 font-medium line-clamp-2">
-                    {watchMetaDesc?.trim() || watchShortDesc?.trim() || "Summit Himalayan peaks with AlpineAce IFMGA Sherpa leaders."}
+                    {watchMetaDesc?.trim() || watchShortDesc?.trim() || "Summit Himalayan peaks with AlpineAce IFMGA lead guides."}
                   </div>
                 </div>
 
@@ -972,7 +972,7 @@ export function ExpeditionFormModal({
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-800">Focus Keywords</label>
-                  <AdminInputField placeholder="e.g. Everest Summit, 8000m Expedition, Sherpa Guide" {...register("keywords")} />
+                  <AdminInputField placeholder="e.g. Everest Summit, 8000m Expedition, Mountain Guide" {...register("keywords")} />
                 </div>
               </div>
             )}
@@ -1011,8 +1011,8 @@ export function ExpeditionFormModal({
                 <span className="text-slate-950 font-bold">{initialData?.durationDays || 0} Days</span>
               </div>
               <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Sherpa Ratio:</span>
-                <span className="text-slate-950 font-bold">{initialData?.sherpaGuideRatio || "1:1 Sherpa"}</span>
+                <span className="text-slate-600 font-semibold block text-[11px]">Guide Ratio:</span>
+                <span className="text-slate-950 font-bold">{initialData?.sherpaGuideRatio || "1:1 Guide"}</span>
               </div>
               <div>
                 <span className="text-slate-600 font-semibold block text-[11px]">Price:</span>

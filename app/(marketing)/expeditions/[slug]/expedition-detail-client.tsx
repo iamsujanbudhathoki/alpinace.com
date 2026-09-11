@@ -351,7 +351,7 @@ export function ExpeditionDetailClient({
         badges={[
           { label: `${peakMeters.toLocaleString()}m Summit` },
           { label: expedition.climbingGrade || "Technical Grade", highlight: true },
-          { label: expedition.sherpaGuideRatio || "1:1 Sherpa" },
+          { label: expedition.sherpaGuideRatio || "1:1 Personal Guide" },
         ]}
       />
 

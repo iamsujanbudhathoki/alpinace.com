@@ -809,7 +809,7 @@ export function TrekFormModal({
                       <AppRichTextEditor
                         value={field.value || ""}
                         onChange={field.onChange}
-                        placeholder="e.g. IFMGA Certified Sherpa Guide, Luxury Teahouse Lodges, Domestic Flights, All Government Permits..."
+                        placeholder="e.g. IFMGA Certified Mountain Guide, Luxury Teahouse Lodges, Domestic Flights, All Government Permits..."
                         height="200px"
                       />
                     )}
@@ -974,7 +974,7 @@ export function TrekFormModal({
                   <div className="text-[11px] text-slate-600 font-medium line-clamp-2 leading-relaxed">
                     {watchMetaDesc?.trim() ||
                       watchShortDesc?.trim() ||
-                      "Experience certified Sherpa-led Himalayan journeys with luxury lodge hospitality. Book with AlpineAce."}
+                      "Experience certified guide-led Himalayan journeys with luxury lodge hospitality. Book with AlpineAce."}
                   </div>
                 </div>
 
@@ -1024,7 +1024,7 @@ export function TrekFormModal({
                     Focus Keywords
                   </label>
                   <AdminInputField
-                    placeholder="e.g. Everest Base Camp, Nepal Trekking, Sherpa Guides, Luxury Lodges"
+                    placeholder="e.g. Everest Base Camp, Nepal Trekking, Mountain Guides, Luxury Lodges"
                     {...register("keywords")}
                   />
                 </div>

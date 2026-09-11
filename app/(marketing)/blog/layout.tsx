@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: "AlpineAce Journal | Nepal Trekking Guides, Packing Advice & Sherpa Stories",
+  title: "AlpineAce Journal | Nepal Trekking Guides, Packing Advice & Mountain Stories",
   description:
-    "Explore comprehensive high-altitude preparation guides, Nepal gear checklists, weather breakdowns, and inspiring Sherpa summit stories on the AlpineAce journal.",
+    "Explore comprehensive high-altitude preparation guides, Nepal gear checklists, weather breakdowns, and inspiring mountain summit stories on the AlpineAce journal.",
   keywords: [
     "Nepal trekking blog",
     "Everest preparation guide",
     "Himalayan gear list",
     "altitude sickness prevention Nepal",
-    "Sherpa stories",
+    "Mountain stories",
     "AlpineAce journal",
   ],
   alternates: {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AlpineAce Journal | Expedition Guides & Himalayan Insights",
     description:
-      "Expert preparation guides, packing checklists, and Sherpa stories for your Himalayan journey.",
+      "Expert preparation guides, packing checklists, and mountain stories for your Himalayan journey.",
     url: `${siteConfig.url}/blog`,
     siteName: siteConfig.name,
     type: "website",

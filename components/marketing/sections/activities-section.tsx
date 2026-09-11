@@ -186,50 +186,45 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                       />
                       {/* Trip Count Badge */}
                       {tripLabel && (
-                        <span className="absolute top-2.5 right-2.5 badge-accent text-xs shadow-xs pointer-events-none">
+                        <span className="absolute top-3 right-3 bg-yellow-400 text-stone-950 font-bold text-xs px-3 py-1 rounded-md shadow-xs pointer-events-none">
                           {tripLabel}
                         </span>
                       )}
                     </div>
 
-                    {/* Card Content: Title & Trip Count Only */}
-                    <div className="p-4 sm:p-5 bg-white space-y-1 border-t border-stone-100">
+                    {/* Card Content: Title Only */}
+                    <div className="p-4 sm:p-5 bg-white border-t border-stone-100">
                       <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
                         {act.name}
                       </h3>
-                      {tripLabel && (
-                        <p className="text-xs sm:text-sm font-medium text-stone-500">
-                          {tripLabel}
-                        </p>
-                      )}
                     </div>
                   </Link>
                 );
               })}
             </div>
           ) : (
-            /* Multi-item Embla Carousel with Inertia Drag & Soft Downward Shadow */
+            /* Multi-item Embla Carousel with Substantial 3-Card Desktop Grid */
             <div
-              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-3 -my-3"
+              className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-4 -my-4"
               ref={emblaRef}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
             >
-              <div className="flex -ml-6">
+              <div className="flex -ml-6 sm:-ml-7 lg:-ml-8">
                 {activities.map((act) => {
                   const tripLabel = getTripCountLabel(act);
                   return (
                     <div
                       key={act.id}
-                      className="flex-[0_0_88%] sm:flex-[0_0_46%] lg:flex-[0_0_31.5%] min-w-0 pl-6"
+                      className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] min-w-0 pl-6 sm:pl-7 lg:pl-8 shrink-0"
                     >
                       <Link
                         href={`/activities/${act.slug}`}
                         onClick={handleCardClick}
-                        className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
+                        className="group flex flex-col h-full bg-white rounded-2xl border border-stone-200/90 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
                       >
-                        {/* Image Frame with contained zoom */}
+                        {/* Taller Image Frame with contained zoom */}
                         <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
                           <Image
                             src={act.image || "/mountain-placeholder.jpg"}
@@ -241,22 +236,24 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                           />
                           {/* Trip Count Badge */}
                           {tripLabel && (
-                            <span className="absolute top-2.5 right-2.5 badge-accent text-xs shadow-xs pointer-events-none">
+                            <span className="absolute top-3.5 right-3.5 bg-yellow-400 text-stone-950 font-bold text-xs px-3 py-1 rounded-md shadow-xs pointer-events-none">
                               {tripLabel}
                             </span>
                           )}
                         </div>
 
-                        {/* Card Content: Title & Trip Count Only */}
-                        <div className="p-4 sm:p-5 bg-white space-y-1 border-t border-stone-100">
-                          <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
-                            {act.name}
-                          </h3>
-                          {tripLabel && (
-                            <p className="text-xs sm:text-sm font-medium text-stone-500">
-                              {tripLabel}
-                            </p>
-                          )}
+                        {/* Card Content: Title & CTA */}
+                        <div className="p-5 sm:p-6 bg-white flex-1 flex flex-col justify-between space-y-4 border-t border-stone-100">
+                          <div>
+                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-700 transition-colors leading-snug line-clamp-1">
+                              {act.name}
+                            </h3>
+                          </div>
+
+                          <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between text-xs sm:text-sm font-semibold text-stone-900 group-hover:underline">
+                            <span>Explore Activity</span>
+                            <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                          </div>
                         </div>
                       </Link>
                     </div>

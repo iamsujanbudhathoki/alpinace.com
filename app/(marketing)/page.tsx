@@ -173,7 +173,7 @@ export default async function Home() {
           itemOffered: {
             "@type": "Trip",
             name: "Everest Base Camp Trek",
-            description: "14-day guided trek to Everest Base Camp and Kala Patthar under safe Sherpa guidance.",
+            description: "14-day guided trek to Everest Base Camp and Kala Patthar under expert mountain guide leadership.",
             url: `${siteConfig.url}/trekking/everest-base-camp-trek`,
           },
           availability: "https://schema.org/InStock",

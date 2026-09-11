@@ -9,7 +9,6 @@ interface Partner {
   name: string;
   website?: string;
   logoUrl: string;
-  fallbackUrl?: string;
 }
 
 const OFFICIAL_PARTNERS: Partner[] = [
@@ -17,37 +16,31 @@ const OFFICIAL_PARTNERS: Partner[] = [
     id: "moctca",
     name: "Ministry of Culture, Tourism & Civil Aviation",
     logoUrl: "/partners/moctca.jpeg",
-    fallbackUrl: "https://rpcdn.ratopati.com/media/albums/culture_8OtcyEd3ME.jpeg",
   },
   {
     id: "ntb",
     name: "Nepal Tourism Board",
     logoUrl: "/partners/ntb.jpg",
-    fallbackUrl: "https://d2s3cbzybmajg3.cloudfront.net/public/media/1920/ntb_logo-1663927863_resized1920.jpg",
   },
   {
     id: "taan",
     name: "Trekking Agencies' Association of Nepal",
     logoUrl: "/partners/taan.jpg",
-    fallbackUrl: "https://www.taan.org.np/public/images/taan-logo.jpg",
   },
   {
     id: "nma",
     name: "Nepal Mountaineering Association",
     logoUrl: "/partners/nma.png",
-    fallbackUrl: "https://www.nepalmountaineering.org/storage/website/logo-header.png",
   },
   {
     id: "hra",
     name: "Himalayan Rescue Association",
     logoUrl: "/partners/hra.png",
-    fallbackUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT48L_K_HXPmWDGYUknEtIskritbLNCm7AEZ3AqwyJtdg&s=10",
   },
   {
     id: "vitof",
     name: "Village Tourism Promotion Forum Nepal",
     logoUrl: "/partners/vitof.png",
-    fallbackUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1x04NR53T93qQhmO71nYzXF2vfbje9s8hGCge3KbOog&s=10",
   },
 ];
 
@@ -92,8 +85,7 @@ export function PartnersAffiliationsSection() {
           {/* Partner Logos in one horizontal line */}
           <div className="flex flex-wrap items-center justify-center lg:justify-end gap-3 sm:gap-4">
             {partners.map((partner) => {
-              const hasError = imgErrors[partner.id];
-              const imgSrc = hasError && partner.fallbackUrl ? partner.fallbackUrl : partner.logoUrl;
+              if (imgErrors[partner.id]) return null;
 
               return (
                 <div
@@ -102,7 +94,7 @@ export function PartnersAffiliationsSection() {
                   className="w-28 sm:w-32 md:w-36 h-12 sm:h-14 bg-white border border-stone-200/80 rounded-md p-2.5 flex items-center justify-center shrink-0 transition-all duration-200 hover:border-stone-300 shadow-2xs"
                 >
                   <Image
-                    src={imgSrc}
+                    src={partner.logoUrl}
                     alt={partner.name}
                     width={120}
                     height={40}

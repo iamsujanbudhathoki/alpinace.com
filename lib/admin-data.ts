@@ -47,9 +47,9 @@ export enum AdminRole {
 
 export enum PackageStatus {
   ACTIVE = "active",
-  FEATURED = "featured",
   DRAFT = "draft",
 }
+
 
 export {
   PackageStatus as TrekStatus,
@@ -229,6 +229,8 @@ export interface PackageItem {
   difficulty: TripDifficulty;
   priceUSD: number;
   status: PackageStatus;
+  isFeatured?: boolean;
+  isPopular?: boolean;
   totalBookings: number;
   rating: number;
   reviewsCount?: number;

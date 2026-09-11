@@ -33,7 +33,6 @@ import {
 
 const STATUS_OPTIONS: InlineSelectOption[] = [
   { value: PackageStatus.ACTIVE, label: "Active" },
-  { value: PackageStatus.FEATURED, label: "Featured" },
   { value: PackageStatus.DRAFT, label: "Draft" },
 ];
 

@@ -55,6 +55,8 @@ export interface TrekItem {
   difficulty: TripDifficulty;
   bestSeason: string;
   priceUSD: number;
+  isFeatured?: boolean;
+  isPopular?: boolean;
   startEndLocation?: string;
   accommodation?: string;
   meals?: string;

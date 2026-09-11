@@ -372,6 +372,8 @@ export interface PackageFilterParams {
   region?: string;
   difficulty?: string;
   status?: string;
+  isFeatured?: boolean;
+  isPopular?: boolean;
   search?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -391,6 +393,8 @@ export function buildPackageQuery(params?: PackageFilterParams): string {
   if (params.region && params.region !== "All") query.set("region", params.region);
   if (params.difficulty && params.difficulty !== "All") query.set("difficulty", params.difficulty);
   if (params.status) query.set("status", params.status);
+  if (params.isFeatured !== undefined) query.set("isFeatured", String(params.isFeatured));
+  if (params.isPopular !== undefined) query.set("isPopular", String(params.isPopular));
   if (params.search && params.search.trim()) query.set("search", params.search.trim());
   if (params.minPrice !== undefined && params.minPrice > 0) query.set("minPrice", String(params.minPrice));
   if (params.maxPrice !== undefined && params.maxPrice > 0) query.set("maxPrice", String(params.maxPrice));
@@ -577,6 +581,8 @@ function cleanPackagePayload(data: any) {
     delete payload.mapMediaId;
   }
 
+  if (rest.isFeatured !== undefined) payload.isFeatured = Boolean(rest.isFeatured);
+  if (rest.isPopular !== undefined) payload.isPopular = Boolean(rest.isPopular);
   if (Array.isArray(rest.packageFiles)) payload.packageFiles = rest.packageFiles;
 
   delete payload.totalBookings;
@@ -637,6 +643,8 @@ export function formatBackendTrek(p: any): TrekItem {
     metaDescription: p.metaDescription,
     keywords: p.keywords,
     status: p.status,
+    isFeatured: Boolean(p.isFeatured),
+    isPopular: Boolean(p.isPopular),
     region: p.region,
   };
 }
@@ -663,6 +671,8 @@ export function formatBackendPackage(p: any): PackageItem {
     difficulty: p.difficulty,
     priceUSD: Number(p.priceUSD),
     status: p.status,
+    isFeatured: Boolean(p.isFeatured),
+    isPopular: Boolean(p.isPopular),
     totalBookings: Number(p.totalBookings || 0),
     bestSeason: p.bestSeason,
     startEndLocation: p.startEndLocation,

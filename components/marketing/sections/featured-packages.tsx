@@ -75,9 +75,9 @@ export function FeaturedPackages({
     async function loadFeatured() {
       try {
         const [treksRes, toursRes, expeditionsRes] = await Promise.all([
-          apiClient.get<any[]>(`/treks?status=${PackageStatus.FEATURED}`).catch(() => null),
-          apiClient.get<any[]>(`/tours?status=${PackageStatus.FEATURED}`).catch(() => null),
-          apiClient.get<any[]>(`/expeditions?status=${PackageStatus.FEATURED}`).catch(() => null),
+          apiClient.get<any[]>(`/treks?isFeatured=true`).catch(() => null),
+          apiClient.get<any[]>(`/tours?isFeatured=true`).catch(() => null),
+          apiClient.get<any[]>(`/expeditions?isFeatured=true`).catch(() => null),
         ]);
 
         let rawTreks = treksRes && treksRes.success && Array.isArray(treksRes.data) ? treksRes.data : [];

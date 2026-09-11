@@ -37,8 +37,8 @@ export default async function Home() {
     ]);
 
     initialTreks = rawTreks
-      .filter((p) => p.status === PackageStatus.FEATURED || p.status === PackageStatus.ACTIVE)
-      .sort((a, b) => (a.status === PackageStatus.FEATURED ? -1 : 1))
+      .filter((p) => p.isFeatured || p.status === PackageStatus.ACTIVE)
+      .sort((a, b) => (a.isFeatured ? -1 : 1))
       .slice(0, 20)
       .map((p) => ({
         id: p.id,
@@ -54,12 +54,12 @@ export default async function Home() {
         reviewsCount: p.reviewsCount ?? 0,
         image: p.image || "",
         shortDesc: p.shortDesc || "",
-        status: p.status,
+        status: (p.status as PackageStatus) || PackageStatus.ACTIVE,
       }));
 
     initialTours = rawTours
-      .filter((p) => p.status === PackageStatus.FEATURED || p.status === PackageStatus.ACTIVE)
-      .sort((a, b) => (a.status === PackageStatus.FEATURED ? -1 : 1))
+      .filter((p) => p.isFeatured || p.status === PackageStatus.ACTIVE)
+      .sort((a, b) => (a.isFeatured ? -1 : 1))
       .slice(0, 20)
       .map((p) => ({
         id: p.id,
@@ -75,12 +75,12 @@ export default async function Home() {
         reviewsCount: p.reviewsCount ?? 0,
         image: p.image || "",
         shortDesc: p.shortDesc || "",
-        status: p.status,
+        status: (p.status as PackageStatus) || PackageStatus.ACTIVE,
       }));
 
     initialExpeditions = rawExpeditions
-      .filter((p) => p.status === PackageStatus.FEATURED || p.status === PackageStatus.ACTIVE)
-      .sort((a, b) => (a.status === PackageStatus.FEATURED ? -1 : 1))
+      .filter((p) => p.isFeatured || p.status === PackageStatus.ACTIVE)
+      .sort((a, b) => (a.isFeatured ? -1 : 1))
       .slice(0, 20)
       .map((p) => ({
         id: p.id,
@@ -96,7 +96,7 @@ export default async function Home() {
         reviewsCount: p.reviewsCount ?? 0,
         image: p.image || "",
         shortDesc: p.shortDesc || "",
-        status: p.status,
+        status: (p.status as PackageStatus) || PackageStatus.ACTIVE,
       }));
 
     initialBlogs = rawBlogs.slice(0, 3).map((b: any) => ({

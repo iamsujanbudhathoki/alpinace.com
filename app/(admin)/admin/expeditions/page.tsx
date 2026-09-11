@@ -32,7 +32,6 @@ import {
 
 const STATUS_OPTIONS: InlineSelectOption[] = [
   { value: PackageStatus.ACTIVE, label: "Active" },
-  { value: PackageStatus.FEATURED, label: "Featured" },
   { value: PackageStatus.DRAFT, label: "Draft" },
 ];
 
@@ -265,7 +264,6 @@ export default function AdminExpeditionsPage() {
         >
           <option value="All">All Statuses</option>
           <option value={PackageStatus.ACTIVE}>Active</option>
-          <option value={PackageStatus.FEATURED}>Featured</option>
           <option value={PackageStatus.DRAFT}>Draft</option>
         </AdminFilterSelect>
       </AdminFilterBar>

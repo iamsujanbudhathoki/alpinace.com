@@ -15,6 +15,8 @@ export interface TravelPackage {
   image: string;
   shortDesc: string;
   status: PackageStatus;
+  isFeatured?: boolean;
+  isPopular?: boolean;
 }
 
 export interface Testimonial {

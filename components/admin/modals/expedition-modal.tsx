@@ -121,6 +121,8 @@ export function ExpeditionFormModal({
       durationDays: 0,
       priceUSD: 0,
       status: PackageStatus.ACTIVE,
+      isFeatured: false,
+      isPopular: false,
       startEndLocation: "",
       accommodation: "",
       meals: "",
@@ -224,6 +226,8 @@ export function ExpeditionFormModal({
         durationDays: initialData.durationDays,
         priceUSD: initialData.priceUSD,
         status: initialData.status,
+        isFeatured: initialData.isFeatured ?? false,
+        isPopular: initialData.isPopular ?? false,
         startEndLocation: initialData.startEndLocation || "",
         accommodation: initialData.accommodation || "",
         meals: initialData.meals || "",
@@ -265,6 +269,8 @@ export function ExpeditionFormModal({
         durationDays: 0,
         priceUSD: 0,
         status: PackageStatus.ACTIVE,
+        isFeatured: false,
+        isPopular: false,
         startEndLocation: "",
         accommodation: "",
         meals: "",
@@ -329,6 +335,8 @@ export function ExpeditionFormModal({
         priceUSD: Number(values.priceUSD) || 0,
         bestSeason: values.bestSeason || "",
         status: values.status || PackageStatus.ACTIVE,
+        isFeatured: values.isFeatured ?? false,
+        isPopular: values.isPopular ?? false,
         startEndLocation: values.startEndLocation,
         accommodation: values.accommodation,
         meals: values.meals,
@@ -665,11 +673,29 @@ export function ExpeditionFormModal({
                     required
                     options={[
                       { label: "Active", value: PackageStatus.ACTIVE },
-                      { label: "Featured", value: PackageStatus.FEATURED },
                       { label: "Draft", value: PackageStatus.DRAFT },
                     ]}
                     {...register("status")}
                   />
+                </div>
+
+                <div className="col-span-2 flex items-center gap-6 pt-2">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      {...register("isFeatured")}
+                      className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span className="text-sm font-medium text-slate-700">Featured Package</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      {...register("isPopular")}
+                      className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span className="text-sm font-medium text-slate-700">Popular Package</span>
+                  </label>
                 </div>
 
                 <div>

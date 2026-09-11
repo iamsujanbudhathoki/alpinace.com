@@ -33,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     const trekRoutes: MetadataRoute.Sitemap = treks
-      .filter((t) => t.slug && (t.status === PackageStatus.ACTIVE || t.status === PackageStatus.FEATURED))
+      .filter((t) => t.slug && (t.status === PackageStatus.ACTIVE || t.isFeatured))
       .map((t) => ({
         url: `${baseUrl}/trekking/${t.slug}`,
         lastModified: new Date(),
@@ -42,7 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
 
     const tourRoutes: MetadataRoute.Sitemap = tours
-      .filter((t) => t.slug && (t.status === PackageStatus.ACTIVE || t.status === PackageStatus.FEATURED))
+      .filter((t) => t.slug && (t.status === PackageStatus.ACTIVE || t.isFeatured))
       .map((t) => ({
         url: `${baseUrl}/tours/${t.slug}`,
         lastModified: new Date(),
@@ -51,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
 
     const expeditionRoutes: MetadataRoute.Sitemap = expeditions
-      .filter((e) => e.slug && (e.status === PackageStatus.ACTIVE || e.status === PackageStatus.FEATURED))
+      .filter((e) => e.slug && (e.status === PackageStatus.ACTIVE || e.isFeatured))
       .map((e) => ({
         url: `${baseUrl}/expeditions/${e.slug}`,
         lastModified: new Date(),

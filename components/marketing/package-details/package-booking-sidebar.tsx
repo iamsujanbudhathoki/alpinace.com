@@ -223,7 +223,7 @@ export function PackageBookingSidebar({
               <button
                 type="button"
                 onClick={onBookClick}
-                className="w-full bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-stone-950 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span>{bookButtonLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
@@ -311,7 +311,7 @@ export function PackageBookingSidebar({
           <button
             type="button"
             onClick={onBookClick}
-            className="bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-stone-950 font-bold text-xs py-2 px-4 rounded-md shadow-xs transition-all cursor-pointer min-h-[42px] flex items-center gap-1.5"
+            className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs py-2 px-4 rounded-md shadow-xs transition-all cursor-pointer min-h-[42px] flex items-center gap-1.5"
           >
             <span>{bookButtonLabel}</span>
             <ArrowRight className="w-3.5 h-3.5 shrink-0" />

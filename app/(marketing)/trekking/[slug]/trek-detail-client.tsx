@@ -516,7 +516,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
           <button
             type="button"
             onClick={() => setIsBookingModalOpen(true)}
-            className="bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+            className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
           >
             Book Trek
           </button>

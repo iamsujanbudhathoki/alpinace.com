@@ -43,14 +43,14 @@ export default function TermsPage() {
         <div className="flex justify-between items-center text-xs font-semibold text-zinc-700">
           <Link
             href="/privacy"
-            className="flex items-center gap-1 hover:text-stone-950 transition-colors"
+            className="flex items-center gap-1 hover:text-[#eab308] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Privacy Policy</span>
           </Link>
           <Link
             href="/contact"
-            className="hover:text-stone-950 transition-colors"
+            className="hover:text-[#eab308] transition-colors"
           >
             Contact Concierge &rarr;
           </Link>

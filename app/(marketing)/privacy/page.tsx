@@ -24,7 +24,7 @@ export default function PrivacyPage() {
       {/* Header Banner */}
       <section className="py-16 bg-slate-950 text-white relative overflow-hidden">
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
-          <span className="text-amber-400 text-sm font-medium block">
+          <span className="text-[#eab308] text-sm font-medium block">
             Legal &amp; Compliance
           </span>
           <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white">
@@ -45,14 +45,14 @@ export default function PrivacyPage() {
         <div className="flex justify-between items-center text-xs font-semibold text-zinc-700">
           <Link
             href="/"
-            className="flex items-center gap-1 hover:text-amber-800 transition-colors"
+            className="flex items-center gap-1 hover:text-[#eab308] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Return to Home</span>
           </Link>
           <Link
             href="/terms"
-            className="hover:text-amber-800 transition-colors"
+            className="hover:text-[#eab308] transition-colors"
           >
             Terms &amp; Conditions &rarr;
           </Link>

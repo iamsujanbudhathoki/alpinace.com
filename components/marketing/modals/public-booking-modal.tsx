@@ -341,7 +341,7 @@ export function PublicBookingModal({
             <Button
               type="button"
               onClick={forceClose}
-              className="w-full bg-[#eab308] hover:bg-[#ca8a04] text-stone-950 font-bold text-xs py-3 rounded-xl cursor-pointer shadow-xs transition-colors"
+              className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs py-3 rounded-xl cursor-pointer shadow-xs transition-colors"
             >
               Done
             </Button>
@@ -564,7 +564,7 @@ export function PublicBookingModal({
                 <Button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken}
-                  className="bg-[#eab308] hover:bg-[#ca8a04] text-stone-950 font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
+                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer shadow-xs transition-colors disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-1.5">

@@ -111,7 +111,7 @@ export default function ContactView() {
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 space-y-6">
               <div className="space-y-2">
-                <span className="text-xs font-bold text-amber-800 uppercase tracking-wider block">
+                <span className="text-xs font-bold text-stone-900 uppercase tracking-wider block">
                   Direct Line &amp; Desk
                 </span>
                 <h3 className="font-heading text-xl font-bold text-zinc-900">
@@ -125,7 +125,7 @@ export default function ContactView() {
               <ul className="space-y-4 pt-2 border-t border-stone-100">
                 {settings.companyAddress && (
                   <li className="flex items-start gap-3.5 text-xs text-zinc-700">
-                    <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200/60">
+                    <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-900 flex items-center justify-center shrink-0 border border-stone-200">
                       <MapPin className="w-4 h-4" />
                     </div>
                     <div>
@@ -137,12 +137,12 @@ export default function ContactView() {
 
                 {settings.contactPhone && (
                   <li className="flex items-start gap-3.5 text-xs text-zinc-700">
-                    <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200/60">
+                    <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-900 flex items-center justify-center shrink-0 border border-stone-200">
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
                       <span className="font-bold block text-zinc-900">Phone &amp; WhatsApp Desk</span>
-                      <a href={`tel:${settings.contactPhone}`} className="font-medium text-amber-800 hover:underline">
+                      <a href={`tel:${settings.contactPhone}`} className="font-medium text-stone-900 hover:text-[#eab308] hover:underline">
                         {settings.contactPhone}
                       </a>
                     </div>
@@ -151,12 +151,12 @@ export default function ContactView() {
 
                 {settings.contactEmail && (
                   <li className="flex items-start gap-3.5 text-xs text-zinc-700">
-                    <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200/60">
+                    <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-900 flex items-center justify-center shrink-0 border border-stone-200">
                       <Mail className="w-4 h-4" />
                     </div>
                     <div>
                       <span className="font-bold block text-zinc-900">Email Inquiry Desk</span>
-                      <a href={`mailto:${settings.contactEmail}`} className="font-medium text-amber-800 hover:underline">
+                      <a href={`mailto:${settings.contactEmail}`} className="font-medium text-stone-900 hover:text-[#eab308] hover:underline">
                         {settings.contactEmail}
                       </a>
                     </div>
@@ -175,7 +175,7 @@ export default function ContactView() {
                       href={settings.googleMapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-medium text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1"
+                      className="text-xs font-medium text-stone-900 hover:text-[#eab308] transition-colors flex items-center gap-1"
                     >
                       <span>Open in Google Maps</span>
                       <span>&rarr;</span>
@@ -224,7 +224,7 @@ export default function ContactView() {
                 </div>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="bg-amber-800 hover:bg-amber-900 text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors cursor-pointer"
+                  className="bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-bold text-xs px-5 py-2.5 rounded-xl transition-colors cursor-pointer"
                 >
                   Send another inquiry
                 </button>
@@ -249,7 +249,7 @@ export default function ContactView() {
                         "w-full bg-stone-50/80 border text-xs rounded-xl px-4 py-3 focus:outline-none transition-colors font-medium",
                         errors.fullName
                           ? "border-rose-400 focus:border-rose-500 bg-rose-50/20 text-rose-950"
-                          : "border-stone-200 focus:border-amber-700 bg-white"
+                          : "border-stone-200 focus:border-stone-900 bg-white"
                       )}
                     />
                     {errors.fullName && (
@@ -267,7 +267,7 @@ export default function ContactView() {
                         "w-full bg-stone-50/80 border text-xs rounded-xl px-4 py-3 focus:outline-none transition-colors font-medium",
                         errors.email
                           ? "border-rose-400 focus:border-rose-500 bg-rose-50/20 text-rose-950"
-                          : "border-stone-200 focus:border-amber-700 bg-white"
+                          : "border-stone-200 focus:border-stone-900 bg-white"
                       )}
                     />
                     {errors.email && (
@@ -285,7 +285,7 @@ export default function ContactView() {
                         "w-full bg-stone-50/80 border text-xs rounded-xl px-4 py-3 focus:outline-none transition-colors font-medium",
                         errors.phone
                           ? "border-rose-400 focus:border-rose-500 bg-rose-50/20 text-rose-950"
-                          : "border-stone-200 focus:border-amber-700 bg-white"
+                          : "border-stone-200 focus:border-stone-900 bg-white"
                       )}
                     />
                     {errors.phone && (
@@ -299,7 +299,7 @@ export default function ContactView() {
                     </FormLabel>
                     <select
                       {...register("country")}
-                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-amber-700 transition-colors cursor-pointer font-medium"
+                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
                     >
                       <option value="">Select Country...</option>
                       {COUNTRY_OPTIONS.map((c) => (
@@ -316,7 +316,7 @@ export default function ContactView() {
                     </FormLabel>
                     <select
                       {...register("destination")}
-                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-amber-700 transition-colors cursor-pointer font-medium"
+                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
                     >
                       <option value="Everest Region (Khumbu)">Everest Region (Khumbu)</option>
                       <option value="Annapurna Region">Annapurna Region</option>
@@ -332,7 +332,7 @@ export default function ContactView() {
                     </FormLabel>
                     <select
                       {...register("travelers")}
-                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-amber-700 transition-colors cursor-pointer font-medium"
+                      className="w-full bg-white border border-stone-200 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-stone-900 transition-colors cursor-pointer font-medium"
                     >
                       <option value="1">1 Traveler (Solo)</option>
                       <option value="2">2 Travelers (Couple / Duo)</option>
@@ -360,7 +360,7 @@ export default function ContactView() {
                       "w-full bg-stone-50/80 border text-xs rounded-xl px-4 py-3 focus:outline-none resize-none leading-relaxed transition-colors font-medium",
                       errors.message
                         ? "border-rose-400 focus:border-rose-500 bg-rose-50/20 text-rose-950"
-                        : "border-stone-200 focus:border-amber-700 bg-white"
+                        : "border-stone-200 focus:border-stone-900 bg-white"
                     )}
                   />
                   {errors.message && (
@@ -377,9 +377,9 @@ export default function ContactView() {
                 <button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken}
-                  className="w-full bg-amber-800 hover:bg-amber-900 text-white font-heading text-sm font-semibold py-3.5 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
+                  className="w-full bg-[#eab308] hover:bg-yellow-400 text-stone-950 font-heading text-sm font-bold py-3.5 rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
                 >
-                  <Send className="h-4 w-4 text-amber-300" />
+                  <Send className="h-4 w-4 text-stone-950" />
                   <span>{isSubmitting ? 'Sending...' : 'Send Inquiry'}</span>
                 </button>
               </form>

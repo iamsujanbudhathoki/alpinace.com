@@ -120,7 +120,7 @@ export default async function ActivityDetailPage({ params }: ActivityDetailPageP
             className="object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 flex items-center justify-center">
+          <div className="w-full h-full bg-stone-900 flex items-center justify-center">
             <span className="text-stone-500 font-heading text-lg tracking-wider uppercase">
               Alpine Ace Experience
             </span>

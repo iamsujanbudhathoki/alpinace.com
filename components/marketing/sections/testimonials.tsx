@@ -8,61 +8,18 @@ import Image from "next/image";
 import { adminTestimonialsApi, SettingService, TestimonialItem } from "@/lib/services/admin-service";
 import { Testimonial } from "@/lib/home-data";
 
-const DEFAULT_TESTIMONIALS: Testimonial[] = [
-  {
-    id: "default-1",
-    author: "Wannapa E.",
-    role: "Adventurer",
-    country: "United States",
-    tripName: "Everest Base Camp Trek",
-    rating: 5,
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-    content: "Very professional company from start to finish. Everything was well organized, and they were extremely helpful with everything along the way. Our guide, Ram, and porters were absolute lifesavers at high altitude!",
-  },
-  {
-    id: "default-2",
-    author: "Marcus Vance",
-    role: "Trekker",
-    country: "United Kingdom",
-    tripName: "Annapurna Circuit Trek",
-    rating: 5,
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-    content: "AlpineAce made our dream trek seamlessly comfortable and completely safe. The tea house selection was great, and the 1:1 attention from our mountain guide gave us total confidence over Thorong La Pass.",
-  },
-  {
-    id: "default-3",
-    author: "Elena Rostova",
-    role: "Mountaineer",
-    country: "Germany",
-    tripName: "Mera Peak Expedition",
-    rating: 5,
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
-    content: "Climbing Mera Peak with AlpineAce was flawless. High altitude gear, satellite communication, fixed ropes, and chef team at base camp were top notch. Could not recommend them more!",
-  },
-  {
-    id: "default-4",
-    author: "David & Sarah Miller",
-    role: "Explorers",
-    country: "Australia",
-    tripName: "Langtang Valley Trek",
-    rating: 5,
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-    content: "From our first inquiry down to Kathmandu hotel drop-offs, the attention to detail was top tier. Warm Himalayan hospitality, clear communication, and incredible mountain vistas throughout.",
-  },
-];
-
 function getReviewHeadline(content: string, tripName?: string): string {
-  if (!content) return tripName ? `Unforgettable ${tripName}` : "Exceptional Himalayan Journey";
+  if (!content) return tripName ? `Review for ${tripName}` : "Exceptional Himalayan Journey";
   const cleaned = content.replace(/^["“']|["”']$/g, "").trim();
   const firstSentence = cleaned.split(/[.!?]/)[0].trim();
   if (firstSentence.length >= 12 && firstSentence.length <= 70) {
     return firstSentence;
   }
-  return tripName ? `Outstanding ${tripName}` : "Very professional company with excellent guides";
+  return tripName ? `Review for ${tripName}` : "Very professional company with excellent guides";
 }
 
 export function TestimonialsSection() {
-  const [items, setItems] = useState<(Testimonial | TestimonialItem)[]>(DEFAULT_TESTIMONIALS);
+  const [items, setItems] = useState<(Testimonial | TestimonialItem)[]>([]);
 
   // Continuous infinite auto scroll configuration
   const autoScroll = useRef(
@@ -113,7 +70,7 @@ export function TestimonialsSection() {
           }
         }
       } catch (e) {
-        console.warn("Failed to load testimonials from backend, using standard showcase data:", e);
+        console.warn("Failed to load testimonials from backend API:", e);
       }
     }
     loadTestimonials();
@@ -127,6 +84,10 @@ export function TestimonialsSection() {
       emblaApi.reInit();
     }
   }, [items, emblaApi]);
+
+  if (items.length === 0) {
+    return null;
+  }
 
   // Ensure sufficient item sequence for seamless infinite loop scrolling
   const displayItems =

@@ -150,6 +150,55 @@ export function ActivityFormModal({
 
   const isViewMode = Boolean(initialData) && !editingMode;
 
+  const modalFooter = (
+    <div className="flex items-center justify-between w-full">
+      <div>
+        {initialData && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-stone-500 font-medium">Status:</span>
+            <AdminStatusBadge status={initialData.status} />
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          disabled={isSubmitting}
+          className="text-xs cursor-pointer"
+        >
+          Cancel
+        </Button>
+
+        {isViewMode ? (
+          <Button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setEditingMode(true);
+            }}
+            className="bg-stone-900 hover:bg-stone-800 text-white text-xs gap-1.5 cursor-pointer"
+          >
+            <Edit className="w-3.5 h-3.5" /> Edit Activity
+          </Button>
+        ) : (
+          <Button
+            form="activity-modal-form"
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-stone-900 hover:bg-stone-800 text-white text-xs gap-1.5 cursor-pointer"
+          >
+            {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            {initialData ? "Save Changes" : "Create Activity"}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <AdminModal
       isOpen={isOpen}
@@ -167,8 +216,9 @@ export function ActivityFormModal({
           : "Fill in the information below to create or update an activity hub."
       }
       maxWidth="2xl"
+      footer={modalFooter}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form id="activity-modal-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {formError && (
           <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-sm text-xs font-medium text-rose-700">
             {formError}
@@ -299,52 +349,6 @@ export function ActivityFormModal({
                   setValue("mediaId", mediaId || "");
                 }}
               />
-            )}
-          </div>
-        </div>
-
-        {/* Modal Footer Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-stone-200">
-          <div>
-            {initialData && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-stone-500">Status:</span>
-                <AdminStatusBadge status={initialData.status} />
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="text-xs"
-            >
-              Close
-            </Button>
-
-            {isViewMode ? (
-              <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setEditingMode(true);
-                }}
-                className="bg-stone-900 hover:bg-stone-800 text-white text-xs gap-1.5"
-              >
-                <Edit className="w-3.5 h-3.5" /> Edit Activity
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-stone-900 hover:bg-stone-800 text-white text-xs gap-1.5"
-              >
-                {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                {initialData ? "Save Changes" : "Create Activity"}
-              </Button>
             )}
           </div>
         </div>

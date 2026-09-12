@@ -4,6 +4,7 @@ import { useEffect, Suspense } from "react";
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useSettings } from "@/lib/settings-context";
+import { CookieConsentBanner } from "./cookie-consent-banner";
 
 declare global {
   interface Window {
@@ -63,6 +64,12 @@ function SiteAnalyticsTracker() {
           __html: `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied'
+            });
             gtag('js', new Date());
             gtag('config', '${gaId}', {
               page_path: window.location.pathname + window.location.search,
@@ -78,6 +85,7 @@ export function SiteAnalytics() {
   return (
     <Suspense fallback={null}>
       <SiteAnalyticsTracker />
+      <CookieConsentBanner />
     </Suspense>
   );
 }

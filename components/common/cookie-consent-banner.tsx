@@ -24,20 +24,26 @@ export function CookieConsentBanner() {
 
   const handleAccept = () => {
     localStorage.setItem("alpine_cookie_consent", "granted");
-    if (typeof window !== "undefined" && typeof window.gtag === "function") {
-      window.gtag("consent", "update", {
-        analytics_storage: "granted",
-      });
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("alpine_cookie_consent_updated"));
+      if (typeof window.gtag === "function") {
+        window.gtag("consent", "update", {
+          analytics_storage: "granted",
+        });
+      }
     }
     setShowBanner(false);
   };
 
   const handleDecline = () => {
     localStorage.setItem("alpine_cookie_consent", "denied");
-    if (typeof window !== "undefined" && typeof window.gtag === "function") {
-      window.gtag("consent", "update", {
-        analytics_storage: "denied",
-      });
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("alpine_cookie_consent_updated"));
+      if (typeof window.gtag === "function") {
+        window.gtag("consent", "update", {
+          analytics_storage: "denied",
+        });
+      }
     }
     setShowBanner(false);
   };

@@ -39,7 +39,7 @@ export function ExpertCtaSection() {
 
   // Display avatars (up to 5 team members or fallback images)
   const defaultAvatars = [
-    { name: "Sujan Budhathoki", image: "/about-everest-group.png" },
+    { name: "Alpine Ace Treks Team", image: "/about-everest-group.png" },
     { name: "Lakpa Tamang", image: "/logo.jpg" },
     { name: "Mingma Norbu", image: "/about-alpineace-group.png" },
     { name: "Pasang Tenzing", image: "/logo.jpg" },
@@ -144,7 +144,7 @@ export function ExpertCtaSection() {
               {/* Expert Name & Flag */}
               <div className="pt-1 space-y-0.5">
                 <span className="font-bold text-stone-900 text-sm sm:text-base flex items-center justify-center gap-1.5">
-                  Sujan <span className="text-stone-400 font-normal">&bull;</span> Nepal 🇳🇵
+                  Alpine Ace Treks <span className="text-stone-400 font-normal">&bull;</span> Nepal 🇳🇵
                 </span>
                 <div>
                   <a

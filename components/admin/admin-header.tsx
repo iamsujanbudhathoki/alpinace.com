@@ -164,7 +164,7 @@ export function AdminHeader({
 
   const userInitials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("")
-    : "SB";
+    : "AA";
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-4 sticky top-0 z-30">
@@ -332,7 +332,7 @@ export function AdminHeader({
 
             <DropdownMenuContent align="end" className="w-56 bg-white border-slate-200 shadow-xl rounded-xl p-1 z-50">
               <DropdownMenuLabel className="font-semibold text-xs px-3 py-2">
-                <div className="font-bold text-slate-900">{user?.name || "Sujan Budhathoki"}</div>
+                <div className="font-bold text-slate-900">{user?.name || "Alpine Ace Treks Admin"}</div>
                 <div className="text-[11px] text-slate-500 font-normal truncate">{user?.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-100" />

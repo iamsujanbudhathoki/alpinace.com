@@ -120,9 +120,8 @@ const organizationJsonLd = {
     },
   ],
   sameAs: [
-    "https://facebook.com/alpineacenepal",
-    "https://instagram.com/alpineacenepal",
-    "https://youtube.com/@alpineacenepal",
+    "https://www.facebook.com/alpineacetreks",
+    "https://www.instagram.com/alpineacetreks",
   ],
 };
 

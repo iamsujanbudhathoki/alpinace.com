@@ -6,21 +6,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: ["/", "/api/agent-markdown"],
         disallow: [
           "/admin",
           "/admin/*",
-          "/admin/login",
-          "/admin/dashboard",
-          "/admin/categories",
-          "/admin/treks",
-          "/admin/tours",
-          "/admin/expeditions",
-          "/admin/bookings",
-          "/admin/inquiries",
-          "/admin/blogs",
-          "/admin/media",
-          "/admin/settings",
           "/api/",
         ],
       },

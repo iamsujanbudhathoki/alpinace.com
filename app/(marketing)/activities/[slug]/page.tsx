@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { ActivityService } from "@/lib/services/admin-service";
+import { generateStaticMetadata } from "@/lib/seo";
 import { ChevronRight } from "lucide-react";
 import { TravelPackage } from "@/lib/home-data";
 import { ActivityDetailClient } from "./activity-detail-client";
@@ -18,20 +19,30 @@ export async function generateMetadata({
   try {
     const res = await ActivityService.getBySlug(slug);
     if (!res || !res.data || !res.data.activity) {
-      return { title: "Activity Not Found | Alpine Ace" };
+      return generateStaticMetadata({
+        title: "Activity | AlpineAce",
+        description: "Explore top rated Himalayan activities with AlpineAce.",
+        path: `/activities/${slug}`,
+        noindex: true,
+      });
     }
     const { activity } = res.data;
-    // Strip HTML tags for clean plain text meta description
     const plainDesc = activity.description
-      ? activity.description.replace(/<[^>]*>?/gm, "").slice(0, 160)
-      : `Explore top rated trekking routes, tours, and expeditions for ${activity.name}.`;
+      ? activity.description.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim().slice(0, 160)
+      : `Explore top rated trekking routes, tours, and expeditions for ${activity.name} with AlpineAce.`;
 
-    return {
-      title: `${activity.name} | Alpine Ace Nepal`,
+    return generateStaticMetadata({
+      title: `${activity.name} | Himalayan Activities & Packages`,
       description: plainDesc,
-    };
+      path: `/activities/${slug}`,
+      keywords: [activity.name, "Himalayan activities", "Nepal adventure", "AlpineAce"],
+    });
   } catch {
-    return { title: "Activity Details | Alpine Ace" };
+    return generateStaticMetadata({
+      title: "Activity Details | AlpineAce",
+      description: "Explore top rated Himalayan activities with AlpineAce.",
+      path: `/activities/${slug}`,
+    });
   }
 }
 

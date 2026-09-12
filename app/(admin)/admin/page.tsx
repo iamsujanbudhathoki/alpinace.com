@@ -8,12 +8,8 @@ import {
   FileCheck,
   ChevronRight,
   Clock,
-  Loader2,
 } from "lucide-react";
 import {
-  mockDashboardMetrics,
-  mockBookings,
-  mockPackages,
   Booking,
   PackageItem,
 } from "@/lib/admin-data";
@@ -35,9 +31,16 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminDashboardPage() {
-  const [metrics, setMetrics] = useState(mockDashboardMetrics);
-  const [recentBookings, setRecentBookings] = useState<Booking[]>(mockBookings.slice(0, 5));
-  const [topExpeditions, setTopExpeditions] = useState<PackageItem[]>(mockPackages.slice(0, 3));
+  const [metrics, setMetrics] = useState<{
+    totalRevenueUSD: number;
+    revenueChangePercent: number;
+    activeExpeditions: number;
+    climbersOnMountain: number;
+    pendingBookings: number;
+    timsPermitsProcessing: number;
+  } | null>(null);
+  const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
+  const [topExpeditions, setTopExpeditions] = useState<PackageItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,15 +54,32 @@ export default function AdminDashboardPage() {
 
         if (dashData) {
           setMetrics(dashData);
+        } else {
+          setMetrics({
+            totalRevenueUSD: 0,
+            revenueChangePercent: 0,
+            activeExpeditions: 0,
+            climbersOnMountain: 0,
+            pendingBookings: 0,
+            timsPermitsProcessing: 0,
+          });
         }
-        if (Array.isArray(bookingsData) && bookingsData.length > 0) {
+        if (Array.isArray(bookingsData)) {
           setRecentBookings(bookingsData.slice(0, 5));
         }
-        if (Array.isArray(expeditionsData) && expeditionsData.length > 0) {
+        if (Array.isArray(expeditionsData)) {
           setTopExpeditions(expeditionsData.slice(0, 3));
         }
       } catch (err) {
         console.error("Dashboard fetch error:", err);
+        setMetrics({
+          totalRevenueUSD: 0,
+          revenueChangePercent: 0,
+          activeExpeditions: 0,
+          climbersOnMountain: 0,
+          pendingBookings: 0,
+          timsPermitsProcessing: 0,
+        });
       } finally {
         setLoading(false);
       }
@@ -112,30 +132,34 @@ export default function AdminDashboardPage() {
           <>
             <AdminStatsCard
               label="Total Revenue"
-              value={`$${metrics.totalRevenueUSD.toLocaleString()}`}
-              trendText={`+${metrics.revenueChangePercent}% vs last season`}
-              trendType="positive"
+              value={`$${(metrics?.totalRevenueUSD ?? 0).toLocaleString()}`}
+              trendText={
+                metrics?.revenueChangePercent
+                  ? `${metrics.revenueChangePercent >= 0 ? "+" : ""}${metrics.revenueChangePercent}% vs last season`
+                  : "Based on confirmed bookings"
+              }
+              trendType={metrics?.revenueChangePercent && metrics.revenueChangePercent < 0 ? "negative" : "positive"}
               icon={DollarSign}
             />
 
             <AdminStatsCard
               label="Active Expeditions"
-              value={`${metrics.activeExpeditions}`}
-              subtext={`${metrics.climbersOnMountain} climbers on peak`}
+              value={`${metrics?.activeExpeditions ?? 0}`}
+              subtext={`${metrics?.climbersOnMountain ?? 0} climbers on peak`}
               icon={Mountain}
             />
 
             <AdminStatsCard
               label="Pending Bookings"
-              value={`${metrics.pendingBookings}`}
-              trendText="Requires guide assignment"
-              trendType="warning"
+              value={`${metrics?.pendingBookings ?? 0}`}
+              trendText={metrics?.pendingBookings ? "Requires guide assignment" : "All bookings up to date"}
+              trendType={metrics?.pendingBookings ? "warning" : "positive"}
               icon={Clock}
             />
 
             <AdminStatsCard
               label="Permits Processing"
-              value={`${metrics.timsPermitsProcessing}`}
+              value={`${metrics?.timsPermitsProcessing ?? 0}`}
               subtext="TIMS & Sagarmatha clearances"
               icon={FileCheck}
             />
@@ -177,6 +201,12 @@ export default function AdminDashboardPage() {
                 <AdminTableBody>
                   {loading ? (
                     <AdminTableLoading colSpan={6} rows={5} />
+                  ) : recentBookings.length === 0 ? (
+                    <AdminTableRow>
+                      <AdminTableCell colSpan={6} className="text-center py-8 text-slate-500 font-medium">
+                        No recent bookings recorded.
+                      </AdminTableCell>
+                    </AdminTableRow>
                   ) : (
                     recentBookings.map((bkg, idx) => (
                       <AdminTableRow key={bkg.id}>
@@ -237,6 +267,10 @@ export default function AdminDashboardPage() {
                     <Skeleton className="h-4 w-12 bg-slate-200 shrink-0" />
                   </div>
                 ))
+              ) : topExpeditions.length === 0 ? (
+                <div className="p-4 rounded-md bg-slate-50 border border-slate-200 text-center text-xs text-slate-500 font-medium">
+                  No active expeditions found.
+                </div>
               ) : (
                 topExpeditions.map((pkg) => (
                   <div

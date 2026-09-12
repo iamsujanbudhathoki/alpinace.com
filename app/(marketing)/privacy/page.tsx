@@ -20,39 +20,37 @@ export function generateMetadata(): Metadata {
 
 export default function PrivacyPage() {
   return (
-    <div className="pt-24 min-h-screen bg-stone-50 pb-20 font-sans">
-      {/* Header Banner */}
-      <section className="py-16 bg-slate-950 text-white relative overflow-hidden">
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
-          <span className="text-accent text-sm font-medium block">
+    <div className="pt-24 min-h-screen bg-white pb-20 font-sans text-stone-900">
+      {/* Header Section */}
+      <header className="pt-8 pb-10 border-b border-stone-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <span className="text-stone-500 text-xs font-semibold uppercase tracking-wider block">
             Legal &amp; Compliance
           </span>
-          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white">
+          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-stone-900">
             Privacy Policy
           </h1>
-          <p className="text-slate-300 text-sm max-w-xl mx-auto font-light leading-relaxed">
-            How AlpineAce Treks &amp; Expeditions collects, uses, and
-            safeguards your personal data during trip planning and high-altitude
-            operations.
+          <p className="text-stone-600 text-base max-w-2xl font-normal leading-relaxed">
+            How AlpineAce Treks &amp; Expeditions collects, uses, and safeguards your personal data during trip planning and high-altitude operations.
           </p>
         </div>
-      </section>
+      </header>
 
       {/* Main Content */}
-      <main className="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <main className="py-12 sm:py-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <PrivacyPolicyContent />
 
-        <div className="flex justify-between items-center text-xs font-semibold text-zinc-700">
+        <div className="pt-8 border-t border-stone-200 flex justify-between items-center text-xs font-semibold text-stone-700">
           <Link
             href="/"
-            className="flex items-center gap-1 hover:text-accent transition-colors"
+            className="flex items-center gap-1 hover:text-stone-950 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Return to Home</span>
           </Link>
           <Link
             href="/terms"
-            className="hover:text-accent transition-colors"
+            className="hover:text-stone-950 transition-colors"
           >
             Terms &amp; Conditions &rarr;
           </Link>

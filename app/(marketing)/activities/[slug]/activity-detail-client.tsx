@@ -124,7 +124,7 @@ export function ActivityDetailClient({
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
             <div className="flex items-center gap-2.5">
               <Image
-                src="/trekking.png"
+                src="/icons/trekking.png"
                 alt="Trekking"
                 width={28}
                 height={28}
@@ -151,7 +151,7 @@ export function ActivityDetailClient({
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
             <div className="flex items-center gap-2.5">
               <Image
-                src="/peaks.png"
+                src="/icons/tour.png"
                 alt="Tours"
                 width={28}
                 height={28}
@@ -178,7 +178,7 @@ export function ActivityDetailClient({
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
             <div className="flex items-center gap-2.5">
               <Image
-                src="/expeditions.png"
+                src="/icons/expeditions.png"
                 alt="Expeditions"
                 width={28}
                 height={28}

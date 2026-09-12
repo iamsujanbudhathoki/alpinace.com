@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight, Flame } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { apiClient } from "@/lib/services/api-client";
 import { TravelPackage } from "@/lib/home-data";
 import { PackageStatus, CategoryType } from "@/lib/admin-data";
@@ -242,11 +242,11 @@ export function FeaturedPackages({
 
   const exploreInfo = getExploreAllLink(activeTab);
 
-  const tabs: { key: FeaturedTab; label: string; iconUrl?: string; icon?: React.ReactNode }[] = [
-    { key: "popular", label: "Popular", icon: <Flame className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-amber-500 fill-amber-500/20 shrink-0" /> },
-    { key: "treks", label: "Trekkings", iconUrl: "/trekking.png" },
-    { key: "tours", label: "Tours", iconUrl: "/peaks.png" },
-    { key: "expeditions", label: "Expeditions", iconUrl: "/expeditions.png" },
+  const tabs: { key: FeaturedTab; label: string; iconUrl: string }[] = [
+    { key: "popular", label: "Popular", iconUrl: "/icons/popular-fire.png" },
+    { key: "treks", label: "Trekkings", iconUrl: "/icons/trekking.png" },
+    { key: "tours", label: "Tours", iconUrl: "/icons/tour.png" },
+    { key: "expeditions", label: "Expeditions", iconUrl: "/icons/expeditions.png" },
   ];
 
   return (
@@ -264,17 +264,13 @@ export function FeaturedPackages({
                   onClick={() => setActiveTab(tab.key)}
                   className="inline-flex items-center gap-1.5 sm:gap-2.5 text-sm sm:text-base md:text-lg font-medium cursor-pointer whitespace-nowrap shrink-0 group pb-1"
                 >
-                  {tab.iconUrl ? (
-                    <Image
-                      src={tab.iconUrl}
-                      alt={tab.label}
-                      width={28}
-                      height={28}
-                      className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 object-contain shrink-0"
-                    />
-                  ) : (
-                    tab.icon
-                  )}
+                  <Image
+                    src={tab.iconUrl}
+                    alt={tab.label}
+                    width={28}
+                    height={28}
+                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 object-contain shrink-0"
+                  />
                   <span className="relative inline-block">
                     <span
                       className={
@@ -381,6 +377,12 @@ export function FeaturedPackages({
                           {pkg.region}
                         </span>
                       )}
+                      {pkg.isPopular && (
+                        <span className="absolute top-3 right-3 bg-amber-500/90 text-stone-950 text-[11px] font-semibold px-2 py-0.5 rounded-sm tracking-wide shadow-xs flex items-center gap-1">
+                          <Image src="/icons/popular-fire.png" alt="Popular" width={12} height={12} className="w-3 h-3 object-contain" />
+                          Popular
+                        </span>
+                      )}
                     </div>
                     <div className="p-5 space-y-4">
                       <div className="space-y-1.5">
@@ -448,6 +450,13 @@ export function FeaturedPackages({
                           {pkg.region && (
                             <span className="absolute top-3.5 left-3.5 bg-stone-900/90 text-white text-xs font-medium px-3 py-1 rounded-md tracking-wide shadow-xs">
                               {pkg.region}
+                            </span>
+                          )}
+                          {/* Popular Tag */}
+                          {pkg.isPopular && (
+                            <span className="absolute top-3.5 right-3.5 bg-amber-500/90 text-stone-950 text-xs font-semibold px-2.5 py-1 rounded-md tracking-wide shadow-xs flex items-center gap-1">
+                              <Image src="/icons/popular-fire.png" alt="Popular" width={14} height={14} className="w-3.5 h-3.5 object-contain" />
+                              Popular
                             </span>
                           )}
                         </div>

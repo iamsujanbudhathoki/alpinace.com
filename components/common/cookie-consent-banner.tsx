@@ -54,24 +54,24 @@ export function CookieConsentBanner() {
     <div
       role="dialog"
       aria-label="Cookie consent banner"
-      className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 p-5 rounded-2xl bg-stone-900/95 backdrop-blur-md text-stone-100 border border-stone-800 shadow-2xl transition-all animate-in fade-in slide-in-from-bottom-5 duration-300"
+      className="fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-md z-[100] p-4.5 sm:p-5 rounded-2xl bg-stone-900/95 backdrop-blur-md text-stone-100 border border-stone-800/80 shadow-2xl transition-all animate-in fade-in slide-in-from-bottom-5 duration-300 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-5"
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2.5 text-amber-400">
+        <div className="flex items-center gap-2 text-amber-400">
           <Cookie className="w-5 h-5 shrink-0" />
           <h3 className="font-heading font-bold text-sm text-stone-100">Cookie &amp; Privacy Choice</h3>
         </div>
         <button
           onClick={handleDecline}
-          className="text-stone-400 hover:text-stone-200 transition-colors p-1"
+          className="text-stone-400 hover:text-stone-200 transition-colors p-1.5 rounded-lg hover:bg-stone-800/60"
           aria-label="Close cookie consent banner"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      <p className="mt-2.5 text-xs text-stone-300 leading-relaxed">
-        We use essential cookies for site functionality and analytics cookies to understand traffic and improve expedition planning. Read our{" "}
+      <p className="mt-2 text-xs text-stone-300 leading-relaxed">
+        We use cookies to analyze site traffic and enhance your trekking inquiry experience. Read our{" "}
         <Link href="/privacy" className="text-amber-400 hover:underline font-medium">
           Privacy Policy
         </Link>.
@@ -80,15 +80,15 @@ export function CookieConsentBanner() {
       <div className="mt-4 flex items-center justify-end gap-2.5">
         <button
           onClick={handleDecline}
-          className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-stone-300 bg-stone-800 hover:bg-stone-700 hover:text-stone-100 transition-colors"
+          className="px-4 py-2 rounded-xl text-xs font-semibold text-stone-300 bg-stone-800 hover:bg-stone-700 hover:text-stone-100 transition-colors"
         >
-          Essential Only
+          Reject
         </button>
         <button
           onClick={handleAccept}
-          className="px-4 py-1.5 rounded-lg text-xs font-semibold text-stone-950 bg-stone-100 hover:bg-white transition-all shadow-sm flex items-center gap-1.5"
+          className="px-4.5 py-2 rounded-xl text-xs font-semibold text-stone-950 bg-stone-100 hover:bg-white transition-all shadow-md flex items-center justify-center gap-1.5"
         >
-          <ShieldCheck className="w-3.5 h-3.5 text-stone-900" />
+          <ShieldCheck className="w-4 h-4 text-stone-950" />
           Accept All
         </button>
       </div>

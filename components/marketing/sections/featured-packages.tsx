@@ -275,15 +275,16 @@ export function FeaturedPackages({
                     <span
                       className={
                         isActive
-                          ? "text-stone-900 font-bold"
+                          ? "text-amber-600 font-bold"
                           : "text-stone-500 group-hover:text-stone-900 font-medium transition-colors"
                       }
                     >
                       {tab.label}
                     </span>
                     <span
-                      className={`absolute left-0 right-0 -bottom-1 h-[2px] transition-all ${isActive ? "bg-stone-900" : "bg-transparent group-hover:bg-stone-300"
-                        }`}
+                      className={`absolute left-0 right-0 -bottom-1 transition-all ${
+                        isActive ? "h-[2.5px] bg-amber-500" : "h-[2px] bg-transparent group-hover:bg-stone-300"
+                      }`}
                     />
                   </span>
                 </button>

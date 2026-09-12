@@ -22,15 +22,15 @@ export default function TermsPage() {
   return (
     <div className="pt-24 min-h-screen bg-white pb-20 font-sans text-stone-900">
       {/* Header Section */}
-      <header className="pt-8 pb-10 border-b border-stone-100">
+      <header className="pt-8 pb-10 border-b border-stone-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
           <span className="text-stone-500 text-xs font-semibold uppercase tracking-wider block">
-            Expedition Agreement
+            Legal &amp; Compliance
           </span>
-          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-stone-900">
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-stone-900">
             Terms &amp; Conditions
           </h1>
-          <p className="text-stone-600 text-base max-w-2xl font-normal leading-relaxed">
+          <p className="text-stone-600 text-base sm:text-lg max-w-3xl font-normal leading-relaxed">
             Please review our booking policies, high-altitude safety agreements, and cancellation terms prior to reserving your trip with AlpineAce.
           </p>
         </div>
@@ -40,10 +40,10 @@ export default function TermsPage() {
       <main className="py-12 sm:py-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <TermsAndConditionsContent />
 
-        <div className="pt-8 border-t border-stone-200 flex justify-between items-center text-xs font-semibold text-stone-700">
+        <div className="pt-8 border-t border-stone-200 flex justify-between items-center text-sm font-semibold text-stone-700">
           <Link
             href="/privacy"
-            className="flex items-center gap-1 hover:text-stone-950 transition-colors"
+            className="inline-flex items-center gap-2 hover:text-stone-950 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Privacy Policy</span>
@@ -52,7 +52,7 @@ export default function TermsPage() {
             href="/contact"
             className="hover:text-stone-950 transition-colors"
           >
-            Contact Concierge &rarr;
+            <span>Contact Us</span>
           </Link>
         </div>
       </main>

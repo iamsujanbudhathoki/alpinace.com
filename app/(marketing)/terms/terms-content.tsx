@@ -23,17 +23,17 @@ export function TermsAndConditionsContent() {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse py-4">
-        <div className="h-4 bg-stone-200 rounded w-1/4" />
-        <div className="space-y-3">
-          <div className="h-3.5 bg-stone-200 rounded w-full" />
-          <div className="h-3.5 bg-stone-200 rounded w-5/6" />
-          <div className="h-3.5 bg-stone-200 rounded w-4/6" />
+      <div className="space-y-6 animate-pulse py-6">
+        <div className="h-6 bg-stone-200 rounded-md w-1/3" />
+        <div className="space-y-4">
+          <div className="h-4 bg-stone-200 rounded-md w-full" />
+          <div className="h-4 bg-stone-200 rounded-md w-11/12" />
+          <div className="h-4 bg-stone-200 rounded-md w-4/5" />
         </div>
-        <div className="space-y-3 pt-4">
-          <div className="h-3.5 bg-stone-200 rounded w-full" />
-          <div className="h-3.5 bg-stone-200 rounded w-full" />
-          <div className="h-3.5 bg-stone-200 rounded w-3/4" />
+        <div className="space-y-4 pt-6">
+          <div className="h-4 bg-stone-200 rounded-md w-full" />
+          <div className="h-4 bg-stone-200 rounded-md w-full" />
+          <div className="h-4 bg-stone-200 rounded-md w-3/4" />
         </div>
       </div>
     );
@@ -41,12 +41,12 @@ export function TermsAndConditionsContent() {
 
   if (error) {
     return (
-      <div className="py-12 text-center space-y-2">
-        <p className="text-sm font-semibold text-stone-800">
+      <div className="py-16 text-center space-y-3">
+        <p className="text-base font-semibold text-stone-900">
           Unable to load Terms &amp; Conditions
         </p>
-        <p className="text-xs text-stone-500">
-          Please try again later or contact us directly.
+        <p className="text-sm text-stone-500">
+          Please try refreshing the page or contact us directly.
         </p>
       </div>
     );
@@ -54,11 +54,11 @@ export function TermsAndConditionsContent() {
 
   if (!content || content.trim() === "" || content === "<p></p>") {
     return (
-      <div className="py-12 text-center space-y-2">
-        <p className="text-sm font-semibold text-stone-800">
+      <div className="py-16 text-center space-y-3">
+        <p className="text-base font-semibold text-stone-900">
           Terms &amp; Conditions not yet published
         </p>
-        <p className="text-xs text-stone-500">
+        <p className="text-sm text-stone-500">
           Please check back soon or contact us for more information.
         </p>
       </div>
@@ -70,20 +70,20 @@ export function TermsAndConditionsContent() {
       <div
         dangerouslySetInnerHTML={{ __html: content }}
         className="
-          prose prose-stone max-w-none text-stone-700 text-sm sm:text-base leading-relaxed
+          prose prose-stone max-w-none text-stone-800 text-base sm:text-lg leading-relaxed
           prose-headings:font-heading prose-headings:text-stone-900 prose-headings:font-bold
-          prose-h1:text-2xl prose-h1:sm:text-3xl prose-h1:mt-8 prose-h1:mb-4
-          prose-h2:text-xl prose-h2:sm:text-2xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:border-b prose-h2:border-stone-100 prose-h2:pb-2
-          prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-2
-          prose-p:text-stone-700 prose-p:leading-relaxed prose-p:my-4
-          prose-a:text-stone-900 prose-a:font-medium prose-a:underline hover:prose-a:text-accent transition-colors
-          prose-strong:text-stone-900 prose-strong:font-semibold
-          prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4 prose-ul:space-y-2
-          prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4 prose-ol:space-y-2
+          prose-h1:text-3xl prose-h1:sm:text-4xl prose-h1:mt-10 prose-h1:mb-5 prose-h1:tracking-tight
+          prose-h2:text-2xl prose-h2:sm:text-3xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:tracking-tight prose-h2:border-b prose-h2:border-stone-200 prose-h2:pb-3
+          prose-h3:text-xl prose-h3:sm:text-2xl prose-h3:mt-8 prose-h3:mb-3 prose-h3:font-semibold
+          prose-p:text-stone-700 prose-p:text-base prose-p:sm:text-lg prose-p:leading-relaxed prose-p:my-5
+          prose-a:text-stone-950 prose-a:font-semibold prose-a:underline hover:prose-a:text-stone-700 transition-colors
+          prose-strong:text-stone-900 prose-strong:font-bold
+          prose-ul:list-disc prose-ul:pl-6 prose-ul:my-5 prose-ul:space-y-2.5 prose-ul:text-base prose-ul:sm:text-lg
+          prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-5 prose-ol:space-y-2.5 prose-ol:text-base prose-ol:sm:text-lg
           prose-li:text-stone-700
-          prose-table:border-collapse prose-table:w-full prose-table:my-6
-          prose-th:border prose-th:border-stone-200 prose-th:p-3 prose-th:bg-stone-50 prose-th:text-left prose-th:font-semibold prose-th:text-stone-900
-          prose-td:border prose-td:border-stone-200 prose-td:p-3
+          prose-table:border-collapse prose-table:w-full prose-table:my-8 prose-table:text-base prose-table:sm:text-lg
+          prose-th:border prose-th:border-stone-200 prose-th:p-4 prose-th:bg-stone-100/70 prose-th:text-left prose-th:font-bold prose-th:text-stone-900
+          prose-td:border prose-td:border-stone-200 prose-td:p-4 prose-td:text-stone-700
         "
       />
     </div>

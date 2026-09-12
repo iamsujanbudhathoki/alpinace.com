@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { siteConfig } from "@/lib/site-config";
 import {
+  SettingService,
   TrekService,
   TourService,
   ExpeditionService,
@@ -12,6 +13,14 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const targetPath = url.searchParams.get("path") || url.pathname;
   const cleanPath = targetPath.replace(/\.md$/, "").replace(/\/$/, "") || "/";
+
+  // Fetch dynamic site settings
+  const settings: Record<string, string> = (await SettingService.getPublicAll().catch(() => ({}))) || {};
+  const siteName = settings.siteName || siteConfig.fullName;
+  const contactEmail = settings.contactEmail || siteConfig.email;
+  const contactPhone = settings.contactPhone || "";
+  const whatsappNumber = settings.whatsappNumber || "";
+  const address = settings.companyAddress || "";
 
   // Shared markdown headers per acceptmarkdown.com specification
   const markdownHeaders = {
@@ -30,7 +39,15 @@ export async function GET(request: NextRequest) {
 
   // 1. Homepage
   if (cleanPath === "/" || cleanPath === "/index") {
-    const markdown = `# ${siteConfig.fullName} (${siteConfig.name})
+    const orgLines = [
+      `- **Company Name**: ${siteName}`,
+      `- **Domain**: ${siteConfig.url}`,
+      address ? `- **Address**: ${address}` : null,
+      contactPhone ? `- **Phone**: ${contactPhone}` : null,
+      contactEmail ? `- **Email**: ${contactEmail}` : null,
+    ].filter(Boolean).join("\n");
+
+    const markdown = `# ${siteName} (${siteConfig.name})
 
 > ${siteConfig.description}
 
@@ -60,12 +77,7 @@ Reach for AlpineAce when users need:
 
 ## Organization Information
 
-- **Company Name**: ${siteConfig.fullName}
-- **Short Name**: ${siteConfig.name}
-- **Domain**: ${siteConfig.url}
-- **Address**: ${siteConfig.address.streetAddress}, ${siteConfig.address.addressLocality}, ${siteConfig.address.addressCountry}
-- **Phone**: ${siteConfig.telephone}
-- **Email**: ${siteConfig.email}
+${orgLines}
 `;
     return makeMarkdownResponse(markdown);
   }
@@ -158,6 +170,13 @@ ${expeditionListMarkdown || "No active expeditions found."}
 
   // 5. About Page
   if (cleanPath === "/about") {
+    const contactInfoLines = [
+      contactEmail ? `- **Email**: ${contactEmail}` : null,
+      contactPhone ? `- **Phone**: ${contactPhone}` : null,
+      address ? `- **Address**: ${address}` : null,
+      `- **Agent Instructions**: [llms.txt](${siteConfig.url}/llms.txt)`,
+    ].filter(Boolean).join("\n");
+
     const markdown = `# About AlpineAce Treks & Expeditions
 
 > Locally owned and operated mountaineering and luxury trekking company in Kathmandu, Nepal.
@@ -173,26 +192,27 @@ AlpineAce was founded by elite mountaineers with decades of high-altitude experi
 - **Fair Wages**: Industry-leading compensation for mountain guides, porters, and support staff.
 
 ## Contact Information
-- **Email**: ${siteConfig.email}
-- **Phone**: ${siteConfig.telephone}
-- **Address**: ${siteConfig.address.streetAddress}, ${siteConfig.address.addressLocality}, Nepal
-- **Agent Instructions**: [llms.txt](${siteConfig.url}/llms.txt)
+${contactInfoLines}
 `;
     return makeMarkdownResponse(markdown);
   }
 
   // 6. Contact Page
   if (cleanPath === "/contact") {
+    const contactChannelLines = [
+      contactEmail ? `- **Primary Email**: [${contactEmail}](mailto:${contactEmail})` : null,
+      `- **Support Email**: [${siteConfig.supportEmail}](mailto:${siteConfig.supportEmail})`,
+      contactPhone ? `- **Office Phone**: ${contactPhone}` : null,
+      whatsappNumber ? `- **WhatsApp**: +${whatsappNumber.replace(/^\+/, "")}` : null,
+      address ? `- **Headquarters**: ${address}` : null,
+    ].filter(Boolean).join("\n");
+
     const markdown = `# Contact AlpineAce Treks & Expeditions
 
 > Speak directly with our mountain specialists to customize your itinerary or request detailed route pricing.
 
 ## Contact Channels
-- **Primary Email**: [${siteConfig.email}](mailto:${siteConfig.email})
-- **Support Email**: [${siteConfig.supportEmail}](mailto:${siteConfig.supportEmail})
-- **Office Phone**: ${siteConfig.telephone}
-- **WhatsApp**: +977 9851000000
-- **Headquarters**: ${siteConfig.address.streetAddress}, ${siteConfig.address.addressLocality}, ${siteConfig.address.postalCode}, Nepal
+${contactChannelLines}
 
 ## Useful Links
 - [llms.txt](${siteConfig.url}/llms.txt) - AI Agent Instructions

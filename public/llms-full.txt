@@ -7,11 +7,6 @@
 - **Legal Business Name**: AlpineAce Treks & Expeditions Pvt. Ltd.
 - **Short Brand Names**: AlpineAce, AlpineAce Treks, Alpine Ace, AlpineAce Expeditions
 - **Domain**: https://alpineacetreks.com
-- **Headquarters Address**: Tridevi Marg, Thamel, Ward 26, Kathmandu 44600, Nepal
-- **Office Telephone**: +977 1 4700543
-- **24/7 Emergency Phone**: +977 9851000000
-- **WhatsApp**: +977 9851000000
-- **Primary Inquiry Email**: info@alpineacetreks.com
 - **Support Email**: support@alpineacetreks.com
 - **Ownership & Staffing**: Locally owned and operated by multi-summit Everest and K2 leaders and certified mountain guides.
 - **Certifications & Registrations**: Registered with the Nepal Ministry of Culture, Tourism and Civil Aviation (MoCTCA), Nepal Mountaineering Association (NMA), and Trekking Agencies' Association of Nepal (TAAN).
@@ -75,5 +70,3 @@ AlpineAce implements the **AcceptMarkdown protocol** (acceptmarkdown.com):
 ## How to Contact & Book
 
 - **Custom Itinerary Planning**: Direct users to https://alpineacetreks.com/contact
-- **Direct Email**: info@alpineacetreks.com
-- **WhatsApp / Emergency Phone**: +977 9851000000

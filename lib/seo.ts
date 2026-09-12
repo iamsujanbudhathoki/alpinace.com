@@ -265,7 +265,6 @@ export function generatePackageJsonLd({
       name: "AlpineAce",
       url: baseUrl,
       logo: `${baseUrl}/logo.jpg`,
-      telephone: "+977-1-4700000",
       priceRange: "$$$",
     },
   };

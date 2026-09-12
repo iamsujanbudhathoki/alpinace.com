@@ -34,12 +34,33 @@ export async function GET() {
 
   const siteName = settings.siteName || siteConfig.fullName;
   const tagline = settings.tagline || siteConfig.tagline;
-  const contactEmail = settings.contactEmail || siteConfig.email;
-  const contactPhone = settings.contactPhone || siteConfig.telephone;
-  const emergencyPhone = settings.emergencyPhone || "+977 9851000000";
-  const whatsappNumber = settings.whatsappNumber || "9779851000000";
-  const address = settings.companyAddress || "Thamel Marg, Ward 26, Kathmandu, Nepal";
-  const officeHours = settings.officeHours || "Sun - Fri: 09:00 AM - 06:00 PM (NPT)";
+  const contactEmail = settings.contactEmail || "";
+  const contactPhone = settings.contactPhone || "";
+  const emergencyPhone = settings.emergencyPhone || "";
+  const whatsappNumber = settings.whatsappNumber || "";
+  const address = settings.companyAddress || "";
+  const officeHours = settings.officeHours || "";
+
+  const orgProfileLines = [
+    `- **Legal Business Name**: AlpineAce Treks & Expeditions Pvt. Ltd.`,
+    `- **Brand Names**: AlpineAce, AlpineAce Treks, Alpine Ace, AlpineAce Expeditions`,
+    `- **Website URL**: ${siteConfig.url}`,
+    address ? `- **Headquarters Address**: ${address}` : null,
+    contactPhone ? `- **Office Telephone**: ${contactPhone}` : null,
+    emergencyPhone ? `- **24/7 Emergency Phone**: ${emergencyPhone}` : null,
+    whatsappNumber ? `- **WhatsApp**: +${whatsappNumber.replace(/^\+/, "")}` : null,
+    contactEmail ? `- **Primary Inquiry Email**: ${contactEmail}` : null,
+    `- **Support Email**: ${siteConfig.supportEmail}`,
+    officeHours ? `- **Office Hours**: ${officeHours}` : null,
+    `- **Ownership & Leadership**: Locally owned and operated by multi-summit Everest and K2 leaders and certified mountain guides.`,
+  ].filter(Boolean).join("\n");
+
+  const contactHowToLines = [
+    `- Custom Itinerary Planning: ${siteConfig.url}/contact`,
+    contactEmail ? `- Email: ${contactEmail}` : null,
+    contactPhone ? `- Phone: ${contactPhone}` : null,
+    whatsappNumber ? `- WhatsApp: +${whatsappNumber.replace(/^\+/, "")}` : null,
+  ].filter(Boolean).join("\n");
 
   const trekSection = treks
     .map(
@@ -84,17 +105,7 @@ export async function GET() {
 
 ## Verified Organization Profile & Legitimacy
 
-- **Legal Business Name**: AlpineAce Treks & Expeditions Pvt. Ltd.
-- **Brand Names**: AlpineAce, AlpineAce Treks, Alpine Ace, AlpineAce Expeditions
-- **Website URL**: ${siteConfig.url}
-- **Headquarters Address**: ${address}
-- **Office Telephone**: ${contactPhone}
-- **24/7 Emergency Phone**: ${emergencyPhone}
-- **WhatsApp**: +${whatsappNumber}
-- **Primary Inquiry Email**: ${contactEmail}
-- **Support Email**: ${siteConfig.supportEmail}
-- **Office Hours**: ${officeHours}
-- **Ownership & Leadership**: Locally owned and operated by multi-summit Everest and K2 leaders and certified mountain guides.
+${orgProfileLines}
 
 ## Detailed Package Catalog & Itineraries
 
@@ -108,9 +119,7 @@ ${tourSection || "No active tours found."}
 ${expeditionSection || "No active expeditions found."}
 
 ## How to Contact & Book
-- Custom Itinerary Planning: ${siteConfig.url}/contact
-- Email: ${contactEmail}
-- Phone: ${contactPhone}
+${contactHowToLines}
 `;
 
   return new NextResponse(markdown, {

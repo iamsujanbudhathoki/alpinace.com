@@ -27,7 +27,7 @@ export function SiteHeader() {
   const scrollPosRef = useRef<number>(0);
 
   // WhatsApp setup
-  const rawPhone = settings.whatsappNumber || "+977 9764398491";
+  const rawPhone = settings.whatsappNumber || "";
   const cleanPhone = rawPhone.replace(/\D/g, "");
   const whatsappUrl = cleanPhone
     ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(

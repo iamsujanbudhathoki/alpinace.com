@@ -24,6 +24,7 @@ import {
   PanelLeftOpen,
   MessageSquareQuote,
   Bell,
+  X,
 } from "lucide-react";
 
 interface NavItem {
@@ -167,34 +168,88 @@ export function AdminSidebar({
 
   return (
     <aside className="w-full bg-white text-slate-900 flex flex-col shrink-0 h-full select-none border-r border-slate-200">
-      {/* Brand Header */}
+      {/* Brand Header with Top Collapsible Control */}
       <div
         className={`h-16 flex items-center border-b border-slate-200 shrink-0 transition-all ${
-          isCollapsed ? "px-3 justify-center" : "px-5 justify-between"
+          isCollapsed ? "px-2.5 justify-center" : "px-4 justify-between"
         }`}
       >
-        <Link
-          href="/admin"
-          onClick={handleNavClick}
-          className="flex items-center gap-2.5 min-w-0"
-          title="AlpineAce Admin Console"
-        >
-          <img
-            src={settings.siteLogo || "/logo.jpg"}
-            alt={settings.siteName || "AlpineAce Logo"}
-            className="w-8 h-8 object-cover rounded-lg border border-slate-200 shrink-0 shadow-2xs"
-          />
-          {!isCollapsed && (
-            <div className="flex flex-col min-w-0 leading-none">
-              <span className="font-bold text-sm text-slate-900 tracking-tight truncate">
-                AlpineAce
-              </span>
-              <span className="text-[10px] font-semibold text-slate-700 truncate mt-0.5">
-                Admin Console
-              </span>
-            </div>
-          )}
-        </Link>
+        {!isCollapsed ? (
+          <>
+            <Link
+              href="/admin"
+              onClick={handleNavClick}
+              className="flex items-center gap-2.5 min-w-0 group"
+              title="AlpineAce Admin Console"
+            >
+              <img
+                src={settings.siteLogo || "/logo.jpg"}
+                alt={settings.siteName || "AlpineAce Logo"}
+                className="w-8 h-8 object-cover rounded-lg border border-slate-200 shrink-0 shadow-2xs group-hover:border-slate-300 transition-colors"
+              />
+              <div className="flex flex-col min-w-0 leading-none">
+                <span className="font-bold text-sm text-slate-900 tracking-tight truncate">
+                  AlpineAce
+                </span>
+                <span className="text-[10px] font-semibold text-slate-700 truncate mt-0.5">
+                  Admin Console
+                </span>
+              </div>
+            </Link>
+
+            {/* Top Desktop Collapse Button */}
+            {onToggleCollapse && (
+              <button
+                type="button"
+                onClick={onToggleCollapse}
+                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all cursor-pointer"
+                title="Collapse sidebar"
+                aria-label="Collapse sidebar"
+              >
+                <PanelLeftClose className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Mobile Close Button */}
+            {onCloseMobile && (
+              <button
+                type="button"
+                onClick={onCloseMobile}
+                className="flex md:hidden items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer"
+                title="Close menu"
+                aria-label="Close menu"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </>
+        ) : (
+          /* Collapsed State: Top Toggle Button with Logo */
+          <div className="flex items-center justify-center w-full">
+            {onToggleCollapse ? (
+              <button
+                type="button"
+                onClick={onToggleCollapse}
+                className="relative group flex items-center justify-center w-10 h-10 rounded-lg hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all cursor-pointer"
+                title="Expand sidebar"
+                aria-label="Expand sidebar"
+              >
+                <img
+                  src={settings.siteLogo || "/logo.jpg"}
+                  alt={settings.siteName || "AlpineAce Logo"}
+                  className="w-7 h-7 object-cover rounded-md border border-slate-200 shrink-0 shadow-2xs group-hover:opacity-0 transition-opacity"
+                />
+                <PanelLeftOpen className="w-4 h-4 text-slate-800 absolute opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            ) : (
+              <img
+                src={settings.siteLogo || "/logo.jpg"}
+                alt={settings.siteName || "AlpineAce Logo"}
+                className="w-8 h-8 object-cover rounded-lg border border-slate-200 shrink-0 shadow-2xs"
+              />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Navigation Links */}
@@ -419,25 +474,6 @@ export function AdminSidebar({
         ))}
       </div>
 
-      {/* Bottom Collapse Trigger */}
-      {onToggleCollapse && (
-        <div className="p-2.5 border-t border-slate-200 shrink-0 hidden md:block">
-          <button
-            onClick={onToggleCollapse}
-            className={`w-full py-1.5 rounded-md text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center ${
-              isCollapsed ? "justify-center px-0" : "px-2.5 justify-between"
-            }`}
-            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {!isCollapsed && <span>Collapse sidebar</span>}
-            {isCollapsed ? (
-              <PanelLeftOpen className="w-4 h-4 text-slate-700" />
-            ) : (
-              <PanelLeftClose className="w-4 h-4 text-slate-600" />
-            )}
-          </button>
-        </div>
-      )}
     </aside>
   );
 }

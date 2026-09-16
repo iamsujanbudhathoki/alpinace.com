@@ -10,7 +10,7 @@ export const ENV_SITE_DOMAIN =
   process.env.NEXT_PUBLIC_SITE_DOMAIN || "alpineacetreks.com";
 
 export const ENV_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+  process.env.NEXT_PUBLIC_API_URL || "https://api.alpineacetreks.com";
 
 export const ENV_SITE_NAME =
   process.env.NEXT_PUBLIC_SITE_NAME || "AlpineAce Treks & Expeditions";

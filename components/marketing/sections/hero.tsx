@@ -62,10 +62,10 @@ const DURATION_OPTIONS = [
 ];
 
 const HERO_PHRASES = [
-  "next adventure.",
-  "next trek.",
-  "next expedition.",
-  "next journey.",
+  "Next Adventure.",
+  "Next Trek.",
+  "Next Expedition.",
+  "Next Journey.",
 ];
 
 export function Hero({

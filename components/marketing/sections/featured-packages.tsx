@@ -119,6 +119,19 @@ export function FeaturedPackages({
           }
         }
 
+        // If no explicitly tagged popular items returned from endpoint, fall back to isPopular flag or top routes
+        if (rawPopTreks.length === 0 && rawPopTours.length === 0 && rawPopExpeditions.length === 0) {
+          rawPopTreks = rawTreks.filter((t: any) => t.isPopular);
+          rawPopTours = rawTours.filter((t: any) => t.isPopular);
+          rawPopExpeditions = rawExpeditions.filter((t: any) => t.isPopular);
+
+          if (rawPopTreks.length === 0 && rawPopTours.length === 0 && rawPopExpeditions.length === 0) {
+            rawPopTreks = rawTreks.slice(0, 3);
+            rawPopTours = rawTours.slice(0, 2);
+            rawPopExpeditions = rawExpeditions.slice(0, 2);
+          }
+        }
+
         const mapRawToPackage = (p: any, defaultCategory: string, catType: CategoryType): TravelPackage => ({
           id: p.id,
           title: p.title,
@@ -250,77 +263,85 @@ export function FeaturedPackages({
   ];
 
   return (
-    <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
+    <section className="py-12 sm:py-16 md:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Centered Filter Navigation Links with Custom PNG Icons & View All CTA on Right */}
-        <div className="relative flex flex-col md:flex-row items-center justify-center pb-4 border-b border-stone-200 min-h-[52px]">
-          {/* Centered Single-Row Tabs */}
-          <div className="flex flex-nowrap items-center justify-center gap-3 sm:gap-6 md:gap-10 overflow-x-auto scrollbar-none max-w-full py-1">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className="inline-flex items-center gap-1.5 sm:gap-2.5 text-sm sm:text-base md:text-lg font-medium cursor-pointer whitespace-nowrap shrink-0 group pb-1"
-                >
-                  <Image
-                    src={tab.iconUrl}
-                    alt={tab.label}
-                    width={28}
-                    height={28}
-                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 object-contain shrink-0"
-                  />
-                  <span className="relative inline-block">
-                    <span
-                      className={
-                        isActive
-                          ? "text-amber-600 font-bold"
-                          : "text-stone-500 group-hover:text-stone-900 font-medium transition-colors"
-                      }
-                    >
-                      {tab.label}
-                    </span>
-                    <span
-                      className={`absolute left-0 right-0 -bottom-1 transition-all ${
-                        isActive ? "h-[2.5px] bg-amber-500" : "h-[2px] bg-transparent group-hover:bg-stone-300"
-                      }`}
+        {/* Filter Navigation Bar: Perfectly Centered across all screen sizes with horizontal touch-scroll on mobile */}
+        <div className="relative flex items-center justify-center pb-3 sm:pb-4 border-b border-stone-200">
+          {/* Scrollable container on mobile, centered row */}
+          <div className="w-full overflow-x-auto nav-horizontal-scroll scrollbar-none py-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex flex-nowrap items-center justify-center min-w-max gap-6 sm:gap-8 md:gap-12 mx-auto">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActiveTab(tab.key)}
+                    className="inline-flex items-center gap-2 sm:gap-2.5 text-sm sm:text-base md:text-lg font-medium cursor-pointer whitespace-nowrap shrink-0 group pb-2 pt-1 select-none transition-all"
+                  >
+                    <Image
+                      src={tab.iconUrl}
+                      alt={tab.label}
+                      width={28}
+                      height={28}
+                      className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110"
                     />
-                  </span>
-                </button>
-              );
-            })}
+                    <span className="relative inline-block">
+                      <span
+                        className={
+                          isActive
+                            ? "text-stone-900 font-bold tracking-tight"
+                            : "text-stone-500 group-hover:text-stone-900 font-medium transition-colors"
+                        }
+                      >
+                        {tab.label}
+                      </span>
+                      <span
+                        className={`absolute left-0 right-0 -bottom-1.5 transition-all duration-300 rounded-full ${
+                          isActive
+                            ? "h-[3px] bg-yellow-400 opacity-100 shadow-[0_1px_6px_rgba(234,179,8,0.5)]"
+                            : "h-[2px] bg-transparent opacity-0 group-hover:opacity-100 group-hover:bg-stone-300"
+                        }`}
+                      />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* View All Link Positioned on Right */}
+          {/* Desktop View All CTA Link - Absolutely positioned to avoid disrupting center alignment */}
           {!loading && currentPackages.length > 0 && (
-            <div className="mt-2 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 shrink-0">
+            <div className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 shrink-0">
               <Link
                 href={exploreInfo.href}
-                className="text-[11px] sm:text-xs font-medium text-stone-600 hover:text-stone-900 hover:underline inline-flex items-center gap-1 transition-colors whitespace-nowrap"
+                className="text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-950 transition-colors inline-flex items-center gap-1.5 group whitespace-nowrap"
               >
-                {exploreInfo.label} &rarr;
+                <span className="group-hover:underline underline-offset-4 decoration-yellow-400">{exploreInfo.label}</span>
+                <span className="text-yellow-500 font-bold group-hover:translate-x-0.5 transition-transform">&rarr;</span>
               </Link>
             </div>
           )}
         </div>
 
         {/* Horizontal Showcase / Carousel Container */}
-        <div className="relative pt-8 group/carousel select-none">
-          {/* Navigation Arrows (Only if more than 1 item) */}
+        <div className="relative pt-6 sm:pt-8 group/carousel select-none">
+          {/* Navigation Arrows (Only on desktop if more than 1 item) */}
           {!loading && currentPackages.length > 1 && (
             <>
               <button
+                type="button"
                 onClick={scrollPrev}
                 aria-label="Previous Destination"
-                className="hidden md:flex absolute -left-4 top-1/2 z-20 w-10 h-10 rounded-sm bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-colors cursor-pointer"
+                className="hidden md:flex absolute -left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white text-stone-800 border border-stone-200 shadow-md items-center justify-center hover:bg-yellow-400 hover:border-yellow-400 hover:text-stone-950 transition-all cursor-pointer active:scale-95"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={scrollNext}
                 aria-label="Next Destination"
-                className="hidden md:flex absolute -right-4 top-1/2 z-20 w-10 h-10 rounded-sm bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-colors cursor-pointer"
+                className="hidden md:flex absolute -right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white text-stone-800 border border-stone-200 shadow-md items-center justify-center hover:bg-yellow-400 hover:border-yellow-400 hover:text-stone-950 transition-all cursor-pointer active:scale-95"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -332,16 +353,16 @@ export function FeaturedPackages({
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
-                  className="bg-white rounded-sm border border-stone-200 p-4 space-y-4 animate-pulse"
+                  className="bg-white rounded-2xl border border-stone-200 p-4 space-y-4 animate-pulse"
                 >
-                  <div className="h-52 bg-stone-100 rounded-sm w-full" />
+                  <div className="h-52 bg-stone-100 rounded-xl w-full" />
                   <div className="h-4 bg-stone-200 rounded w-1/3" />
                   <div className="h-5 bg-stone-200 rounded w-3/4" />
                 </div>
               ))}
             </div>
           ) : currentPackages.length === 0 ? (
-            <div className="bg-white rounded-sm p-8 sm:p-12 text-center space-y-3 border border-stone-200">
+            <div className="bg-white rounded-2xl p-8 sm:p-12 text-center space-y-3 border border-stone-200">
               <p className="text-sm text-stone-600">
                 {activeTab === "popular"
                   ? "No popular packages available currently."
@@ -349,21 +370,21 @@ export function FeaturedPackages({
               </p>
               <Link
                 href={exploreInfo.href}
-                className="inline-block text-xs font-semibold text-stone-900 hover:underline"
+                className="inline-block text-xs font-semibold text-stone-900 hover:text-yellow-600 hover:underline"
               >
                 {exploreInfo.label} &rarr;
               </Link>
             </div>
           ) : currentPackages.length === 1 ? (
-            /* Single item clean layout */
-            <div className="max-w-md">
+            /* Single item centered layout */
+            <div className="max-w-md mx-auto">
               {currentPackages.map((pkg) => {
                 const packageHref = getPackageLink(pkg, activeTab);
                 return (
                   <Link
                     key={pkg.id}
                     href={packageHref}
-                    className="group flex flex-col bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
+                    className="group flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-yellow-400/60 hover:-translate-y-1 hover:shadow-[0_16px_32px_-6px_rgba(0,0,0,0.12)]"
                   >
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
                       <Image
@@ -374,12 +395,12 @@ export function FeaturedPackages({
                         className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                       />
                       {pkg.region && (
-                        <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-sm tracking-wide">
+                        <span className="absolute top-3 left-3 bg-stone-900/90 text-white text-[11px] font-medium px-2.5 py-1 rounded-md tracking-wide">
                           {pkg.region}
                         </span>
                       )}
                       {pkg.isPopular && (
-                        <span className="absolute top-3 right-3 bg-amber-500/90 text-stone-950 text-[11px] font-semibold px-2 py-0.5 rounded-sm tracking-wide shadow-xs flex items-center gap-1">
+                        <span className="absolute top-3 right-3 bg-yellow-400 text-stone-950 text-[11px] font-bold px-2.5 py-1 rounded-md tracking-wide shadow-xs flex items-center gap-1.5 z-10">
                           <Image src="/icons/popular-fire.png" alt="Popular" width={12} height={12} className="w-3 h-3 object-contain" />
                           Popular
                         </span>
@@ -393,7 +414,7 @@ export function FeaturedPackages({
                             <span>{pkg.maxAltitudeMeters.toLocaleString()}m altitude</span>
                           )}
                         </div>
-                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-600 transition-colors leading-snug line-clamp-1">
+                        <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-yellow-600 transition-colors leading-snug line-clamp-1">
                           {pkg.title}
                         </h3>
                       </div>
@@ -404,7 +425,7 @@ export function FeaturedPackages({
                             ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
                           </span>
                         </div>
-                        <span className="text-xs font-semibold text-stone-900 group-hover:underline">
+                        <span className="text-xs font-semibold text-stone-900 group-hover:text-yellow-600 group-hover:underline inline-flex items-center gap-1">
                           Explore Route &rarr;
                         </span>
                       </div>
@@ -414,7 +435,7 @@ export function FeaturedPackages({
               })}
             </div>
           ) : (
-            /* Multi-item Embla Carousel with Substantial 3-Card Desktop Grid */
+            /* Multi-item Embla Carousel: Mobile swipeable cards with visual peek, tablet 2-card, desktop 3-card grid */
             <div
               className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-4 -my-4"
               ref={emblaRef}
@@ -422,19 +443,19 @@ export function FeaturedPackages({
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
             >
-              <div className="flex flex-nowrap -ml-6 sm:-ml-7 lg:-ml-8">
+              <div className="flex flex-nowrap -ml-4 sm:-ml-6 lg:-ml-8">
                 {displayPackages.map((pkg, index) => {
                   const packageHref = getPackageLink(pkg, activeTab);
 
                   return (
                     <div
                       key={`${pkg.id}-${index}`}
-                      className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] min-w-0 pl-6 sm:pl-7 lg:pl-8 shrink-0"
+                      className="flex-[0_0_88%] xs:flex-[0_0_85%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] min-w-0 pl-4 sm:pl-6 lg:pl-8 shrink-0"
                     >
                       <Link
                         href={packageHref}
                         onClick={handleCardClick}
-                        className="group flex flex-col h-full bg-white rounded-2xl border border-stone-200/90 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
+                        className="group flex flex-col h-full bg-white rounded-2xl border border-stone-200/90 overflow-hidden transition-all duration-300 ease-out hover:border-yellow-400/60 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
                       >
                         {/* Taller Mountain Image Frame */}
                         <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-900">
@@ -442,7 +463,7 @@ export function FeaturedPackages({
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
                             fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            sizes="(max-width: 640px) 88vw, (max-width: 1024px) 50vw, 33vw"
                             className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             draggable={false}
                           />
@@ -453,9 +474,9 @@ export function FeaturedPackages({
                               {pkg.region}
                             </span>
                           )}
-                          {/* Popular Tag */}
+                          {/* Popular Tag in Brand Yellow */}
                           {pkg.isPopular && (
-                            <span className="absolute top-3.5 right-3.5 bg-amber-500/90 text-stone-950 text-xs font-semibold px-2.5 py-1 rounded-md tracking-wide shadow-xs flex items-center gap-1">
+                            <span className="absolute top-3.5 right-3.5 bg-yellow-400 text-stone-950 text-xs font-bold px-2.5 py-1 rounded-md tracking-wide shadow-sm flex items-center gap-1.5 z-10">
                               <Image src="/icons/popular-fire.png" alt="Popular" width={14} height={14} className="w-3.5 h-3.5 object-contain" />
                               Popular
                             </span>
@@ -472,7 +493,7 @@ export function FeaturedPackages({
                               )}
                             </div>
 
-                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-700 transition-colors leading-snug line-clamp-1">
+                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-yellow-600 transition-colors leading-snug line-clamp-1">
                               {pkg.title}
                             </h3>
                           </div>
@@ -487,9 +508,9 @@ export function FeaturedPackages({
                               </span>
                             </div>
 
-                            <span className="text-xs sm:text-sm font-semibold text-stone-900 group-hover:underline inline-flex items-center gap-1">
+                            <span className="text-xs sm:text-sm font-semibold text-stone-900 group-hover:text-yellow-600 group-hover:underline inline-flex items-center gap-1">
                               <span>Explore Route</span>
-                              <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                              <span className="group-hover:translate-x-0.5 transition-transform text-yellow-500 font-bold">&rarr;</span>
                             </span>
                           </div>
                         </div>
@@ -501,6 +522,19 @@ export function FeaturedPackages({
             </div>
           )}
         </div>
+
+        {/* Mobile Centered View All Action */}
+        {!loading && currentPackages.length > 0 && (
+          <div className="flex md:hidden justify-center pt-6 sm:pt-8">
+            <Link
+              href={exploreInfo.href}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-stone-200 hover:bg-yellow-400 hover:border-yellow-400 text-stone-900 text-xs font-semibold transition-all shadow-xs active:scale-95"
+            >
+              <span>{exploreInfo.label}</span>
+              <span className="text-yellow-500 group-hover:text-stone-950 font-bold">&rarr;</span>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

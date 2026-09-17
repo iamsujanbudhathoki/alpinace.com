@@ -56,6 +56,7 @@ export function AdminSearchableSelect({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
+  const errorId = useId();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -172,6 +173,9 @@ export function AdminSearchableSelect({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-labelledby={label ? labelId : undefined}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : undefined}
+        aria-required={required}
       >
         <div className="flex items-center gap-2 truncate flex-1 min-w-0">
           {renderTriggerValue ? (
@@ -204,6 +208,7 @@ export function AdminSearchableSelect({
               onClick={handleClear}
               className="p-0.5 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               title="Clear selection"
+              aria-label="Clear selection"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -216,7 +221,11 @@ export function AdminSearchableSelect({
         </div>
       </div>
 
-      {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
+      {error && (
+        <p id={errorId} role="alert" className="text-xs font-semibold text-rose-600 mt-0.5">
+          {error}
+        </p>
+      )}
 
       {/* Dropdown Menu Overlay */}
       {isOpen && (

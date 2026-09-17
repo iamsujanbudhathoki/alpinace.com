@@ -169,6 +169,7 @@ export function AdminSidebar({
   return (
     <aside
       data-slot="admin-sidebar"
+      aria-label="Admin Navigation"
       className="w-full bg-white text-slate-900 flex flex-col shrink-0 h-full select-none border-r border-slate-200"
     >
       {/* Brand Header with Top Collapsible Control */}
@@ -313,6 +314,7 @@ export function AdminSidebar({
                     <button
                       type="button"
                       onClick={() => setCategoriesOpen((prev) => !prev)}
+                      aria-expanded={categoriesOpen}
                       className={`w-full group flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                         isActive
                           ? "bg-slate-900 text-white shadow-xs"
@@ -373,6 +375,7 @@ export function AdminSidebar({
                     <button
                       type="button"
                       onClick={() => setSettingsOpen((prev) => !prev)}
+                      aria-expanded={settingsOpen}
                       className={`w-full group flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                         isActive
                           ? "bg-slate-900 text-white shadow-xs"

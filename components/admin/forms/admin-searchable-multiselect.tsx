@@ -46,6 +46,7 @@ export function AdminSearchableMultiSelect({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
+  const errorId = useId();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -149,6 +150,9 @@ export function AdminSearchableMultiSelect({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-labelledby={label ? labelId : undefined}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : undefined}
+        aria-required={required}
       >
         <div className="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
           {selectedOptions.length > 0 ? (
@@ -164,6 +168,7 @@ export function AdminSearchableMultiSelect({
                     onClick={(e) => handleRemoveValue(e, opt.value)}
                     className="hover:text-stone-300 p-0.5 rounded transition-colors cursor-pointer"
                     title={`Remove ${opt.label}`}
+                    aria-label={`Remove ${opt.label}`}
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -182,6 +187,7 @@ export function AdminSearchableMultiSelect({
               onClick={handleClearAll}
               className="p-0.5 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               title="Clear all selections"
+              aria-label="Clear all selections"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -194,7 +200,11 @@ export function AdminSearchableMultiSelect({
         </div>
       </div>
 
-      {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
+      {error && (
+        <p id={errorId} role="alert" className="text-xs font-semibold text-rose-600 mt-0.5">
+          {error}
+        </p>
+      )}
 
       {/* Dropdown Menu Overlay */}
       {isOpen && (

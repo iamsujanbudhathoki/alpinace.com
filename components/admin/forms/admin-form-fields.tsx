@@ -12,6 +12,8 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
   ({ label, error, required, className = "", id: externalId, ...props }, ref) => {
     const generatedId = useId();
     const id = externalId || generatedId;
+    const errorId = `${id}-error`;
+
     return (
       <div className="space-y-1">
         {label && (
@@ -22,6 +24,9 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
         <input
           id={id}
           ref={ref}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
+          aria-required={required}
           {...props}
           className={`w-full bg-white border ${
             error
@@ -29,7 +34,11 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
               : "border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10"
           } rounded-md px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none transition-colors placeholder:text-slate-500 disabled:opacity-50 disabled:bg-slate-50 disabled:cursor-not-allowed ${className}`}
         />
-        {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
+        {error && (
+          <p id={errorId} role="alert" className="text-xs font-semibold text-rose-600 mt-0.5">
+            {error}
+          </p>
+        )}
       </div>
     );
   }
@@ -133,6 +142,8 @@ export const AdminTextareaField = React.forwardRef<HTMLTextAreaElement, AdminTex
   ({ label, error, required, className = "", id: externalId, ...props }, ref) => {
     const generatedId = useId();
     const id = externalId || generatedId;
+    const errorId = `${id}-error`;
+
     return (
       <div className="space-y-1">
         {label && (
@@ -143,6 +154,9 @@ export const AdminTextareaField = React.forwardRef<HTMLTextAreaElement, AdminTex
         <textarea
           id={id}
           ref={ref}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
+          aria-required={required}
           {...props}
           className={`w-full bg-white border ${
             error
@@ -150,7 +164,11 @@ export const AdminTextareaField = React.forwardRef<HTMLTextAreaElement, AdminTex
               : "border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10"
           } rounded-md px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none transition-colors placeholder:text-slate-500 resize-y disabled:opacity-50 disabled:bg-slate-50 disabled:cursor-not-allowed ${className}`}
         />
-        {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
+        {error && (
+          <p id={errorId} role="alert" className="text-xs font-semibold text-rose-600 mt-0.5">
+            {error}
+          </p>
+        )}
       </div>
     );
   }
@@ -177,6 +195,7 @@ export const AdminFilterSelect = React.forwardRef<HTMLSelectElement, AdminFilter
         <select
           id={id}
           ref={ref}
+          aria-label={!label ? (props["aria-label"] || "Filter options") : undefined}
           {...props}
           className={`h-9 text-xs bg-white border border-slate-300 text-slate-900 font-semibold rounded-md px-3 py-1.5 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 cursor-pointer disabled:opacity-50 disabled:bg-slate-50 disabled:cursor-not-allowed transition-colors ${className}`}
         >

@@ -175,9 +175,11 @@ export function AdminHeader({
       <div className="flex items-center gap-3">
         {onToggleMobileSidebar && (
           <button
+            type="button"
             onClick={onToggleMobileSidebar}
             className="md:hidden p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
             title="Toggle Menu"
+            aria-label="Toggle mobile menu"
           >
             <Menu className="w-4 h-4" />
           </button>
@@ -189,6 +191,7 @@ export function AdminHeader({
         <button
           type="button"
           onClick={() => setIsSearchModalOpen(true)}
+          aria-label="Global search command palette (Command K)"
           className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-950 text-xs rounded-lg pl-3 pr-2.5 py-1.5 flex items-center justify-between transition-all cursor-pointer font-medium group"
         >
           <div className="flex items-center gap-2 min-w-0">
@@ -205,7 +208,10 @@ export function AdminHeader({
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Notifications Popover */}
         <Popover>
-          <PopoverTrigger className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors relative cursor-pointer focus:outline-none">
+          <PopoverTrigger
+            aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
+            className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors relative cursor-pointer focus:outline-none"
+          >
             <Bell className="w-4 h-4 text-slate-600" />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 leading-none shadow-xs border-2 border-white pointer-events-none">
@@ -318,7 +324,10 @@ export function AdminHeader({
         {/* User Profile Dropdown Menu */}
         <div className="pl-1 border-l border-slate-200">
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 p-1 rounded-lg hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer">
+            <DropdownMenuTrigger
+              aria-label="User profile menu"
+              className="flex items-center gap-2 p-1 rounded-lg hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer"
+            >
               <div className="w-7 h-7 rounded-md bg-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-2xs shrink-0">
                 {userInitials}
               </div>

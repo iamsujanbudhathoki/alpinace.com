@@ -13,7 +13,11 @@ export function FormLabel({ required, children, className, ...props }: FormLabel
       {...props}
     >
       {children}
-      {required && <span className="text-rose-500 ml-0.5 font-bold">*</span>}
+      {required && (
+        <span className="text-rose-500 ml-0.5 font-bold" aria-hidden="true">
+          *
+        </span>
+      )}
     </label>
   );
 }

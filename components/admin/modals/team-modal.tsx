@@ -211,7 +211,7 @@ export function TeamModal({
           <AdminSelectField
             label="Active Status"
             value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value as "active" | "inactive" })}
+            onChange={(val) => setFormData({ ...formData, status: val as "active" | "inactive" })}
             options={[
               { label: "Active (Visible on Website)", value: "active" },
               { label: "Inactive (Hidden)", value: "inactive" },

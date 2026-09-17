@@ -15,11 +15,25 @@ export interface SearchableSelectOption {
   metadata?: any;
 }
 
+export function normalizeSelectValue(val: any): string {
+  if (val === undefined || val === null) return "";
+  if (typeof val === "object") {
+    if (val.target && typeof val.target.value !== "undefined") {
+      return String(val.target.value);
+    }
+    if (typeof val.value !== "undefined") {
+      return String(val.value);
+    }
+  }
+  return String(val);
+}
+
 export interface AdminSearchableSelectProps {
   label?: string;
   value?: string;
+  defaultValue?: string;
   options: SearchableSelectOption[];
-  onChange: (value: string, selectedOption?: SearchableSelectOption | null) => void;
+  onChange?: (value: string, selectedOption?: SearchableSelectOption | null) => void;
   error?: string;
   required?: boolean;
   placeholder?: string;
@@ -35,7 +49,8 @@ export interface AdminSearchableSelectProps {
 
 export function AdminSearchableSelect({
   label,
-  value = "",
+  value: valueProp,
+  defaultValue,
   options = [],
   onChange,
   error,
@@ -52,11 +67,22 @@ export function AdminSearchableSelect({
 }: AdminSearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [internalValue, setInternalValue] = useState<string>(defaultValue || "");
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
   const errorId = useId();
+
+  // Controlled if valueProp is defined, otherwise uncontrolled via internalValue
+  const rawValue = valueProp !== undefined ? valueProp : internalValue;
+  const normalizedValue = useMemo(() => normalizeSelectValue(rawValue), [rawValue]);
+
+  useEffect(() => {
+    if (valueProp === undefined && defaultValue !== undefined) {
+      setInternalValue(defaultValue);
+    }
+  }, [valueProp, defaultValue]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -91,7 +117,7 @@ export function AdminSearchableSelect({
     if (!q) return options;
     return options.filter((opt) => {
       const matchLabel = opt.label.toLowerCase().includes(q);
-      const matchValue = opt.value.toLowerCase().includes(q);
+      const matchValue = String(opt.value).toLowerCase().includes(q);
       const matchBadge = opt.badge ? opt.badge.toLowerCase().includes(q) : false;
       const matchDesc = opt.description ? opt.description.toLowerCase().includes(q) : false;
       return matchLabel || matchValue || matchBadge || matchDesc;
@@ -100,33 +126,43 @@ export function AdminSearchableSelect({
 
   // Find currently selected option object
   const selectedOption = useMemo(() => {
-    if (!value) return null;
-    const v = String(value).trim().toLowerCase();
-    return (
-      options.find(
-        (opt) =>
-          opt.value === value ||
-          String(opt.value).toLowerCase() === v ||
-          opt.label.toLowerCase() === v
-      ) ||
-      options.find(
-        (opt) =>
-          opt.label.toLowerCase().includes(v) ||
-          (v.length > 2 && String(opt.value).toLowerCase().includes(v)) ||
-          (v.length > 2 && v.includes(String(opt.value).toLowerCase()))
-      ) ||
-      null
-    );
-  }, [options, value]);
+    if (!normalizedValue) return null;
+    const vLower = normalizedValue.trim().toLowerCase();
+    if (!vLower) return null;
+
+    // 1. Exact value match (string comparison)
+    const exactValueMatch = options.find((opt) => String(opt.value) === normalizedValue);
+    if (exactValueMatch) return exactValueMatch;
+
+    // 2. Case-insensitive value match
+    const caseValueMatch = options.find((opt) => String(opt.value).toLowerCase() === vLower);
+    if (caseValueMatch) return caseValueMatch;
+
+    // 3. Exact label match (string comparison)
+    const exactLabelMatch = options.find((opt) => opt.label === normalizedValue);
+    if (exactLabelMatch) return exactLabelMatch;
+
+    // 4. Case-insensitive label match
+    const caseLabelMatch = options.find((opt) => opt.label.toLowerCase() === vLower);
+    if (caseLabelMatch) return caseLabelMatch;
+
+    return null;
+  }, [options, normalizedValue]);
 
   const handleSelect = (option: SearchableSelectOption) => {
-    onChange(option.value, option);
+    if (valueProp === undefined) {
+      setInternalValue(option.value);
+    }
+    onChange?.(option.value, option);
     setIsOpen(false);
   };
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onChange("", null);
+    if (valueProp === undefined) {
+      setInternalValue("");
+    }
+    onChange?.("", null);
     setSearchQuery("");
   };
 
@@ -134,6 +170,21 @@ export function AdminSearchableSelect({
     if (e.key === "Escape") {
       setIsOpen(false);
     }
+  };
+
+  const isOptionSelected = (opt: SearchableSelectOption) => {
+    if (!normalizedValue) return false;
+    const optVal = String(opt.value);
+    const optValLower = optVal.toLowerCase();
+    const optLabelLower = opt.label.toLowerCase();
+    const vLower = normalizedValue.trim().toLowerCase();
+
+    return (
+      optVal === normalizedValue ||
+      optValLower === vLower ||
+      opt.label === normalizedValue ||
+      optLabelLower === vLower
+    );
   };
 
   return (
@@ -179,7 +230,7 @@ export function AdminSearchableSelect({
       >
         <div className="flex items-center gap-2 truncate flex-1 min-w-0">
           {renderTriggerValue ? (
-            renderTriggerValue(selectedOption, value)
+            renderTriggerValue(selectedOption, normalizedValue)
           ) : selectedOption ? (
             <>
               {selectedOption.icon && <span className="shrink-0">{selectedOption.icon}</span>}
@@ -194,15 +245,15 @@ export function AdminSearchableSelect({
               )}
               <span className="text-slate-900 font-semibold truncate">{selectedOption.label}</span>
             </>
-          ) : value ? (
-            <span className="text-slate-900 font-semibold truncate">{value}</span>
+          ) : normalizedValue ? (
+            <span className="text-slate-900 font-semibold truncate">{normalizedValue}</span>
           ) : (
             <span className="text-slate-400 font-normal truncate">{placeholder}</span>
           )}
         </div>
 
         <div className="flex items-center gap-1 shrink-0 ml-1">
-          {allowClear && value && !disabled && (
+          {allowClear && Boolean(normalizedValue) && !disabled && (
             <button
               type="button"
               onClick={handleClear}
@@ -262,8 +313,7 @@ export function AdminSearchableSelect({
               </div>
             ) : (
               filteredOptions.map((opt) => {
-                const isSelected =
-                  value === opt.value || value.toLowerCase() === opt.label.toLowerCase();
+                const selected = isOptionSelected(opt);
 
                 if (renderOption) {
                   return (
@@ -280,7 +330,7 @@ export function AdminSearchableSelect({
                       }}
                       className="cursor-pointer"
                     >
-                      {renderOption(opt, isSelected)}
+                      {renderOption(opt, selected)}
                     </div>
                   );
                 }
@@ -291,7 +341,7 @@ export function AdminSearchableSelect({
                     type="button"
                     onClick={() => handleSelect(opt)}
                     className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition-colors cursor-pointer ${
-                      isSelected
+                      selected
                         ? "bg-slate-100 text-slate-900 font-bold"
                         : "hover:bg-slate-50 text-slate-800"
                     }`}
@@ -301,7 +351,7 @@ export function AdminSearchableSelect({
                       {opt.badge && (
                         <span
                           className={`px-1.5 py-0.2 rounded text-[10px] font-bold border shrink-0 ${
-                            isSelected
+                            selected
                               ? "bg-slate-200 text-slate-900 border-slate-300"
                               : opt.badgeColor || "bg-slate-100 text-slate-600 border-slate-200"
                           }`}
@@ -319,7 +369,7 @@ export function AdminSearchableSelect({
                       </div>
                     </div>
 
-                    {isSelected && <Check className="w-3.5 h-3.5 text-amber-600 shrink-0 ml-2" />}
+                    {selected && <Check className="w-3.5 h-3.5 text-amber-600 shrink-0 ml-2" />}
                   </button>
                 );
               })

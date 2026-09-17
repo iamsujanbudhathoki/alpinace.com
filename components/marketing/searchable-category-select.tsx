@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 import { FilterSidebarSkeleton } from "@/components/marketing/skeletons/filter-sidebar-skeleton";
+import { normalizeSelectValue } from "@/components/admin/forms/admin-searchable-select";
 
 export interface CategoryOption {
   label: string;
@@ -54,16 +55,22 @@ export function SearchableCategorySelect({
     return <FilterSidebarSkeleton />;
   }
 
+  const normalizedCategory = normalizeSelectValue(selectedCategory);
+
   const hasAllOption = categories.some((c) => c.value === "All");
   const categoryList: CategoryOption[] = hasAllOption
     ? categories
     : [{ label: "All Categories", value: "All" }, ...categories];
 
   const currentCategoryObj = categoryList.find(
-    (c) => c.value.toLowerCase() === selectedCategory.toLowerCase()
+    (c) =>
+      c.value.toLowerCase() === normalizedCategory.toLowerCase() ||
+      c.label.toLowerCase() === normalizedCategory.toLowerCase()
   );
   const selectedLabel = currentCategoryObj
     ? currentCategoryObj.label
+    : normalizedCategory && normalizedCategory !== "All"
+    ? normalizedCategory
     : "All Categories";
 
   const filteredCategories = categoryList.filter((cat) =>

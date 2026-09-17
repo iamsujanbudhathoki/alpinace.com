@@ -45,7 +45,7 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
 );
 AdminInputField.displayName = "AdminInputField";
 
-import { AdminSearchableSelect, SearchableSelectOption } from "./admin-searchable-select";
+import { AdminSearchableSelect, SearchableSelectOption, normalizeSelectValue } from "./admin-searchable-select";
 
 export interface AdminSelectOption {
   label: string;
@@ -94,20 +94,11 @@ export const AdminSelectField = React.forwardRef<HTMLDivElement, AdminSelectFiel
     ref
   ) => {
     const rawVal = value !== undefined ? value : (restProps as any).value;
-    const stringVal = rawVal !== undefined && rawVal !== null ? String(rawVal) : "";
+    const stringVal = normalizeSelectValue(rawVal);
 
     const handleSelectChange = (selectedVal: string, selectedOpt?: SearchableSelectOption | null) => {
       if (onChange) {
         (onChange as any)(selectedVal, selectedOpt);
-        const fieldName = name || (restProps as any).name;
-        if (fieldName) {
-          (onChange as any)({
-            target: {
-              name: fieldName,
-              value: selectedVal,
-            },
-          });
-        }
       }
     };
 

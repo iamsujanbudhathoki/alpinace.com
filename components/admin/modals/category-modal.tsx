@@ -354,7 +354,7 @@ export function CategoryFormModal({
                   { label: "OFF (Hide from Marketing Menu)", value: "false" },
                 ]}
                 value={watch("showInMenu") !== false ? "true" : "false"}
-                onChange={(e) => setValue("showInMenu", e.target.value === "true", { shouldValidate: true })}
+                onChange={(val) => setValue("showInMenu", val === "true", { shouldValidate: true })}
               />
             </div>
 
@@ -368,7 +368,7 @@ export function CategoryFormModal({
                   { label: "YES (Featured Category)", value: "true" },
                 ]}
                 value={watch("isFeatured") ? "true" : "false"}
-                onChange={(e) => setValue("isFeatured", e.target.value === "true", { shouldValidate: true })}
+                onChange={(val) => setValue("isFeatured", val === "true", { shouldValidate: true })}
               />
             </div>
 

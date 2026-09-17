@@ -72,6 +72,8 @@ export function getCategoryBadgeStyle(category?: string): string {
   return "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/70 hover:border-slate-300 font-semibold";
 }
 
+import { normalizeSelectValue } from "@/components/admin/forms/admin-searchable-select";
+
 export function AdminInlineSelect({
   value,
   options,
@@ -85,25 +87,28 @@ export function AdminInlineSelect({
   const [isUpdating, setIsUpdating] = useState(false);
   const selectId = useId();
 
-  const selectedOption = value ? options.find((opt) => opt.value === value) : undefined;
-  const displayLabel = selectedOption ? selectedOption.label : placeholder;
+  const normalizedVal = normalizeSelectValue(value);
+  const selectedOption = normalizedVal
+    ? options.find(
+        (opt) =>
+          opt.value === normalizedVal ||
+          String(opt.value).toLowerCase() === normalizedVal.toLowerCase() ||
+          opt.label.toLowerCase() === normalizedVal.toLowerCase()
+      )
+    : undefined;
+  const displayLabel = selectedOption ? selectedOption.label : (normalizedVal || placeholder);
 
   const handleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value;
-    // Allow onChange to be called even if the selected value is the same as the current value.
-    // This ensures that the change handler runs in cases where there is only a single selectable option.
-
-
     setIsUpdating(true);
     try {
       const success = await onChange(newValue);
       if (success === false) {
-        // Revert back
-        if (value !== undefined) e.target.value = value;
+        if (value !== undefined) e.target.value = normalizedVal;
       }
     } catch (err) {
       console.error("Inline edit failed:", err);
-      if (value !== undefined) e.target.value = value;
+      if (value !== undefined) e.target.value = normalizedVal;
     } finally {
       setIsUpdating(false);
     }
@@ -111,7 +116,7 @@ export function AdminInlineSelect({
 
   let variantStyle = "";
   if (variant === "badge") {
-    variantStyle = getStatusBadgeStyle(value);
+    variantStyle = getStatusBadgeStyle(normalizedVal);
   } else if (variant === "category") {
     variantStyle = getCategoryBadgeStyle(displayLabel);
   } else {

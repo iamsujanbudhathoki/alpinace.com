@@ -467,7 +467,7 @@ export function BookingFormModal({
                 label="Reservation Type"
                 required
                 value={currentPackageType}
-                onChange={(e) => handleTypeChange(e.target.value as BookingPackageType)}
+                onChange={(val) => handleTypeChange(val as BookingPackageType)}
                 options={[
                   { label: "Trekking", value: BookingPackageType.TREKKING },
                   { label: "Expedition", value: BookingPackageType.EXPEDITION },

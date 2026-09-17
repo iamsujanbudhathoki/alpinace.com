@@ -257,7 +257,7 @@ export function BlogArticleForm({
                 label="Category"
                 options={categoryOptions}
                 value={formData.category}
-                onChange={(e) => handleChange("category", e.target.value)}
+                onChange={(val) => handleChange("category", val)}
                 error={errors.category}
                 required
               />
@@ -266,7 +266,7 @@ export function BlogArticleForm({
                 label="Status"
                 options={STATUS_OPTIONS}
                 value={formData.status}
-                onChange={(e) => handleChange("status", e.target.value as any)}
+                onChange={(val) => handleChange("status", val as any)}
                 error={errors.status}
                 required
               />

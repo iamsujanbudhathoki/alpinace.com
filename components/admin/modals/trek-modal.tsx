@@ -685,6 +685,22 @@ export function TrekFormModal({
                   />
                 </div>
 
+                <div>
+                  <AdminInputField
+                    label="Group Size Range"
+                    placeholder="e.g. 2 - 12 Travelers"
+                    {...register("groupSizeRange")}
+                  />
+                </div>
+
+                <div>
+                  <AdminInputField
+                    label="Start & End Route Location"
+                    placeholder="e.g. Kathmandu to Kathmandu"
+                    {...register("startEndLocation")}
+                  />
+                </div>
+
                 <div className="col-span-2">
                   <AdminInputField
                     label="Best Season"
@@ -712,22 +728,6 @@ export function TrekFormModal({
                     />
                     <span className="text-sm font-medium text-slate-700">Popular Package</span>
                   </label>
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Group Size Range"
-                    placeholder="e.g. 2 - 12 Travelers"
-                    {...register("groupSizeRange")}
-                  />
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Start & End Route Location"
-                    placeholder="e.g. Kathmandu to Kathmandu"
-                    {...register("startEndLocation")}
-                  />
                 </div>
 
                 <div className="col-span-2">

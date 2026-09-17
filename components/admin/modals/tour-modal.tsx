@@ -999,18 +999,18 @@ export function TourFormModal({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800">Meta Title</label>
-                  <AdminInputField placeholder="e.g. Kathmandu & Pokhara Luxury Cultural Tour" {...register("metaTitle")} />
+                  <label htmlFor="tour-meta-title" className="text-xs font-bold text-slate-800 cursor-pointer">Meta Title</label>
+                  <AdminInputField id="tour-meta-title" placeholder="e.g. Kathmandu & Pokhara Luxury Cultural Tour" {...register("metaTitle")} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800">Meta Description</label>
-                  <AdminTextareaField rows={3} placeholder="Brief summary for search result snippets..." {...register("metaDescription")} />
+                  <label htmlFor="tour-meta-description" className="text-xs font-bold text-slate-800 cursor-pointer">Meta Description</label>
+                  <AdminTextareaField id="tour-meta-description" rows={3} placeholder="Brief summary for search result snippets..." {...register("metaDescription")} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800">Focus Keywords</label>
-                  <AdminInputField placeholder="e.g. Nepal Tours, Kathmandu Heritage, Pokhara Resort" {...register("keywords")} />
+                  <label htmlFor="tour-keywords" className="text-xs font-bold text-slate-800 cursor-pointer">Focus Keywords</label>
+                  <AdminInputField id="tour-keywords" placeholder="e.g. Nepal Tours, Kathmandu Heritage, Pokhara Resort" {...register("keywords")} />
                 </div>
               </div>
             )}

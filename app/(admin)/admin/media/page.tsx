@@ -565,8 +565,9 @@ export default function AdminMediaPage() {
             </div>
           )}
           <div className="space-y-1">
-            <label className="font-bold text-slate-800 block text-xs">Asset Title</label>
+            <label htmlFor="edit-media-title" className="font-bold text-slate-800 block text-xs">Asset Title</label>
             <input
+              id="edit-media-title"
               type="text"
               required
               value={editTitle}
@@ -576,8 +577,9 @@ export default function AdminMediaPage() {
           </div>
 
           <div className="space-y-1">
-            <label className="font-bold text-slate-800 block text-xs">Category Taxonomy</label>
+            <label htmlFor="edit-media-category" className="font-bold text-slate-800 block text-xs">Category Taxonomy</label>
             <select
+              id="edit-media-category"
               value={editCategoryId}
               onChange={(e) => setEditCategoryId(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 text-slate-900 font-bold text-xs rounded-xl px-3.5 py-2 focus:outline-none focus:border-amber-500 cursor-pointer"
@@ -590,8 +592,9 @@ export default function AdminMediaPage() {
           </div>
 
           <div className="space-y-1">
-            <label className="font-bold text-slate-800 block text-xs">Description</label>
+            <label htmlFor="edit-media-description" className="font-bold text-slate-800 block text-xs">Description</label>
             <textarea
+              id="edit-media-description"
               rows={3}
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
@@ -601,8 +604,9 @@ export default function AdminMediaPage() {
           </div>
 
           <div className="space-y-1">
-            <label className="font-bold text-slate-800 block text-xs">Alt Text (For SEO)</label>
+            <label htmlFor="edit-media-alt-text" className="font-bold text-slate-800 block text-xs">Alt Text (For SEO)</label>
             <input
+              id="edit-media-alt-text"
               type="text"
               value={editAltText}
               onChange={(e) => setEditAltText(e.target.value)}

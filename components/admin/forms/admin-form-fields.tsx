@@ -58,6 +58,7 @@ export interface AdminSelectOption {
 
 export interface AdminSelectFieldProps {
   label?: string;
+  id?: string;
   error?: string;
   required?: boolean;
   options: AdminSelectOption[];
@@ -77,6 +78,7 @@ export const AdminSelectField = React.forwardRef<HTMLDivElement, AdminSelectFiel
   (
     {
       label,
+      id,
       error,
       required,
       options = [],
@@ -120,6 +122,7 @@ export const AdminSelectField = React.forwardRef<HTMLDivElement, AdminSelectFiel
       <div ref={ref}>
         <AdminSearchableSelect
           label={label}
+          id={id}
           value={stringVal}
           options={options}
           onChange={handleSelectChange}

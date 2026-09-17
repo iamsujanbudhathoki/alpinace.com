@@ -1016,7 +1016,7 @@ export function TrekFormModal({
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-800">
+                    <label htmlFor="trek-meta-title" className="text-xs font-bold text-slate-800 cursor-pointer">
                       Meta Title
                     </label>
                     <span className={`text-[10px] font-semibold ${(watchMetaTitle?.length || 0) > 60
@@ -1029,6 +1029,7 @@ export function TrekFormModal({
                     </span>
                   </div>
                   <AdminInputField
+                    id="trek-meta-title"
                     placeholder="e.g. Everest Base Camp Luxury Helicopter Trek | Alpine Ace"
                     {...register("metaTitle")}
                   />
@@ -1036,7 +1037,7 @@ export function TrekFormModal({
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-800">
+                    <label htmlFor="trek-meta-description" className="text-xs font-bold text-slate-800 cursor-pointer">
                       Meta Description
                     </label>
                     <span className={`text-[10px] font-semibold ${(watchMetaDesc?.length || 0) > 160
@@ -1049,6 +1050,7 @@ export function TrekFormModal({
                     </span>
                   </div>
                   <AdminTextareaField
+                    id="trek-meta-description"
                     rows={3}
                     placeholder="Brief summary for Google search result snippets and social media previews..."
                     {...register("metaDescription")}
@@ -1056,10 +1058,11 @@ export function TrekFormModal({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800 block">
+                  <label htmlFor="trek-keywords" className="text-xs font-bold text-slate-800 block cursor-pointer">
                     Focus Keywords
                   </label>
                   <AdminInputField
+                    id="trek-keywords"
                     placeholder="e.g. Everest Base Camp, Nepal Trekking, Mountain Guides, Luxury Lodges"
                     {...register("keywords")}
                   />

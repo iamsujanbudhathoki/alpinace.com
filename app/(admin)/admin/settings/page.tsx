@@ -148,11 +148,12 @@ export default function AdminSettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
+              <label htmlFor="settings-site-name" className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
                 <Building className="w-3.5 h-3.5 text-slate-600" />
                 <span>Company Registered Name</span>
               </label>
               <Input
+                id="settings-site-name"
                 type="text"
                 value={formData.siteName}
                 onChange={(e) => handleChange("siteName", e.target.value)}
@@ -163,10 +164,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">
+              <label htmlFor="settings-tagline" className="block text-slate-700 font-bold mb-1.5">
                 Company Slogan / Tagline
               </label>
               <Input
+                id="settings-tagline"
                 type="text"
                 value={formData.tagline}
                 onChange={(e) => handleChange("tagline", e.target.value)}
@@ -176,10 +178,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-slate-700 font-bold mb-1.5">
+              <label htmlFor="settings-site-description" className="block text-slate-700 font-bold mb-1.5">
                 Agency Bio / Footer Summary
               </label>
               <textarea
+                id="settings-site-description"
                 rows={3}
                 value={formData.siteDescription || ""}
                 onChange={(e) => handleChange("siteDescription", e.target.value)}
@@ -190,13 +193,11 @@ export default function AdminSettingsPage() {
 
             {/* Agency Brand Logo Upload */}
             <div className="md:col-span-2 space-y-1.5 pt-2 border-t border-slate-100">
-              <label className="block text-slate-800 font-bold text-xs">
-                Agency Brand Logo
-              </label>
               <p className="text-[11px] text-slate-500 mb-2">
                 Upload your official company logo. This logo will automatically display on the website header, mobile drawer menu, and footer.
               </p>
               <AdminImageUpload
+                id="settings-site-logo"
                 label="Site Logo"
                 value={formData.siteLogo || ""}
                 onChange={(url) => handleChange("siteLogo", url)}
@@ -204,11 +205,12 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
+              <label htmlFor="settings-contact-email" className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-slate-600" />
                 <span>Operations &amp; Booking Email</span>
               </label>
               <Input
+                id="settings-contact-email"
                 type="email"
                 value={formData.contactEmail}
                 onChange={(e) => handleChange("contactEmail", e.target.value)}
@@ -219,11 +221,12 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
+              <label htmlFor="settings-contact-phone" className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
                 <Phone className="w-3.5 h-3.5 text-slate-600" />
                 <span>Primary Office Landline Phone</span>
               </label>
               <Input
+                id="settings-contact-phone"
                 type="text"
                 value={formData.contactPhone}
                 onChange={(e) => handleChange("contactPhone", e.target.value)}
@@ -233,11 +236,12 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
+              <label htmlFor="settings-emergency-phone" className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
                 <span>24/7 Mountain Emergency Hotline</span>
               </label>
               <Input
+                id="settings-emergency-phone"
                 type="text"
                 value={formData.emergencyPhone}
                 onChange={(e) => handleChange("emergencyPhone", e.target.value)}
@@ -247,11 +251,12 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
+              <label htmlFor="settings-whatsapp-number" className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
                 <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Official WhatsApp Number (E.164 digits)</span>
               </label>
               <Input
+                id="settings-whatsapp-number"
                 type="text"
                 value={formData.whatsappNumber}
                 onChange={(e) => handleChange("whatsappNumber", e.target.value)}
@@ -264,11 +269,12 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
+              <label htmlFor="settings-company-address" className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-slate-600" />
                 <span>Physical Office Address</span>
               </label>
               <Input
+                id="settings-company-address"
                 type="text"
                 value={formData.companyAddress}
                 onChange={(e) => handleChange("companyAddress", e.target.value)}
@@ -278,11 +284,12 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
+              <label htmlFor="settings-office-hours" className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-600" />
                 <span>Office Business Hours</span>
               </label>
               <Input
+                id="settings-office-hours"
                 type="text"
                 value={formData.officeHours}
                 onChange={(e) => handleChange("officeHours", e.target.value)}
@@ -292,11 +299,12 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
+              <label htmlFor="settings-google-maps-url" className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1.5">
                 <Globe className="w-3.5 h-3.5 text-slate-600" />
                 <span>Google Maps Location / Embed URL</span>
               </label>
               <Input
+                id="settings-google-maps-url"
                 type="text"
                 value={formData.googleMapsUrl}
                 onChange={(e) => handleChange("googleMapsUrl", e.target.value)}
@@ -324,7 +332,7 @@ export default function AdminSettingsPage() {
           <div className="space-y-4 text-xs">
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-slate-700 font-bold">
+                <label htmlFor="settings-meta-title" className="text-slate-700 font-bold">
                   Global Homepage Meta Title
                 </label>
                 <span className="text-[11px] text-slate-600 font-medium">
@@ -332,6 +340,7 @@ export default function AdminSettingsPage() {
                 </span>
               </div>
               <Input
+                id="settings-meta-title"
                 type="text"
                 value={formData.metaTitle}
                 onChange={(e) => handleChange("metaTitle", e.target.value)}
@@ -342,7 +351,7 @@ export default function AdminSettingsPage() {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-slate-700 font-bold">
+                <label htmlFor="settings-meta-description" className="text-slate-700 font-bold">
                   Global Search Meta Description
                 </label>
                 <span className="text-[11px] text-slate-600 font-medium">
@@ -350,6 +359,7 @@ export default function AdminSettingsPage() {
                 </span>
               </div>
               <textarea
+                id="settings-meta-description"
                 rows={3}
                 value={formData.metaDescription}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -361,10 +371,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">
+              <label htmlFor="settings-meta-keywords" className="block text-slate-700 font-bold mb-1.5">
                 Target SEO Keywords (Comma Separated)
               </label>
               <Input
+                id="settings-meta-keywords"
                 type="text"
                 value={formData.metaKeywords}
                 onChange={(e) => handleChange("metaKeywords", e.target.value)}
@@ -375,10 +386,11 @@ export default function AdminSettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-slate-700 font-bold mb-1.5">
+                <label htmlFor="settings-canonical-url" className="block text-slate-700 font-bold mb-1.5">
                   Canonical Site URL
                 </label>
                 <Input
+                  id="settings-canonical-url"
                   type="text"
                   value={formData.canonicalUrl}
                   onChange={(e) => handleChange("canonicalUrl", e.target.value)}
@@ -406,10 +418,11 @@ export default function AdminSettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">
+              <label htmlFor="settings-facebook-url" className="block text-slate-700 font-bold mb-1.5">
                 Facebook Page URL
               </label>
               <Input
+                id="settings-facebook-url"
                 type="text"
                 value={formData.facebookUrl}
                 onChange={(e) => handleChange("facebookUrl", e.target.value)}
@@ -419,10 +432,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">
+              <label htmlFor="settings-instagram-url" className="block text-slate-700 font-bold mb-1.5">
                 Instagram Profile URL
               </label>
               <Input
+                id="settings-instagram-url"
                 type="text"
                 value={formData.instagramUrl}
                 onChange={(e) => handleChange("instagramUrl", e.target.value)}
@@ -432,10 +446,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">
+              <label htmlFor="settings-youtube-url" className="block text-slate-700 font-bold mb-1.5">
                 YouTube Channel URL
               </label>
               <Input
+                id="settings-youtube-url"
                 type="text"
                 value={formData.youtubeUrl}
                 onChange={(e) => handleChange("youtubeUrl", e.target.value)}
@@ -445,10 +460,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-slate-700 font-bold mb-1.5">
+              <label htmlFor="settings-tripadvisor-url" className="block text-slate-700 font-bold mb-1.5">
                 TripAdvisor Profile URL
               </label>
               <Input
+                id="settings-tripadvisor-url"
                 type="text"
                 value={formData.tripadvisorUrl}
                 onChange={(e) => handleChange("tripadvisorUrl", e.target.value)}
@@ -458,10 +474,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-slate-700 font-bold mb-1.5">
+              <label htmlFor="settings-linkedin-url" className="block text-slate-700 font-bold mb-1.5">
                 LinkedIn Company Page
               </label>
               <Input
+                id="settings-linkedin-url"
                 type="text"
                 value={formData.linkedinUrl}
                 onChange={(e) => handleChange("linkedinUrl", e.target.value)}

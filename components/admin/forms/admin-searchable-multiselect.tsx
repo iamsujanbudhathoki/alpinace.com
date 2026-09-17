@@ -16,6 +16,7 @@ export interface SearchableMultiSelectOption {
 
 export interface AdminSearchableMultiSelectProps {
   label?: string;
+  id?: string;
   values?: string[];
   options: SearchableMultiSelectOption[];
   onChange: (values: string[]) => void;
@@ -30,6 +31,7 @@ export interface AdminSearchableMultiSelectProps {
 
 export function AdminSearchableMultiSelect({
   label,
+  id: externalId,
   values = [],
   options = [],
   onChange,
@@ -52,6 +54,8 @@ export function AdminSearchableMultiSelect({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const optionRefs = useRef<(HTMLElement | null)[]>([]);
 
+  const generatedId = useId();
+  const selectId = externalId || generatedId;
   const labelId = useId();
   const errorId = useId();
   const listboxId = useId();
@@ -257,8 +261,8 @@ export function AdminSearchableMultiSelect({
       {label && (
         <FormLabel
           id={labelId}
+          htmlFor={selectId}
           required={required}
-          onClick={() => { if (!disabled) { triggerRef.current?.focus(); setIsOpen(true); } }}
           className="cursor-pointer"
         >
           {label}
@@ -267,6 +271,7 @@ export function AdminSearchableMultiSelect({
 
       {/* Main Trigger & Selected Chips Display */}
       <div
+        id={selectId}
         ref={triggerRef}
         role="combobox"
         tabIndex={disabled ? -1 : 0}

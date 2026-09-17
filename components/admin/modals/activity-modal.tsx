@@ -317,33 +317,36 @@ export function ActivityFormModal({
           </div>
 
           {/* Cover Media Image Upload */}
-          <div className="space-y-2 pt-2 border-t border-stone-100">
-            <label className="text-xs font-semibold text-stone-700 block">
-              Cover Banner Image
-            </label>
+          <div className="pt-2 border-t border-stone-100">
             {isViewMode ? (
-              currentImage ? (
-                <div className="relative w-full h-44 rounded-sm overflow-hidden border border-stone-200 group bg-stone-100">
-                  <img
-                    src={currentImage}
-                    alt="Activity Banner"
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => openSingleImage(currentImage, initialData?.name)}
-                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white gap-1.5 text-xs font-medium"
-                  >
-                    <Maximize2 className="w-4 h-4" /> View Full Image
-                  </button>
-                </div>
-              ) : (
-                <div className="p-6 text-center border border-dashed border-stone-200 rounded-sm bg-stone-50 text-xs text-stone-400">
-                  No image assigned.
-                </div>
-              )
+              <div className="space-y-2">
+                <span className="text-xs font-semibold text-stone-700 block">
+                  Cover Banner Image
+                </span>
+                {currentImage ? (
+                  <div className="relative w-full h-44 rounded-sm overflow-hidden border border-stone-200 group bg-stone-100">
+                    <img
+                      src={currentImage}
+                      alt="Activity Banner"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openSingleImage(currentImage, initialData?.name)}
+                      className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white gap-1.5 text-xs font-medium"
+                    >
+                      <Maximize2 className="w-4 h-4" /> View Full Image
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-6 text-center border border-dashed border-stone-200 rounded-sm bg-stone-50 text-xs text-stone-400">
+                    No image assigned.
+                  </div>
+                )}
+              </div>
             ) : (
               <AdminImageUpload
+                label="Cover Banner Image"
                 value={currentImage || ""}
                 onChange={(url, mediaId) => {
                   setValue("image", url || "");

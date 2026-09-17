@@ -89,8 +89,9 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4 text-xs">
             {/* Email Field */}
             <div className="space-y-1">
-              <label className="block text-slate-700 font-bold">Email Address</label>
+              <label htmlFor="login-email" className="block text-slate-700 font-bold">Email Address</label>
               <Input
+                id="login-email"
                 type="email"
                 disabled={isSubmitting}
                 {...register("email")}
@@ -110,9 +111,10 @@ export default function AdminLoginPage() {
 
             {/* Password Field */}
             <div className="space-y-1">
-              <label className="block text-slate-700 font-bold">Password</label>
+              <label htmlFor="login-password" className="block text-slate-700 font-bold">Password</label>
               <div className="relative">
                 <Input
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
                   disabled={isSubmitting}
                   {...register("password")}

@@ -1001,18 +1001,18 @@ export function ExpeditionFormModal({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800">Meta Title</label>
-                  <AdminInputField placeholder="e.g. Mount Everest 8848m Expedition | Alpine Ace" {...register("metaTitle")} />
+                  <label htmlFor="expedition-meta-title" className="text-xs font-bold text-slate-800 cursor-pointer">Meta Title</label>
+                  <AdminInputField id="expedition-meta-title" placeholder="e.g. Mount Everest 8848m Expedition | Alpine Ace" {...register("metaTitle")} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800">Meta Description</label>
-                  <AdminTextareaField rows={3} placeholder="Brief summary for search result snippets..." {...register("metaDescription")} />
+                  <label htmlFor="expedition-meta-description" className="text-xs font-bold text-slate-800 cursor-pointer">Meta Description</label>
+                  <AdminTextareaField id="expedition-meta-description" rows={3} placeholder="Brief summary for search result snippets..." {...register("metaDescription")} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800">Focus Keywords</label>
-                  <AdminInputField placeholder="e.g. Everest Summit, 8000m Expedition, Mountain Guide" {...register("keywords")} />
+                  <label htmlFor="expedition-keywords" className="text-xs font-bold text-slate-800 cursor-pointer">Focus Keywords</label>
+                  <AdminInputField id="expedition-keywords" placeholder="e.g. Everest Summit, 8000m Expedition, Mountain Guide" {...register("keywords")} />
                 </div>
               </div>
             )}

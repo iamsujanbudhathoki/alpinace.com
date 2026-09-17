@@ -390,7 +390,7 @@ export function BlogArticleForm({
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-800">
+                <label htmlFor="blog-meta-title" className="text-xs font-bold text-slate-800 cursor-pointer">
                   Meta Title
                 </label>
                 <span
@@ -406,6 +406,7 @@ export function BlogArticleForm({
                 </span>
               </div>
               <AdminInputField
+                id="blog-meta-title"
                 placeholder="e.g. Essential Gear List for Everest Base Camp Trek | AlpineAce"
                 value={formData.metaTitle || ""}
                 onChange={(e) => handleChange("metaTitle", e.target.value)}
@@ -415,7 +416,7 @@ export function BlogArticleForm({
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-800">
+                <label htmlFor="blog-meta-description" className="text-xs font-bold text-slate-800 cursor-pointer">
                   Meta Description
                 </label>
                 <span
@@ -431,6 +432,7 @@ export function BlogArticleForm({
                 </span>
               </div>
               <AdminTextareaField
+                id="blog-meta-description"
                 rows={3}
                 placeholder="Brief summary for Google search result snippets and social media previews..."
                 value={formData.metaDescription || ""}
@@ -442,10 +444,11 @@ export function BlogArticleForm({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-800 block">
+              <label htmlFor="blog-keywords" className="text-xs font-bold text-slate-800 block cursor-pointer">
                 Focus Keywords
               </label>
               <AdminInputField
+                id="blog-keywords"
                 placeholder="e.g. Everest packing list, Nepal gear, trekking advice"
                 value={formData.keywords || ""}
                 onChange={(e) => handleChange("keywords", e.target.value)}

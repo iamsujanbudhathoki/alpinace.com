@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useId } from "react";
 import {
   UploadCloud,
   FolderOpen,
@@ -21,6 +21,7 @@ import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface AdminImageUploadProps {
   label?: string;
+  id?: string;
   value: string;
   onChange: (url: string, mediaId?: string) => void;
   error?: string;
@@ -61,11 +62,14 @@ const deduplicateAssets = (list: MediaAsset[]): MediaAsset[] => {
 
 export function AdminImageUpload({
   label = "Cover Image",
+  id: externalId,
   value,
   onChange,
   error,
   libraryOnly = false,
 }: AdminImageUploadProps) {
+  const generatedId = useId();
+  const uploadId = externalId || generatedId;
   const [isUploading, setIsUploading] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
@@ -239,7 +243,7 @@ export function AdminImageUpload({
       {label && (
         <div className="flex items-center justify-between">
           <label
-            onClick={() => setIsLibraryOpen(true)}
+            htmlFor={uploadId}
             className="font-bold text-slate-900 text-xs tracking-tight cursor-pointer"
           >
             {label}
@@ -354,6 +358,7 @@ export function AdminImageUpload({
         /* ── Clean Compact Dropzone Box ── */
         <div className="border-2 border-dashed border-slate-300 hover:border-slate-400 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-100/50 transition-colors relative flex flex-col items-center justify-center text-center group cursor-pointer">
           <input
+            id={uploadId}
             type="file"
             accept="image/*"
             onChange={(e) => handleFileChange(e, false)}

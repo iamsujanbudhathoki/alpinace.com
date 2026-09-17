@@ -410,10 +410,11 @@ export function TripItineraryManager({
                     {/* Day Number and Title */}
                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                       <div className="sm:col-span-3">
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        <label htmlFor={`itinerary-day-num-${index}`} className="block text-xs font-semibold text-slate-700 mb-1">
                           Day Number <span className="text-red-500">*</span>
                         </label>
                         <Input
+                          id={`itinerary-day-num-${index}`}
                           type="number"
                           min={1}
                           value={dayItem.day || index + 1}
@@ -422,10 +423,11 @@ export function TripItineraryManager({
                         />
                       </div>
                       <div className="sm:col-span-9">
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        <label htmlFor={`itinerary-day-title-${index}`} className="block text-xs font-semibold text-slate-700 mb-1">
                           Day Title <span className="text-red-500">*</span>
                         </label>
                         <Input
+                          id={`itinerary-day-title-${index}`}
                           type="text"
                           placeholder="e.g. Arrive in Kathmandu / Trek to Namche Bazaar"
                           value={dayItem.title || ""}
@@ -445,10 +447,11 @@ export function TripItineraryManager({
 
                     {/* Day Description */}
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label htmlFor={`itinerary-day-desc-${index}`} className="block text-xs font-semibold text-slate-700 mb-1">
                         Daily Description / Route Breakdown <span className="text-red-500">*</span>
                       </label>
                       <textarea
+                        id={`itinerary-day-desc-${index}`}
                         rows={3}
                         placeholder="Detail the day's route, trail conditions, mountain viewpoints, guide support, or acclimatization schedule..."
                         value={dayItem.description || ""}
@@ -470,11 +473,12 @@ export function TripItineraryManager({
                     {/* Common Highlights / Fast Fields */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
                       <div>
-                        <label className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                        <label htmlFor={`itinerary-day-altitude-${index}`} className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
                           <Mountain className="w-3 h-3 text-amber-600" />
                           <span>Max. Altitude</span>
                         </label>
                         <Input
+                          id={`itinerary-day-altitude-${index}`}
                           type="text"
                           placeholder="e.g. Kathmandu (1,400 m)"
                           value={dayItem.maxAltitude || ""}
@@ -484,11 +488,12 @@ export function TripItineraryManager({
                       </div>
 
                       <div>
-                        <label className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                        <label htmlFor={`itinerary-day-lodging-${index}`} className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
                           <BedDouble className="w-3 h-3 text-amber-600" />
                           <span>Overnight / Lodging</span>
                         </label>
                         <Input
+                          id={`itinerary-day-lodging-${index}`}
                           type="text"
                           placeholder="e.g. Overnight in Kathmandu"
                           value={dayItem.accommodation || ""}
@@ -498,11 +503,12 @@ export function TripItineraryManager({
                       </div>
 
                       <div>
-                        <label className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                        <label htmlFor={`itinerary-day-meals-${index}`} className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
                           <Utensils className="w-3 h-3 text-amber-600" />
                           <span>Meals</span>
                         </label>
                         <Input
+                          id={`itinerary-day-meals-${index}`}
                           type="text"
                           placeholder="e.g. Meals not included / B, L, D"
                           value={dayItem.meals || ""}

@@ -34,6 +34,7 @@ export function normalizeSelectValue(val: any): string {
 
 export interface AdminSearchableSelectProps {
   label?: string;
+  id?: string;
   value?: string;
   defaultValue?: string;
   options: SearchableSelectOption[];
@@ -53,6 +54,7 @@ export interface AdminSearchableSelectProps {
 
 export function AdminSearchableSelect({
   label,
+  id: externalId,
   value: valueProp,
   defaultValue,
   options = [],
@@ -83,6 +85,8 @@ export function AdminSearchableSelect({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const optionRefs = useRef<(HTMLElement | null)[]>([]);
 
+  const generatedId = useId();
+  const selectId = externalId || generatedId;
   const labelId = useId();
   const errorId = useId();
   const listboxId = useId();
@@ -333,8 +337,8 @@ export function AdminSearchableSelect({
       {label && (
         <FormLabel
           id={labelId}
+          htmlFor={selectId}
           required={required}
-          onClick={() => { if (!disabled) { triggerRef.current?.focus(); setIsOpen(true); } }}
           className="cursor-pointer"
         >
           {label}
@@ -343,6 +347,7 @@ export function AdminSearchableSelect({
 
       {/* Main Trigger */}
       <div
+        id={selectId}
         ref={triggerRef}
         role="combobox"
         tabIndex={disabled ? -1 : 0}

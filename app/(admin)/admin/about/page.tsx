@@ -346,7 +346,7 @@ export default function AdminAboutUsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-900 block">
+                  <label htmlFor="about-story-content" className="text-xs font-bold text-slate-900 block">
                     Story Content (Rich Text)
                   </label>
                   <AppRichTextEditor
@@ -377,7 +377,7 @@ export default function AdminAboutUsPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <label htmlFor="about-mission" className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                     <Target className="w-3.5 h-3.5 text-slate-600" />
                     <span>Our Mission (Rich Text)</span>
                   </label>
@@ -395,7 +395,7 @@ export default function AdminAboutUsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <label htmlFor="about-vision" className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                     <FileText className="w-3.5 h-3.5 text-slate-600" />
                     <span>Our Vision (Rich Text)</span>
                   </label>
@@ -590,7 +590,7 @@ export default function AdminAboutUsPage() {
             <div className="space-y-4 pt-2">
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-900">
+                  <label htmlFor="about-meta-title" className="text-xs font-bold text-slate-900">
                     Meta Title
                   </label>
                   <span
@@ -604,6 +604,7 @@ export default function AdminAboutUsPage() {
                   </span>
                 </div>
                 <AdminInputField
+                  id="about-meta-title"
                   placeholder="e.g. About AlpineAce | Our Team & Values"
                   value={formData.metaTitle || ""}
                   onChange={(e) => handleChange("metaTitle", e.target.value)}
@@ -613,7 +614,7 @@ export default function AdminAboutUsPage() {
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-900">
+                  <label htmlFor="about-meta-description" className="text-xs font-bold text-slate-900">
                     Meta Description
                   </label>
                   <span
@@ -627,6 +628,7 @@ export default function AdminAboutUsPage() {
                   </span>
                 </div>
                 <AdminTextareaField
+                  id="about-meta-description"
                   rows={3}
                   placeholder="Brief summary for Google search result snippets and social media previews..."
                   value={formData.metaDescription || ""}

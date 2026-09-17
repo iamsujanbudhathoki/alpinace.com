@@ -187,15 +187,11 @@ export function TeamModal({
         </div>
 
         {/* Avatar Image Selection */}
-        <div className="space-y-1">
-          <label className="block text-xs font-semibold text-slate-700">
-            Avatar Photo
-          </label>
-          <AdminImageUpload
-            value={formData.avatar || ""}
-            onChange={(url, mediaId) => setFormData({ ...formData, avatar: url, avatarMediaId: mediaId })}
-          />
-        </div>
+        <AdminImageUpload
+          label="Avatar Photo"
+          value={formData.avatar || ""}
+          onChange={(url, mediaId) => setFormData({ ...formData, avatar: url, avatarMediaId: mediaId })}
+        />
 
         {/* Display Order & Status */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

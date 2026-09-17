@@ -128,10 +128,11 @@ export function TripFaqsManager({ faqs = [], onChange }: TripFaqsManagerProps) {
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                <label htmlFor={`faq-q-${index}`} className="block text-[11px] font-bold text-slate-700 mb-1">
                   Question
                 </label>
                 <Input
+                  id={`faq-q-${index}`}
                   type="text"
                   value={faq.question}
                   onChange={(e) => handleUpdateFaq(index, "question", e.target.value)}
@@ -141,10 +142,11 @@ export function TripFaqsManager({ faqs = [], onChange }: TripFaqsManagerProps) {
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                <label htmlFor={`faq-a-${index}`} className="block text-[11px] font-bold text-slate-700 mb-1">
                   Answer
                 </label>
                 <textarea
+                  id={`faq-a-${index}`}
                   rows={2}
                   value={faq.answer}
                   onChange={(e) => handleUpdateFaq(index, "answer", e.target.value)}
@@ -451,10 +453,11 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
               {/* Author, Country & Date */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  <label htmlFor={`rev-author-${index}`} className="block text-[11px] font-bold text-slate-700 mb-1">
                     Author Name <span className="text-rose-500">*</span>
                   </label>
                   <Input
+                    id={`rev-author-${index}`}
                     type="text"
                     value={rev.author}
                     onChange={(e) => handleUpdateReview(index, "author", e.target.value)}
@@ -473,10 +476,11 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  <label htmlFor={`rev-date-${index}`} className="block text-[11px] font-bold text-slate-700 mb-1">
                     Date / Season
                   </label>
                   <Input
+                    id={`rev-date-${index}`}
                     type="text"
                     value={rev.date || ""}
                     onChange={(e) => handleUpdateReview(index, "date", e.target.value)}
@@ -488,10 +492,11 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
 
               {/* Review Text */}
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                <label htmlFor={`rev-content-${index}`} className="block text-[11px] font-bold text-slate-700 mb-1">
                   Review Text / Feedback <span className="text-rose-500">*</span>
                 </label>
                 <textarea
+                  id={`rev-content-${index}`}
                   rows={2}
                   value={rev.content}
                   onChange={(e) => handleUpdateReview(index, "content", e.target.value)}

@@ -49,60 +49,26 @@
   --spacing-modal-fixed-h: 85vh;
 }
 
-/* ── Systemic Lock & De-emphasis of Admin Layout when Modal is Active ── */
+/* ── Systemic Lock & Unified De-emphasis of Admin Layout when Modal is Active ── */
 body[data-modal-open="true"] {
   overflow: hidden !important;
 }
 
 body[data-modal-open="true"] [data-slot="admin-main"] {
   overflow: hidden !important;
-  opacity: 0.55 !important;
-  filter: blur(1.5px) grayscale(25%) brightness(0.85) !important;
-  transition: filter 0.2s ease-out, opacity 0.2s ease-out;
 }
 
 body[data-modal-open="true"] [data-slot="admin-layout"] {
   pointer-events: none !important;
   user-select: none !important;
-}
-
-body[data-modal-open="true"] [data-slot="admin-sidebar-container"],
-body[data-modal-open="true"] [data-slot="admin-sidebar"] {
-  pointer-events: none !important;
-  user-select: none !important;
-  opacity: 0.45 !important;
-  filter: blur(1.5px) grayscale(60%) brightness(0.8) !important;
-  transition: filter 0.2s ease-out, opacity 0.2s ease-out;
-}
-
-/* De-emphasize active navigation item highlights in sidebar when modal is active */
-body[data-modal-open="true"] [data-slot="admin-sidebar"] .bg-slate-900,
-body[data-modal-open="true"] [data-slot="admin-sidebar"] .bg-slate-800 {
-  background-color: #334155 !important;
-  box-shadow: none !important;
-  opacity: 0.5 !important;
-}
-
-body[data-modal-open="true"] [data-slot="admin-sidebar"] .text-amber-400 {
-  color: #94a3b8 !important;
-}
-
-body[data-modal-open="true"] [data-slot="admin-sidebar"] svg {
-  opacity: 0.5 !important;
+  filter: blur(2.5px) brightness(0.85) !important;
+  transition: filter 0.2s ease-out;
 }
 
 /* Suppress tooltips on collapsed sidebar items during modal state */
 body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:opacity-100"] {
   opacity: 0 !important;
   pointer-events: none !important;
-}
-
-body[data-modal-open="true"] [data-slot="admin-header"] {
-  pointer-events: none !important;
-  user-select: none !important;
-  opacity: 0.55 !important;
-  filter: blur(1.5px) grayscale(35%) brightness(0.85) !important;
-  transition: filter 0.2s ease-out, opacity 0.2s ease-out;
 }
 
 

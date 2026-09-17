@@ -311,7 +311,7 @@ export function TripGalleryManager({
                 placeholder="Search media..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-9 text-xs pl-9 pr-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                className="w-full h-9 text-xs pl-9 pr-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 dark:focus:border-slate-400 dark:focus:ring-slate-400/10 transition-colors"
               />
             </div>
 

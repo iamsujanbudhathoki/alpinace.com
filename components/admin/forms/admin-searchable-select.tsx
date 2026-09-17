@@ -72,6 +72,7 @@ export function AdminSearchableSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
   const [internalValue, setInternalValue] = useState<string>(() =>
     normalizeSelectValue(valueProp !== undefined ? valueProp : defaultValue)
   );
@@ -80,8 +81,11 @@ export function AdminSearchableSelect({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const optionRefs = useRef<(HTMLElement | null)[]>([]);
+
   const labelId = useId();
   const errorId = useId();
+  const listboxId = useId();
 
   const [coords, setCoords] = useState<{
     top?: number;
@@ -198,7 +202,43 @@ export function AdminSearchableSelect({
     });
   }, [options, searchQuery]);
 
-  // Find currently selected option object
+  // Helper to check if an option is currently selected
+  const isOptionSelected = useCallback((opt: SearchableSelectOption) => {
+    if (!normalizedValue) return false;
+    const optVal = String(opt.value).trim();
+    const optValLower = optVal.toLowerCase();
+    const optLabelLower = opt.label.trim().toLowerCase();
+    const vLower = normalizedValue.trim().toLowerCase();
+
+    return (
+      optVal === normalizedValue.trim() ||
+      optValLower === vLower ||
+      opt.label.trim() === normalizedValue.trim() ||
+      optLabelLower === vLower
+    );
+  }, [normalizedValue]);
+
+  // Highlight initial option when dropdown opens or filtered options change
+  useEffect(() => {
+    if (isOpen) {
+      const selectedIdx = filteredOptions.findIndex((opt) => isOptionSelected(opt));
+      setHighlightedIndex(selectedIdx >= 0 ? selectedIdx : 0);
+    } else {
+      setHighlightedIndex(-1);
+    }
+  }, [isOpen, filteredOptions, isOptionSelected]);
+
+  // Auto-scroll highlighted option into view
+  useEffect(() => {
+    if (isOpen && highlightedIndex >= 0 && optionRefs.current[highlightedIndex]) {
+      optionRefs.current[highlightedIndex]?.scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      });
+    }
+  }, [highlightedIndex, isOpen]);
+
+  // Find currently selected option object for trigger display
   const selectedOption = useMemo(() => {
     if (!normalizedValue) return null;
     const vLower = normalizedValue.trim().toLowerCase();
@@ -230,6 +270,7 @@ export function AdminSearchableSelect({
     setInternalValue(option.value);
     onChange?.(option.value, option);
     setIsOpen(false);
+    triggerRef.current?.focus();
   };
 
   const handleClear = (e: React.MouseEvent) => {
@@ -239,25 +280,52 @@ export function AdminSearchableSelect({
     setSearchQuery("");
   };
 
+  // Keyboard navigation & accessibility handler
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      setIsOpen(false);
+    if (disabled) return;
+
+    if (!isOpen) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+      return;
     }
-  };
 
-  const isOptionSelected = (opt: SearchableSelectOption) => {
-    if (!normalizedValue) return false;
-    const optVal = String(opt.value).trim();
-    const optValLower = optVal.toLowerCase();
-    const optLabelLower = opt.label.trim().toLowerCase();
-    const vLower = normalizedValue.trim().toLowerCase();
-
-    return (
-      optVal === normalizedValue.trim() ||
-      optValLower === vLower ||
-      opt.label.trim() === normalizedValue.trim() ||
-      optLabelLower === vLower
-    );
+    switch (e.key) {
+      case "ArrowDown": {
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          filteredOptions.length > 0 ? (prev < filteredOptions.length - 1 ? prev + 1 : 0) : -1
+        );
+        break;
+      }
+      case "ArrowUp": {
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          filteredOptions.length > 0 ? (prev > 0 ? prev - 1 : filteredOptions.length - 1) : -1
+        );
+        break;
+      }
+      case "Enter": {
+        e.preventDefault();
+        if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+          handleSelect(filteredOptions[highlightedIndex], e);
+        }
+        break;
+      }
+      case "Escape": {
+        e.preventDefault();
+        setIsOpen(false);
+        triggerRef.current?.focus();
+        break;
+      }
+      case "Tab": {
+        // Natural focus transition to next form element while closing dropdown
+        setIsOpen(false);
+        break;
+      }
+    }
   };
 
   return (
@@ -279,12 +347,6 @@ export function AdminSearchableSelect({
         role="combobox"
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        onKeyDown={(e) => {
-          if (!disabled && (e.key === "Enter" || e.key === " ")) {
-            e.preventDefault();
-            setIsOpen(!isOpen);
-          }
-        }}
         className={`w-full flex items-center justify-between bg-white border ${
           error
             ? "border-rose-500 focus-visible:ring-1 focus-visible:ring-rose-500/20"
@@ -296,6 +358,10 @@ export function AdminSearchableSelect({
         } rounded-md px-3 py-2 text-xs font-medium text-left transition-colors outline-none`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        aria-controls={isOpen ? listboxId : undefined}
+        aria-activedescendant={
+          isOpen && highlightedIndex >= 0 ? `${listboxId}-opt-${highlightedIndex}` : undefined
+        }
         aria-labelledby={label ? labelId : undefined}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
@@ -351,10 +417,12 @@ export function AdminSearchableSelect({
         </p>
       )}
 
-      {/* Portal-based Dropdown Menu Overlay (Fixed Position to avoid layout shift & scrollbars) */}
+      {/* Portal-based Dropdown Menu Overlay */}
       {isOpen && mounted && coords && createPortal(
         <div
           ref={dropdownRef}
+          id={listboxId}
+          role="listbox"
           style={{
             position: "fixed",
             ...(coords.top !== undefined ? { top: `${coords.top}px` } : {}),
@@ -376,6 +444,7 @@ export function AdminSearchableSelect({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder={searchPlaceholder}
                 className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
               />
@@ -398,23 +467,22 @@ export function AdminSearchableSelect({
                 {emptyText} {searchQuery ? `for "${searchQuery}"` : ""}
               </div>
             ) : (
-              filteredOptions.map((opt) => {
+              filteredOptions.map((opt, index) => {
                 const selected = isOptionSelected(opt);
+                const isHighlighted = index === highlightedIndex;
 
                 if (renderOption) {
                   return (
                     <div
                       key={opt.value}
-                      role="button"
-                      tabIndex={0}
+                      id={`${listboxId}-opt-${index}`}
+                      role="option"
+                      aria-selected={selected}
+                      ref={(el) => { optionRefs.current[index] = el; }}
                       onClick={(e) => handleSelect(opt, e)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          handleSelect(opt, e);
-                        }
-                      }}
-                      className="cursor-pointer"
+                      className={`cursor-pointer rounded-md transition-colors ${
+                        isHighlighted ? "bg-slate-100 ring-1 ring-slate-900/10" : ""
+                      }`}
                     >
                       {renderOption(opt, selected)}
                     </div>
@@ -424,11 +492,15 @@ export function AdminSearchableSelect({
                 return (
                   <button
                     key={opt.value}
+                    id={`${listboxId}-opt-${index}`}
+                    role="option"
+                    aria-selected={selected}
+                    ref={(el) => { optionRefs.current[index] = el; }}
                     type="button"
                     onClick={(e) => handleSelect(opt, e)}
                     className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition-colors cursor-pointer ${
-                      selected
-                        ? "bg-slate-100 text-slate-900 font-bold"
+                      isHighlighted || selected
+                        ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
                         : "hover:bg-slate-50 text-slate-800"
                     }`}
                   >

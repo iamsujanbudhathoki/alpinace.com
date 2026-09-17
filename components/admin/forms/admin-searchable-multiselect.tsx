@@ -44,13 +44,17 @@ export function AdminSearchableMultiSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const optionRefs = useRef<(HTMLElement | null)[]>([]);
+
   const labelId = useId();
   const errorId = useId();
+  const listboxId = useId();
 
   const [coords, setCoords] = useState<{
     top?: number;
@@ -158,7 +162,26 @@ export function AdminSearchableMultiSelect({
     return options.filter((opt) => valSet.has(opt.value));
   }, [options, values]);
 
-  const handleToggleOption = (optValue: string, e?: React.MouseEvent) => {
+  // Highlight initial option when dropdown opens
+  useEffect(() => {
+    if (isOpen) {
+      setHighlightedIndex(filteredOptions.length > 0 ? 0 : -1);
+    } else {
+      setHighlightedIndex(-1);
+    }
+  }, [isOpen, filteredOptions]);
+
+  // Auto-scroll highlighted option into view
+  useEffect(() => {
+    if (isOpen && highlightedIndex >= 0 && optionRefs.current[highlightedIndex]) {
+      optionRefs.current[highlightedIndex]?.scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      });
+    }
+  }, [highlightedIndex, isOpen]);
+
+  const handleToggleOption = (optValue: string, e?: React.MouseEvent | React.KeyboardEvent) => {
     if (e) {
       e.stopPropagation();
     }
@@ -182,8 +205,55 @@ export function AdminSearchableMultiSelect({
     onChange([]);
   };
 
+  // Keyboard navigation & accessibility handler
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled) return;
+
+    if (!isOpen) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case "ArrowDown": {
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          filteredOptions.length > 0 ? (prev < filteredOptions.length - 1 ? prev + 1 : 0) : -1
+        );
+        break;
+      }
+      case "ArrowUp": {
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          filteredOptions.length > 0 ? (prev > 0 ? prev - 1 : filteredOptions.length - 1) : -1
+        );
+        break;
+      }
+      case "Enter": {
+        e.preventDefault();
+        if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+          handleToggleOption(filteredOptions[highlightedIndex].value, e);
+        }
+        break;
+      }
+      case "Escape": {
+        e.preventDefault();
+        setIsOpen(false);
+        triggerRef.current?.focus();
+        break;
+      }
+      case "Tab": {
+        setIsOpen(false);
+        break;
+      }
+    }
+  };
+
   return (
-    <div className={`space-y-1 relative ${className}`} ref={containerRef}>
+    <div className={`space-y-1 relative ${className}`} ref={containerRef} onKeyDown={handleKeyDown}>
       {label && (
         <FormLabel
           id={labelId}
@@ -201,12 +271,6 @@ export function AdminSearchableMultiSelect({
         role="combobox"
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        onKeyDown={(e) => {
-          if (!disabled && (e.key === "Enter" || e.key === " ")) {
-            e.preventDefault();
-            setIsOpen(!isOpen);
-          }
-        }}
         className={`w-full flex items-center justify-between min-h-[34px] bg-white border ${
           error
             ? "border-rose-500 focus-visible:ring-1 focus-visible:ring-rose-500/20"
@@ -218,6 +282,10 @@ export function AdminSearchableMultiSelect({
         } rounded-md px-3 py-2 text-xs font-medium text-left transition-colors outline-none gap-2`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        aria-controls={isOpen ? listboxId : undefined}
+        aria-activedescendant={
+          isOpen && highlightedIndex >= 0 ? `${listboxId}-opt-${highlightedIndex}` : undefined
+        }
         aria-labelledby={label ? labelId : undefined}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
@@ -275,10 +343,13 @@ export function AdminSearchableMultiSelect({
         </p>
       )}
 
-      {/* Portal-based Dropdown Menu Overlay (Fixed Position to avoid layout shift & scrollbars) */}
+      {/* Portal-based Dropdown Menu Overlay */}
       {isOpen && mounted && coords && createPortal(
         <div
           ref={dropdownRef}
+          id={listboxId}
+          role="listbox"
+          aria-multiselectable="true"
           style={{
             position: "fixed",
             ...(coords.top !== undefined ? { top: `${coords.top}px` } : {}),
@@ -289,6 +360,7 @@ export function AdminSearchableMultiSelect({
             zIndex: 99999,
           }}
           className="bg-white border border-slate-200 rounded-md shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100 flex flex-col"
+          onKeyDown={handleKeyDown}
         >
           {/* Search Box inside dropdown */}
           <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2 shrink-0">
@@ -298,6 +370,7 @@ export function AdminSearchableMultiSelect({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder={searchPlaceholder}
               className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
             />
@@ -319,17 +392,22 @@ export function AdminSearchableMultiSelect({
                 {emptyText} {searchQuery ? `for "${searchQuery}"` : ""}
               </div>
             ) : (
-              filteredOptions.map((opt) => {
+              filteredOptions.map((opt, index) => {
                 const isSelected = values.includes(opt.value);
+                const isHighlighted = index === highlightedIndex;
 
                 return (
                   <button
                     key={opt.value}
+                    id={`${listboxId}-opt-${index}`}
+                    role="option"
+                    aria-selected={isSelected}
+                    ref={(el) => { optionRefs.current[index] = el; }}
                     type="button"
                     onClick={(e) => handleToggleOption(opt.value, e)}
                     className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-colors cursor-pointer ${
-                      isSelected
-                        ? "bg-stone-100 text-stone-900 font-bold"
+                      isHighlighted || isSelected
+                        ? "bg-stone-100 text-stone-900 font-bold shadow-2xs"
                         : "hover:bg-slate-50 text-slate-800"
                     }`}
                   >

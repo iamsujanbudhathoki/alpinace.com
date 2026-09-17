@@ -6,6 +6,7 @@ import { Search, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, Folde
 import { toast } from "sonner";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
+import { AdminStatsCard } from "@/components/admin/ui/admin-stats-card";
 import { AdminTablePagination } from "@/components/admin/ui/admin-table";
 import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
@@ -367,51 +368,33 @@ export default function AdminMediaPage() {
 
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold">
-            <ImageIcon className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-700">Total Assets</div>
-            <div className="text-lg font-bold text-slate-900">{totalItems || allAssetsForStats.length}</div>
-          </div>
-        </div>
+        <AdminStatsCard
+          label="Total Assets"
+          value={totalItems || allAssetsForStats.length}
+          icon={ImageIcon}
+          iconBgClass="bg-slate-100 border border-slate-200 text-slate-700"
+        />
 
-        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center font-bold">
-            <FolderOpen className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-700">Everest Assets</div>
-            <div className="text-lg font-bold text-slate-900">
-              {allAssetsForStats.filter((a) => a.category === "Everest & Peaks").length}
-            </div>
-          </div>
-        </div>
+        <AdminStatsCard
+          label="Everest Assets"
+          value={allAssetsForStats.filter((a) => a.category === "Everest & Peaks").length}
+          icon={FolderOpen}
+          iconBgClass="bg-blue-50 border border-blue-200 text-blue-700"
+        />
 
-        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-bold">
-            <Tag className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-700">Annapurna Assets</div>
-            <div className="text-lg font-bold text-slate-900">
-              {allAssetsForStats.filter((a) => a.category === "Annapurna Region").length}
-            </div>
-          </div>
-        </div>
+        <AdminStatsCard
+          label="Annapurna Assets"
+          value={allAssetsForStats.filter((a) => a.category === "Annapurna Region").length}
+          icon={Tag}
+          iconBgClass="bg-purple-50 border border-purple-200 text-purple-700"
+        />
 
-        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-bold">
-            <Check className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-700">Helicopter Charters</div>
-            <div className="text-lg font-bold text-slate-900">
-              {allAssetsForStats.filter((a) => a.category === "Helicopter Charters").length}
-            </div>
-          </div>
-        </div>
+        <AdminStatsCard
+          label="Helicopter Charters"
+          value={allAssetsForStats.filter((a) => a.category === "Helicopter Charters").length}
+          icon={Check}
+          iconBgClass="bg-emerald-50 border border-emerald-200 text-emerald-700"
+        />
       </div>
 
       {/* Control Bar: Search & Category Filter */}

@@ -8,7 +8,9 @@ interface AdminStatsCardProps {
   icon: LucideIcon;
   trendText?: string;
   trendType?: "positive" | "negative" | "warning" | "neutral";
+  iconBgClass?: string;
   iconColorClass?: string;
+  className?: string;
 }
 
 export function AdminStatsCard({
@@ -18,13 +20,16 @@ export function AdminStatsCard({
   icon: Icon,
   trendText,
   trendType = "positive",
+  iconBgClass = "bg-slate-50 border border-slate-200 text-slate-700",
+  iconColorClass = "",
+  className = "",
 }: AdminStatsCardProps) {
   return (
-    <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-2 relative overflow-hidden transition-all">
+    <div className={`p-4 bg-white border border-slate-200 rounded-lg space-y-2 relative overflow-hidden transition-all ${className}`}>
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-slate-700">{label}</span>
-        <div className="w-8 h-8 rounded-md bg-slate-50 border border-slate-200 text-slate-700 flex items-center justify-center shrink-0">
-          <Icon className="w-4 h-4" />
+        <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${iconBgClass}`}>
+          <Icon className={`w-4 h-4 ${iconColorClass}`} />
         </div>
       </div>
       <div>

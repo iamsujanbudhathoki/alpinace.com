@@ -3,13 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Plus, Search, Eye, Edit, Trash2, Sparkles, Image as ImageIcon, Maximize2, GitMerge, GripVertical, Save, Check, Loader2, Clock } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, Activity, CheckCircle2, FileEdit, Image as ImageIcon, Maximize2, GitMerge, GripVertical, Save, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityItem, ActivityStatus } from "@/lib/admin-data";
 import { ActivityService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 import { ActivityFormModal, DeleteActivityModal } from "@/components/admin/modals/activity-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import { AdminStatsCard } from "@/components/admin/ui/admin-stats-card";
 import {
   AdminTableContainer,
   AdminTable,
@@ -233,35 +234,26 @@ export default function AdminActivitiesPage() {
 
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-700">Total Activities</div>
-            <div className="text-lg font-bold text-slate-900">{stats.total}</div>
-          </div>
-        </div>
+        <AdminStatsCard
+          label="Total Activities"
+          value={stats.total}
+          icon={Activity}
+          iconBgClass="bg-slate-100 border border-slate-200 text-slate-700"
+        />
 
-        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-bold">
-            <Check className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-700">Active Activities</div>
-            <div className="text-lg font-bold text-slate-900">{stats.active}</div>
-          </div>
-        </div>
+        <AdminStatsCard
+          label="Active Activities"
+          value={stats.active}
+          icon={CheckCircle2}
+          iconBgClass="bg-emerald-50 border border-emerald-200 text-emerald-700"
+        />
 
-        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center font-bold">
-            <Clock className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold text-slate-700">Draft Activities</div>
-            <div className="text-lg font-bold text-slate-900">{stats.draft}</div>
-          </div>
-        </div>
+        <AdminStatsCard
+          label="Draft Activities"
+          value={stats.draft}
+          icon={FileEdit}
+          iconBgClass="bg-amber-50 border border-amber-200 text-amber-700"
+        />
       </div>
 
       {/* Filters & Search Toolbar */}
@@ -370,8 +362,8 @@ export default function AdminActivitiesPage() {
                           </button>
                         </div>
                       ) : (
-                        <div className="w-9 h-9 mx-auto rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-300">
-                          <Sparkles className="w-4 h-4" />
+                        <div className="w-9 h-9 mx-auto rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400">
+                          <Activity className="w-4 h-4" />
                         </div>
                       )}
                     </AdminTableCell>

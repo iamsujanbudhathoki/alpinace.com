@@ -14,11 +14,13 @@ export function CookieConsentBanner() {
       // Delay showing banner slightly for smooth UX
       const timer = setTimeout(() => setShowBanner(true), 1000);
       return () => clearTimeout(timer);
-    } else if (consentChoice === "granted" && typeof window !== "undefined" && typeof window.gtag === "function") {
-      // Re-apply granted consent on return visits
-      window.gtag("consent", "update", {
-        analytics_storage: "granted",
-      });
+    } else if (consentChoice === "granted" && typeof window !== "undefined") {
+      const win = window as any;
+      if (typeof win.gtag === "function") {
+        win.gtag("consent", "update", {
+          analytics_storage: "granted",
+        });
+      }
     }
   }, []);
 
@@ -26,8 +28,9 @@ export function CookieConsentBanner() {
     localStorage.setItem("alpine_cookie_consent", "granted");
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("alpine_cookie_consent_updated"));
-      if (typeof window.gtag === "function") {
-        window.gtag("consent", "update", {
+      const win = window as any;
+      if (typeof win.gtag === "function") {
+        win.gtag("consent", "update", {
           analytics_storage: "granted",
         });
       }
@@ -39,8 +42,9 @@ export function CookieConsentBanner() {
     localStorage.setItem("alpine_cookie_consent", "denied");
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("alpine_cookie_consent_updated"));
-      if (typeof window.gtag === "function") {
-        window.gtag("consent", "update", {
+      const win = window as any;
+      if (typeof win.gtag === "function") {
+        win.gtag("consent", "update", {
           analytics_storage: "denied",
         });
       }

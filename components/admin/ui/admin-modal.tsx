@@ -36,7 +36,7 @@ export function AdminModal({
   children,
   footer,
   maxWidth = "xl",
-  maxHeight = "85vh",
+  maxHeight = "var(--spacing-modal-max-h)",
   fixedHeight,
   preventOutsideClose = true,
   hideHeader = false,
@@ -91,9 +91,9 @@ export function AdminModal({
       <DialogContent
         showCloseButton={true}
         onCloseClick={onClose}
-        className={`${maxWidthClass} w-full flex flex-col overflow-hidden max-h-[85vh] ${
+        className={`${maxWidthClass} w-full flex flex-col overflow-hidden max-h-modal-max-h ${
           isFixedHeight
-            ? "h-[85vh] max-h-[85vh] sm:h-[85vh] sm:max-h-[85vh] min-h-[460px]"
+            ? "h-modal-fixed-h max-h-modal-max-h sm:h-modal-fixed-h sm:max-h-modal-max-h min-h-100"
             : "h-auto"
         } ${
           isDark

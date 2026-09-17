@@ -55,7 +55,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Sidebar Overlay Drawer */}
       {mobileSidebarOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-drawer md:hidden flex animate-in fade-in duration-200">
           <div
             className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs"
             onClick={() => setMobileSidebarOpen(false)}

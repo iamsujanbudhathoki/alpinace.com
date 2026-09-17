@@ -685,7 +685,17 @@ export function TrekFormModal({
                   />
                 </div>
 
-                <div className="col-span-2 flex items-center gap-6 pt-2">
+                <div className="col-span-2">
+                  <AdminInputField
+                    label="Best Season"
+                    required
+                    placeholder="e.g. March - May & Sept - Nov"
+                    error={errors.bestSeason?.message}
+                    {...register("bestSeason")}
+                  />
+                </div>
+
+                <div className="col-span-2 flex items-center gap-6 pt-1">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -706,16 +716,6 @@ export function TrekFormModal({
 
                 <div>
                   <AdminInputField
-                    label="Best Season"
-                    required
-                    placeholder="e.g. March - May & Sept - Nov"
-                    error={errors.bestSeason?.message}
-                    {...register("bestSeason")}
-                  />
-                </div>
-
-                <div>
-                  <AdminInputField
                     label="Group Size Range"
                     placeholder="e.g. 2 - 12 Travelers"
                     {...register("groupSizeRange")}
@@ -730,7 +730,7 @@ export function TrekFormModal({
                   />
                 </div>
 
-                <div>
+                <div className="col-span-2">
                   <AdminInputField
                     label="Accommodation Type"
                     placeholder="e.g. Luxury Lodges & Heritage Hotels"

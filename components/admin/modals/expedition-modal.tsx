@@ -688,7 +688,15 @@ export function ExpeditionFormModal({
                   />
                 </div>
 
-                <div className="col-span-2 flex items-center gap-6 pt-2">
+                <div className="col-span-2">
+                  <AdminInputField
+                    label="Best Climbing Season"
+                    placeholder="e.g. Spring (April - May) & Autumn"
+                    {...register("bestSeason")}
+                  />
+                </div>
+
+                <div className="col-span-2 flex items-center gap-6 pt-1">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -705,14 +713,6 @@ export function ExpeditionFormModal({
                     />
                     <span className="text-sm font-medium text-slate-700">Popular Package</span>
                   </label>
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Best Climbing Season"
-                    placeholder="e.g. Spring (April - May) & Autumn"
-                    {...register("bestSeason")}
-                  />
                 </div>
 
                 <div>

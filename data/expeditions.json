@@ -1,0 +1,1371 @@
+[
+  {
+    "id": "expedition-ama-dablam",
+    "title": "Ama Dablam Expedition (6,812m)",
+    "slug": "ama-dablam-expedition",
+    "category": "expeditions",
+    "region": "Everest Region",
+    "durationDays": 30,
+    "difficulty": "Extreme Technical",
+    "maxAltitudeM": 6812,
+    "bestSeason": ["Autumn", "Spring"],
+    "priceUSD": 7800,
+    "isFeatured": true,
+    "status": "Published",
+    "rating": 4.98,
+    "reviewsCount": 29,
+    "peakHeightM": 6812,
+    "climbingGrade": "Technical Alpine Grade (TD/5.7/WI3)",
+    "sherpaGuideRatio": "1:1 Dedicated IFMGA Sherpa Guide",
+    "oxygenRequired": false,
+    "overview": "Ama Dablam (6,812m) is widely regarded as one of the most beautiful and coveted technical peak climbs in the Himalayas. Known as the 'Matterhorn of the Himalayas', this expedition combines severe vertical rock, mixed snow, ice climbing, and breathtaking exposure along the South-West Ridge route.",
+    "highlights": [
+      "Summit the iconic 6,812m Ama Dablam pinnacle via the classic South-West Ridge",
+      "Fixed rope vertical rock climbing on the famous Yellow Tower and Grey Tower",
+      "Dedicated 1:1 IFMGA / NMA Certified High Altitude Sherpa Guide ratio",
+      "Spectacular Base Camp luxury setup with full dining, private tents, and internet",
+      "Stunning views of Everest, Lhotse, Makalu, and Cho Oyu from high camps"
+    ],
+    "inclusionsText": "Full logistics support, IFMGA summit guide 1:1 ratio, NMA climbing permits, garbage deposit, Kathmandu hotel 4 nights, flight Kathmandu-Lukla-Kathmandu, all high altitude meals and tents, fixed rope charges.",
+    "exclusionsText": "International airfare, Nepal visa fees, personal summit climbing gear, personal travel/evacuation insurance, guide/staff tips ($500+ recommended), personal alcohol & expenses.",
+    "included": [
+      "1:1 IFMGA Certified Sherpa Guide ratio",
+      "Official NMA Expedition Permit & National Park Fees",
+      "Round-trip domestic flights (Kathmandu - Lukla - Kathmandu)",
+      "Full Base Camp & High Camp logistics, tents, and meals",
+      "Fixed rope and safety gear deployment",
+      "Kathmandu 4-Star Hotel accommodation (4 nights with breakfast)"
+    ],
+    "excluded": [
+      "International flights and airport taxes",
+      "Climbing gear rental (crampons, ice axes, harness, boots)",
+      "High altitude emergency evacuation insurance",
+      "Summit bonus for Sherpa guide ($800 - $1000 standard)"
+    ],
+    "metaTitle": "Ama Dablam Expedition 6812m | Technical Himalaya Peak Climb",
+    "metaDescription": "Climb Ama Dablam (6,812m) with certified IFMGA Sherpa guides. 30-day technical expedition via the South-West Ridge with 1:1 guide ratio and full logistical support.",
+    "keywords": [
+      "Ama Dablam climb",
+      "Ama Dablam expedition",
+      "technical peak climbing Nepal",
+      "6000m peak Nepal",
+      "Everest region expedition"
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu & Transfer to Hotel",
+        "description": "Arrive at Tribhuvan International Airport in Kathmandu. Transfer to hotel, rest, and evening team welcome dinner with expedition leaders.",
+        "altitudeM": 1400,
+        "accommodation": "4-Star Hotel",
+        "meals": "Dinner"
+      },
+      {
+        "day": 2,
+        "title": "Expedition Briefing & Equipment Check",
+        "description": "Official Ministry of Tourism briefing, gear inspection with IFMGA guides, and final permit checks.",
+        "altitudeM": 1400,
+        "accommodation": "4-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 3,
+        "title": "Flight to Lukla & Trek to Phakding",
+        "description": "Scenic 35-minute flight to Tenzing-Hillary Airport in Lukla. Begin trek through Sherpa villages along the Dudh Koshi river to Phakding.",
+        "altitudeM": 2610,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 4,
+        "title": "Trek to Namche Bazaar",
+        "description": "Ascend through pine forests, cross high suspension bridges, and climb up to the vibrant Sherpa capital of Namche Bazaar.",
+        "altitudeM": 3440,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 5,
+        "title": "Acclimatization Day at Namche Bazaar",
+        "description": "Hike to Everest View Hotel (3,880m) for panoramic views of Ama Dablam, Lhotse, and Everest. Return to Namche for preparation.",
+        "altitudeM": 3440,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 6,
+        "title": "Trek to Tengboche Monastery",
+        "description": "Follow the cliffside trail with magnificent views of Ama Dablam soaring above, reaching the historic Tengboche Monastery.",
+        "altitudeM": 3867,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 7,
+        "title": "Trek to Pangboche",
+        "description": "Descend through rhododendron forests to Deboche, then cross the Imja Khola to Pangboche village, home of summit Sherpas.",
+        "altitudeM": 3985,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 8,
+        "title": "Trek to Ama Dablam Base Camp",
+        "description": "Leave the main trail and ascend grassy slopes directly beneath the soaring face of Ama Dablam to set up Base Camp.",
+        "altitudeM": 4600,
+        "accommodation": "Expedition Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 9,
+        "title": "Puja Ceremony & Base Camp Rest",
+        "description": "Traditional Sherpa Buddhist Puja ceremony to ask the mountain deity for safe passage. Gear organization and rope practice.",
+        "altitudeM": 4600,
+        "accommodation": "Expedition Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 10,
+        "title": "Rotation 1: Hike to Yak Camp",
+        "description": "First rotation carrying high altitude gear up to Yak Camp (5,400m) for acclimatization practice.",
+        "altitudeM": 5400,
+        "accommodation": "High Altitude Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 11,
+        "title": "Rotation 1: Touch Camp 1 & Return to Base Camp",
+        "description": "Climb up granite boulders to Camp 1 (5,700m). Practice jumar techniques on fixed ropes before returning to Base Camp.",
+        "altitudeM": 4600,
+        "accommodation": "Expedition Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 12,
+        "title": "Rest & Acclimatization at Base Camp",
+        "description": "Full recovery day at Base Camp. Massages, gear tuning, and weather forecast analysis.",
+        "altitudeM": 4600,
+        "accommodation": "Expedition Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 13,
+        "title": "Climbing Window: Move to Camp 1",
+        "description": "Ascend to Camp 1 via Yak Camp across boulder fields and slab rock sections.",
+        "altitudeM": 5700,
+        "accommodation": "Camp 1 Tents on Slabs",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 14,
+        "title": "Climb to Camp 2 (The Yellow Tower)",
+        "description": "Navigate technical granite ridges including the 5.7 Yellow Tower pitch to establish Camp 2 on narrow rock ledge.",
+        "altitudeM": 5950,
+        "accommodation": "Camp 2 Ledge Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 15,
+        "title": "Climb to Camp 3 (Mushroom Ridge)",
+        "description": "Cross the famous snow-and-ice Mushroom Ridge to pitch Camp 3 beneath the Dablam glacier hanging ice face.",
+        "altitudeM": 6300,
+        "accommodation": "Camp 3 Snow Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 16,
+        "title": "SUMMIT PUSH: Ama Dablam (6,812m) & Return to Camp 2",
+        "description": "Midnight alpine start. Ascend steep 50-degree ice slopes alongside the Dablam hanging glacier to reach the summit pyramid (6,812m). Unrivaled 360-degree Himalayan panorama. Rappel down safely to Camp 2.",
+        "altitudeM": 6812,
+        "accommodation": "Camp 2 Tents",
+        "meals": "High Altitude Rations"
+      },
+      {
+        "day": 17,
+        "title": "Descend from Camp 2 to Base Camp",
+        "description": "Rappel down the remaining fixed ropes past Camp 1 and Yak Camp, returning to warm hospitality at Base Camp.",
+        "altitudeM": 4600,
+        "accommodation": "Expedition Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 18,
+        "title": "Contingency / Reserve Weather Day",
+        "description": "Extra day built in for adverse weather, high winds, or additional summit attempt window.",
+        "altitudeM": 4600,
+        "accommodation": "Expedition Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 19,
+        "title": "Contingency / Reserve Weather Day 2",
+        "description": "Second reserve day ensuring high success rate for summit attempt.",
+        "altitudeM": 4600,
+        "accommodation": "Expedition Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 20,
+        "title": "Base Camp Teardown & Packing",
+        "description": "Pack equipment, clear rubbish following leave-no-trace principles, and prepare baggage for porter transport.",
+        "altitudeM": 4600,
+        "accommodation": "Expedition Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 21,
+        "title": "Trek Base Camp to Pangboche",
+        "description": "Descend from Base Camp back to Pangboche village and celebrate with local lodge owners.",
+        "altitudeM": 3985,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 22,
+        "title": "Trek Pangboche to Namche Bazaar",
+        "description": "Retrace steps through Tengboche Monastery back into Namche Bazaar.",
+        "altitudeM": 3440,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 23,
+        "title": "Trek Namche Bazaar to Lukla",
+        "description": "Final day of walking along the Dudh Koshi river back to Lukla. Farewell celebration with porters.",
+        "altitudeM": 2860,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 24,
+        "title": "Flight Lukla to Kathmandu",
+        "description": "Morning flight back to Kathmandu. Transfer to hotel and afternoon at leisure.",
+        "altitudeM": 1400,
+        "accommodation": "4-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 25,
+        "title": "Rest & Free Day in Kathmandu",
+        "description": "Free day for souvenir shopping, spa treatment, or exploring Thamel.",
+        "altitudeM": 1400,
+        "accommodation": "4-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 26,
+        "title": "Government Debriefing & Reserve Day",
+        "description": "Official Ministry of Tourism debriefing and certification verification.",
+        "altitudeM": 1400,
+        "accommodation": "4-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 27,
+        "title": "Cultural Sightseeing Tour",
+        "description": "Guided visit to Pashupatinath Temple and Boudhanath Stupa.",
+        "altitudeM": 1400,
+        "accommodation": "4-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 28,
+        "title": "Farewell Celebration Dinner",
+        "description": "Gala farewell dinner with Alpine Ace leadership team and summit photo presentation.",
+        "altitudeM": 1400,
+        "accommodation": "4-Star Hotel",
+        "meals": "Breakfast, Dinner"
+      },
+      {
+        "day": 29,
+        "title": "Buffer Day for International Departures",
+        "description": "Relaxation and packing day in Kathmandu.",
+        "altitudeM": 1400,
+        "accommodation": "4-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 30,
+        "title": "Final Departure from Kathmandu",
+        "description": "Airport transfer for international homeward flight.",
+        "altitudeM": 1400,
+        "accommodation": "N/A",
+        "meals": "Breakfast"
+      }
+    ],
+    "departureDates": [
+      {
+        "id": "dep-ama-01",
+        "startDate": "2026-10-15",
+        "endDate": "2026-11-13",
+        "priceUSD": 7800,
+        "seatsTotal": 8,
+        "seatsAvailable": 3,
+        "status": "Guaranteed"
+      },
+      {
+        "id": "dep-ama-02",
+        "startDate": "2026-11-01",
+        "endDate": "2026-11-30",
+        "priceUSD": 7800,
+        "seatsTotal": 8,
+        "seatsAvailable": 5,
+        "status": "Available"
+      },
+      {
+        "id": "dep-ama-03",
+        "startDate": "2027-04-10",
+        "endDate": "2027-05-09",
+        "priceUSD": 8200,
+        "seatsTotal": 8,
+        "seatsAvailable": 6,
+        "status": "Available"
+      }
+    ],
+    "faqs": [
+      {
+        "id": "faq-ama-01",
+        "question": "What technical experience is required for Ama Dablam?",
+        "answer": "Climbers must have prior experience with 5000m-6000m peaks, proficiency with jumars on fixed ropes, 5.7 rock climbing capability, and front-pointing with crampons on 50-degree ice."
+      },
+      {
+        "id": "faq-ama-02",
+        "question": "What is the guide-to-climber ratio on the summit push?",
+        "answer": "We maintain a strict 1:1 ratio between climbing Sherpa and climber above Base Camp for maximum safety and individual pacing."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-ama-01",
+        "author": "Markus Weber",
+        "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+        "rating": 5,
+        "date": "2025-11-20",
+        "title": "The pinnacle of my mountaineering journey!",
+        "comment": "Ama Dablam was a dream come true. The technical rock on the Yellow Tower and snow ridge to the summit were unbelievable. Alpine Ace's 1:1 Sherpa support was exceptional."
+      }
+    ]
+  },
+  {
+    "id": "expedition-island-peak",
+    "title": "Island Peak (Imja Tse) Expedition (6,189m)",
+    "slug": "island-peak-expedition",
+    "category": "expeditions",
+    "region": "Everest Region",
+    "durationDays": 18,
+    "difficulty": "Challenging",
+    "maxAltitudeM": 6189,
+    "bestSeason": ["Spring", "Autumn"],
+    "priceUSD": 2650,
+    "isFeatured": true,
+    "status": "Published",
+    "rating": 4.92,
+    "reviewsCount": 42,
+    "peakHeightM": 6189,
+    "climbingGrade": "PD+ (Alpine Snow & Ice Climb)",
+    "sherpaGuideRatio": "1:2 Guide Ratio",
+    "oxygenRequired": false,
+    "overview": "Island Peak (6,189m), locally known as Imja Tse, is Nepal's most popular trekking peak. Rising in the middle of the Chhukung valley, it offers an incredible introduction to Himalayan high altitude mountaineering with a non-extreme technical glacier wall traverse.",
+    "highlights": [
+      "Summit 6,189m Island Peak with breathtaking views of Lhotse South Face and Makalu",
+      "Comprehensive glacier and climbing training day at High Camp",
+      "Combined with the legendary Everest Base Camp and Kala Patthar trek",
+      "Crossing the final headwall using fixed lines and ascenders"
+    ],
+    "inclusionsText": "NMA climbing permit, all tea house and tented accommodations, climbing Sherpa guide (1:2 ratio), Lukla flights, Everest National Park entry permit, climbing group gear.",
+    "exclusionsText": "International flights, personal climbing boots/crampons, travel insurance covering search & rescue up to 6500m, personal drinks and tips.",
+    "included": [
+      "NMA Peak Climbing Permit & Sagarmatha Park Fees",
+      "Experienced Summit Sherpa Guide (1:2 ratio)",
+      "Roundtrip Lukla flights & transfers",
+      "All meals & accommodation during trek and climb",
+      "Tents, cooking staff, and group mountaineering gear"
+    ],
+    "excluded": [
+      "Personal mountaineering boots & crampons (available for rental in Chhukung)",
+      "Travel insurance including helicopter evacuation",
+      "Guide summit bonus ($250-350 standard)"
+    ],
+    "metaTitle": "Island Peak Expedition 6189m | Climb Imja Tse Nepal",
+    "metaDescription": "Climb Island Peak (6,189m) in Nepal with expert Sherpa guides. 18-day itinerary combining Everest Base Camp and Island Peak summit.",
+    "keywords": [
+      "Island Peak climb",
+      "Imja Tse expedition",
+      "Nepal 6000m peak",
+      "Everest trekking peak",
+      "Island Peak itinerary"
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu",
+        "description": "Welcome at airport, hotel check-in, and evening trip orientation.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Dinner"
+      },
+      {
+        "day": 2,
+        "title": "Flight to Lukla & Trek to Phakding",
+        "description": "Scenic flight to Lukla (2,860m) and 3-hour trek along the Dudh Koshi river.",
+        "altitudeM": 2610,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 3,
+        "title": "Trek to Namche Bazaar",
+        "description": "Ascend through Hillary Suspension bridge to reach Namche Bazaar.",
+        "altitudeM": 3440,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 4,
+        "title": "Acclimatization at Namche",
+        "description": "Hike to Everest View Hotel for panoramic mountain views.",
+        "altitudeM": 3440,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 5,
+        "title": "Trek to Tengboche",
+        "description": "Trek to famous Tengboche Monastery beneath Ama Dablam.",
+        "altitudeM": 3867,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 6,
+        "title": "Trek to Dingboche",
+        "description": "Enter the high Imja Valley with stone-walled fields of Dingboche.",
+        "altitudeM": 4410,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 7,
+        "title": "Acclimatization Hike in Dingboche",
+        "description": "Climb Nagarjun Hill (5,100m) for acclimatization.",
+        "altitudeM": 4410,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 8,
+        "title": "Trek to Lobuche",
+        "description": "Trek past Thokla Pass memorial site to Lobuche hamlet.",
+        "altitudeM": 4940,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 9,
+        "title": "Trek to Gorak Shep & Everest Base Camp Visit",
+        "description": "Reach Gorak Shep and hike to iconic Everest Base Camp (5,364m).",
+        "altitudeM": 5164,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 10,
+        "title": "Kala Patthar Sunrise & Trek to Dingboche",
+        "description": "Early morning climb of Kala Patthar (5,545m) for sunrise over Everest, then descend to Dingboche.",
+        "altitudeM": 4410,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 11,
+        "title": "Trek to Chhukung",
+        "description": "Short trek up to Chhukung village. Gear check and crampon fitting.",
+        "altitudeM": 4730,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 12,
+        "title": "Trek to Island Peak Base Camp & Pre-Climb Training",
+        "description": "Trek to Base Camp (5,200m). Practical training session on fixed ropes and jumars with Sherpa guides.",
+        "altitudeM": 5200,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 13,
+        "title": "SUMMIT DAY: Island Peak (6,189m) & Return to Chhukung",
+        "description": "Alpine start at 1:00 AM. Scramble up rocky gully, cross crampon point, ascend 100m headwall fixed ropes to narrow summit ridge. Summit (6,189m)! Descend safely to Chhukung.",
+        "altitudeM": 6189,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 14,
+        "title": "Contingency Weather Day",
+        "description": "Reserve day in case of inclement weather on summit day.",
+        "altitudeM": 4730,
+        "accommodation": "Trek Lodge / Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 15,
+        "title": "Trek Chhukung to Tengboche",
+        "description": "Descend valley retracing steps back to Tengboche.",
+        "altitudeM": 3867,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 16,
+        "title": "Trek Tengboche to Monjo",
+        "description": "Trek past Namche Bazaar down to Monjo village.",
+        "altitudeM": 2835,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 17,
+        "title": "Trek Monjo to Lukla & Flight to Kathmandu",
+        "description": "Final morning trek to Lukla and afternoon flight to Kathmandu.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Breakfast, Dinner"
+      },
+      {
+        "day": 18,
+        "title": "Final Departure",
+        "description": "Transfer to Tribhuvan International Airport for homeward flight.",
+        "altitudeM": 1400,
+        "accommodation": "N/A",
+        "meals": "Breakfast"
+      }
+    ],
+    "departureDates": [
+      {
+        "id": "dep-isp-01",
+        "startDate": "2026-10-05",
+        "endDate": "2026-10-22",
+        "priceUSD": 2650,
+        "seatsTotal": 10,
+        "seatsAvailable": 4,
+        "status": "Guaranteed"
+      },
+      {
+        "id": "dep-isp-02",
+        "startDate": "2026-11-01",
+        "endDate": "2026-11-18",
+        "priceUSD": 2650,
+        "seatsTotal": 10,
+        "seatsAvailable": 6,
+        "status": "Available"
+      }
+    ],
+    "faqs": [
+      {
+        "id": "faq-isp-01",
+        "question": "Can beginners climb Island Peak?",
+        "answer": "Yes, physically fit trekkers with strong determination can climb Island Peak. Basic climbing skills are taught by our Sherpas at Base Camp."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-isp-01",
+        "author": "Sarah Jenkins",
+        "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
+        "rating": 5,
+        "date": "2025-10-30",
+        "title": "Incredible summit feeling!",
+        "comment": "The summit headwall was intense, but our Sherpa guide Passang made me feel 100% safe. Standing at 6,189m was life-changing."
+      }
+    ]
+  },
+  {
+    "id": "expedition-mera-peak",
+    "title": "Mera Peak Expedition (6,476m)",
+    "slug": "mera-peak-expedition",
+    "category": "expeditions",
+    "region": "Everest Region",
+    "durationDays": 19,
+    "difficulty": "Challenging",
+    "maxAltitudeM": 6476,
+    "bestSeason": ["Spring", "Autumn"],
+    "priceUSD": 2800,
+    "isFeatured": true,
+    "status": "Published",
+    "rating": 4.95,
+    "reviewsCount": 36,
+    "peakHeightM": 6476,
+    "climbingGrade": "F (Non-Technical High Altitude Glacial Trek)",
+    "sherpaGuideRatio": "1:2 Guide Ratio",
+    "oxygenRequired": false,
+    "overview": "Mera Peak (6,476m) is Nepal's highest official trekking peak. Situated in the remote Hinku Valley, it offers straightforward non-technical glacier walking with what is considered the finest summit panorama in the entire Himalayas—viewing 5 of the world's 14 8,000m peaks.",
+    "highlights": [
+      "Stand on the highest trekking peak in Nepal (6,476m)",
+      "Panoramic views of 5 eight-thousand meter peaks: Everest, Lhotse, Cho Oyu, Makalu, and Kanchenjunga",
+      "Trek through the untouched, pristine wilderness of the Hinku Valley",
+      "Ideal first 6000m high-altitude peak climb"
+    ],
+    "inclusionsText": "NMA climbing permit, high camp tents & meals, experienced climbing guide, flights Lukla/Kathmandu, camping & teahouse stay.",
+    "exclusionsText": "Personal trekking & climbing gear, personal travel insurance with high altitude rescue, tips and alcohol.",
+    "included": [
+      "Mera Peak NMA Climbing Permit & Local Permits",
+      "Licensed IFMGA/NMA Climbing Sherpa Guide (1:2)",
+      "Domestic Flights (Kathmandu - Lukla - Kathmandu)",
+      "High Camp Camping Equipment & Full Meals",
+      "Safety Rope & Medical First Aid Kit"
+    ],
+    "excluded": [
+      "Personal mountaineering plastic/double boots & climbing harness",
+      "Helicopter rescue travel insurance",
+      "Summit bonus for climbing guide"
+    ],
+    "metaTitle": "Mera Peak Expedition 6476m | Highest Trekking Peak Nepal",
+    "metaDescription": "Climb Mera Peak (6,476m) in Nepal's Hinku Valley. Enjoy views of 5 8000m peaks with expert Sherpa guides on a 19-day non-technical high peak climb.",
+    "keywords": [
+      "Mera Peak climb",
+      "Mera Peak expedition",
+      "highest trekking peak Nepal",
+      "Hinku valley trek",
+      "6000m peak climb"
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu",
+        "description": "Arrival at airport, hotel transfer, and expedition briefing.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Dinner"
+      },
+      {
+        "day": 2,
+        "title": "Flight to Lukla & Trek to Paiya",
+        "description": "Fly to Lukla and trek south through bamboo forests towards Paiya.",
+        "altitudeM": 2730,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 3,
+        "title": "Trek to Panggom",
+        "description": "Cross Panggom La pass through quiet Sherpa farming hamlets.",
+        "altitudeM": 2846,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 4,
+        "title": "Trek to Ningsow",
+        "description": "Trek through dense rhododendron and pine forests.",
+        "altitudeM": 2863,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 5,
+        "title": "Trek to Chhatra Khola",
+        "description": "Descend towards the remote Hinku River valley.",
+        "altitudeM": 2800,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 6,
+        "title": "Trek to Kothe",
+        "description": "Follow the Hinku River upward into the high sanctuary.",
+        "altitudeM": 3690,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 7,
+        "title": "Trek to Thaknak",
+        "description": "Pass 200-year-old Lungsumgba Monastery with views of Mera Peak.",
+        "altitudeM": 4350,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 8,
+        "title": "Trek to Khare",
+        "description": "Trek up to Khare, the staging base for Mera Peak climbing.",
+        "altitudeM": 5045,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 9,
+        "title": "Acclimatization & Training at Khare",
+        "description": "Ice climbing, jumar practice, and rope techniques on nearby glacier tongue.",
+        "altitudeM": 5045,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 10,
+        "title": "Trek to Mera La & Mera High Camp",
+        "description": "Ascend Mera Glacier to Mera La (5,415m) and set up High Camp (5,800m) on a rocky outcrop.",
+        "altitudeM": 5800,
+        "accommodation": "High Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 11,
+        "title": "SUMMIT DAY: Mera Peak (6,476m) & Return to Khare",
+        "description": "2:00 AM start. Rope up and traverse easy glacier slope to Central Summit (6,476m). Unrivaled view of 5 8000m giants! Descend to Khare.",
+        "altitudeM": 6476,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 12,
+        "title": "Contingency Summit Day",
+        "description": "Reserved for bad weather or flight delays.",
+        "altitudeM": 5045,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 13,
+        "title": "Trek Khare to Kothe",
+        "description": "Descend back down the Hinku Valley to Kothe.",
+        "altitudeM": 3690,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 14,
+        "title": "Trek Kothe to Thuli Kharka",
+        "description": "Ascend westward towards Zatrwa La high pass.",
+        "altitudeM": 4300,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 15,
+        "title": "Cross Zatrwa La Pass & Trek to Lukla",
+        "description": "Cross Zatrwa La Pass (4,600m) with views of Lukla valley, descend to Lukla town.",
+        "altitudeM": 2860,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 16,
+        "title": "Flight Lukla to Kathmandu",
+        "description": "Morning flight back to Kathmandu. Hotel check-in.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 17,
+        "title": "Free Day in Kathmandu",
+        "description": "Rest, sightseeing, and celebratory dinner.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Breakfast, Dinner"
+      },
+      {
+        "day": 18,
+        "title": "Buffer Day",
+        "description": "Extra buffer day for weather delays in Lukla flights.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 19,
+        "title": "Final Departure",
+        "description": "Transfer to airport for homeward journey.",
+        "altitudeM": 1400,
+        "accommodation": "N/A",
+        "meals": "Breakfast"
+      }
+    ],
+    "departureDates": [
+      {
+        "id": "dep-mer-01",
+        "startDate": "2026-10-10",
+        "endDate": "2026-10-28",
+        "priceUSD": 2800,
+        "seatsTotal": 10,
+        "seatsAvailable": 5,
+        "status": "Guaranteed"
+      }
+    ],
+    "faqs": [
+      {
+        "id": "faq-mer-01",
+        "question": "Is Mera Peak technically difficult?",
+        "answer": "Mera Peak is non-technical, meaning it does not involve vertical steep ice or rock walls. However, high physical fitness and endurance are essential due to 6,476m elevation."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-mer-01",
+        "author": "David Miller",
+        "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+        "rating": 5,
+        "date": "2025-11-05",
+        "title": "Best view of Everest and Makalu imaginable!",
+        "comment": "Standing on Mera Peak summit watching the sun rise over Everest, Lhotse and Makalu simultaneously was the absolute high point of my life."
+      }
+    ]
+  },
+  {
+    "id": "expedition-lobuche-east",
+    "title": "Lobuche East Peak Expedition (6,119m)",
+    "slug": "lobuche-east-expedition",
+    "category": "expeditions",
+    "region": "Everest Region",
+    "durationDays": 16,
+    "difficulty": "Demanding Technical",
+    "maxAltitudeM": 6119,
+    "bestSeason": ["Spring", "Autumn"],
+    "priceUSD": 2750,
+    "isFeatured": false,
+    "status": "Published",
+    "rating": 4.88,
+    "reviewsCount": 24,
+    "peakHeightM": 6119,
+    "climbingGrade": "PD+ (Steep Snow & Ridge Climbing)",
+    "sherpaGuideRatio": "1:2 Guide Ratio",
+    "oxygenRequired": false,
+    "overview": "Lobuche East (6,119m) is an exhilarating technical trekking peak near Everest Base Camp. Featuring steep 45-50 degree snow slopes and a sharp summit knife-edge ridge, it offers an authentic alpine experience for ambitious climbers.",
+    "highlights": [
+      "Climb 6,119m Lobuche East via the South-East Ridge",
+      "Stunning look down over the Khumbu Glacier and Everest Base Camp",
+      "Steep technical fixed line ascent on crisp alpine snow walls",
+      "Combine with Everest Base Camp acclimatization trek"
+    ],
+    "inclusionsText": "NMA peak climbing permit, high camp tents, experienced climbing guide 1:2 ratio, Lukla flights, meals & lodges.",
+    "exclusionsText": "Personal gear rental, rescue insurance, tips.",
+    "included": [
+      "NMA Climbing Permit & Sagarmatha Park Fees",
+      "IFMGA/NMA Certified Sherpa Guide",
+      "Kathmandu-Lukla Flights",
+      "High Camp Tented Stay & Cook Team"
+    ],
+    "excluded": [
+      "Personal mountaineering equipment",
+      "Travel Evacuation Insurance"
+    ],
+    "metaTitle": "Lobuche East Peak Expedition 6119m | Technical Nepal Peak",
+    "metaDescription": "Climb Lobuche East (6,119m) with expert Sherpas. 16-day technical peak climbing expedition near Everest Base Camp.",
+    "keywords": [
+      "Lobuche East climb",
+      "Lobuche peak expedition",
+      "Khumbu peak climbing",
+      "Nepal 6000m peak"
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu",
+        "description": "Transfer to hotel and trip briefing.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Dinner"
+      },
+      {
+        "day": 2,
+        "title": "Flight to Lukla & Trek to Phakding",
+        "description": "Flight to Lukla and trek to Phakding village.",
+        "altitudeM": 2610,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 3,
+        "title": "Trek to Namche Bazaar",
+        "description": "Trek up the hill to Namche Bazaar.",
+        "altitudeM": 3440,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 4,
+        "title": "Acclimatization Day at Namche",
+        "description": "Hike to Everest View Hotel.",
+        "altitudeM": 3440,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 5,
+        "title": "Trek to Tengboche",
+        "description": "Trek through rhododendron forest to Tengboche.",
+        "altitudeM": 3867,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 6,
+        "title": "Trek to Dingboche",
+        "description": "Trek into Imja Valley to Dingboche.",
+        "altitudeM": 4410,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 7,
+        "title": "Trek to Lobuche Village",
+        "description": "Trek past Thokla pass to Lobuche village.",
+        "altitudeM": 4940,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 8,
+        "title": "Trek to Gorak Shep & EBC",
+        "description": "Visit Everest Base Camp for acclimatization.",
+        "altitudeM": 5364,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 9,
+        "title": "Kala Patthar & Trek to Lobuche High Camp",
+        "description": "Morning Kala Patthar climb (5,545m), then move to Lobuche High Camp (5,400m).",
+        "altitudeM": 5400,
+        "accommodation": "High Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 10,
+        "title": "SUMMIT DAY: Lobuche East (6,119m) & Return to High Camp / Pheriche",
+        "description": "Early start, climb fixed lines on 45-degree snow shoulder to knife ridge. Summit (6,119m)! Descend to Pheriche.",
+        "altitudeM": 6119,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 11,
+        "title": "Contingency Weather Day",
+        "description": "Reserved day for weather.",
+        "altitudeM": 4240,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 12,
+        "title": "Trek Pheriche to Namche Bazaar",
+        "description": "Descend back to Namche Bazaar.",
+        "altitudeM": 3440,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 13,
+        "title": "Trek Namche to Lukla",
+        "description": "Trek down to Lukla.",
+        "altitudeM": 2860,
+        "accommodation": "Trek Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 14,
+        "title": "Flight to Kathmandu",
+        "description": "Fly back to Kathmandu hotel.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 15,
+        "title": "Kathmandu Free Day",
+        "description": "Shopping and celebration dinner.",
+        "altitudeM": 1400,
+        "accommodation": "3-Star Hotel",
+        "meals": "Breakfast, Dinner"
+      },
+      {
+        "day": 16,
+        "title": "Final Departure",
+        "description": "Airport transfer.",
+        "altitudeM": 1400,
+        "accommodation": "N/A",
+        "meals": "Breakfast"
+      }
+    ],
+    "departureDates": [
+      {
+        "id": "dep-lob-01",
+        "startDate": "2026-10-12",
+        "endDate": "2026-10-27",
+        "priceUSD": 2750,
+        "seatsTotal": 8,
+        "seatsAvailable": 3,
+        "status": "Guaranteed"
+      }
+    ],
+    "faqs": [
+      {
+        "id": "faq-lob-01",
+        "question": "Is Lobuche East harder than Island Peak?",
+        "answer": "Lobuche East is slightly more technical with steeper rock/ice slabs near high camp and a sustained snow ridge."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-lob-01",
+        "author": "Elena Rostova",
+        "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+        "rating": 5,
+        "date": "2025-10-25",
+        "title": "A true mountaineering thrill!",
+        "comment": "The view of Everest from Lobuche East summit is far better than from Kala Patthar. Great expedition!"
+      }
+    ]
+  },
+  {
+    "id": "expedition-himlung-himal",
+    "title": "Himlung Himal Expedition (7,126m)",
+    "slug": "himlung-himal-expedition",
+    "category": "expeditions",
+    "region": "Annapurna / Manaslu Region",
+    "durationDays": 31,
+    "difficulty": "Extreme 7000m Expedition",
+    "maxAltitudeM": 7126,
+    "bestSeason": ["Autumn"],
+    "priceUSD": 9500,
+    "isFeatured": true,
+    "status": "Published",
+    "rating": 4.97,
+    "reviewsCount": 18,
+    "peakHeightM": 7126,
+    "climbingGrade": "7000m Non-Extreme Technical Peak",
+    "sherpaGuideRatio": "1:1 Dedicated IFMGA Sherpa Guide",
+    "oxygenRequired": true,
+    "overview": "Himlung Himal (7,126m) lies in the remote Nar-Phu region north of Annapurna, close to the Tibetan border. It is recognized as one of the safest and most accessible 7,000m peaks in Nepal, making it the ultimate stepping stone for climbers targeting 8,000m giants like Manaslu or Everest.",
+    "highlights": [
+      "Summit a real 7,000m Himalayan giant (7,126m)",
+      "Trek through the forbidden, ancient Tibetan-culture villages of Nar and Phu",
+      "Full high-altitude support with supplementary oxygen and 1:1 Sherpa guide ratio",
+      "Ideal preparation peak for Everest or 8,000m peaks"
+    ],
+    "inclusionsText": "Department of Tourism 7000m Climbing Permit, Nar-Phu Restricted Area Permits, 1:1 IFMGA Summit Sherpa, Summit Oxygen Set (2 bottles + Mask/Regulator), full Base Camp and High Camp management.",
+    "exclusionsText": "International airfare, personal high altitude down suit, personal gear, tips for summit Sherpa ($1000+).",
+    "included": [
+      "Official 7000m Nepal Government Expedition Permit",
+      "1:1 Dedicated Summit Sherpa Guide",
+      "2 Oxygen Cylinders per climber with TopOut Mask",
+      "Full Base Camp (4,850m) and 3 High Camps setup",
+      "All overland transfers by private 4WD Jeeps"
+    ],
+    "excluded": [
+      "Personal Down Suit & 8000m double boots",
+      "Travel insurance including high altitude evacuation up to 7500m",
+      "Sherpa Summit Bonus ($1000 standard)"
+    ],
+    "metaTitle": "Himlung Himal Expedition 7126m | 7000m Nepal Peak Climb",
+    "metaDescription": "Climb Himlung Himal (7,126m) in Nepal's Nar-Phu valley. 31-day 7000m expedition with 1:1 Sherpa guide and summit oxygen.",
+    "keywords": [
+      "Himlung Himal climb",
+      "7000m peak Nepal",
+      "Himlung expedition",
+      "Nar Phu valley expedition",
+      "Everest preparation peak"
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu",
+        "description": "Arrival at airport, luxury hotel check-in, and team dinner.",
+        "altitudeM": 1400,
+        "accommodation": "5-Star Hotel",
+        "meals": "Dinner"
+      },
+      {
+        "day": 2,
+        "title": "Government Briefing & Gear Inspection",
+        "description": "Official Ministry of Tourism briefing and gear check with expedition leader.",
+        "altitudeM": 1400,
+        "accommodation": "5-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 3,
+        "title": "Drive Kathmandu to Koto (via Besisahar)",
+        "description": "Drive by private 4WD jeep along the Marshyangdi river to Koto village.",
+        "altitudeM": 2600,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 4,
+        "title": "Trek Koto to Meta",
+        "description": "Enter the restricted Nar-Phu gorge along the Phu Khola.",
+        "altitudeM": 3560,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 5,
+        "title": "Trek Meta to Phu Village",
+        "description": "Trek past ancient chortens and ruined forts to the mystical stone village of Phu.",
+        "altitudeM": 4080,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 6,
+        "title": "Acclimatization Day in Phu Village",
+        "description": "Explore Tashi Lhakhang Monastery and acclimatize at 4,000m.",
+        "altitudeM": 4080,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 7,
+        "title": "Trek Phu to Himlung Base Camp",
+        "description": "Trek up the glacial valley to set up Himlung Base Camp at French Camp.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 8,
+        "title": "Puja Ceremony & Base Camp Setup",
+        "description": "Traditional Sherpa Puja blessing ceremony, gear sorting, and dining tent setup.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 9,
+        "title": "Rotation 1: Hike to Camp 1 (5,450m) & Return",
+        "description": "Acclimatization carry up moraine ridges to Camp 1.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 10,
+        "title": "Rest Day at Base Camp",
+        "description": "Rest, hydrate, and prepare high altitude food.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 11,
+        "title": "Move to Camp 1",
+        "description": "Ascend to sleep at Camp 1.",
+        "altitudeM": 5450,
+        "accommodation": "Camp 1 Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 12,
+        "title": "Rotation 2: Touch Camp 2 (6,000m) & Return to Camp 1",
+        "description": "Climb snow slope onto glacier plateaus reaching Camp 2.",
+        "altitudeM": 5450,
+        "accommodation": "Camp 1 Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 13,
+        "title": "Descend to Base Camp",
+        "description": "Descend for full rest cycle before summit push.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 14,
+        "title": "Rest Day at Base Camp",
+        "description": "Rest day. Oxygen system testing and mask fitting.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 15,
+        "title": "Rest Day at Base Camp",
+        "description": "Weather forecast analysis and route planning.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 16,
+        "title": "Summit Push: Move to Camp 1",
+        "description": "Ascend to Camp 1.",
+        "altitudeM": 5450,
+        "accommodation": "Camp 1 Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 17,
+        "title": "Move to Camp 2 (6,000m)",
+        "description": "Climb glacier headwall to Camp 2.",
+        "altitudeM": 6000,
+        "accommodation": "Camp 2 Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 18,
+        "title": "Move to Camp 3 (6,350m)",
+        "description": "Establish high Camp 3 on upper snow plateau.",
+        "altitudeM": 6350,
+        "accommodation": "Camp 3 Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 19,
+        "title": "SUMMIT PUSH: Himlung Himal (7,126m) & Return to Camp 2",
+        "description": "1:00 AM start with supplementary oxygen. Ascend northwest ridge snow fields to reaching the 7,126m summit crest! Stand above 7000m! Descend safely to Camp 2.",
+        "altitudeM": 7126,
+        "accommodation": "Camp 2 Tents",
+        "meals": "High Altitude Rations"
+      },
+      {
+        "day": 20,
+        "title": "Descend to Base Camp",
+        "description": "Descend past Camp 1 back to Base Camp celebration.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 21,
+        "title": "Contingency Summit Day 1",
+        "description": "Reserve day for weather window.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 22,
+        "title": "Contingency Summit Day 2",
+        "description": "Second weather reserve day.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 23,
+        "title": "Base Camp Teardown & Clean Up",
+        "description": "Pack equipment and clean Base Camp.",
+        "altitudeM": 4850,
+        "accommodation": "Base Camp Tents",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 24,
+        "title": "Trek Base Camp to Phu Village",
+        "description": "Trek back down to Phu village.",
+        "altitudeM": 4080,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 25,
+        "title": "Trek Phu to Meta",
+        "description": "Descend gorge trail to Meta.",
+        "altitudeM": 3560,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 26,
+        "title": "Trek Meta to Koto",
+        "description": "Trek down to Koto.",
+        "altitudeM": 2600,
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 27,
+        "title": "Drive Koto to Besisahar",
+        "description": "4WD Jeep drive to Besisahar.",
+        "altitudeM": 760,
+        "accommodation": "Hotel",
+        "meals": "Breakfast, Lunch, Dinner"
+      },
+      {
+        "day": 28,
+        "title": "Drive Besisahar to Kathmandu",
+        "description": "Drive back to Kathmandu and check into 5-star hotel.",
+        "altitudeM": 1400,
+        "accommodation": "5-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 29,
+        "title": "Government Debriefing",
+        "description": "Official Ministry of Tourism debriefing.",
+        "altitudeM": 1400,
+        "accommodation": "5-Star Hotel",
+        "meals": "Breakfast"
+      },
+      {
+        "day": 30,
+        "title": "Gala Celebration Dinner",
+        "description": "Celebratory banquet and summit awards presentation.",
+        "altitudeM": 1400,
+        "accommodation": "5-Star Hotel",
+        "meals": "Breakfast, Dinner"
+      },
+      {
+        "day": 31,
+        "title": "Final Departure",
+        "description": "Airport transfer for home flights.",
+        "altitudeM": 1400,
+        "accommodation": "N/A",
+        "meals": "Breakfast"
+      }
+    ],
+    "departureDates": [
+      {
+        "id": "dep-him-01",
+        "startDate": "2026-10-01",
+        "endDate": "2026-10-31",
+        "priceUSD": 9500,
+        "seatsTotal": 6,
+        "seatsAvailable": 2,
+        "status": "Guaranteed"
+      }
+    ],
+    "faqs": [
+      {
+        "id": "faq-him-01",
+        "question": "Is oxygen included in the Himlung expedition price?",
+        "answer": "Yes, 2 high-pressure 300-bar carbon fiber oxygen cylinders with Summit/TopOut mask and regulator are included per climber."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-him-01",
+        "author": "Jean-Pierre Laurent",
+        "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+        "rating": 5,
+        "date": "2025-11-10",
+        "title": "The ultimate 7000m experience!",
+        "comment": "Himlung was the perfect test before attempting Everest next year. The Nar-Phu valley culture and Alpine Ace's logistics were world class."
+      }
+    ]
+  }
+]

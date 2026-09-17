@@ -1,0 +1,759 @@
+[
+  {
+    "id": "tour-kathmandu-pokhara-cultural",
+    "title": "Kathmandu & Pokhara Valley Cultural Tour",
+    "slug": "kathmandu-pokhara-cultural-tour",
+    "category": "Kathmandu & Pokhara",
+    "categoryId": "cat-tours-cultural-01",
+    "subcategoryId": "subcat-heritage-tours",
+    "activityIds": ["act-sightseeing-01"],
+    "categorySlug": "tours",
+    "rating": 4.9,
+    "reviewsCount": 84,
+    "image": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200",
+    "coverMediaId": "media-ktm-pokhara-cover",
+    "country": "Nepal",
+    "activity": "Cultural Sightseeing",
+    "shortDesc": "Explore UNESCO World Heritage shrines in Kathmandu Valley, ancient Patan & Bhaktapur durbar squares, and relax by Phewa Lake with Annapurna mountain backdrops.",
+    "durationDays": 7,
+    "maxAltitudeMeters": 1400,
+    "difficulty": "easy",
+    "bestSeason": "Jan - Dec (Year-Round)",
+    "priceUSD": 850,
+    "isFeatured": true,
+    "isPopular": true,
+    "startEndLocation": "Kathmandu Airport Pick-up & Drop-off",
+    "accommodation": "Luxury 4-Star Boutique Hotels",
+    "meals": "Breakfast Daily & 2 Special Heritage Dinners",
+    "groupSizeRange": "1 to 16 Travelers",
+    "tourType": "cultural_heritage",
+    "transportation": "Private Air-Conditioned Tourist Vehicle & Scenic Domestic Flight",
+    "totalBookings": 156,
+    "inclusionsText": "- 6 nights luxury 4-star boutique hotel accommodation\n- All entrance fees to UNESCO Heritage Sites & monuments\n- Private AC vehicle transfers throughout\n- Flight from Pokhara to Kathmandu\n- Licensed English-speaking Heritage Tour Guide\n- Phewa Lake private boat ride\n- Welcome and farewell cultural dinners with traditional dance show",
+    "exclusionsText": "- International flights & Nepal visa fee\n- Meals not specified (Lunches & 4 dinners)\n- Personal expenses & shopping\n- Tips for driver & tour guide",
+    "addonsText": "- Sunrise Sarangkot Paragliding in Pokhara: $90 USD\n- Ultralight mountain flight in Pokhara: $140 USD",
+    "usefulInfoText": "Comfortable walking shoes and modest clothing suitable for temple visits (shoulders and knees covered) are recommended.",
+    "departureDates": [
+      {
+        "id": "dep-tour-ktm-01",
+        "startDate": "2026-10-02",
+        "endDate": "2026-10-08",
+        "priceUSD": 850,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 8,
+        "notes": "Weekly Guaranteed Departure"
+      },
+      {
+        "id": "dep-tour-ktm-02",
+        "startDate": "2026-10-16",
+        "endDate": "2026-10-22",
+        "priceUSD": 850,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 10,
+        "notes": "Festival Cultural Highlights"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-tour-ktm-01", "med-tour-ktm-02"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-tour-ktm-map",
+    "packageFiles": [
+      {
+        "id": "file-cultural-tour-pdf",
+        "mediaId": "med-file-tour-ktm",
+        "title": "Kathmandu & Pokhara Heritage Tour Itinerary",
+        "fileUrl": "/docs/Kathmandu-Pokhara-Cultural-Tour-AlpineAce.pdf",
+        "fileName": "Kathmandu-Pokhara-Cultural-Tour-AlpineAce.pdf",
+        "fileSize": "1.8 MB",
+        "fileType": "pdf",
+        "uploadedAt": "2026-09-01"
+      }
+    ],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu & Evening Welcome Dinner",
+        "description": "Airport pickup and transfer to luxury boutique hotel in Thamel. Evening welcome dinner with traditional Nepalese cultural performance.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Boutique Hotel in Kathmandu",
+        "meals": "Welcome Dinner Included",
+        "details": [{ "label": "Vehicle", "value": "Private AC Car" }]
+      },
+      {
+        "day": 2,
+        "title": "Kathmandu Valley UNESCO Heritage Tour",
+        "description": "Guided visit to Swayambhunath (Monkey Temple), Pashupatinath Hindu Temple along Bagmati river, and Boudhanath Stupa.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Boutique Hotel in Kathmandu",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Sites Visited", "value": "Swayambhu, Pashupati, Boudha" }]
+      },
+      {
+        "day": 3,
+        "title": "Patan & Bhaktapur Ancient Durbar Squares",
+        "description": "Explore the medieval courtyards, stone carvings, Golden Temple in Patan and 55-Window Palace in Bhaktapur.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Boutique Hotel in Kathmandu",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Heritage", "value": "Newari Art & Architecture" }]
+      },
+      {
+        "day": 4,
+        "title": "Drive/Fly to Pokhara Valley",
+        "description": "Scenic flight or private overland drive to Pokhara valley. Check in to lakeside resort. Evening boating on Phewa Lake.",
+        "maxAltitude": "820 m",
+        "accommodation": "Lakeside Resort Pokhara",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Boating", "value": "Private Phewa Lake Sunset Boat" }]
+      },
+      {
+        "day": 5,
+        "title": "Sarangkot Sunrise & Pokhara Sightseeing",
+        "description": "Early morning drive to Sarangkot hill for sunrise over Annapurna & Dhaulagiri peaks. Afternoon visit to Davis Falls, Gupteshwor Cave, and International Mountain Museum.",
+        "maxAltitude": "1,600 m",
+        "accommodation": "Lakeside Resort Pokhara",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Sunrise View", "value": "Annapurna & Machhapuchhre" }]
+      },
+      {
+        "day": 6,
+        "title": "Flight back to Kathmandu & Shopping",
+        "description": "Morning flight back to Kathmandu. Free afternoon for souvenir shopping in Thamel and Durbar Marg.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Boutique Hotel in Kathmandu",
+        "meals": "Breakfast & Farewell Dinner",
+        "details": [{ "label": "Flight Time", "value": "25 mins" }]
+      },
+      {
+        "day": 7,
+        "title": "Final Departure",
+        "description": "Check-out and private transfer to Kathmandu airport for departure.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Transfer", "value": "Private Airport Drop Off" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Is this tour suitable for families and senior citizens?",
+        "answer": "Yes! This tour is easy, comfortable, and involves minimal walking with private AC vehicles and 4-star boutique accommodation."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-tour-101",
+        "author": "Dr. Aris Thorne",
+        "country": "Singapore",
+        "date": "Nov 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+        "content": "The cultural depth of Bhaktapur and Patan with our guide was exceptional. The sunset boat ride on Phewa Lake in Pokhara was magical."
+      }
+    ],
+    "metaTitle": "Kathmandu & Pokhara 7-Day Cultural Tour | Alpine Ace",
+    "metaDescription": "Discover Nepal's rich UNESCO heritage, temples, and lakes in 7 days. Luxury boutique accommodation, private AC vehicle, Sarangkot sunrise & flights included.",
+    "keywords": "Kathmandu Pokhara Tour, Nepal Cultural Tour, UNESCO Heritage Nepal, Phewa Lake",
+    "status": "active",
+    "region": "Kathmandu & Pokhara"
+  },
+  {
+    "id": "tour-everest-heli-luxury",
+    "title": "Everest Heli Sightseeing & Luxury Lodge Tour",
+    "slug": "everest-heli-sightseeing-luxury-tour",
+    "category": "Everest Region",
+    "categoryId": "cat-everest-01",
+    "subcategoryId": "subcat-luxury-heli",
+    "activityIds": ["act-heli-tour-01"],
+    "categorySlug": "everest",
+    "rating": 5.0,
+    "reviewsCount": 42,
+    "image": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200",
+    "coverMediaId": "media-heli-cover",
+    "country": "Nepal",
+    "activity": "Heli Trek & Tour",
+    "shortDesc": "Experience Everest without high altitude trekking! Private chartered helicopter flyover of Everest Base Camp, Kala Patthar landing, and champagne breakfast at Hotel Everest View.",
+    "durationDays": 4,
+    "maxAltitudeMeters": 5364,
+    "difficulty": "easy",
+    "bestSeason": "Mar - May, Sep - Dec",
+    "priceUSD": 2400,
+    "isFeatured": true,
+    "isPopular": true,
+    "startEndLocation": "Kathmandu Airport / Helipad",
+    "accommodation": "5-Star Luxury Hotels & Yeti Mountain Home Lodges",
+    "meals": "All Gourmet Meals & Champagne Breakfast",
+    "groupSizeRange": "1 to 5 Passengers per Helicopter",
+    "tourType": "helicopter_tour",
+    "transportation": "Private Airbus H125 / Eurocopter Helicopter & Luxury AC Vehicles",
+    "totalBookings": 88,
+    "inclusionsText": "- Private chartered helicopter flight Kathmandu to Everest & return\n- Kala Patthar / Everest Base Camp aerial touchdown\n- Champagne breakfast at Everest View Hotel (3,880m)\n- 3 nights luxury 5-star hotel accommodation (Dwarika's or Marriott KTM)\n- Airport VIP lounge access & private transfers",
+    "exclusionsText": "- Nepal visa fee & international flights\n- Personal shopping & tips",
+    "addonsText": "- Extra night at Luxury Yeti Mountain Home Kongde: $450 USD per night",
+    "usefulInfoText": "Oxygen cylinders are equipped on board every helicopter. Landings at Kala Patthar are subject to weather window safety approvals.",
+    "departureDates": [
+      {
+        "id": "dep-heli-2026-10-08",
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-11",
+        "priceUSD": 2400,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 3,
+        "notes": "VIP Private Heli Charter"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-heli-01"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-heli-map",
+    "packageFiles": [],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu & VIP Hotel Check-in",
+        "description": "VIP pickup at Kathmandu airport in luxury sedan. Transfer to Dwarika's Hotel or Marriott. Evening fine dining experience.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Dwarika's 5-Star Heritage Hotel",
+        "meals": "Gourmet Welcome Dinner",
+        "details": [{ "label": "Transfer", "value": "Private Mercedes / Sedan" }]
+      },
+      {
+        "day": 2,
+        "title": "Everest Helicopter Tour & Champagne Breakfast at Everest View",
+        "description": "Early morning luxury helicopter flight to Lukla, Lukla refuel, fly over Khumbu Glacier and Everest Base Camp, touch down at Kala Patthar (5,450m) for photo opportunity, and enjoy champagne breakfast at Everest View Hotel (3,880m). Return to KTM in afternoon.",
+        "maxAltitude": "5,450 m",
+        "accommodation": "Dwarika's 5-Star Hotel",
+        "meals": "Champagne Breakfast & Dinner",
+        "details": [{ "label": "Heli Model", "value": "Airbus H125 B3e Helicopter" }]
+      },
+      {
+        "day": 3,
+        "title": "Kathmandu Valley Private Luxury Tour & Spa Day",
+        "description": "Private guided tour of Patan Durbar Square followed by 90-minute Ayurvedic spa & massage session.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Dwarika's 5-Star Hotel",
+        "meals": "Breakfast & Spa Refreshments",
+        "details": [{ "label": "Wellness", "value": "Full Body Himalayan Spa" }]
+      },
+      {
+        "day": 4,
+        "title": "Final Departure",
+        "description": "Breakfast at hotel and VIP private transfer to Kathmandu airport.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Transfer", "value": "VIP Airport Drop Off" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Is oxygen available during the Kala Patthar landing?",
+        "answer": "Yes, our Airbus H125 helicopters carry emergency oxygen systems and flights are piloted by high-altitude expert captains."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-heli-101",
+        "author": "Lady Veronica Hastings",
+        "country": "United Kingdom",
+        "date": "Oct 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+        "content": "Sipping champagne at Everest View Hotel while looking at the summit of Mount Everest was unforgettable. Flawless luxury execution by Alpine Ace."
+      }
+    ],
+    "metaTitle": "Everest Helicopter Tour & Luxury Lodge Experience",
+    "metaDescription": "Fly over Everest Base Camp & Kala Patthar by private chartered helicopter. Includes 5-star hotel, champagne breakfast at Everest View Hotel. Book now!",
+    "keywords": "Everest Heli Tour, Helicopter to Everest Base Camp, Luxury Nepal Tour, Everest View Hotel",
+    "status": "active",
+    "region": "Everest"
+  },
+  {
+    "id": "tour-nepal-heritage-safari",
+    "title": "Nepal Heritage, Wildlife Safari & Annapurna Sunrise Tour",
+    "slug": "nepal-heritage-wildlife-safari-tour",
+    "category": "Kathmandu & Pokhara",
+    "categoryId": "cat-tours-cultural-01",
+    "subcategoryId": "subcat-safari-tours",
+    "activityIds": ["act-wildlife-safari-01"],
+    "categorySlug": "tours",
+    "rating": 4.9,
+    "reviewsCount": 61,
+    "image": "https://images.unsplash.com/photo-1585970480901-90d6bb2a48b5?q=80&w=1200",
+    "coverMediaId": "media-safari-cover",
+    "country": "Nepal",
+    "activity": "Wildlife Safari",
+    "shortDesc": "Combine Kathmandu's ancient temples, Chitwan Jungle Safari (Rhino & Tiger tracking), and Pokhara's Himalayan mountain lakes in one 10-day trip.",
+    "durationDays": 10,
+    "maxAltitudeMeters": 1600,
+    "difficulty": "easy",
+    "bestSeason": "Sep - May",
+    "priceUSD": 1350,
+    "isFeatured": false,
+    "isPopular": true,
+    "startEndLocation": "Kathmandu to Chitwan, Pokhara & KTM Return",
+    "accommodation": "Luxury Jungle Safari Resort & 4-Star City Hotels",
+    "meals": "All Meals in Chitwan Safari & Breakfast elsewhere",
+    "groupSizeRange": "2 to 14 Travelers",
+    "tourType": "wildlife_safari",
+    "transportation": "Private Tourist AC Vehicle & Domestic Flight Options",
+    "totalBookings": 112,
+    "inclusionsText": "- 9 nights premium hotel & safari resort accommodation\n- Full Chitwan National Park Jungle Safari package (Jeep safari, canoe, bird watching, Tharu cultural dance)\n- All park entrance fees & UNESCO site entry permits\n- Private AC vehicle transfer between Kathmandu - Chitwan - Pokhara\n- Domestic flight Pokhara to Kathmandu",
+    "exclusionsText": "- International flights & Nepal visa\n- Personal expenses & alcoholic drinks\n- Guide & driver gratuities",
+    "addonsText": "- Elephant bath & care encounter: $40 USD",
+    "usefulInfoText": "Neutral color clothing (khaki, green) recommended for jungle safari activities in Chitwan.",
+    "departureDates": [
+      {
+        "id": "dep-safari-2026-11-01",
+        "startDate": "2026-11-01",
+        "endDate": "2026-11-10",
+        "priceUSD": 1350,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 6,
+        "notes": "Best Jungle Wildlife Season"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1585970480901-90d6bb2a48b5?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-safari-01"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-safari-map",
+    "packageFiles": [],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu",
+        "description": "Airport pickup and transfer to hotel. Orientation evening.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Dinner Included",
+        "details": [{ "label": "Transfer", "value": "Private AC Car" }]
+      },
+      {
+        "day": 2,
+        "title": "Kathmandu Valley World Heritage Tour",
+        "description": "Visit Pashupatinath, Boudhanath Stupa, and Kathmandu Durbar Square.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Sites", "value": "Pashupati & Boudhanath" }]
+      },
+      {
+        "day": 3,
+        "title": "Drive Kathmandu to Chitwan National Park",
+        "description": "Scenic drive to Chitwan tropical jungle resort. Sunset riverwalk and Tharu stick dance cultural program.",
+        "maxAltitude": "410 m",
+        "accommodation": "Luxury Safari Resort in Chitwan",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Drive Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 4,
+        "title": "Full Day Chitwan Jungle Safari",
+        "description": "Canoe ride along Rapti river tracking mugger crocodiles, 4WD open-top jeep safari searching for One-horned Rhinos & Bengal Tigers.",
+        "maxAltitude": "410 m",
+        "accommodation": "Luxury Safari Resort in Chitwan",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Wildlife", "value": "One-Horned Rhino & Bengal Tiger" }]
+      },
+      {
+        "day": 5,
+        "title": "Drive Chitwan to Pokhara Valley",
+        "description": "Drive along Seti river gorge up to Pokhara lakeside city. Evening boat ride on Phewa Lake.",
+        "maxAltitude": "820 m",
+        "accommodation": "Resort in Pokhara",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Drive Time", "value": "4-5 hours" }]
+      },
+      {
+        "day": 6,
+        "title": "Sarangkot Sunrise & Pokhara Sightseeing",
+        "description": "Sunrise view over Annapurna mountain range. Visit Davis Falls, Gupteshwor Cave, and Peace Stupa.",
+        "maxAltitude": "1,600 m",
+        "accommodation": "Resort in Pokhara",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Sunrise", "value": "Sarangkot Hill" }]
+      },
+      {
+        "day": 7,
+        "title": "Pokhara Day Trip to Begnas Lake",
+        "description": "Peaceful day trip to Begnas Lake and local organic coffee farms.",
+        "maxAltitude": "820 m",
+        "accommodation": "Resort in Pokhara",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Excursion", "value": "Begnas Lake & Village Walk" }]
+      },
+      {
+        "day": 8,
+        "title": "Flight Pokhara to Kathmandu",
+        "description": "25-minute scenic mountain flight back to Kathmandu hotel.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Flight", "value": "Pokhara to KTM" }]
+      },
+      {
+        "day": 9,
+        "title": "Patan Durbar Square & Pottery Village",
+        "description": "Guided visit to Patan heritage city and traditional pottery squares.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast & Farewell Dinner",
+        "details": [{ "label": "Cultural Visit", "value": "Patan Art & Pottery" }]
+      },
+      {
+        "day": 10,
+        "title": "Final Departure",
+        "description": "Transfer to Kathmandu airport for departure flight.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Transfer", "value": "Airport Drop Off" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "What animals can we see in Chitwan National Park?",
+        "answer": "Chitwan is famous for the endangered Greater One-horned Rhinoceros, Royal Bengal Tigers, gharial crocodiles, Asian elephants, and over 500 bird species."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-safari-101",
+        "author": "Guillermo Rossi",
+        "country": "Italy",
+        "date": "Oct 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+        "content": "Seeing rhinos up close on our jeep safari in Chitwan and the sunrise over Annapurna in Pokhara made this the perfect 10-day Nepal vacation!"
+      }
+    ],
+    "metaTitle": "Nepal Heritage & Chitwan Wildlife Safari Tour 10 Days",
+    "metaDescription": "Combine Kathmandu heritage temples, Chitwan Rhino & Tiger safari, and Pokhara mountain lakes in 10 days. Book your Nepal tour package today.",
+    "keywords": "Nepal Safari Tour, Chitwan National Park, Pokhara Tour, Rhino Safari Nepal, Heritage Tour",
+    "status": "active",
+    "region": "Kathmandu & Pokhara"
+  },
+  {
+    "id": "tour-upper-mustang-overland",
+    "title": "Upper Mustang Forbidden Kingdom Overland 4WD Tour",
+    "slug": "upper-mustang-overland-tour",
+    "category": "Mustang",
+    "categoryId": "cat-mustang-01",
+    "subcategoryId": "subcat-overland-tours",
+    "activityIds": ["act-sightseeing-01"],
+    "categorySlug": "mustang",
+    "rating": 4.9,
+    "reviewsCount": 47,
+    "image": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200",
+    "coverMediaId": "media-mustang-cover",
+    "country": "Nepal",
+    "activity": "Cultural Sightseeing",
+    "shortDesc": "Drive into the trans-Himalayan desert of Upper Mustang by 4WD jeep. Visit Lo Manthang walled royal city, ancient sky caves, and red clay cliffs.",
+    "durationDays": 12,
+    "maxAltitudeMeters": 3840,
+    "difficulty": "moderate",
+    "bestSeason": "Mar - Nov",
+    "priceUSD": 1980,
+    "isFeatured": true,
+    "isPopular": false,
+    "startEndLocation": "Drive Pokhara to Jomsom & Lo Manthang / Return KTM",
+    "accommodation": "Boutique Tibetan Heritage Lodges",
+    "meals": "All Meals Included during Mustang Tour",
+    "groupSizeRange": "Minimum 2 Travelers (Restricted Area)",
+    "tourType": "cultural_heritage",
+    "transportation": "Private Toyota Land Cruiser / Scorpio 4WD Jeep",
+    "totalBookings": 64,
+    "inclusionsText": "- Upper Mustang Restricted Area Permit ($500 USD value) & ACAP Permit\n- Private 4WD Jeep with experienced mountain driver\n- 11 nights boutique tea house & hotel accommodation\n- Full board meals (Breakfast, Lunch, Dinner)\n- English-speaking cultural tour guide",
+    "exclusionsText": "- International airfare & Nepal visa\n- Personal travel insurance\n- Tips for driver & guide",
+    "addonsText": "- Tiji Festival special event entry (May edition): $150 USD",
+    "usefulInfoText": "Upper Mustang is in the rain-shadow of the Himalayas, making it ideal for summer monsoon season travel (June to August). Minimum 2 travelers required for restricted area permit.",
+    "departureDates": [
+      {
+        "id": "dep-mustang-2026-10-05",
+        "startDate": "2026-10-05",
+        "endDate": "2026-10-16",
+        "priceUSD": 1980,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 5,
+        "notes": "4WD Overland Expedition"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-mustang-01"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-mustang-map",
+    "packageFiles": [],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Drive Kathmandu to Pokhara",
+        "description": "Drive to Pokhara and prepare restricted permits.",
+        "maxAltitude": "820 m",
+        "accommodation": "Hotel in Pokhara",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Drive Time", "value": "6 hours" }]
+      },
+      {
+        "day": 2,
+        "title": "Drive Pokhara to Tatopani & Jomsom (2,720m)",
+        "description": "Drive up Kali Gandaki river gorge past Tatopani hot springs to Jomsom.",
+        "maxAltitude": "2,720 m",
+        "accommodation": "Lodge in Jomsom",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Drive Time", "value": "7 hours 4WD" }]
+      },
+      {
+        "day": 3,
+        "title": "Drive Jomsom to Kagbeni & Chhusang (2,980m)",
+        "description": "Enter Upper Mustang restricted checkpoint at Kagbeni gateway and drive to red cliff village Chhusang.",
+        "maxAltitude": "2,980 m",
+        "accommodation": "Lodge in Chhusang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Checkpoint", "value": "Kagbeni RAP Gate" }]
+      },
+      {
+        "day": 4,
+        "title": "Drive Chhusang to Syangboche & Ghami (3,520m)",
+        "description": "Cross passes enjoying views of Nilgiri and Damodar Himal to Ghami, home to Nepal's longest Mani wall.",
+        "maxAltitude": "3,520 m",
+        "accommodation": "Lodge in Ghami",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Highlight", "value": "Longest Mani Wall in Nepal" }]
+      },
+      {
+        "day": 5,
+        "title": "Drive Ghami to Tsarang & Lo Manthang (3,840m)",
+        "description": "Drive via Tsarang Dzong to the walled capital of Lo Manthang, kingdom of Korala pass.",
+        "maxAltitude": "3,840 m",
+        "accommodation": "Heritage Lodge in Lo Manthang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Destination", "value": "Lo Manthang Walled City" }]
+      },
+      {
+        "day": 6,
+        "title": "Explore Lo Manthang Royal Palaces & Monasteries",
+        "description": "Visit Royal Palace, Jampa Lhakhang, Thubchen Gompa, and Chode Gompa.",
+        "maxAltitude": "3,840 m",
+        "accommodation": "Heritage Lodge in Lo Manthang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Monasteries", "value": "15th Century Tibetan Frescoes" }]
+      },
+      {
+        "day": 7,
+        "title": "Excursion to Chhoser Sky Caves & Chonup Village",
+        "description": "Drive to Chhoser Jhong Sky Cave complex carved 5-stories into red rock cliff faces.",
+        "maxAltitude": "3,900 m",
+        "accommodation": "Heritage Lodge in Lo Manthang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Ancient Site", "value": "2,500-year-old Sky Caves" }]
+      },
+      {
+        "day": 8,
+        "title": "Drive Lo Manthang to Ghar Gompa & Syangboche",
+        "description": "Visit 8th-century Ghar Gompa (Padmasambhava monastery) and return south to Syangboche.",
+        "maxAltitude": "3,840 m",
+        "accommodation": "Lodge in Syangboche",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Monastery", "value": "Ghar Gompa" }]
+      },
+      {
+        "day": 9,
+        "title": "Drive Syangboche to Muktinath & Jomsom",
+        "description": "Drive via Kagbeni up to sacred Muktinath 108 water spouts before returning to Jomsom.",
+        "maxAltitude": "3,800 m",
+        "accommodation": "Hotel in Jomsom",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Temple", "value": "Muktinath Sacred 108 Spouts" }]
+      },
+      {
+        "day": 10,
+        "title": "Drive Jomsom to Pokhara",
+        "description": "Scenic 4WD drive down Kali Gandaki to Pokhara hotel.",
+        "maxAltitude": "2,720 m",
+        "accommodation": "Hotel in Pokhara",
+        "meals": "Breakfast & Lunch",
+        "details": [{ "label": "Drive Time", "value": "7 hours" }]
+      },
+      {
+        "day": 11,
+        "title": "Flight/Drive Pokhara to Kathmandu",
+        "description": "Return to Kathmandu. Farewell dinner in Thamel.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast & Farewell Dinner",
+        "details": [{ "label": "Celebration", "value": "Nepalese Dinner Show" }]
+      },
+      {
+        "day": 12,
+        "title": "Final Departure",
+        "description": "Airport transfer for international departure flight.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Transfer", "value": "Airport Drop Off" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Why is Upper Mustang special?",
+        "answer": "Upper Mustang was a forbidden Tibetan Buddhist kingdom isolated from the outside world until 1992. It preserves authentic 15th-century Tibetan palaces, sky caves, and desert landscapes."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-mustang-101",
+        "author": "Astrid Lindgren",
+        "country": "Sweden",
+        "date": "Sep 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+        "content": "Driving into Lo Manthang in a 4WD jeep felt like stepping back in time 500 years. The red rock cliffs and ancient sky caves were surreal!"
+      }
+    ],
+    "metaTitle": "Upper Mustang 12-Day 4WD Overland Tour | Alpine Ace",
+    "metaDescription": "Journey into the forbidden kingdom of Upper Mustang by 4WD jeep. Visit Lo Manthang, ancient sky caves & Muktinath temple. Book your 12-day Nepal tour.",
+    "keywords": "Upper Mustang Tour, Lo Manthang 4WD, Mustang Jeep Tour, Forbidden Kingdom Nepal",
+    "status": "active",
+    "region": "Mustang"
+  },
+  {
+    "id": "tour-chitwan-lumbini-peace",
+    "title": "Chitwan Wildlife & Lumbini Birthplace Peace Tour",
+    "slug": "chitwan-lumbini-peace-tour",
+    "category": "Kathmandu & Pokhara",
+    "categoryId": "cat-tours-cultural-01",
+    "subcategoryId": "subcat-pilgrimage-tours",
+    "activityIds": ["act-sightseeing-01"],
+    "categorySlug": "tours",
+    "rating": 4.7,
+    "reviewsCount": 38,
+    "image": "https://images.unsplash.com/photo-1585970480901-90d6bb2a48b5?q=80&w=1200",
+    "coverMediaId": "media-lumbini-cover",
+    "country": "Nepal",
+    "activity": "Cultural Sightseeing",
+    "shortDesc": "Visit Lumbini, the sacred birthplace of Lord Buddha (Maya Devi Temple), and explore Chitwan National Park's rhino safari and Tharu village heritage.",
+    "durationDays": 6,
+    "maxAltitudeMeters": 1400,
+    "difficulty": "easy",
+    "bestSeason": "Oct - Apr",
+    "priceUSD": 720,
+    "isFeatured": false,
+    "isPopular": false,
+    "startEndLocation": "Kathmandu to Chitwan, Lumbini & KTM Return",
+    "accommodation": "4-Star Hotels & Safari Lodge",
+    "meals": "Breakfast Daily & All Meals in Chitwan",
+    "groupSizeRange": "1 to 15 Travelers",
+    "tourType": "cultural_heritage",
+    "transportation": "Private AC Tourist Car / Van",
+    "totalBookings": 45,
+    "inclusionsText": "- 5 nights hotel & safari lodge accommodation\n- Full Chitwan National Park jeep safari & canoe package\n- Lumbini Maya Devi Temple & monastic zone guided tour\n- All transfers in private AC tourist vehicle\n- All entrance tickets & guide fees",
+    "exclusionsText": "- International airfare & Nepal visa\n- Personal expenses & tips",
+    "addonsText": "- Flight Bhairahawa to Kathmandu upgrade: $95 USD",
+    "usefulInfoText": "Peaceful, accessible tour ideal for spiritual seekers, photography, and nature lovers.",
+    "departureDates": [
+      {
+        "id": "dep-lumbini-2026-11-15",
+        "startDate": "2026-11-15",
+        "endDate": "2026-11-20",
+        "priceUSD": 720,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 10,
+        "notes": "Peace Pilgrimage Season"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1585970480901-90d6bb2a48b5?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-lumbini-01"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-lumbini-map",
+    "packageFiles": [],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Drive Kathmandu to Chitwan National Park",
+        "description": "Drive from Kathmandu to Chitwan jungle resort. Evening Tharu cultural show.",
+        "maxAltitude": "410 m",
+        "accommodation": "Safari Lodge in Chitwan",
+        "meals": "Lunch & Dinner Included",
+        "details": [{ "label": "Drive Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 2,
+        "title": "Full Day Chitwan Jungle Safari",
+        "description": "Jeep safari, river canoe ride, and elephant breeding center visit.",
+        "maxAltitude": "410 m",
+        "accommodation": "Safari Lodge in Chitwan",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Activity", "value": "Jeep Safari & Canoe" }]
+      },
+      {
+        "day": 3,
+        "title": "Drive Chitwan to Lumbini Sacred Garden",
+        "description": "Drive west to Lumbini, the birthplace of Buddha. Sunset at Maya Devi Temple.",
+        "maxAltitude": "150 m",
+        "accommodation": "Hotel in Lumbini",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Drive Time", "value": "3-4 hours" }]
+      },
+      {
+        "day": 4,
+        "title": "Lumbini Monastic Zone & Ashoka Pillar Tour",
+        "description": "Visit Maya Devi Temple, Sacred Pond, Ashoka Pillar, World Peace Pagoda, and international monasteries (German, Chinese, Thai, Myanmar stupas).",
+        "maxAltitude": "150 m",
+        "accommodation": "Hotel in Lumbini",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "UNESCO Site", "value": "Buddha's Birthplace" }]
+      },
+      {
+        "day": 5,
+        "title": "Drive / Fly Lumbini back to Kathmandu",
+        "description": "Drive or fly from Bhairahawa back to Kathmandu hotel. Evening farewell dinner.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast & Dinner",
+        "details": [{ "label": "Return", "value": "Kathmandu Hotel" }]
+      },
+      {
+        "day": 6,
+        "title": "Final Departure",
+        "description": "Check-out and transfer to Kathmandu airport.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Transfer", "value": "Airport Drop Off" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "What is the historical significance of Lumbini?",
+        "answer": "Lumbini is a UNESCO World Heritage site and the sacred birthplace of Siddhartha Gautama (Lord Buddha) in 623 BC."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-lumbini-101",
+        "author": "Kenji Sato",
+        "country": "Japan",
+        "date": "Nov 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+        "content": "Meditating at Maya Devi Temple in Lumbini was a deeply peaceful experience. Combining it with Chitwan rhino safari made it a fantastic trip."
+      }
+    ],
+    "metaTitle": "Chitwan Wildlife & Lumbini Birthplace Tour 6 Days",
+    "metaDescription": "Explore Buddha's birthplace in Lumbini and Chitwan National Park rhino safari in 6 days. Guided cultural peace tour in Nepal. Book online with Alpine Ace.",
+    "keywords": "Lumbini Tour, Chitwan Safari, Buddha Birthplace, Nepal Peace Tour, Lumbini Maya Devi",
+    "status": "active",
+    "region": "Kathmandu & Pokhara"
+  }
+]

@@ -1,0 +1,1098 @@
+[
+  {
+    "id": "trek-everest-base-camp",
+    "title": "Everest Base Camp Trek",
+    "slug": "everest-base-camp-trek",
+    "category": "Everest Region",
+    "categoryId": "cat-everest-01",
+    "subcategoryId": "subcat-high-passes",
+    "activityIds": ["act-trekking-01", "act-mountain-sightseeing"],
+    "categorySlug": "everest",
+    "rating": 4.9,
+    "reviewsCount": 142,
+    "image": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200",
+    "coverMediaId": "media-ebc-cover",
+    "country": "Nepal",
+    "activity": "Trekking/Hiking",
+    "shortDesc": "Embark on the iconic 14-day foot journey to the base of Mount Everest (8,848.86m), passing Sherpa capital Namche Bazaar, ancient Tengboche Monastery, and Kala Patthar viewpoint.",
+    "durationDays": 14,
+    "maxAltitudeMeters": 5545,
+    "difficulty": "challenging",
+    "bestSeason": "Mar - May, Sep - Nov",
+    "priceUSD": 1450,
+    "isFeatured": true,
+    "isPopular": true,
+    "startEndLocation": "Kathmandu to Lukla (Flight) / Return Lukla to Kathmandu",
+    "accommodation": "Standard Tea Houses / Mountain Lodges",
+    "meals": "All Meals Included (Breakfast, Lunch & Dinner during trek)",
+    "groupSizeRange": "2 to 12 Trekkers",
+    "inclusionsText": "- Round-trip domestic flight (Kathmandu/Ramechhap - Lukla)\n- Sagarmatha National Park Permit & TIMS Card\n- Licensed English-speaking Sherpa Trek Leader & Porters (1 porter per 2 trekkers)\n- 13 nights lodge accommodation\n- Full board meals on trek (Breakfast, Lunch, Dinner)\n- Medical kit & pulse oximeter monitoring\n- Airport transfers in Kathmandu",
+    "exclusionsText": "- International airfare to/from Nepal\n- Nepal tourist visa fee ($50 USD)\n- Travel & high-altitude medical insurance with helicopter evacuation coverage\n- Personal gear & sleeping bags\n- Personal expenses (charging, hot showers, Wi-Fi, beverages)\n- Tips for guides & porters",
+    "addonsText": "- Single room supplement in Kathmandu: $120 USD\n- Helicopter return upgrade from Gorak Shep to Lukla: $950 USD per person\n- Sleeping bag & down jacket rental: $35 USD each",
+    "usefulInfoText": "Valid passport required (minimum 6 months validity). Comprehensive travel insurance with medical evacuation up to 6,000m altitude is compulsory.",
+    "departureDates": [
+      {
+        "id": "dep-ebc-2026-10-05",
+        "startDate": "2026-10-05",
+        "endDate": "2026-10-18",
+        "priceUSD": 1450,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 6,
+        "notes": "Peak Autumn Season • Clear Sky Guarantee"
+      },
+      {
+        "id": "dep-ebc-2026-10-20",
+        "startDate": "2026-10-20",
+        "endDate": "2026-11-02",
+        "priceUSD": 1450,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 4,
+        "notes": "Festival Season Special"
+      },
+      {
+        "id": "dep-ebc-2026-11-05",
+        "startDate": "2026-11-05",
+        "endDate": "2026-11-18",
+        "priceUSD": 1400,
+        "status": "Open Booking",
+        "seatsAvailable": 8,
+        "notes": "Late Autumn View Trek"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200",
+      "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-ebc-01", "med-ebc-02", "med-ebc-03"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-ebc-map",
+    "packageFiles": [
+      {
+        "id": "file-ebc-brochure",
+        "mediaId": "med-file-ebc",
+        "title": "Everest Base Camp Detailed Dossier & Gear List",
+        "fileUrl": "/docs/EBC-Trek-Detailed-Itinerary-AlpineAce.pdf",
+        "fileName": "EBC-Trek-Detailed-Itinerary-AlpineAce.pdf",
+        "fileSize": "2.4 MB",
+        "fileType": "pdf",
+        "uploadedAt": "2026-09-01"
+      }
+    ],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Kathmandu & Transfer to Hotel",
+        "description": "Upon arrival at Tribhuvan International Airport (KTM), meet our representative and transfer to your hotel. Evening pre-trek briefing with lead Sherpa guide.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "3-Star Hotel in Thamel",
+        "meals": "Welcome Dinner Included",
+        "details": [
+          { "label": "Distance", "value": "7 km from airport" },
+          { "label": "Activity", "value": "Gear check & orientation" }
+        ]
+      },
+      {
+        "day": 2,
+        "title": "Flight to Lukla (2,860m) & Trek to Phakding (2,610m)",
+        "description": "Early flight to Lukla airstrip. Meet porters and descend along the Dudh Koshi river through pine forests to Phakding village.",
+        "maxAltitude": "2,860 m",
+        "accommodation": "Mountain Tea House",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Flight Time", "value": "35-40 mins" },
+          { "label": "Walking Time", "value": "3-4 hours" }
+        ]
+      },
+      {
+        "day": 3,
+        "title": "Trek from Phakding to Namche Bazaar (3,440m)",
+        "description": "Cross iconic suspension bridges wrapped in prayer flags including Hillary Suspension Bridge. Steep climb up to Namche Bazaar, the Sherpa hub.",
+        "maxAltitude": "3,440 m",
+        "accommodation": "Mountain Lodge with Hot Shower",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Walking Time", "value": "5-6 hours" },
+          { "label": "Elevation Gain", "value": "830 m" }
+        ]
+      },
+      {
+        "day": 4,
+        "title": "Acclimatization Day at Namche Bazaar (Hike to Everest View Hotel 3,880m)",
+        "description": "Acclimatization day. Hike up to Syangboche and Everest View Hotel for panoramic views of Mount Everest, Lhotse, Ama Dablam, and Thamserku.",
+        "maxAltitude": "3,880 m",
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Hike Time", "value": "3-4 hours round trip" },
+          { "label": "Highlight", "value": "First view of Mt. Everest" }
+        ]
+      },
+      {
+        "day": 5,
+        "title": "Trek from Namche Bazaar to Tengboche Monastery (3,860m)",
+        "description": "Walk along winding trails with Ama Dablam towering overhead. Descend to Phunki Thenga before ascending through rhododendron forests to Tengboche Monastery.",
+        "maxAltitude": "3,860 m",
+        "accommodation": "Tea House",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Walking Time", "value": "5 hours" },
+          { "label": "Cultural Visit", "value": "Evening Buddhist prayer ceremony" }
+        ]
+      },
+      {
+        "day": 6,
+        "title": "Trek from Tengboche to Dingboche (4,410m)",
+        "description": "Descend through Pangboche and cross Imja Khola river. Ascend into alpine meadows above the tree line to Dingboche valley enclosed by stone walls.",
+        "maxAltitude": "4,410 m",
+        "accommodation": "Tea House Lodge",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Walking Time", "value": "5-6 hours" },
+          { "label": "Landscape", "value": "Sub-alpine glacial valley" }
+        ]
+      },
+      {
+        "day": 7,
+        "title": "Second Acclimatization Day at Dingboche (Nagarjun Hill Climb 5,100m)",
+        "description": "Day trip to Nagarjun Hill for vital high-altitude adaptation. Marvel at 360-degree views of Makalu, Lhotse, Chalolatse, and Island Peak.",
+        "maxAltitude": "5,100 m",
+        "accommodation": "Tea House Lodge",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Walking Time", "value": "4-5 hours" },
+          { "label": "Purpose", "value": "Climb high, sleep low protocol" }
+        ]
+      },
+      {
+        "day": 8,
+        "title": "Trek from Dingboche to Lobuche (4,940m)",
+        "description": "Ascend gentler slope to Thukla pass, passing stone memorials dedicated to fallen climbers. Continue along lateral moraine of Khumbu Glacier to Lobuche.",
+        "maxAltitude": "4,940 m",
+        "accommodation": "High Altitude Lodge",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Walking Time", "value": "5 hours" },
+          { "label": "Memorial Visit", "value": "Everest Climbers Memorial Wall" }
+        ]
+      },
+      {
+        "day": 9,
+        "title": "Trek to Everest Base Camp (5,364m) & Return to Gorak Shep (5,164m)",
+        "description": "Trek over rocky glacial moraines to Gorak Shep. Drop gear and trek to Everest Base Camp (5,364m). Celebrate at base camp before returning to Gorak Shep overnight.",
+        "maxAltitude": "5,364 m",
+        "accommodation": "Basic Lodge at Gorak Shep",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Walking Time", "value": "7-8 hours" },
+          { "label": "Milestone", "value": "Everest Base Camp Reached" }
+        ]
+      },
+      {
+        "day": 10,
+        "title": "Summit Kala Patthar (5,545m) & Descend to Pheriche (4,370m)",
+        "description": "Pre-dawn climb up Kala Patthar for dramatic sunrise over Mt. Everest peak and Khumbu Icefall. Descend to Gorak Shep for breakfast and continue down to Pheriche.",
+        "maxAltitude": "5,545 m",
+        "accommodation": "Mountain Lodge",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Climb Time", "value": "3 hours up Kala Patthar" },
+          { "label": "Total Walk", "value": "7 hours" }
+        ]
+      },
+      {
+        "day": 11,
+        "title": "Trek from Pheriche to Namche Bazaar (3,440m)",
+        "description": "Retrace steps down the valley through Tengboche and back to Namche Bazaar. Enjoy hot showers and bakery treats in Namche.",
+        "maxAltitude": "4,370 m",
+        "accommodation": "Lodge in Namche",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "6 hours" }]
+      },
+      {
+        "day": 12,
+        "title": "Trek from Namche Bazaar to Lukla (2,860m)",
+        "description": "Final day of trekking. Follow Dudh Koshi river down to Lukla airstrip. Farewell dinner with guide & porter crew.",
+        "maxAltitude": "3,440 m",
+        "accommodation": "Lodge in Lukla",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Walking Time", "value": "6-7 hours" },
+          { "label": "Celebration", "value": "Farewell party with staff" }
+        ]
+      },
+      {
+        "day": 13,
+        "title": "Fly from Lukla to Kathmandu & Hotel Transfer",
+        "description": "Morning scenic flight back to Kathmandu. Transfer to hotel for rest, massage, or shopping in Thamel.",
+        "maxAltitude": "2,860 m",
+        "accommodation": "3-Star Hotel in Thamel",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Flight Time", "value": "35-40 mins" }]
+      },
+      {
+        "day": 14,
+        "title": "Final Departure from Kathmandu",
+        "description": "Breakfast at hotel and free time until airport transfer for international flight home.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Transfer", "value": "Airport Drop Off" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "How fit do I need to be for the Everest Base Camp Trek?",
+        "answer": "A good level of physical fitness is required. Regular cardiovascular exercises (hiking, stair climbing, running) 2-3 months before departure are strongly recommended."
+      },
+      {
+        "question": "Is drinking water available on the trail?",
+        "answer": "Boiled, filtered, or UV-sterilized water is available at all tea houses. We recommend carrying reusable water bottles and purification tablets or SteriPEN."
+      },
+      {
+        "question": "What happens in case of acute mountain sickness (AMS) or medical emergency?",
+        "answer": "Our guides are trained in wilderness first aid and pulse oximeter monitoring. If emergency evacuation is needed, we arrange immediate helicopter rescue to Kathmandu hospitals."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-ebc-101",
+        "author": "Marcus Sterling",
+        "country": "United Kingdom",
+        "date": "Nov 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+        "content": "An incredible once-in-a-lifetime journey. The Alpine Ace Sherpa guides were super professional, attentive to altitude acclimatization, and ensured our safety every step."
+      },
+      {
+        "id": "rev-ebc-102",
+        "author": "Sarah Jenkins",
+        "country": "Australia",
+        "date": "Oct 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+        "content": "Sunrise on Kala Patthar looking directly at Everest peak was breathtaking. Perfectly organized, delicious meals at tea houses, and wonderful porters!"
+      }
+    ],
+    "metaTitle": "Everest Base Camp Trek 14 Days | Alpine Ace Treks",
+    "metaDescription": "Join our 14-day guided Everest Base Camp Trek. Fly to Lukla, trek through Namche Bazaar, Tengboche Monastery, and stand at Everest Base Camp (5,364m). Book now!",
+    "keywords": "Everest Base Camp Trek, EBC Trek 14 Days, Nepal Trekking, Lukla Flight, Kala Patthar",
+    "status": "active",
+    "region": "Everest"
+  },
+  {
+    "id": "trek-annapurna-circuit",
+    "title": "Annapurna Circuit Trek with Thorong La Pass",
+    "slug": "annapurna-circuit-trek",
+    "category": "Annapurna Region",
+    "categoryId": "cat-annapurna-01",
+    "subcategoryId": "subcat-circuit-treks",
+    "activityIds": ["act-trekking-01"],
+    "categorySlug": "annapurna",
+    "rating": 4.8,
+    "reviewsCount": 96,
+    "image": "https://images.unsplash.com/photo-1585970480901-90d6bb2a48b5?q=80&w=1200",
+    "coverMediaId": "media-annapurna-cover",
+    "country": "Nepal",
+    "activity": "Trekking/Hiking",
+    "shortDesc": "Circumnavigate the magnificent Annapurna Massif, crossing high-altitude Thorong La Pass (5,416m), sacred Muktinath Temple, and dramatic Kali Gandaki gorge.",
+    "durationDays": 16,
+    "maxAltitudeMeters": 5416,
+    "difficulty": "strenuous",
+    "bestSeason": "Mar - May, Sep - Nov",
+    "priceUSD": 1280,
+    "isFeatured": true,
+    "isPopular": true,
+    "startEndLocation": "Drive Kathmandu to Besisahar / Pokhara to Kathmandu",
+    "accommodation": "Tea Houses & Mountain Lodges",
+    "meals": "All Meals Included during Trek",
+    "groupSizeRange": "2 to 14 Trekkers",
+    "inclusionsText": "- Annapurna Conservation Area Project (ACAP) permit & TIMS card\n- Private overland drive Kathmandu to Besisahar / Dharapani\n- Licensed Trekking Guide & Porters\n- 15 nights lodge accommodation\n- Full board meals (Breakfast, Lunch, Dinner)\n- Flight/Drive from Jomsom to Pokhara & Pokhara to Kathmandu",
+    "exclusionsText": "- Personal travel & medical evacuation insurance\n- International flight to Nepal\n- Personal drinks, hot showers, Wi-Fi\n- Tips for guide & porters",
+    "addonsText": "- Tatopani hot springs rest day extension: $75 USD\n- Ghorepani Poon Hill detour extension: $140 USD",
+    "usefulInfoText": "High pass crossing at 5,416m requires good endurance. Warm thermal layers and sturdy crampons/microspikes recommended for pass day.",
+    "departureDates": [
+      {
+        "id": "dep-ac-2026-09-28",
+        "startDate": "2026-09-28",
+        "endDate": "2026-10-13",
+        "priceUSD": 1280,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 5,
+        "notes": "Early Autumn Route"
+      },
+      {
+        "id": "dep-ac-2026-10-15",
+        "startDate": "2026-10-15",
+        "endDate": "2026-10-30",
+        "priceUSD": 1280,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 7,
+        "notes": "Peak Autumn Colors"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1585970480901-90d6bb2a48b5?q=80&w=1200",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-ac-01", "med-ac-02"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-ac-map",
+    "packageFiles": [
+      {
+        "id": "file-ac-guide",
+        "mediaId": "med-file-ac",
+        "title": "Annapurna Circuit Complete Route Dossier",
+        "fileUrl": "/docs/Annapurna-Circuit-Trek-Guide.pdf",
+        "fileName": "Annapurna-Circuit-Trek-Guide.pdf",
+        "fileSize": "3.1 MB",
+        "fileType": "pdf",
+        "uploadedAt": "2026-09-02"
+      }
+    ],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Drive from Kathmandu to Besisahar & Chame (2,670m)",
+        "description": "Drive from Kathmandu via Marshyangdi river valley through Besisahar up to Chame by 4WD jeep.",
+        "maxAltitude": "2,670 m",
+        "accommodation": "Lodge in Chame",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Drive Time", "value": "8-9 hours 4WD" }]
+      },
+      {
+        "day": 2,
+        "title": "Trek from Chame to Pisang (3,200m)",
+        "description": "Walk through dense pine forests towards Paungda Danda rock face wall into Upper Pisang.",
+        "maxAltitude": "3,200 m",
+        "accommodation": "Lodge in Pisang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 3,
+        "title": "Trek from Upper Pisang to Manang (3,540m)",
+        "description": "Scenic high route via Ghyaru village offering breathtaking panoramas of Annapurna II, III, IV, and Gangapurna.",
+        "maxAltitude": "3,540 m",
+        "accommodation": "Lodge in Manang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "6-7 hours" }]
+      },
+      {
+        "day": 4,
+        "title": "Acclimatization Day in Manang (Ice Lake / Gangapurna Lake Hike)",
+        "description": "Rest and altitude adaptation day. Hike to Gangapurna viewpoint or Ice Lake (4,600m).",
+        "maxAltitude": "4,600 m",
+        "accommodation": "Lodge in Manang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Hike Time", "value": "4-5 hours" }]
+      },
+      {
+        "day": 5,
+        "title": "Trek from Manang to Yak Kharka (4,110m)",
+        "description": "Gradual ascent leaving tree line behind. Cross small streams to reach alpine pastures of Yak Kharka.",
+        "maxAltitude": "4,110 m",
+        "accommodation": "Tea House Lodge",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "4 hours" }]
+      },
+      {
+        "day": 6,
+        "title": "Trek from Yak Kharka to Thorong Phedi / High Camp (4,880m)",
+        "description": "Trek along steep slopes to Thorong Phedi and up to High Camp for early rest before pass day.",
+        "maxAltitude": "4,880 m",
+        "accommodation": "High Camp Lodge",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "4-5 hours" }]
+      },
+      {
+        "day": 7,
+        "title": "Cross Thorong La Pass (5,416m) to Muktinath (3,800m)",
+        "description": "4 AM early start to cross Thorong La Pass (5,416m). Enjoy prayer flag summits and descend to sacred Muktinath temple.",
+        "maxAltitude": "5,416 m",
+        "accommodation": "Hotel in Muktinath",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [
+          { "label": "Pass Crossing", "value": "Thorong La (5,416m)" },
+          { "label": "Walking Time", "value": "8-10 hours" }
+        ]
+      },
+      {
+        "day": 8,
+        "title": "Trek/Drive Muktinath to Jomsom & Tatopani Hot Springs",
+        "description": "Descend Kali Gandaki riverbed to Jomsom and drive to Tatopani for natural hot spring bath.",
+        "maxAltitude": "3,800 m",
+        "accommodation": "Lodge in Tatopani",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Highlight", "value": "Natural Hot Springs" }]
+      },
+      {
+        "day": 9,
+        "title": "Trek Tatopani to Ghorepani (2,860m)",
+        "description": "Ascend through traditional Gurung villages of Sikha and Ghara up to rhododendron haven Ghorepani.",
+        "maxAltitude": "2,860 m",
+        "accommodation": "Lodge in Ghorepani",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "6-7 hours" }]
+      },
+      {
+        "day": 10,
+        "title": "Poon Hill Sunrise (3,210m) & Drive to Pokhara",
+        "description": "Pre-dawn hike up Poon Hill for famous sunrise over Dhaulagiri and Annapurna ranges. Descend to Birethanti and drive to Pokhara lakeside hotel.",
+        "maxAltitude": "3,210 m",
+        "accommodation": "Hotel in Pokhara",
+        "meals": "Breakfast & Lunch",
+        "details": [{ "label": "Sunrise Peak", "value": "Poon Hill 3,210m" }]
+      },
+      {
+        "day": 11,
+        "title": "Rest & Sightseeing in Pokhara",
+        "description": "Relax in Pokhara. Optional Phewa lake boat trip, Davis Falls, and World Peace Pagoda visit.",
+        "maxAltitude": "820 m",
+        "accommodation": "Hotel in Pokhara",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Activity", "value": "Lakeside Relaxation" }]
+      },
+      {
+        "day": 12,
+        "title": "Drive Pokhara to Kathmandu",
+        "description": "Return tourist bus drive to Kathmandu along Prithvi Highway.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Drive Time", "value": "6-7 hours" }]
+      },
+      {
+        "day": 13,
+        "title": "Kathmandu Valley Cultural Sightseeing",
+        "description": "Visit Swayambhunath Monkey Temple, Pashupatinath, and Boudhanath Stupa.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast & Farewell Dinner",
+        "details": [{ "label": "Sightseeing", "value": "UNESCO World Heritage Sites" }]
+      },
+      {
+        "day": 14,
+        "title": "Final Departure",
+        "description": "Transfer to Kathmandu International Airport for departure.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Transfer", "value": "Airport Drop Off" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Is Thorong La Pass dangerous during snow?",
+        "answer": "During clear autumn and spring weather, it is safe with experienced guides. If heavy snow occurs, microspikes and guide navigation ensure safe transit."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-ac-101",
+        "author": "David Miller",
+        "country": "Germany",
+        "date": "Oct 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+        "content": "Crossing Thorong La Pass at 5,416m was the toughest and most rewarding thing I have ever done. Incredible views of Mustang and Dhaulagiri!"
+      }
+    ],
+    "metaTitle": "Annapurna Circuit Trek 16 Days | Thorong La Pass",
+    "metaDescription": "Trek the full Annapurna Circuit in 16 days. Cross Thorong La Pass (5,416m), visit Muktinath temple & Poon Hill sunrise. Experienced Sherpa guides.",
+    "keywords": "Annapurna Circuit Trek, Thorong La Pass, Muktinath, Poon Hill Trek, Nepal Trekking",
+    "status": "active",
+    "region": "Annapurna"
+  },
+  {
+    "id": "trek-manaslu-circuit",
+    "title": "Manaslu Circuit Restricted Wilderness Trek",
+    "slug": "manaslu-circuit-trek",
+    "category": "Manaslu Region",
+    "categoryId": "cat-manaslu-01",
+    "subcategoryId": "subcat-remote-treks",
+    "activityIds": ["act-trekking-01"],
+    "categorySlug": "manaslu",
+    "rating": 4.9,
+    "reviewsCount": 64,
+    "image": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200",
+    "coverMediaId": "media-manaslu-cover",
+    "country": "Nepal",
+    "activity": "Trekking/Hiking",
+    "shortDesc": "An off-the-beaten-path restricted trek around Mount Manaslu (8,163m), crossing Larkya La Pass (5,106m) with rich Tibetan-Buddhist heritage.",
+    "durationDays": 15,
+    "maxAltitudeMeters": 5106,
+    "difficulty": "strenuous",
+    "bestSeason": "Mar - May, Sep - Nov",
+    "priceUSD": 1390,
+    "isFeatured": true,
+    "isPopular": false,
+    "startEndLocation": "Drive Kathmandu to Machha Khola / Dharapani to Kathmandu",
+    "accommodation": "Remote Tea Houses / Lodges",
+    "meals": "All Meals Included during Trek",
+    "groupSizeRange": "Minimum 2 Trekkers (Restricted Area Requirement)",
+    "inclusionsText": "- Manaslu Restricted Area Permit (RAP), MCAP & ACAP permits\n- Government registered license guide & porters\n- Kathmandu to Machha Khola 4WD jeep drive\n- 14 nights lodge accommodation\n- Full board meals (Breakfast, Lunch, Dinner)",
+    "exclusionsText": "- Personal emergency medical & helicopter evacuation insurance\n- Nepal visa & international flights\n- Personal expenses & tips",
+    "addonsText": "- Tsum Valley extension detour (7 extra days): $450 USD",
+    "usefulInfoText": "Manaslu requires a minimum group size of 2 trekkers and a compulsory licensed guide as mandated by Nepal Immigration.",
+    "departureDates": [
+      {
+        "id": "dep-manaslu-2026-10-01",
+        "startDate": "2026-10-01",
+        "endDate": "2026-10-15",
+        "priceUSD": 1390,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 6,
+        "notes": "Restricted Area Group Confirmed"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-manaslu-01"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-manaslu-map",
+    "packageFiles": [],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Drive Kathmandu to Machha Khola (900m)",
+        "description": "Drive from Kathmandu through scenic countryside to Machha Khola via Soti Khola.",
+        "maxAltitude": "900 m",
+        "accommodation": "Lodge in Machha Khola",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Drive Time", "value": "7-8 hours 4WD" }]
+      },
+      {
+        "day": 2,
+        "title": "Trek Machha Khola to Jagat (1,340m)",
+        "description": "Follow Budhi Gandaki river through Tatopani hot springs and Dobhan up to Jagat restricted checkpoint.",
+        "maxAltitude": "1,340 m",
+        "accommodation": "Lodge in Jagat",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "6 hours" }]
+      },
+      {
+        "day": 3,
+        "title": "Trek Jagat to Deng (1,860m)",
+        "description": "Climb rocky ridge to Salleri and descend to Sirdibas before reaching Deng village.",
+        "maxAltitude": "1,860 m",
+        "accommodation": "Lodge in Deng",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "6 hours" }]
+      },
+      {
+        "day": 4,
+        "title": "Trek Deng to Namrung (2,630m)",
+        "description": "Trek through bamboo and rhododendron forests crossing Budhi Gandaki river multiple times into Nubri region.",
+        "maxAltitude": "2,630 m",
+        "accommodation": "Lodge in Namrung",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "6-7 hours" }]
+      },
+      {
+        "day": 5,
+        "title": "Trek Namrung to Lho (3,180m)",
+        "description": "Enter Tibetan-influenced mountain hamlets with views of Mt. Manaslu North face and Ribung Monastery.",
+        "maxAltitude": "3,180 m",
+        "accommodation": "Lodge in Lho",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "4-5 hours" }]
+      },
+      {
+        "day": 6,
+        "title": "Trek Lho to Samagaon (3,530m)",
+        "description": "Walk through Shyala village with panoramas of Manaslu Peak (8,163m) and Himal Chuli to Samagaon.",
+        "maxAltitude": "3,530 m",
+        "accommodation": "Lodge in Samagaon",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "4 hours" }]
+      },
+      {
+        "day": 7,
+        "title": "Acclimatization Day at Samagaon (Manaslu Base Camp Hike 4,800m)",
+        "description": "Excursion to Birendra Lake or high climb up to Manaslu Base Camp (4,800m).",
+        "maxAltitude": "4,800 m",
+        "accommodation": "Lodge in Samagaon",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Highlight", "value": "Manaslu Base Camp Excursion" }]
+      },
+      {
+        "day": 8,
+        "title": "Trek Samagaon to Samdo (3,860m)",
+        "description": "Follow trail towards Tibetan border past birch forests and juniper bushes to Samdo village.",
+        "maxAltitude": "3,860 m",
+        "accommodation": "Lodge in Samdo",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "3-4 hours" }]
+      },
+      {
+        "day": 9,
+        "title": "Trek Samdo to Dharamsala / Larkya Phedi (4,460m)",
+        "description": "Ascend to Dharamsala high camp base in preparation for pass crossing.",
+        "maxAltitude": "4,460 m",
+        "accommodation": "High Camp Lodge",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "4 hours" }]
+      },
+      {
+        "day": 10,
+        "title": "Cross Larkya La Pass (5,106m) & Descend to Bimthang (3,720m)",
+        "description": "Cross Larkya La Pass (5,106m) enjoying sweeping views of Himlung Himal, Cheo Himal, and Annapurna II. Descend to Bimthang.",
+        "maxAltitude": "5,106 m",
+        "accommodation": "Lodge in Bimthang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Pass Day", "value": "Larkya La (5,106m) • 8-9 hrs" }]
+      },
+      {
+        "day": 11,
+        "title": "Trek Bimthang to Tilije (2,300m)",
+        "description": "Descend through rhododendron forests along Dudh Khola to Tilije village.",
+        "maxAltitude": "3,720 m",
+        "accommodation": "Lodge in Tilije",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 12,
+        "title": "Trek Tilije to Dharapani & Drive to Besisahar",
+        "description": "Trek down to Dharapani meeting Annapurna Circuit route, then drive by jeep to Besisahar.",
+        "maxAltitude": "2,300 m",
+        "accommodation": "Hotel in Besisahar",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Combined", "value": "2 hrs walk + 3 hrs drive" }]
+      },
+      {
+        "day": 13,
+        "title": "Drive Besisahar to Kathmandu",
+        "description": "Drive back to Kathmandu hotel. Evening celebration dinner.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast & Farewell Dinner",
+        "details": [{ "label": "Drive Time", "value": "6 hours" }]
+      },
+      {
+        "day": 14,
+        "title": "Kathmandu Sightseeing Day",
+        "description": "Relaxation and shopping day in Kathmandu.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Free Day", "value": "Souvenir shopping in Thamel" }]
+      },
+      {
+        "day": 15,
+        "title": "Final Departure",
+        "description": "Airport transfer for international departure.",
+        "maxAltitude": "1,400 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Transfer", "value": "Airport Drop Off" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Can solo trekkers do Manaslu Circuit?",
+        "answer": "No, Nepal Immigration regulations require a minimum of two trekkers accompanied by a licensed guide for restricted area permits."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-manaslu-101",
+        "author": "Henri Laurant",
+        "country": "France",
+        "date": "Oct 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+        "content": "Manaslu Circuit was far less crowded than Everest or Annapurna. Crossing Larkya La Pass with snowy peaks all around was unforgettable."
+      }
+    ],
+    "metaTitle": "Manaslu Circuit Trek 15 Days | Larkya La Pass",
+    "metaDescription": "Explore the off-the-beaten-path Manaslu Circuit Trek (15 Days). Cross Larkya La Pass (5,106m) around Mt. Manaslu (8,163m). Book with licensed Sherpa team.",
+    "keywords": "Manaslu Circuit Trek, Larkya La Pass, Restricted Trek Nepal, Mt Manaslu",
+    "status": "active",
+    "region": "Manaslu"
+  },
+  {
+    "id": "trek-langtang-gosaikunda",
+    "title": "Langtang Valley & Gosaikunda Sacred Lakes Trek",
+    "slug": "langtang-valley-gosaikunda-trek",
+    "category": "Langtang Region",
+    "categoryId": "cat-langtang-01",
+    "subcategoryId": "subcat-valley-lakes",
+    "activityIds": ["act-trekking-01"],
+    "categorySlug": "langtang",
+    "rating": 4.8,
+    "reviewsCount": 52,
+    "image": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=1200",
+    "coverMediaId": "media-langtang-cover",
+    "country": "Nepal",
+    "activity": "Trekking/Hiking",
+    "shortDesc": "Discover the valley of glaciers, Tamang heritage villages, Kyanjin Gompa monastery, and sacred high-altitude alpine Gosaikunda Lakes.",
+    "durationDays": 11,
+    "maxAltitudeMeters": 4773,
+    "difficulty": "moderate",
+    "bestSeason": "Mar - May, Sep - Nov",
+    "priceUSD": 980,
+    "isFeatured": false,
+    "isPopular": true,
+    "startEndLocation": "Drive Kathmandu to Syabrubesi / Sundarijal to Kathmandu",
+    "accommodation": "Tamang Heritage Tea Houses",
+    "meals": "All Meals Included during Trek",
+    "groupSizeRange": "1 to 12 Trekkers",
+    "inclusionsText": "- Langtang National Park entry permit & TIMS card\n- Overland transport Kathmandu to Syabrubesi\n- Experienced Tamang/Sherpa guide & porters\n- 10 nights lodge accommodation\n- Full board meals on trail",
+    "exclusionsText": "- Personal emergency travel insurance\n- International flights & Nepal visa fee\n- Personal beverages & hot showers",
+    "addonsText": "- Kyanjin Ri 4,773m summit extension included",
+    "usefulInfoText": "Closest high-altitude alpine valley trek from Kathmandu valley.",
+    "departureDates": [
+      {
+        "id": "dep-langtang-2026-10-10",
+        "startDate": "2026-10-10",
+        "endDate": "2026-10-20",
+        "priceUSD": 980,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 8,
+        "notes": "Autumn Peak Season"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-langtang-01"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-langtang-map",
+    "packageFiles": [],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Drive Kathmandu to Syabrubesi (1,550m)",
+        "description": "Drive north from Kathmandu through Trishuli river valley to Syabrubesi gateway village.",
+        "maxAltitude": "1,550 m",
+        "accommodation": "Lodge in Syabrubesi",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Drive Time", "value": "6-7 hours" }]
+      },
+      {
+        "day": 2,
+        "title": "Trek Syabrubesi to Lama Hotel (2,380m)",
+        "description": "Cross Bhote Koshi river and trek along Langtang Khola river gorge through oak and rhododendron forests.",
+        "maxAltitude": "2,380 m",
+        "accommodation": "Lodge in Lama Hotel",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 3,
+        "title": "Trek Lama Hotel to Langtang Village (3,430m)",
+        "description": "Ascend valley enjoying glimpses of Langtang Lirung (7,227m). Pass Ghodatabela to reach rebuilt Langtang village.",
+        "maxAltitude": "3,430 m",
+        "accommodation": "Lodge in Langtang",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "6 hours" }]
+      },
+      {
+        "day": 4,
+        "title": "Trek Langtang Village to Kyanjin Gompa (3,870m)",
+        "description": "Short scenic walk past Mani stone walls and yak pastures to alpine sanctuary Kyanjin Gompa and cheese factory.",
+        "maxAltitude": "3,870 m",
+        "accommodation": "Lodge in Kyanjin Gompa",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "3-4 hours" }]
+      },
+      {
+        "day": 5,
+        "title": "Climb Kyanjin Ri (4,773m) & Explore Glaciers",
+        "description": "Pre-dawn hike up Kyanjin Ri (4,773m) for panoramic views of Langtang mountain rim and icefalls.",
+        "maxAltitude": "4,773 m",
+        "accommodation": "Lodge in Kyanjin Gompa",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Summit Height", "value": "Kyanjin Ri 4,773m" }]
+      },
+      {
+        "day": 6,
+        "title": "Trek Kyanjin Gompa back to Lama Hotel (2,380m)",
+        "description": "Descend back down Langtang valley through Ghodatabela to Lama Hotel.",
+        "maxAltitude": "3,870 m",
+        "accommodation": "Lodge in Lama Hotel",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 7,
+        "title": "Trek Lama Hotel to Thulo Syabru (2,210m)",
+        "description": "Branch off main route to climb up to beautiful ridge top village of Thulo Syabru.",
+        "maxAltitude": "2,380 m",
+        "accommodation": "Lodge in Thulo Syabru",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5 hours" }]
+      },
+      {
+        "day": 8,
+        "title": "Trek Thulo Syabru to Shin Gompa / Lauribina (3,900m)",
+        "description": "Ascend through hemlock and fir forest past Chandanbari cheese factory up to Lauribina ridge.",
+        "maxAltitude": "3,900 m",
+        "accommodation": "Lodge in Lauribina",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 9,
+        "title": "Trek Lauribina to Sacred Gosaikunda Lakes (4,380m)",
+        "description": "Climb steep ridge trail to sacred glacial alpine Gosaikunda Lake, revered by Hindu & Buddhist pilgrims.",
+        "maxAltitude": "4,380 m",
+        "accommodation": "Lodge at Gosaikunda",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Highlight", "value": "Gosaikunda Sacred Lakes" }]
+      },
+      {
+        "day": 10,
+        "title": "Cross Lauribina Pass (4,610m) & Descend to Gopte (3,440m)",
+        "description": "Cross Lauribina Pass (4,610m) and descend steep alpine ridge route to Gopte.",
+        "maxAltitude": "4,610 m",
+        "accommodation": "Lodge in Gopte",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Pass Day", "value": "Lauribina Pass 4,610m" }]
+      },
+      {
+        "day": 11,
+        "title": "Trek to Sundarijal & Drive Back to Kathmandu",
+        "description": "Final descent through Shivapuri National Park to Sundarijal water source and drive back to Kathmandu.",
+        "maxAltitude": "2,500 m",
+        "accommodation": "Hotel in Kathmandu",
+        "meals": "Breakfast & Lunch",
+        "details": [{ "label": "Return Drive", "value": "1 hour to Kathmandu" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Are tea houses operational after the 2015 earthquake?",
+        "answer": "Yes! Langtang valley and Kyanjin Gompa have been completely rebuilt with resilient lodges, solar amenities, and warm Tamang hospitality."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-lang-101",
+        "author": "Chloe Bennett",
+        "country": "Canada",
+        "date": "Nov 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+        "content": "Langtang valley was peaceful and stunning. The local cheese at Kyanjin Gompa and sunrise at Gosaikunda Lake were unforgettable."
+      }
+    ],
+    "metaTitle": "Langtang Valley & Gosaikunda Lakes Trek | Alpine Ace",
+    "metaDescription": "Trek Langtang Valley & sacred Gosaikunda Lakes in 11 days. Kyanjin Gompa 3,870m, Lauribina Pass 4,610m, Tamang culture. Book your Nepal trek today.",
+    "keywords": "Langtang Valley Trek, Gosaikunda Lakes, Kyanjin Gompa, Tamang Heritage, Nepal Trek",
+    "status": "active",
+    "region": "Langtang"
+  },
+  {
+    "id": "trek-gokyo-lakes-chola-pass",
+    "title": "Gokyo Sacred Lakes & Cho La Pass Trek",
+    "slug": "gokyo-lakes-chola-pass-trek",
+    "category": "Everest Region",
+    "categoryId": "cat-everest-01",
+    "subcategoryId": "subcat-high-passes",
+    "activityIds": ["act-trekking-01"],
+    "categorySlug": "everest",
+    "rating": 4.9,
+    "reviewsCount": 78,
+    "image": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200",
+    "coverMediaId": "media-gokyo-cover",
+    "country": "Nepal",
+    "activity": "Trekking/Hiking",
+    "shortDesc": "Trek to pristine turquoise Gokyo Lakes, climb Gokyo Ri (5,357m), cross glaciated Cho La Pass (5,420m), and reach Everest Base Camp.",
+    "durationDays": 15,
+    "maxAltitudeMeters": 5420,
+    "difficulty": "strenuous",
+    "bestSeason": "Mar - May, Sep - Nov",
+    "priceUSD": 1590,
+    "isFeatured": true,
+    "isPopular": true,
+    "startEndLocation": "Lukla to Lukla (Round-trip fly from KTM)",
+    "accommodation": "Mountain Lodges / Tea Houses",
+    "meals": "All Meals Included on Trek",
+    "groupSizeRange": "2 to 10 Trekkers",
+    "inclusionsText": "- Lukla return flights\n- Sagarmatha permit & TIMS\n- Expert Sherpa pass guide & porters\n- 14 nights lodge accommodation\n- Full board meals",
+    "exclusionsText": "- Personal emergency travel & evacuation insurance\n- Tips & personal drinks",
+    "addonsText": "- Renjo La pass extension: $180 USD",
+    "usefulInfoText": "Requires glaciated pass crossing over Cho La glacier. Microspikes strongly recommended.",
+    "departureDates": [
+      {
+        "id": "dep-gokyo-2026-10-12",
+        "startDate": "2026-10-12",
+        "endDate": "2026-10-26",
+        "priceUSD": 1590,
+        "status": "Guaranteed Departure",
+        "seatsAvailable": 4,
+        "notes": "Cho La Pass Confirmed Group"
+      }
+    ],
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200"
+    ],
+    "galleryMediaIds": ["med-gokyo-01"],
+    "mapImage": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=800",
+    "mapMediaId": "med-gokyo-map",
+    "packageFiles": [],
+    "itinerary": [
+      {
+        "day": 1,
+        "title": "Fly Lukla (2,860m) & Trek Phakding (2,610m)",
+        "description": "Flight from KTM/Ramechhap to Lukla, trek down to Phakding village.",
+        "maxAltitude": "2,860 m",
+        "accommodation": "Lodge in Phakding",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Flight", "value": "35 mins" }]
+      },
+      {
+        "day": 2,
+        "title": "Trek Phakding to Namche Bazaar (3,440m)",
+        "description": "Ascend through Sagarmatha National Park entrance up to Namche Bazaar.",
+        "maxAltitude": "3,440 m",
+        "accommodation": "Lodge in Namche",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 3,
+        "title": "Acclimatization at Namche Bazaar",
+        "description": "Hike to Everest View Hotel (3,880m) for panorama of Everest and Ama Dablam.",
+        "maxAltitude": "3,880 m",
+        "accommodation": "Lodge in Namche",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Hike Time", "value": "3 hours" }]
+      },
+      {
+        "day": 4,
+        "title": "Trek Namche to Dole (4,200m)",
+        "description": "Diverge from main EBC trail heading towards Gokyo valley through rhododendron forests.",
+        "maxAltitude": "4,200 m",
+        "accommodation": "Lodge in Dole",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5-6 hours" }]
+      },
+      {
+        "day": 5,
+        "title": "Trek Dole to Machhermo (4,470m)",
+        "description": "Scenic walk along Dudh Koshi valley slope past Luza village to Machhermo.",
+        "maxAltitude": "4,470 m",
+        "accommodation": "Lodge in Machhermo",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "4-5 hours" }]
+      },
+      {
+        "day": 6,
+        "title": "Trek Machhermo to Gokyo Lakes (4,790m)",
+        "description": "Ascend along Ngozumpa Glacier moraine past first, second, and third turquoise Gokyo Lakes.",
+        "maxAltitude": "4,790 m",
+        "accommodation": "Lodge in Gokyo",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Highlight", "value": "Turquoise Gokyo Sacred Lakes" }]
+      },
+      {
+        "day": 7,
+        "title": "Climb Gokyo Ri (5,357m) & Explore 4th/5th Lakes",
+        "description": "Sunrise climb of Gokyo Ri for views of Everest, Lhotse, Makalu, and Cho Oyu.",
+        "maxAltitude": "5,357 m",
+        "accommodation": "Lodge in Gokyo",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Summit Peak", "value": "Gokyo Ri 5,357m" }]
+      },
+      {
+        "day": 8,
+        "title": "Trek Gokyo to Thaknak (4,700m)",
+        "description": "Cross Ngozumpa Glacier lateral moraine to Thaknak base camp below Cho La Pass.",
+        "maxAltitude": "4,700 m",
+        "accommodation": "Lodge in Thaknak",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "3-4 hours" }]
+      },
+      {
+        "day": 9,
+        "title": "Cross Glaciation Cho La Pass (5,420m) to Dzongla (4,830m)",
+        "description": "Pre-dawn pass crossing over glaciated Cho La pass (5,420m). Descend down rocky wall to Dzongla.",
+        "maxAltitude": "5,420 m",
+        "accommodation": "Lodge in Dzongla",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Pass Day", "value": "Cho La Pass 5,420m" }]
+      },
+      {
+        "day": 10,
+        "title": "Trek Dzongla to Lobuche (4,940m)",
+        "description": "Walk along high ridge with Cholatse and Ama Dablam backdrop to join EBC trail at Lobuche.",
+        "maxAltitude": "4,940 m",
+        "accommodation": "Lodge in Lobuche",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "3-4 hours" }]
+      },
+      {
+        "day": 11,
+        "title": "Trek Lobuche to Gorak Shep & Everest Base Camp (5,364m)",
+        "description": "Reach Gorak Shep and trek to Everest Base Camp before returning overnight.",
+        "maxAltitude": "5,364 m",
+        "accommodation": "Lodge in Gorak Shep",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Milestone", "value": "Everest Base Camp Reached" }]
+      },
+      {
+        "day": 12,
+        "title": "Kala Patthar (5,545m) & Descend to Pangboche (3,930m)",
+        "description": "Sunrise view on Kala Patthar peak, descend valley to Pangboche village.",
+        "maxAltitude": "5,545 m",
+        "accommodation": "Lodge in Pangboche",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Sunrise", "value": "Kala Patthar 5,545m" }]
+      },
+      {
+        "day": 13,
+        "title": "Trek Pangboche to Namche Bazaar",
+        "description": "Return trek past Tengboche monastery down to Namche Bazaar.",
+        "maxAltitude": "3,930 m",
+        "accommodation": "Lodge in Namche",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "5 hours" }]
+      },
+      {
+        "day": 14,
+        "title": "Trek Namche Bazaar to Lukla",
+        "description": "Final day walk back down to Lukla airstrip.",
+        "maxAltitude": "3,440 m",
+        "accommodation": "Lodge in Lukla",
+        "meals": "Breakfast, Lunch, Dinner",
+        "details": [{ "label": "Walking Time", "value": "6-7 hours" }]
+      },
+      {
+        "day": 15,
+        "title": "Fly Lukla to Kathmandu",
+        "description": "Morning flight back to Kathmandu. Hotel transfer and tour conclusion.",
+        "maxAltitude": "2,860 m",
+        "accommodation": "None",
+        "meals": "Breakfast Included",
+        "details": [{ "label": "Flight", "value": "Return flight to KTM" }]
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Which is better: classic EBC or Gokyo Cho La Pass?",
+        "answer": "Gokyo Cho La Pass offers a complete loop with pristine turquoise lakes, fewer crowds, and the dramatic Cho La glacier crossing alongside classic Base Camp."
+      }
+    ],
+    "reviews": [
+      {
+        "id": "rev-gokyo-101",
+        "author": "Liam Hemsworth",
+        "country": "New Zealand",
+        "date": "Oct 2025",
+        "rating": 5,
+        "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+        "content": "Gokyo Lakes are even more stunning in person than photos suggest. Crossing Cho La pass with Alpine Ace's guide team was smooth and exhilarating."
+      }
+    ],
+    "metaTitle": "Gokyo Lakes & Cho La Pass Trek 15 Days | Alpine Ace",
+    "metaDescription": "Trek Gokyo Sacred Lakes, Gokyo Ri (5,357m), Cho La Pass (5,420m) & Everest Base Camp in 15 days. Book your high-altitude Nepal adventure with expert Sherpa guides.",
+    "keywords": "Gokyo Lakes Trek, Cho La Pass, Gokyo Ri, Everest Base Camp, Nepal Pass Trekking",
+    "status": "active",
+    "region": "Everest"
+  }
+]

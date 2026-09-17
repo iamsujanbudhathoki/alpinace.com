@@ -1,76 +1,49 @@
 "use client";
 
-import {
-  AdminInputField,
-  AdminSelectField,
-  AdminTextareaField,
-} from "@/components/admin/forms/admin-form-fields";
-import { AdminSearchableSelect } from "@/components/admin/forms/admin-searchable-select";
-import { AdminSearchableMultiSelect } from "@/components/admin/forms/admin-searchable-multiselect";
-import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
-import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
-import {
-  TripFaqItem,
-  TripFaqsManager,
-  TripReviewItem,
-  TripReviewsManager,
-} from "@/components/admin/forms/trip-faqs-reviews-fields";
-import { TripItineraryManager } from "@/components/admin/forms/trip-itinerary-manager";
-import { TripDepartureDatesManager } from "@/components/admin/forms/trip-departure-dates-manager";
-import { TripGalleryManager } from "@/components/admin/forms/trip-gallery-manager";
-import { TripMapManager } from "@/components/admin/forms/trip-map-manager";
-import { TripFilesManager } from "@/components/admin/forms/trip-files-manager";
-import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
-import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
-import {
-  CategoryType,
-  ClimbingGrade,
-  PackageItem,
-  PackageStatus,
-  TripDifficulty,
-  TripActivity,
-  PACKAGE_COUNTRIES,
-} from "@/lib/admin-data";
+import { CategoryType, PackageStatus, TripDifficulty, TripActivity, ClimbingGrade } from "@/lib/admin-data";
 import { ExpeditionFormValues, expeditionSchema } from "@/lib/admin-schemas";
-import { CategoryService, MediaService, ActivityService } from "@/lib/services/admin-service";
-import { openSingleImage } from "@/lib/utils/lightbox";
-import { websiteDomain } from "@/lib/env.constants";
+import { CategoryService, ActivityService } from "@/lib/services/admin-service";
+import { ExpeditionItem } from "@/lib/expedition-data";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Calendar,
   CheckCircle2,
   Clock,
-  Compass,
   Edit,
-  ExternalLink,
   FileText,
-  Globe,
   HelpCircle,
   Image as ImageIcon,
   Info,
   Loader2,
-  MapPin,
-  Maximize2,
   MessageSquareQuote,
-  Mountain,
   Search,
-  Star,
-  XCircle,
 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-interface ExpeditionFormModalProps {
+import { PackageDetailView } from "./package/view/package-detail-view";
+import { PackageBasicInfoTab } from "./package/form/package-basic-info-tab";
+import { ExpeditionExtraFields } from "./package/fields/expedition-extra-fields";
+import { PackageItineraryTab } from "./package/form/package-itinerary-tab";
+import { PackageInclusionsTab } from "./package/form/package-inclusions-tab";
+import { PackageDatesTab } from "./package/form/package-dates-tab";
+import { PackageMediaTab } from "./package/form/package-media-tab";
+import { PackageFilesTab } from "./package/form/package-files-tab";
+import { PackageFaqsReviewsTab } from "./package/form/package-faqs-reviews-tab";
+import { PackageSeoTab } from "./package/form/package-seo-tab";
+
+export interface ExpeditionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (expedition: PackageItem) => Promise<boolean | void> | boolean | void;
-  initialData?: PackageItem | null;
+  onSave: (expedition: any) => Promise<boolean | void> | boolean | void;
+  initialData?: any;
+  mode?: "view" | "edit" | "create";
   isEditing?: boolean;
 }
+
 
 type TabType =
   | "general"
@@ -82,44 +55,59 @@ type TabType =
   | "faqs"
   | "seo";
 
-export function ExpeditionFormModal({
+export function ExpeditionModal({
   isOpen,
   onClose,
   onSave,
   initialData,
-  isEditing = false,
-}: ExpeditionFormModalProps) {
-  const [editingMode, setEditingMode] = useState(isEditing);
+  mode = "create",
+  isEditing,
+}: ExpeditionModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>("general");
+  const [editingMode, setEditingMode] = useState<boolean>(
+    isEditing !== undefined ? isEditing : mode !== "view"
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const [expeditionCategories, setExpeditionCategories] = useState<{ label: string; value: string }[]>([]);
+  const [subcategories, setSubcategories] = useState<{ label: string; value: string }[]>([]);
+  const [availableActivities, setAvailableActivities] = useState<{ id: string; name: string }[]>([]);
+  const [isLoadingSubcats, setIsLoadingSubcats] = useState(false);
+
+  useEffect(() => {
+    setEditingMode(isEditing !== undefined ? isEditing : mode !== "view");
+    setActiveTab("general");
+  }, [mode, isEditing, isOpen]);
+
 
   const {
     register,
     handleSubmit,
+    control,
     reset,
     setValue,
-    getValues,
-    control,
     watch,
-    formState: { errors },
-  } = useForm<ExpeditionFormValues, any, ExpeditionFormValues>({
+    formState: { errors, isSubmitted, isDirty },
+  } = useForm<ExpeditionFormValues>({
     resolver: zodResolver(expeditionSchema) as any,
     defaultValues: {
       title: "",
       categoryId: "",
+      subcategoryId: "",
       activityIds: [],
       region: "",
-      country: "",
-      activity: "",
-      peakHeightM: 8848,
-      maxAltitudeMeters: 8848,
-      climbingGrade: ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-      sherpaGuideRatio: "1:1 Personal Guide Ratio",
-      oxygenRequired: true,
+      country: "Nepal",
+      activity: TripActivity.PEAK_CLIMBING,
+      peakHeightM: 6000,
+      climbingGrade: ClimbingGrade.TECHNICAL_ALPINE_GRADE,
+      sherpaGuideRatio: "1:1 Dedicated Sherpa",
+      oxygenRequired: false,
+      durationDays: 15,
+      maxAltitudeMeters: 6000,
       difficulty: TripDifficulty.EXTREME,
+      priceUSD: 2500,
       bestSeason: "",
-      durationDays: 0,
-      priceUSD: 0,
       status: PackageStatus.ACTIVE,
       isFeatured: false,
       isPopular: false,
@@ -134,9 +122,12 @@ export function ExpeditionFormModal({
       usefulInfoText: "",
       departureDates: [],
       galleryImages: [],
+      galleryMediaIds: [],
       mapImage: "",
+      mapMediaId: "",
       packageFiles: [],
       image: "",
+      coverMediaId: "",
       metaTitle: "",
       metaDescription: "",
       keywords: "",
@@ -146,34 +137,20 @@ export function ExpeditionFormModal({
     },
   });
 
-  const watchTitle = watch("title");
-  const watchMetaTitle = watch("metaTitle");
-  const watchMetaDesc = watch("metaDescription");
-  const watchKeywords = watch("keywords");
-  const watchDuration = watch("durationDays");
-  const watchShortDesc = watch("shortDesc");
   const watchItinerary = watch("itinerary") || [];
   const watchDepartureDates = watch("departureDates") || [];
   const watchGalleryImages = watch("galleryImages") || [];
   const watchPackageFiles = watch("packageFiles") || [];
   const watchFaqs = watch("faqs") || [];
   const watchReviews = watch("reviews") || [];
-
-  const [expeditionCategories, setExpeditionCategories] = useState<{ label: string; value: string }[]>([]);
-  const [subcategories, setSubcategories] = useState<{ label: string; value: string }[]>([]);
-  const [availableActivities, setAvailableActivities] = useState<{ id: string; name: string }[]>([]);
-  const [isLoadingSubcats, setIsLoadingSubcats] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-
   const selectedCategoryId = watch("categoryId");
 
-  // Fetch Expedition domain parent categories & available activities
+  // Fetch Expedition domain parent categories and activities
   useEffect(() => {
     if (isOpen) {
       CategoryService.getAdminParents(CategoryType.EXPEDITIONS).then((cats) => {
         if (cats && cats.length > 0) {
-          const opts = cats.map((c) => ({ label: c.name, value: c.id }));
-          setExpeditionCategories(opts);
+          setExpeditionCategories(cats.map((c) => ({ label: c.name, value: c.id })));
         } else {
           setExpeditionCategories([]);
         }
@@ -185,14 +162,13 @@ export function ExpeditionFormModal({
     }
   }, [isOpen]);
 
-  // Dynamically load subcategories for selected parent category
+  // Dynamically load subcategories
   useEffect(() => {
     if (selectedCategoryId) {
       setIsLoadingSubcats(true);
       CategoryService.getAdminSubcategories(selectedCategoryId).then((subs) => {
         if (subs && subs.length > 0) {
-          const opts = subs.map((s) => ({ label: s.name, value: s.id }));
-          setSubcategories(opts);
+          setSubcategories(subs.map((s) => ({ label: s.name, value: s.id })));
         } else {
           setSubcategories([]);
         }
@@ -208,49 +184,50 @@ export function ExpeditionFormModal({
     setFormError(null);
     setIsSubmitting(false);
     if (initialData) {
+      const data = initialData as any;
       reset({
-        title: initialData.title,
-        categoryId: initialData.categoryId || "",
-        subcategoryId: initialData.subcategoryId || "",
-        activityIds: Array.isArray(initialData.activityIds) ? initialData.activityIds : [],
-        region: initialData.region,
-        country: initialData.country || "",
-        activity: initialData.activity || "",
-        peakHeightM: initialData.peakHeightM || initialData.maxAltitudeMeters || 8000,
-        maxAltitudeMeters: initialData.maxAltitudeMeters || initialData.peakHeightM || 8000,
-        climbingGrade: initialData.climbingGrade || ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-        sherpaGuideRatio: initialData.sherpaGuideRatio || "1:1 Personal Guide Ratio",
-        oxygenRequired: initialData.oxygenRequired !== undefined ? initialData.oxygenRequired : true,
-        difficulty: initialData.difficulty || TripDifficulty.EXTREME,
-        bestSeason: initialData.bestSeason || "",
-        durationDays: initialData.durationDays,
-        priceUSD: initialData.priceUSD,
-        status: initialData.status,
-        isFeatured: initialData.isFeatured ?? false,
-        isPopular: initialData.isPopular ?? false,
-        startEndLocation: initialData.startEndLocation || "",
-        accommodation: initialData.accommodation || "",
-        meals: initialData.meals || "",
-        groupSizeRange: initialData.groupSizeRange || "",
-        inclusionsText: initialData.inclusionsText || "",
-        exclusionsText: initialData.exclusionsText || "",
-        shortDesc: initialData.shortDesc || "",
-        addonsText: initialData.addonsText || "",
-        usefulInfoText: initialData.usefulInfoText || "",
-        departureDates: Array.isArray(initialData.departureDates) ? initialData.departureDates : [],
-        galleryImages: Array.isArray(initialData.galleryImages) ? initialData.galleryImages : [],
-        galleryMediaIds: Array.isArray(initialData.galleryMediaIds) ? initialData.galleryMediaIds : [],
-        mapImage: initialData.mapImage || "",
-        mapMediaId: initialData.mapMediaId || "",
-        packageFiles: Array.isArray(initialData.packageFiles) ? initialData.packageFiles : [],
-        image: initialData.image || "",
-        coverMediaId: initialData.coverMediaId || "",
-        metaTitle: initialData.metaTitle || "",
-        metaDescription: initialData.metaDescription || "",
-        keywords: initialData.keywords || "",
-        itinerary: Array.isArray(initialData.itinerary) ? initialData.itinerary : [],
-        faqs: Array.isArray(initialData.faqs) ? initialData.faqs : [],
-        reviews: Array.isArray(initialData.reviews) ? initialData.reviews : [],
+        title: data.title,
+        categoryId: data.categoryId || "",
+        subcategoryId: data.subcategoryId || "",
+        activityIds: Array.isArray(data.activityIds) ? data.activityIds : [],
+        region: data.region || "",
+        country: data.country || "Nepal",
+        activity: data.activity || TripActivity.PEAK_CLIMBING,
+        peakHeightM: data.peakHeightM || data.maxAltitudeMeters || 6000,
+        climbingGrade: data.climbingGrade || ClimbingGrade.TECHNICAL_ALPINE_GRADE,
+        sherpaGuideRatio: data.sherpaGuideRatio || "",
+        oxygenRequired: data.oxygenRequired ?? false,
+        durationDays: data.durationDays,
+        maxAltitudeMeters: data.maxAltitudeMeters || data.peakHeightM || 6000,
+        difficulty: data.difficulty || TripDifficulty.EXTREME,
+        priceUSD: data.priceUSD,
+        bestSeason: data.bestSeason || "",
+        status: (data.status as PackageStatus) || PackageStatus.ACTIVE,
+        isFeatured: data.isFeatured ?? false,
+        isPopular: data.isPopular ?? false,
+        startEndLocation: data.startEndLocation || "",
+        accommodation: data.accommodation || "",
+        meals: data.meals || "",
+        groupSizeRange: data.groupSizeRange || "",
+        inclusionsText: data.inclusionsText || "",
+        exclusionsText: data.exclusionsText || "",
+        shortDesc: data.shortDesc || "",
+        addonsText: data.addonsText || "",
+        usefulInfoText: data.usefulInfoText || "",
+        departureDates: Array.isArray(data.departureDates) ? data.departureDates : [],
+        galleryImages: Array.isArray(data.galleryImages) ? data.galleryImages : [],
+        galleryMediaIds: Array.isArray(data.galleryMediaIds) ? data.galleryMediaIds : [],
+        mapImage: data.mapImage || "",
+        mapMediaId: data.mapMediaId || "",
+        packageFiles: Array.isArray(data.packageFiles) ? data.packageFiles : [],
+        image: data.image || "",
+        coverMediaId: data.coverMediaId || "",
+        metaTitle: data.metaTitle || "",
+        metaDescription: data.metaDescription || "",
+        keywords: data.keywords || "",
+        itinerary: Array.isArray(data.itinerary) ? data.itinerary : [],
+        faqs: Array.isArray(data.faqs) ? data.faqs : [],
+        reviews: Array.isArray(data.reviews) ? data.reviews : [],
       });
     } else {
       reset({
@@ -258,16 +235,18 @@ export function ExpeditionFormModal({
         categoryId: "",
         subcategoryId: "",
         activityIds: [],
-        region: "Everest",
-        peakHeightM: 8848,
-        maxAltitudeMeters: 8848,
-        climbingGrade: ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-        sherpaGuideRatio: "1:1 Personal Guide Ratio",
-        oxygenRequired: true,
+        region: "",
+        country: "Nepal",
+        activity: TripActivity.PEAK_CLIMBING,
+        peakHeightM: 6000,
+        climbingGrade: ClimbingGrade.TECHNICAL_ALPINE_GRADE,
+        sherpaGuideRatio: "1:1 Dedicated Sherpa",
+        oxygenRequired: false,
+        durationDays: 15,
+        maxAltitudeMeters: 6000,
         difficulty: TripDifficulty.EXTREME,
+        priceUSD: 2500,
         bestSeason: "",
-        durationDays: 0,
-        priceUSD: 0,
         status: PackageStatus.ACTIVE,
         isFeatured: false,
         isPopular: false,
@@ -296,27 +275,23 @@ export function ExpeditionFormModal({
         reviews: [],
       });
     }
-    setEditingMode(isEditing || !initialData);
-  }, [initialData, isEditing, isOpen, reset, expeditionCategories]);
+  }, [initialData, isOpen, reset]);
 
   const handleClose = () => {
-    setFormError(null);
-    setIsSubmitting(false);
-    onClose();
+    if (editingMode && isDirty) {
+      if (confirm("You have unsaved changes. Are you sure you want to exit?")) {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
   };
 
   const onSubmit = async (values: ExpeditionFormValues) => {
     setIsSubmitting(true);
-    setFormError(null);
     try {
-      const permitsArray = (values.permitsText || "")
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-      const alt = Number(values.peakHeightM) || Number(values.maxAltitudeMeters) || 8000;
-
-      const expeditionToSave: PackageItem = {
+      const initData = (initialData || {}) as any;
+      const expeditionToSave: ExpeditionItem = {
         id: initialData?.id || "",
         title: values.title,
         slug: initialData?.slug || "",
@@ -324,19 +299,15 @@ export function ExpeditionFormModal({
         categoryId: values.categoryId && values.categoryId.trim() !== "" ? values.categoryId : undefined,
         subcategoryId: values.subcategoryId && values.subcategoryId.trim() !== "" ? values.subcategoryId : undefined,
         activityIds: values.activityIds || [],
-        region: (values.region as any) || "Everest",
-        peakHeightM: alt,
-        maxAltitudeMeters: alt,
-        climbingGrade: values.climbingGrade || ClimbingGrade.EXTREME_TECHNICAL_GRADE,
-        sherpaGuideRatio: values.sherpaGuideRatio || "1:1 Personal Guide Ratio",
-        oxygenRequired: values.oxygenRequired !== undefined ? values.oxygenRequired : true,
+        peakHeightM: Number(values.peakHeightM) || Number(values.maxAltitudeMeters) || 6000,
+        climbingGrade: values.climbingGrade || ClimbingGrade.TECHNICAL_ALPINE_GRADE,
+        sherpaGuideRatio: values.sherpaGuideRatio,
+        oxygenRequired: values.oxygenRequired ?? false,
         durationDays: Number(values.durationDays) || 0,
+        maxAltitudeMeters: Number(values.maxAltitudeMeters) || Number(values.peakHeightM) || 6000,
         difficulty: values.difficulty || TripDifficulty.EXTREME,
         priceUSD: Number(values.priceUSD) || 0,
         bestSeason: values.bestSeason || "",
-        status: values.status || PackageStatus.ACTIVE,
-        isFeatured: values.isFeatured ?? false,
-        isPopular: values.isPopular ?? false,
         startEndLocation: values.startEndLocation,
         accommodation: values.accommodation,
         meals: values.meals,
@@ -348,20 +319,28 @@ export function ExpeditionFormModal({
         usefulInfoText: values.usefulInfoText,
         departureDates: values.departureDates || [],
         galleryImages: values.galleryImages || [],
-        galleryMediaIds: values.galleryMediaIds || initialData?.galleryMediaIds || [],
         mapImage: values.mapImage,
-        mapMediaId: values.mapMediaId || (initialData?.mapMediaId ? initialData.mapMediaId : undefined),
         packageFiles: values.packageFiles || [],
         image: values.image || "",
-        coverMediaId: values.coverMediaId || (initialData?.coverMediaId ? initialData.coverMediaId : undefined),
-        metaTitle: values.metaTitle,
-        metaDescription: values.metaDescription,
-        keywords: values.keywords,
         itinerary: values.itinerary || [],
         faqs: values.faqs || [],
-        reviews: values.reviews || [],
         rating: initialData?.rating || 5.0,
-        totalBookings: initialData?.totalBookings || 0,
+        reviewsCount: initialData?.reviewsCount || (values.reviews?.length || 0),
+        ...({
+          region: (values.region as any) || initData.region || "Everest Region",
+          status: values.status || PackageStatus.ACTIVE,
+          isFeatured: values.isFeatured ?? false,
+          isPopular: values.isPopular ?? false,
+          country: values.country || "Nepal",
+          activity: values.activity || TripActivity.PEAK_CLIMBING,
+          galleryMediaIds: values.galleryMediaIds || initData.galleryMediaIds || [],
+          mapMediaId: values.mapMediaId || initData.mapMediaId,
+          coverMediaId: values.coverMediaId || initData.coverMediaId,
+          metaTitle: values.metaTitle,
+          metaDescription: values.metaDescription,
+          keywords: values.keywords,
+          reviews: values.reviews || [],
+        } as any),
       };
 
       const success = await onSave(expeditionToSave);
@@ -380,22 +359,42 @@ export function ExpeditionFormModal({
   const modalTitle = !initialData
     ? "Add New Expedition Package"
     : editingMode
-      ? `Edit: ${initialData.title}`
+      ? `Edit Expedition: ${initialData.title}`
       : `Expedition Details: ${initialData.title}`;
 
   const modalDescription = editingMode
-    ? "Configure peak details, technical specs, itinerary, gallery, departure dates, and downloadable brochures."
-    : "Review summit specifications, climb itinerary, media gallery, departure dates, and downloadable files.";
+    ? "Configure 6000m-8000m peak climbing itineraries, Sherpa guide ratios, oxygen support, and mountain logistics."
+    : "Review peak elevation, climbing technical ratings, high camp itineraries, and departure dates.";
 
-  const tabs: { id: TabType; label: string; icon: any; count?: number }[] = [
-    { id: "general", label: "Overview & Specs", icon: Info },
-    { id: "itinerary", label: "Itinerary", icon: Calendar, count: watchItinerary.length },
-    { id: "inclusions", label: "Includes / Excludes", icon: CheckCircle2 },
+  // Validation error flags for tab badges
+  const hasGeneralErrors = isSubmitted && !!(
+    errors.title ||
+    errors.categoryId ||
+    errors.region ||
+    errors.durationDays ||
+    errors.priceUSD ||
+    errors.shortDesc ||
+    errors.peakHeightM
+  );
+  const hasItineraryErrors = isSubmitted && !!(
+    errors.itinerary &&
+    (Array.isArray(errors.itinerary) ? errors.itinerary.some(Boolean) : true)
+  );
+  const hasInclusionsErrors = isSubmitted && !!(errors.inclusionsText || errors.exclusionsText);
+  const hasFaqErrors = isSubmitted && !!(errors.faqs);
+  const hasReviewErrors = isSubmitted && !!(errors.reviews);
+  const hasMediaErrors = isSubmitted && !!(errors.image);
+  const hasSeoErrors = isSubmitted && !!(errors.metaTitle || errors.metaDescription || errors.keywords);
+
+  const tabs: { id: TabType; label: string; icon: any; count?: number; hasError?: boolean }[] = [
+    { id: "general", label: "Overview & Specs", icon: Info, hasError: hasGeneralErrors },
+    { id: "itinerary", label: "Itinerary", icon: Calendar, count: watchItinerary.length, hasError: hasItineraryErrors },
+    { id: "inclusions", label: "Includes / Excludes", icon: CheckCircle2, hasError: hasInclusionsErrors },
     { id: "departures", label: "Departure Dates", icon: Clock, count: watchDepartureDates.length },
-    { id: "media", label: "Media & Map", icon: ImageIcon, count: watchGalleryImages.length },
+    { id: "media", label: "Media & Map", icon: ImageIcon, count: watchGalleryImages.length, hasError: hasMediaErrors },
     { id: "files", label: "Files & Downloads", icon: FileText, count: watchPackageFiles.length },
-    { id: "faqs", label: "FAQs & Reviews", icon: MessageSquareQuote, count: watchFaqs.length + watchReviews.length },
-    { id: "seo", label: "SEO", icon: Search },
+    { id: "faqs", label: "FAQs & Reviews", icon: MessageSquareQuote, count: watchFaqs.length + watchReviews.length, hasError: hasFaqErrors || hasReviewErrors },
+    { id: "seo", label: "SEO", icon: Search, hasError: hasSeoErrors },
   ];
 
   const editFooter = (
@@ -406,26 +405,17 @@ export function ExpeditionFormModal({
         </span>
       </div>
       <div className="flex items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleClose}
-          disabled={isSubmitting}
-        >
+        <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button
-          type="submit"
-          form="expedition-form"
-          disabled={isSubmitting}
-        >
+        <Button type="submit" form="expedition-form" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-1.5">
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
               Saving...
             </span>
           ) : (
-            "Save Expedition"
+            "Save Expedition Package"
           )}
         </Button>
       </div>
@@ -434,17 +424,12 @@ export function ExpeditionFormModal({
 
   const viewFooter = (
     <div className="flex justify-end gap-2">
-      <Button
-        variant="outline"
-        onClick={handleClose}
-      >
+      <Button variant="outline" onClick={handleClose}>
         Close
       </Button>
-      <Button
-        onClick={() => setEditingMode(true)}
-      >
+      <Button onClick={() => setEditingMode(true)}>
         <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
-        Edit Expedition
+        Edit Expedition Package
       </Button>
     </div>
   );
@@ -454,6 +439,7 @@ export function ExpeditionFormModal({
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
+        const isTabError = tab.hasError;
         return (
           <button
             key={tab.id}
@@ -462,17 +448,20 @@ export function ExpeditionFormModal({
             className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
               isActive
                 ? "bg-slate-900 text-white shadow-xs"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : isTabError
+                  ? "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
           >
-            <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : "text-slate-500"}`} />
+            <Icon className={`w-3.5 h-3.5 ${isActive ? "text-amber-400" : isTabError ? "text-rose-500" : "text-slate-500"}`} />
             <span>{tab.label}</span>
-            {tab.count !== undefined && tab.count > 0 && (
+            {isTabError && (
+              <span className="w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
+            )}
+            {tab.count !== undefined && tab.count > 0 && !isTabError && (
               <span
                 className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                  isActive
-                    ? "bg-slate-900 text-white"
-                    : "bg-slate-200 text-slate-800"
+                  isActive ? "bg-slate-900 text-white" : "bg-slate-200 text-slate-800"
                 }`}
               >
                 {tab.count}
@@ -502,642 +491,79 @@ export function ExpeditionFormModal({
               {formError}
             </div>
           )}
-
-          <form id="expedition-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
-            {/* 1. OVERVIEW & SPECS TAB */}
+          <form id="expedition-form" onSubmit={handleSubmit(onSubmit as any)} className="space-y-4 pt-1">
             {activeTab === "general" && (
-              <div className="grid grid-cols-2 gap-3 pr-1">
-                <div className="col-span-2 sm:col-span-1">
-                  <AdminInputField
-                    label="Expedition Peak Title"
-                    required
-                    placeholder="e.g. Mount Everest 8848m South Col Expedition"
-                    error={errors.title?.message}
-                    {...register("title")}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <AdminSearchableSelect
-                    label="Category"
-                    required
-                    value={watch("categoryId") || ""}
-                    onChange={(val) => {
-                      setValue("categoryId", val, { shouldValidate: true });
-                      setValue("subcategoryId", "", { shouldValidate: true });
-                    }}
-                    error={errors.categoryId?.message}
-                    placeholder="Select category..."
-                    searchPlaceholder="Search categories..."
-                    options={expeditionCategories}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <AdminSearchableSelect
-                    label="Subcategory (Optional)"
-                    value={watch("subcategoryId") || ""}
-                    onChange={(val) => setValue("subcategoryId", val, { shouldValidate: true })}
-                    error={errors.subcategoryId?.message}
-                    placeholder={
-                      isLoadingSubcats
-                        ? "Loading subcategories..."
-                        : subcategories.length > 0
-                          ? "Select subcategory (Optional)..."
-                          : "No subcategories available"
-                    }
-                    searchPlaceholder="Search subcategories..."
-                    options={subcategories}
-                    disabled={isLoadingSubcats || subcategories.length === 0}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <AdminSelectField
-                    label="Region"
-                    required
-                    searchable
-                    placeholder="Select or search region..."
-                    value={watch("region") || ""}
-                    onChange={(val) => setValue("region", val as any, { shouldValidate: true })}
-                    error={errors.region?.message}
-                    options={[
-                      { label: "Everest / Khumbu", value: "Everest" },
-                      { label: "Annapurna Region", value: "Annapurna" },
-                      { label: "Manaslu Region", value: "Manaslu" },
-                      { label: "Kanchenjunga & East", value: "Kanchenjunga" },
-                      { label: "Dolpo & West", value: "Dolpo" },
-                    ]}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <AdminCountrySelect
-                    label="Country"
-                    required
-                    value={watch("country") || ""}
-                    onChange={(val) => setValue("country", val, { shouldValidate: true })}
-                    error={errors.country?.message}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <AdminSelectField
-                    label="Activity"
-                    required
-                    value={watch("activity") || ""}
-                    onChange={(val) => setValue("activity", val as any, { shouldValidate: true })}
-                    error={errors.activity?.message}
-                    options={[
-                      { label: "Peak Climbing", value: TripActivity.PEAK_CLIMBING },
-                      { label: "Trekking/Hiking", value: TripActivity.TREKKING_HIKING },
-                      { label: "Cultural Sightseeing", value: TripActivity.CULTURAL_SIGHTSEEING },
-                      { label: "Heli Trek & Tour", value: TripActivity.HELI_TREK_TOUR },
-                      { label: "Wildlife Safari", value: TripActivity.WILDLIFE_SAFARI },
-                      { label: "Other", value: TripActivity.OTHER },
-                    ]}
-                  />
-                </div>
-
-                <div className="sm:col-span-3">
-                  <Controller
-                    name="activityIds"
-                    control={control}
-                    render={({ field }) => (
-                      <AdminSearchableMultiSelect
-                        label="Associated Activity Hubs (Multi-Select)"
-                        placeholder="Select activity hubs to link to this expedition..."
-                        searchPlaceholder="Search available activities..."
-                        values={field.value || []}
-                        disabled={!editingMode}
-                        options={availableActivities.map((act) => ({
-                          value: act.id,
-                          label: act.name,
-                        }))}
-                        onChange={(newValues) => field.onChange(newValues)}
-                        error={errors.activityIds?.message}
-                      />
-                    )}
-                  />
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Summit Altitude (Peak Height M)"
-                    type="number"
-                    required
-                    placeholder="8848"
-                    error={errors.peakHeightM?.message}
-                    {...register("peakHeightM")}
-                  />
-                </div>
-
-                <div>
-                  <AdminSelectField
-                    label="Climbing Technical Grade"
-                    required
-                    value={watch("climbingGrade") || ""}
-                    onChange={(val) => setValue("climbingGrade", val as any, { shouldValidate: true })}
-                    error={errors.climbingGrade?.message}
-                    options={[
-                      { label: "Non-Technical Trekking Peak", value: ClimbingGrade.NON_TECHNICAL_TREKKING_PEAK },
-                      { label: "Technical Alpine Grade", value: ClimbingGrade.TECHNICAL_ALPINE_GRADE },
-                      { label: "Extreme Technical Grade", value: ClimbingGrade.EXTREME_TECHNICAL_GRADE },
-                    ]}
-                  />
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Guide Ratio"
-                    placeholder="e.g. 1:1 Personal Mountain Guide Ratio"
-                    {...register("sherpaGuideRatio")}
-                  />
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Duration (Days)"
-                    type="number"
-                    required
-                    error={errors.durationDays?.message}
-                    {...register("durationDays")}
-                  />
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Price (USD)"
-                    type="number"
-                    required
-                    error={errors.priceUSD?.message}
-                    {...register("priceUSD")}
-                  />
-                </div>
-
-                <div>
-                  <AdminSelectField
-                    label="Status"
-                    required
-                    value={watch("status") || ""}
-                    onChange={(val) => setValue("status", val as any, { shouldValidate: true })}
-                    error={errors.status?.message}
-                    options={[
-                      { label: "Active", value: PackageStatus.ACTIVE },
-                      { label: "Draft", value: PackageStatus.DRAFT },
-                    ]}
-                  />
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Group Size Range"
-                    placeholder="e.g. 4 - 8 Summit Climbers"
-                    {...register("groupSizeRange")}
-                  />
-                </div>
-
-                <div className="col-span-2 sm:col-span-3">
-                  <AdminInputField
-                    label="Best Climbing Season"
-                    placeholder="e.g. Spring (April - May) & Autumn"
-                    {...register("bestSeason")}
-                  />
-                </div>
-
-                <div className="col-span-2 sm:col-span-3 flex items-center gap-6 pt-1">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      {...register("isFeatured")}
-                      className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <span className="text-sm font-medium text-slate-700">Featured Package</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      {...register("isPopular")}
-                      className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <span className="text-sm font-medium text-slate-700">Popular Package</span>
-                  </label>
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Basecamp & Start Location"
-                    placeholder="e.g. Everest Basecamp (5,364m)"
-                    {...register("startEndLocation")}
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <AdminInputField
-                    label="Accommodation Type"
-                    placeholder="e.g. Basecamp Heated Tents & High Altitude Tents"
-                    {...register("accommodation")}
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <AdminInputField
-                    label="Meals Plan"
-                    placeholder="e.g. Full High-Calorie Expedition Kitchen & High Altitude Rations"
-                    {...register("meals")}
-                  />
-                </div>
-
-
-
-                <div className="col-span-2 space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800 block">
-                    Overview &amp; Summit Description <span className="text-rose-500">*</span>
-                  </label>
-                  <Controller
-                    name="shortDesc"
-                    control={control}
-                    render={({ field }) => (
-                      <AppRichTextEditor
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="Detailed expedition summary, summit logistics, guide support, oxygen systems, and safety protocols..."
-                        height="220px"
-                      />
-                    )}
-                  />
-                </div>
-
-                <div className="col-span-2 space-y-1.5 pt-2 border-t border-slate-100">
-                  <label className="text-xs font-bold text-slate-800 block">
-                    Add-ons &amp; Summit Upgrades (Rich Text)
-                  </label>
-                  <Controller
-                    name="addonsText"
-                    control={control}
-                    render={({ field }) => (
-                      <AppRichTextEditor
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="Detail supplementary Summit Oxygen bottles, Western Guide upgrade, Helicopter transport options..."
-                        height="180px"
-                      />
-                    )}
-                  />
-                </div>
-
-                <div className="col-span-2 space-y-1.5 pt-2 border-t border-slate-100">
-                  <label className="text-xs font-bold text-slate-800 block">
-                    Useful Info &amp; Climbing Requirements (Rich Text)
-                  </label>
-                  <Controller
-                    name="usefulInfoText"
-                    control={control}
-                    render={({ field }) => (
-                      <AppRichTextEditor
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="Prerequisite 6000m/7000m summits, personal climbing gear list, medical checkup requirements..."
-                        height="200px"
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* 2. ITINERARY TAB */}
-            {activeTab === "itinerary" && (
-              <Controller
-                name="itinerary"
+              <PackageBasicInfoTab
+                register={register}
                 control={control}
-                render={({ field }) => (
-                  <TripItineraryManager
-                    itinerary={field.value || []}
-                    onChange={(newDays) => field.onChange(newDays)}
-                    durationDays={Number(watch("durationDays") || 0)}
-                    errors={errors.itinerary}
+                setValue={setValue}
+                watch={watch}
+                errors={errors}
+                categories={expeditionCategories}
+                subcategories={subcategories}
+                isLoadingSubcats={isLoadingSubcats}
+                availableActivities={availableActivities}
+                editingMode={editingMode}
+                titlePlaceholder="e.g. Ama Dablam Expedition (6,812m)"
+                extraFields={
+                  <ExpeditionExtraFields
+                    register={register}
+                    setValue={setValue}
+                    watch={watch}
+                    errors={errors}
                   />
-                )}
+                }
               />
             )}
 
-            {/* 3. INCLUSIONS & EXCLUSIONS TAB */}
+            {activeTab === "itinerary" && (
+              <PackageItineraryTab control={control} errors={errors} />
+            )}
+
             {activeTab === "inclusions" && (
-              <div className="space-y-6 pr-1">
-                <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200/80 space-y-2">
-                  <div className="flex items-center gap-2 text-emerald-900 font-bold">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>What&apos;s Included in Expedition Price (Rich Text)</span>
-                  </div>
-                  <Controller
-                    name="inclusionsText"
-                    control={control}
-                    render={({ field }) => (
-                      <AppRichTextEditor
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="e.g. Summit Climbing Royalty Fee, 1:1 Personal Lead Guide, Summit Oxygen Bottles & Regulator..."
-                        height="200px"
-                      />
-                    )}
-                  />
-                </div>
-
-                <div className="bg-rose-50/60 p-4 rounded-xl border border-rose-200/80 space-y-2">
-                  <div className="flex items-center gap-2 text-rose-900 font-bold">
-                    <XCircle className="w-4 h-4 text-rose-600" />
-                    <span>What&apos;s Excluded from Expedition Price (Rich Text)</span>
-                  </div>
-                  <Controller
-                    name="exclusionsText"
-                    control={control}
-                    render={({ field }) => (
-                      <AppRichTextEditor
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="e.g. International Flights to Kathmandu, Personal High Altitude Gear & Boots..."
-                        height="200px"
-                      />
-                    )}
-                  />
-                </div>
-              </div>
+              <PackageInclusionsTab control={control} errors={errors} />
             )}
 
-            {/* 4. DEPARTURE DATES TAB */}
             {activeTab === "departures" && (
-              <div className="pr-1">
-                <Controller
-                  name="departureDates"
-                  control={control}
-                  render={({ field }) => (
-                    <TripDepartureDatesManager
-                      dates={field.value || []}
-                      onChange={field.onChange}
-                      defaultPrice={Number(watch("priceUSD") || 0)}
-                    />
-                  )}
-                />
-              </div>
+              <PackageDatesTab control={control} watch={watch} />
             )}
 
-            {/* 5. MEDIA & MAP TAB */}
             {activeTab === "media" && (
-              <div className="space-y-6 pr-1">
-                <Controller
-                  name="image"
-                  control={control}
-                  render={({ field }) => (
-                    <AdminImageUpload
-                      label="Primary Cover Image"
-                      value={field.value || ""}
-                      onChange={(url, mediaId) => {
-                        field.onChange(url);
-                        setValue("coverMediaId", mediaId || "");
-                      }}
-                      error={errors.image?.message}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="galleryImages"
-                  control={control}
-                  render={({ field }) => (
-                    <TripGalleryManager
-                      images={field.value || []}
-                      galleryMediaIds={watch("galleryMediaIds") || []}
-                      onChange={(newImages, newMediaIds) => {
-                        field.onChange(newImages);
-                        if (newMediaIds) {
-                          setValue("galleryMediaIds", newMediaIds);
-                        }
-                      }}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="mapImage"
-                  control={control}
-                  render={({ field }) => (
-                    <TripMapManager
-                      mapImage={field.value || ""}
-                      mapMediaId={watch("mapMediaId") || ""}
-                      onChange={(url, mediaId) => {
-                        field.onChange(url);
-                        setValue("mapMediaId", mediaId || "");
-                      }}
-                      packageTitle={watch("title")}
-                    />
-                  )}
-                />
-              </div>
+              <PackageMediaTab
+                register={register}
+                control={control}
+                setValue={setValue}
+                watch={watch}
+                errors={errors}
+              />
             )}
 
-            {/* 6. FILES & DOWNLOADS TAB */}
-            {activeTab === "files" && (
-              <div className="pr-1">
-                <Controller
-                  name="packageFiles"
-                  control={control}
-                  render={({ field }) => (
-                    <TripFilesManager
-                      files={field.value || []}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </div>
-            )}
+            {activeTab === "files" && <PackageFilesTab control={control} />}
 
-            {/* 7. FAQS & REVIEWS TAB */}
             {activeTab === "faqs" && (
-              <div className="space-y-6 pr-1">
-                <Controller
-                  name="faqs"
-                  control={control}
-                  render={({ field }) => (
-                    <TripFaqsManager
-                      faqs={field.value || []}
-                      onChange={(newFaqs: TripFaqItem[]) => field.onChange(newFaqs)}
-                    />
-                  )}
-                />
-
-                <div className="pt-4 border-t border-slate-200">
-                  <Controller
-                    name="reviews"
-                    control={control}
-                    render={({ field }) => (
-                      <TripReviewsManager
-                        reviews={field.value || []}
-                        onChange={(newReviews: TripReviewItem[]) => field.onChange(newReviews)}
-                      />
-                    )}
-                  />
-                </div>
-              </div>
+              <PackageFaqsReviewsTab control={control} errors={errors} />
             )}
 
-            {/* 8. SEO TAB */}
             {activeTab === "seo" && (
-              <div className="space-y-4 pr-1">
-                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-                  <div className="text-[11px] font-medium text-emerald-800 truncate">
-                    {websiteDomain} › expeditions › {watchTitle ? watchTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : "expedition-slug"}
-                  </div>
-                  <div className="text-xs font-bold text-blue-700 truncate">
-                    {watchMetaTitle?.trim() || `${watchTitle || "Expedition Package"} | AlpineAce`}
-                  </div>
-                  <div className="text-[11px] text-slate-600 font-medium line-clamp-2">
-                    {watchMetaDesc?.trim() || watchShortDesc?.trim() || "Summit Himalayan peaks with AlpineAce lead guides."}
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label htmlFor="expedition-meta-title" className="text-xs font-bold text-slate-800 cursor-pointer">Meta Title</label>
-                  <AdminInputField id="expedition-meta-title" placeholder="e.g. Mount Everest 8848m Expedition | Alpine Ace" {...register("metaTitle")} />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label htmlFor="expedition-meta-description" className="text-xs font-bold text-slate-800 cursor-pointer">Meta Description</label>
-                  <AdminTextareaField id="expedition-meta-description" rows={3} placeholder="Brief summary for search result snippets..." {...register("metaDescription")} />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label htmlFor="expedition-keywords" className="text-xs font-bold text-slate-800 cursor-pointer">Focus Keywords</label>
-                  <AdminInputField id="expedition-keywords" placeholder="e.g. Everest Summit, 8000m Expedition, Mountain Guide" {...register("keywords")} />
-                </div>
-              </div>
+              <PackageSeoTab
+                register={register}
+                watch={watch}
+                errors={errors}
+                slugPrefix="expeditions"
+                initialSlug={initialData?.slug}
+              />
             )}
           </form>
         </div>
       ) : (
-        /* READ-ONLY VIEW MODE */
-        <div className="space-y-4 py-2 text-xs pr-1">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="aspect-video rounded-xl bg-slate-100 border border-slate-200 overflow-hidden col-span-1 relative flex items-center justify-center">
-              {initialData?.image ? (
-                <img src={initialData.image} alt={initialData.title} className="w-full h-full object-cover" />
-              ) : (
-                <Mountain className="w-8 h-8 text-slate-300" />
-              )}
-            </div>
-
-            <div className="col-span-2 grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-              <div className="col-span-2 pb-1 border-b border-slate-200 flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-semibold text-slate-500 block">Public Expedition Route</span>
-                  <Link href={`/expeditions/${initialData?.slug}`} target="_blank" rel="noopener noreferrer" className="font-extrabold text-slate-900 hover:text-amber-600 inline-flex items-center gap-1">
-                    <span>{initialData?.title}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                  </Link>
-                </div>
-                <AdminStatusBadge status={initialData?.status || "active"} />
-              </div>
-
-              <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Summit Altitude:</span>
-                <span className="text-slate-950 font-bold">{(initialData?.peakHeightM || initialData?.maxAltitudeMeters || 8000).toLocaleString()}m</span>
-              </div>
-              <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Duration:</span>
-                <span className="text-slate-950 font-bold">{initialData?.durationDays || 0} Days</span>
-              </div>
-              <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Guide Ratio:</span>
-                <span className="text-slate-950 font-bold">{initialData?.sherpaGuideRatio || "1:1 Guide"}</span>
-              </div>
-              <div>
-                <span className="text-slate-600 font-semibold block text-[11px]">Price:</span>
-                <span className="text-slate-950 font-black text-sm text-emerald-800">${(initialData?.priceUSD || 0).toLocaleString()} USD</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Linked Activity Hubs */}
-          {initialData?.activityIds && initialData.activityIds.length > 0 && (
-            <div className="space-y-1">
-              <span className="font-bold text-slate-900 block text-xs">Associated Activity Hubs:</span>
-              <div className="flex flex-wrap gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200">
-                {initialData.activityIds.map((actId) => {
-                  const actName = availableActivities.find((a) => a.id === actId)?.name || actId;
-                  return (
-                    <span key={actId} className="inline-flex items-center gap-1 bg-stone-900 text-white text-[11px] font-semibold px-2.5 py-1 rounded-md">
-                      {actName}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {initialData?.shortDesc && (
-            <div className="space-y-1">
-              <span className="font-bold text-slate-900 block text-xs">Expedition Overview:</span>
-              <div className="prose prose-sm max-w-none text-slate-800 bg-slate-50 p-3.5 rounded-lg border border-slate-200" dangerouslySetInnerHTML={{ __html: initialData.shortDesc }} />
-            </div>
-          )}
-
-          {initialData?.addonsText && (
-            <div className="space-y-1">
-              <span className="font-bold text-slate-900 block text-xs">Add-ons &amp; Options:</span>
-              <div className="prose prose-sm max-w-none text-slate-800 bg-slate-50 p-3.5 rounded-lg border border-slate-200" dangerouslySetInnerHTML={{ __html: initialData.addonsText }} />
-            </div>
-          )}
-
-          {initialData?.usefulInfoText && (
-            <div className="space-y-1">
-              <span className="font-bold text-slate-900 block text-xs">Useful Info:</span>
-              <div className="prose prose-sm max-w-none text-slate-800 bg-slate-50 p-3.5 rounded-lg border border-slate-200" dangerouslySetInnerHTML={{ __html: initialData.usefulInfoText }} />
-            </div>
-          )}
-
-          {initialData?.departureDates && initialData.departureDates.length > 0 && (
-            <div className="space-y-1.5">
-              <span className="font-bold text-slate-900 block text-xs">Scheduled Departure Dates ({initialData.departureDates.length}):</span>
-              <TripDepartureDatesManager dates={initialData.departureDates} onChange={() => { }} readOnly />
-            </div>
-          )}
-
-          {((initialData?.galleryImages && initialData.galleryImages.length > 0) || initialData?.mapImage) && (
-            <div className="space-y-3 pt-1">
-              {initialData.mapImage && (
-                <div>
-                  <span className="font-bold text-slate-900 block text-xs mb-1">Climbing Route Map:</span>
-                  <TripMapManager mapImage={initialData.mapImage} onChange={() => { }} readOnly packageTitle={initialData.title} />
-                </div>
-              )}
-              {initialData.galleryImages && initialData.galleryImages.length > 0 && (
-                <div>
-                  <span className="font-bold text-slate-900 block text-xs mb-1">Photo Gallery ({initialData.galleryImages.length}):</span>
-                  <TripGalleryManager images={initialData.galleryImages} onChange={() => { }} readOnly />
-                </div>
-              )}
-            </div>
-          )}
-
-          {initialData?.packageFiles && initialData.packageFiles.length > 0 && (
-            <div className="space-y-1.5">
-              <span className="font-bold text-slate-900 block text-xs">Downloadable Files &amp; Brochures ({initialData.packageFiles.length}):</span>
-              <TripFilesManager files={initialData.packageFiles} onChange={() => { }} readOnly />
-            </div>
-          )}
-        </div>
+        <PackageDetailView
+          packageData={initialData}
+          availableActivities={availableActivities}
+          categorySlugPrefix="expeditions"
+        />
       )}
     </AdminModal>
   );
-}
-
-interface DeleteExpeditionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  expeditionTitle?: string;
-  isDeleting?: boolean;
-  error?: string | null;
 }
 
 export function DeleteExpeditionModal({
@@ -1147,13 +573,20 @@ export function DeleteExpeditionModal({
   expeditionTitle,
   isDeleting = false,
   error = null,
-}: DeleteExpeditionModalProps) {
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  expeditionTitle?: string;
+  isDeleting?: boolean;
+  error?: string | null;
+}) {
   return (
     <AdminConfirmModal
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={onConfirm}
-      title="Delete Expedition"
+      title="Delete Expedition Package"
       description={`Are you sure you want to delete "${expeditionTitle}"? This action cannot be undone.`}
       confirmText="Delete Expedition"
       cancelText="Cancel"
@@ -1163,3 +596,6 @@ export function DeleteExpeditionModal({
     />
   );
 }
+
+export { ExpeditionModal as ExpeditionFormModal };
+

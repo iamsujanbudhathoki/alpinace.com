@@ -317,9 +317,7 @@ export function ActivityFormModal({
           <div className="pt-2 border-t border-stone-100">
             {isViewMode ? (
               <div className="space-y-2">
-                <span className="text-xs font-semibold text-stone-700 block">
-                  Cover Banner Image
-                </span>
+               
                 {currentImage ? (
                   <div className="relative w-full h-44 rounded-sm overflow-hidden border border-stone-200 group bg-stone-100">
                     <img

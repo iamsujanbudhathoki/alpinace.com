@@ -497,7 +497,7 @@ export function ToursCatalogClient({
                               {tour.region}
                             </span>
                           )}
-                          {tour.durationDays && (
+                          {Boolean(tour.durationDays && tour.durationDays > 0) && (
                             <span className="absolute top-3 right-3 bg-stone-900/80 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-sm">
                               {tour.durationDays} Days
                             </span>

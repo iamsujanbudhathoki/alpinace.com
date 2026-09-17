@@ -555,6 +555,11 @@ export function ExpeditionFormModal({
                   <AdminSelectField
                     label="Region"
                     required
+                    searchable
+                    placeholder="Select or search region..."
+                    value={watch("region") || ""}
+                    onChange={(val) => setValue("region", val as any, { shouldValidate: true })}
+                    error={errors.region?.message}
                     options={[
                       { label: "Everest / Khumbu", value: "Everest" },
                       { label: "Annapurna Region", value: "Annapurna" },
@@ -562,7 +567,6 @@ export function ExpeditionFormModal({
                       { label: "Kanchenjunga & East", value: "Kanchenjunga" },
                       { label: "Dolpo & West", value: "Dolpo" },
                     ]}
-                    {...register("region")}
                   />
                 </div>
 
@@ -580,6 +584,8 @@ export function ExpeditionFormModal({
                   <AdminSelectField
                     label="Activity"
                     required
+                    value={watch("activity") || ""}
+                    onChange={(val) => setValue("activity", val as any, { shouldValidate: true })}
                     error={errors.activity?.message}
                     options={[
                       { label: "Peak Climbing", value: TripActivity.PEAK_CLIMBING },
@@ -589,7 +595,6 @@ export function ExpeditionFormModal({
                       { label: "Wildlife Safari", value: TripActivity.WILDLIFE_SAFARI },
                       { label: "Other", value: TripActivity.OTHER },
                     ]}
-                    {...register("activity")}
                   />
                 </div>
 
@@ -630,12 +635,14 @@ export function ExpeditionFormModal({
                   <AdminSelectField
                     label="Climbing Technical Grade"
                     required
+                    value={watch("climbingGrade") || ""}
+                    onChange={(val) => setValue("climbingGrade", val as any, { shouldValidate: true })}
+                    error={errors.climbingGrade?.message}
                     options={[
                       { label: "Non-Technical Trekking Peak", value: ClimbingGrade.NON_TECHNICAL_TREKKING_PEAK },
                       { label: "Technical Alpine Grade", value: ClimbingGrade.TECHNICAL_ALPINE_GRADE },
                       { label: "Extreme Technical Grade", value: ClimbingGrade.EXTREME_TECHNICAL_GRADE },
                     ]}
-                    {...register("climbingGrade")}
                   />
                 </div>
 
@@ -671,11 +678,13 @@ export function ExpeditionFormModal({
                   <AdminSelectField
                     label="Status"
                     required
+                    value={watch("status") || ""}
+                    onChange={(val) => setValue("status", val as any, { shouldValidate: true })}
+                    error={errors.status?.message}
                     options={[
                       { label: "Active", value: PackageStatus.ACTIVE },
                       { label: "Draft", value: PackageStatus.DRAFT },
                     ]}
-                    {...register("status")}
                   />
                 </div>
 

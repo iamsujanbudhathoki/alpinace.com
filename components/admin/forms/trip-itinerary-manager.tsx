@@ -223,7 +223,7 @@ export function TripItineraryManager({
             </div>
           )}
 
-          {durationDays && durationDays > 0 && itinerary.length === 0 && (
+          {Boolean(durationDays && durationDays > 0 && itinerary.length === 0) ? (
             <Button
               type="button"
               variant="outline"
@@ -234,7 +234,7 @@ export function TripItineraryManager({
               <Sparkles className="w-3.5 h-3.5 mr-1 text-slate-500" />
               Generate {durationDays} Days
             </Button>
-          )}
+          ) : null}
 
           <Button
             type="button"
@@ -279,7 +279,7 @@ export function TripItineraryManager({
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-            {durationDays && durationDays > 0 && (
+            {Boolean(durationDays && durationDays > 0) ? (
               <Button
                 type="button"
                 variant="outline"
@@ -290,7 +290,7 @@ export function TripItineraryManager({
                 <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" />
                 Auto-generate {durationDays} Days
               </Button>
-            )}
+            ) : null}
             <Button
               type="button"
               size="sm"

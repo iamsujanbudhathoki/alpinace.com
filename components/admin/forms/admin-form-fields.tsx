@@ -29,33 +29,88 @@ export const AdminInputField = React.forwardRef<HTMLInputElement, AdminInputFiel
 );
 AdminInputField.displayName = "AdminInputField";
 
-interface AdminSelectFieldProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
-  error?: string;
-  options: { label: string; value: string }[];
+import { AdminSearchableSelect, SearchableSelectOption } from "./admin-searchable-select";
+
+export interface AdminSelectOption {
+  label: string;
+  value: string;
+  badge?: string;
+  badgeColor?: string;
+  description?: string;
+  icon?: React.ReactNode;
 }
 
-export const AdminSelectField = React.forwardRef<HTMLSelectElement, AdminSelectFieldProps>(
-  ({ label, error, required, options, className = "", ...props }, ref) => {
+export interface AdminSelectFieldProps {
+  label?: string;
+  error?: string;
+  required?: boolean;
+  options: AdminSelectOption[];
+  value?: string;
+  onChange?: (value: any, option?: any) => void;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  searchable?: boolean;
+  allowClear?: boolean;
+  disabled?: boolean;
+  className?: string;
+  name?: string;
+  onBlur?: (e: any) => void;
+}
+
+export const AdminSelectField = React.forwardRef<HTMLDivElement, AdminSelectFieldProps>(
+  (
+    {
+      label,
+      error,
+      required,
+      options = [],
+      value,
+      onChange,
+      placeholder = "Select...",
+      searchPlaceholder = "Search options...",
+      searchable = false,
+      allowClear = false,
+      disabled = false,
+      className = "",
+      name,
+      ...restProps
+    },
+    ref
+  ) => {
+    const rawVal = value !== undefined ? value : (restProps as any).value;
+    const stringVal = rawVal !== undefined && rawVal !== null ? String(rawVal) : "";
+
+    const handleSelectChange = (selectedVal: string, selectedOpt?: SearchableSelectOption | null) => {
+      if (onChange) {
+        (onChange as any)(selectedVal, selectedOpt);
+        const fieldName = name || (restProps as any).name;
+        if (fieldName) {
+          (onChange as any)({
+            target: {
+              name: fieldName,
+              value: selectedVal,
+            },
+          });
+        }
+      }
+    };
+
     return (
-      <div className="space-y-1">
-        {label && <FormLabel required={required}>{label}</FormLabel>}
-        <select
-          ref={ref}
-          {...props}
-          className={`w-full bg-white border ${
-            error
-              ? "border-rose-500 focus:border-rose-600 focus:ring-1 focus:ring-rose-500/20"
-              : "border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10"
-          } rounded-md px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none cursor-pointer transition-colors ${className}`}
-        >
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        {error && <p className="text-xs font-semibold text-rose-600 mt-0.5">{error}</p>}
+      <div ref={ref}>
+        <AdminSearchableSelect
+          label={label}
+          value={stringVal}
+          options={options}
+          onChange={handleSelectChange}
+          error={error}
+          required={required}
+          placeholder={placeholder}
+          searchPlaceholder={searchPlaceholder}
+          searchable={searchable}
+          allowClear={allowClear}
+          disabled={disabled}
+          className={className}
+        />
       </div>
     );
   }

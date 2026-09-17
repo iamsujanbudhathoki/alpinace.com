@@ -14,7 +14,6 @@ import {
   Globe,
   Clock,
   MessageCircle,
-  BarChart3,
   ShieldCheck,
   ExternalLink,
 } from "lucide-react";
@@ -52,8 +51,6 @@ export default function AdminSettingsPage() {
     metaDescription: "",
     metaKeywords: "",
     canonicalUrl: "",
-    googleAnalyticsId: "",
-    googleSiteVerification: "",
 
     // Social Links
     facebookUrl: "",
@@ -386,37 +383,6 @@ export default function AdminSettingsPage() {
                   value={formData.canonicalUrl}
                   onChange={(e) => handleChange("canonicalUrl", e.target.value)}
                   placeholder={websiteDomain}
-                  className="text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 font-bold mb-1.5 flex items-center gap-1">
-                  <BarChart3 className="w-3.5 h-3.5 text-slate-600" />
-                  <span>Google Analytics ID</span>
-                </label>
-                <Input
-                  type="text"
-                  value={formData.googleAnalyticsId}
-                  onChange={(e) =>
-                    handleChange("googleAnalyticsId", e.target.value)
-                  }
-                  placeholder="G-XXXXXXXXXX"
-                  className="text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-700 font-bold mb-1.5">
-                  Google Search Console Key
-                </label>
-                <Input
-                  type="text"
-                  value={formData.googleSiteVerification}
-                  onChange={(e) =>
-                    handleChange("googleSiteVerification", e.target.value)
-                  }
-                  placeholder="verification_token_here"
                   className="text-xs"
                 />
               </div>

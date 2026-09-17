@@ -19,8 +19,6 @@ export interface SiteSettings {
   metaDescription: string;
   metaKeywords: string;
   canonicalUrl: string;
-  googleAnalyticsId: string;
-  googleSiteVerification: string;
   facebookUrl: string;
   instagramUrl: string;
   youtubeUrl: string;
@@ -44,8 +42,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   metaDescription: "",
   metaKeywords: "",
   canonicalUrl: "",
-  googleAnalyticsId: "",
-  googleSiteVerification: "",
   facebookUrl: "",
   instagramUrl: "",
   youtubeUrl: "",

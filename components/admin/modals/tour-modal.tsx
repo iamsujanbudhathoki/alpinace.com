@@ -547,6 +547,9 @@ export function TourFormModal({
                   <AdminSelectField
                     label="Tour Type"
                     required
+                    value={watch("tourType") || ""}
+                    onChange={(val) => setValue("tourType", val as any, { shouldValidate: true })}
+                    error={errors.tourType?.message}
                     options={[
                       { label: "Cultural Heritage", value: TourType.CULTURAL_HERITAGE },
                       { label: "Luxury & Wellness", value: TourType.LUXURY_WELLNESS },
@@ -555,7 +558,6 @@ export function TourFormModal({
                       { label: "Day Tour", value: TourType.DAY_TOUR },
                       { label: "Other Tour", value: TourType.OTHER },
                     ]}
-                    {...register("tourType")}
                   />
                 </div>
 
@@ -563,6 +565,11 @@ export function TourFormModal({
                   <AdminSelectField
                     label="Region"
                     required
+                    searchable
+                    placeholder="Select or search region..."
+                    value={watch("region") || ""}
+                    onChange={(val) => setValue("region", val as any, { shouldValidate: true })}
+                    error={errors.region?.message}
                     options={[
                       { label: "Kathmandu & Pokhara", value: "Kathmandu & Pokhara" },
                       { label: "Chitwan & Lumbini", value: "Chitwan & Lumbini" },
@@ -570,7 +577,6 @@ export function TourFormModal({
                       { label: "Annapurna Region", value: "Annapurna" },
                       { label: "Langtang Region", value: "Langtang" },
                     ]}
-                    {...register("region")}
                   />
                 </div>
 
@@ -588,6 +594,8 @@ export function TourFormModal({
                   <AdminSelectField
                     label="Activity"
                     required
+                    value={watch("activity") || ""}
+                    onChange={(val) => setValue("activity", val as any, { shouldValidate: true })}
                     error={errors.activity?.message}
                     options={[
                       { label: "Cultural Sightseeing", value: TripActivity.CULTURAL_SIGHTSEEING },
@@ -597,7 +605,6 @@ export function TourFormModal({
                       { label: "Wildlife Safari", value: TripActivity.WILDLIFE_SAFARI },
                       { label: "Other", value: TripActivity.OTHER },
                     ]}
-                    {...register("activity")}
                   />
                 </div>
 
@@ -646,12 +653,14 @@ export function TourFormModal({
                 <div>
                   <AdminSelectField
                     label="Difficulty"
+                    value={watch("difficulty") || ""}
+                    onChange={(val) => setValue("difficulty", val as any, { shouldValidate: true })}
+                    error={errors.difficulty?.message}
                     options={[
                       { label: "Easy", value: TripDifficulty.EASY },
                       { label: "Moderate", value: TripDifficulty.MODERATE },
                       { label: "Challenging", value: TripDifficulty.CHALLENGING },
                     ]}
-                    {...register("difficulty")}
                   />
                 </div>
 
@@ -667,11 +676,13 @@ export function TourFormModal({
                   <AdminSelectField
                     label="Status"
                     required
+                    value={watch("status") || ""}
+                    onChange={(val) => setValue("status", val as any, { shouldValidate: true })}
+                    error={errors.status?.message}
                     options={[
                       { label: "Active", value: PackageStatus.ACTIVE },
                       { label: "Draft", value: PackageStatus.DRAFT },
                     ]}
-                    {...register("status")}
                   />
                 </div>
 

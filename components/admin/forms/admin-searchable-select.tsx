@@ -24,6 +24,7 @@ export interface AdminSearchableSelectProps {
   required?: boolean;
   placeholder?: string;
   searchPlaceholder?: string;
+  searchable?: boolean;
   allowClear?: boolean;
   disabled?: boolean;
   className?: string;
@@ -41,6 +42,7 @@ export function AdminSearchableSelect({
   required = false,
   placeholder = "Select or search...",
   searchPlaceholder = "Search options...",
+  searchable = true,
   allowClear = true,
   disabled = false,
   className = "",
@@ -69,16 +71,16 @@ export function AdminSearchableSelect({
     };
   }, [isOpen]);
 
-  // Focus search input when dropdown opens
+  // Focus search input when dropdown opens (if searchable)
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && searchable) {
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 50);
     } else {
       setSearchQuery("");
     }
-  }, [isOpen]);
+  }, [isOpen, searchable]);
 
   // Filter options by search query
   const filteredOptions = useMemo(() => {
@@ -96,7 +98,22 @@ export function AdminSearchableSelect({
   // Find currently selected option object
   const selectedOption = useMemo(() => {
     if (!value) return null;
-    return options.find((opt) => opt.value === value || opt.label.toLowerCase() === value.toLowerCase()) || null;
+    const v = String(value).trim().toLowerCase();
+    return (
+      options.find(
+        (opt) =>
+          opt.value === value ||
+          String(opt.value).toLowerCase() === v ||
+          opt.label.toLowerCase() === v
+      ) ||
+      options.find(
+        (opt) =>
+          opt.label.toLowerCase().includes(v) ||
+          (v.length > 2 && String(opt.value).toLowerCase().includes(v)) ||
+          (v.length > 2 && v.includes(String(opt.value).toLowerCase()))
+      ) ||
+      null
+    );
   }, [options, value]);
 
   const handleSelect = (option: SearchableSelectOption) => {
@@ -192,26 +209,28 @@ export function AdminSearchableSelect({
       {isOpen && (
         <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100">
           {/* Search Box inside dropdown */}
-          <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={searchPlaceholder}
-              className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery("")}
-                className="text-slate-400 hover:text-slate-600 p-0.5"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </div>
+          {searchable && (
+            <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+              <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={searchPlaceholder}
+                className="w-full bg-transparent text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="text-slate-400 hover:text-slate-600 p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Options List */}
           <div className="max-h-56 overflow-y-auto p-1 text-xs">

@@ -17,20 +17,9 @@ const poppins = Poppins({
 
 import { Toaster } from "sonner";
 import { SettingsProvider } from "@/lib/settings-context";
-import { SiteAnalytics, extractVerificationToken } from "@/components/common/site-analytics";
-import { SettingService } from "@/lib/services/admin-service";
+import { SiteAnalytics } from "@/components/common/site-analytics";
 
 export async function generateMetadata(): Promise<Metadata> {
-  let googleVerificationToken = "";
-  try {
-    const settings = await SettingService.getPublicAll();
-    if (settings?.googleSiteVerification) {
-      googleVerificationToken = extractVerificationToken(settings.googleSiteVerification);
-    }
-  } catch (e) {
-    // Ignore fetch error, fallback to defaults
-  }
-
   return {
     metadataBase: new URL(siteConfig.url),
     applicationName: siteConfig.name,
@@ -49,13 +38,6 @@ export async function generateMetadata(): Promise<Metadata> {
     appleWebApp: {
       title: siteConfig.name,
     },
-    ...(googleVerificationToken
-      ? {
-          verification: {
-            google: googleVerificationToken,
-          },
-        }
-      : {}),
     icons: {
       icon: "/favicon.ico",
       shortcut: "/favicon.ico",
@@ -192,6 +174,18 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-35E6ELH493" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-35E6ELH493');
+            `,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

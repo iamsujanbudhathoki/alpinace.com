@@ -557,6 +557,10 @@ export function TrekFormModal({
                   <AdminSelectField
                     label="Region"
                     required
+                    searchable
+                    placeholder="Select or search region..."
+                    value={watch("region") || ""}
+                    onChange={(val) => setValue("region", val as any, { shouldValidate: true })}
                     error={errors.region?.message}
                     options={[
                       { label: "Everest", value: "Everest" },
@@ -566,7 +570,6 @@ export function TrekFormModal({
                       { label: "Khumbu", value: "Khumbu" },
                       { label: "Kathmandu & Pokhara", value: "Kathmandu & Pokhara" },
                     ]}
-                    {...register("region")}
                   />
                 </div>
 
@@ -584,6 +587,8 @@ export function TrekFormModal({
                   <AdminSelectField
                     label="Activity Type"
                     required
+                    value={watch("activity") || ""}
+                    onChange={(val) => setValue("activity", val as any, { shouldValidate: true })}
                     error={errors.activity?.message}
                     options={[
                       { label: "Trekking/Hiking", value: TripActivity.TREKKING_HIKING },
@@ -593,7 +598,6 @@ export function TrekFormModal({
                       { label: "Wildlife Safari", value: TripActivity.WILDLIFE_SAFARI },
                       { label: "Other", value: TripActivity.OTHER },
                     ]}
-                    {...register("activity")}
                   />
                 </div>
 
@@ -644,6 +648,8 @@ export function TrekFormModal({
                   <AdminSelectField
                     label="Difficulty Grade"
                     required
+                    value={watch("difficulty") || ""}
+                    onChange={(val) => setValue("difficulty", val as any, { shouldValidate: true })}
                     error={errors.difficulty?.message}
                     options={[
                       { label: "Easy", value: TripDifficulty.EASY },
@@ -652,7 +658,6 @@ export function TrekFormModal({
                       { label: "Strenuous", value: TripDifficulty.STRENUOUS },
                       { label: "Extreme", value: TripDifficulty.EXTREME },
                     ]}
-                    {...register("difficulty")}
                   />
                 </div>
 
@@ -670,12 +675,13 @@ export function TrekFormModal({
                   <AdminSelectField
                     label="Status"
                     required
+                    value={watch("status") || ""}
+                    onChange={(val) => setValue("status", val as any, { shouldValidate: true })}
                     error={errors.status?.message}
                     options={[
                       { label: "Active", value: PackageStatus.ACTIVE },
                       { label: "Draft", value: PackageStatus.DRAFT },
                     ]}
-                    {...register("status")}
                   />
                 </div>
 

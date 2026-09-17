@@ -167,7 +167,6 @@ export function ActivityFormModal({
           variant="outline"
           onClick={onClose}
           disabled={isSubmitting}
-          className="text-xs cursor-pointer"
         >
           Cancel
         </Button>
@@ -180,16 +179,14 @@ export function ActivityFormModal({
               e.stopPropagation();
               setEditingMode(true);
             }}
-            className="bg-stone-900 hover:bg-stone-800 text-white text-xs gap-1.5 cursor-pointer"
           >
-            <Edit className="w-3.5 h-3.5" /> Edit Activity
+            <Edit className="w-3.5 h-3.5 mr-1" /> Edit Activity
           </Button>
         ) : (
           <Button
             form="activity-modal-form"
             type="submit"
             disabled={isSubmitting}
-            className="bg-stone-900 hover:bg-stone-800 text-white text-xs gap-1.5 cursor-pointer"
           >
             {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {initialData ? "Save Changes" : "Create Activity"}

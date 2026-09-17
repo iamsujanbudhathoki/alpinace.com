@@ -222,7 +222,7 @@ export default function AdminAboutUsPage() {
             type="button"
             variant="outline"
             size="sm"
-            className="text-slate-700 border-slate-300 font-semibold text-xs cursor-pointer flex items-center gap-1.5"
+            className="flex items-center gap-1.5"
           >
             <span>View Public Page</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
@@ -670,7 +670,7 @@ export default function AdminAboutUsPage() {
               type="button"
               variant="outline"
               size="sm"
-              className="w-full sm:w-auto text-slate-700 border-slate-300 font-semibold text-xs cursor-pointer"
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -679,7 +679,7 @@ export default function AdminAboutUsPage() {
             type="submit"
             size="sm"
             disabled={saving}
-            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs flex items-center justify-center gap-2"
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
           >
             {saving ? (
               <>

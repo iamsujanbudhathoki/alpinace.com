@@ -620,13 +620,11 @@ export default function AdminMediaPage() {
               type="button"
               variant="outline"
               onClick={handleCloseEditModal}
-              className="text-xs font-semibold cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
             >
               Save Changes
             </Button>

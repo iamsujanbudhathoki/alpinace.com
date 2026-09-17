@@ -336,7 +336,6 @@ export function BookingFormModal({
           variant="outline"
           onClick={handleClose}
           disabled={isSubmitting}
-          className="text-xs font-semibold cursor-pointer"
         >
           Cancel
         </Button>
@@ -344,7 +343,6 @@ export function BookingFormModal({
           type="submit"
           form="booking-form"
           disabled={isSubmitting}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors shadow-xs"
         >
           {isSubmitting ? (
             <span className="flex items-center gap-1.5">
@@ -365,13 +363,11 @@ export function BookingFormModal({
         type="button"
         variant="outline"
         onClick={handleClose}
-        className="text-xs font-semibold cursor-pointer"
       >
         Close
       </Button>
       <Button
         onClick={() => setEditingMode(true)}
-        className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs cursor-pointer"
       >
         <Edit className="w-3.5 h-3.5 mr-1" />
         Edit Reservation

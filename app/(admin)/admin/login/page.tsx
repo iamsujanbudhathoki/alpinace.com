@@ -143,8 +143,9 @@ export default function AdminLoginPage() {
 
             <Button
               type="submit"
+              size="lg"
               disabled={isSubmitting}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-10 rounded-xl cursor-pointer transition-colors shadow-xs"
+              className="w-full"
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">

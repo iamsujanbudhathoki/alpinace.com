@@ -407,7 +407,6 @@ export function TrekFormModal({
           variant="outline"
           onClick={handleClose}
           disabled={isSubmitting}
-          className="text-xs font-semibold cursor-pointer"
         >
           Cancel
         </Button>
@@ -415,7 +414,6 @@ export function TrekFormModal({
           type="submit"
           form="trek-form"
           disabled={isSubmitting}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
         >
           {isSubmitting ? (
             <span className="flex items-center gap-1.5">
@@ -435,13 +433,11 @@ export function TrekFormModal({
       <Button
         variant="outline"
         onClick={handleClose}
-        className="text-xs font-semibold cursor-pointer"
       >
         Close
       </Button>
       <Button
         onClick={() => setEditingMode(true)}
-        className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
       >
         <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
         Edit Trek Package

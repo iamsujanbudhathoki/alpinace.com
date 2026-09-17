@@ -119,7 +119,6 @@ export function TestimonialModal({
         variant="outline"
         onClick={handleClose}
         disabled={saving}
-        className="text-xs font-semibold h-9 px-4 rounded-lg cursor-pointer"
       >
         Cancel
       </Button>
@@ -127,7 +126,7 @@ export function TestimonialModal({
         type="submit"
         form="testimonial-form"
         disabled={saving}
-        className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold h-9 px-4 rounded-lg cursor-pointer flex items-center gap-1.5"
+        className="flex items-center gap-1.5"
       >
         {saving ? (
           <>

@@ -204,14 +204,13 @@ export function CategoryFormModal({
 
   const editFooter = (
     <div className="flex items-center justify-end gap-2 w-full">
-      <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer">
+      <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
         Cancel
       </Button>
       <Button
         type="submit"
         form="category-form"
         disabled={isSubmitting}
-        className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
       >
         {isSubmitting ? (
           <span className="flex items-center gap-1.5">
@@ -227,12 +226,11 @@ export function CategoryFormModal({
 
   const viewFooter = (
     <div className="flex items-center justify-between gap-2 w-full">
-      <Button type="button" variant="outline" onClick={handleClose} className="text-xs font-semibold cursor-pointer">
+      <Button type="button" variant="outline" onClick={handleClose}>
         Close
       </Button>
       <Button
         onClick={() => setEditingMode(true)}
-        className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer transition-colors"
       >
         <Edit className="w-3.5 h-3.5 mr-1" />
         Edit Category

@@ -240,7 +240,6 @@ export function TripItineraryManager({
             type="button"
             size="sm"
             onClick={handleAddDay}
-            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-8 px-3 rounded-lg cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 mr-1" />
             Add Day

@@ -206,7 +206,7 @@ export function BlogArticleForm({
               type="button"
               variant="outline"
               size="sm"
-              className="w-full text-slate-700 border-slate-300 font-semibold text-xs cursor-pointer"
+              className="w-full"
             >
               Cancel
             </Button>
@@ -215,7 +215,7 @@ export function BlogArticleForm({
             type="submit"
             size="sm"
             disabled={loading}
-            className="w-1/2 sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-sm flex items-center justify-center gap-2"
+            className="w-1/2 sm:w-auto flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

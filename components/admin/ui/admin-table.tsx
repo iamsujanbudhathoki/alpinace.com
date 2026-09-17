@@ -369,23 +369,21 @@ export function AdminTablePagination({
       <div className="flex items-center gap-1.5">
         <Button
           variant="outline"
-          size="sm"
+          size="xs"
           disabled={currentPage <= 1}
           onClick={() => onPageChange?.(currentPage - 1)}
-          className="h-7 px-2.5 text-xs border-slate-300 text-slate-800 font-semibold bg-white hover:bg-slate-50 disabled:opacity-50 cursor-pointer"
         >
           <ChevronLeft className="w-3.5 h-3.5 mr-1" />
           Previous
         </Button>
-        <span className="px-2.5 py-1 bg-white border border-slate-300 rounded-md text-xs font-bold text-slate-900">
+        <span className="px-2.5 py-1 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900">
           {currentPage} / {safeTotalPages}
         </span>
         <Button
           variant="outline"
-          size="sm"
+          size="xs"
           disabled={currentPage >= safeTotalPages}
           onClick={() => onPageChange?.(currentPage + 1)}
-          className="h-7 px-2.5 text-xs border-slate-300 text-slate-800 font-semibold bg-white hover:bg-slate-50 disabled:opacity-50 cursor-pointer"
         >
           Next
           <ChevronRight className="w-3.5 h-3.5 ml-1" />

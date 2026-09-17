@@ -81,7 +81,6 @@ export function TripFaqsManager({ faqs = [], onChange }: TripFaqsManagerProps) {
           type="button"
           size="sm"
           onClick={handleAddFaq}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-8 px-3 rounded-lg cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 mr-1 text-amber-400" />
           Add FAQ
@@ -100,7 +99,7 @@ export function TripFaqsManager({ faqs = [], onChange }: TripFaqsManagerProps) {
             variant="outline"
             size="sm"
             onClick={handleAddFaq}
-            className="mt-3 text-xs font-semibold cursor-pointer text-slate-800"
+            className="mt-3"
           >
             <Plus className="w-3.5 h-3.5 mr-1 text-amber-500" />
             Add First FAQ
@@ -264,7 +263,6 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
           type="button"
           size="sm"
           onClick={handleAddReview}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-8 px-3 rounded-lg cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 mr-1 text-amber-400" />
           Add Review

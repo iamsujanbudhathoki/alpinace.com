@@ -15,7 +15,8 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { MediaService } from "@/lib/services/admin-service";
 import { TripPackageFile } from "@/lib/admin-data";
 
@@ -128,7 +129,7 @@ export function TripFilesManager({
 
         {!readOnly && (
           <label className="cursor-pointer shrink-0">
-            <span className="inline-flex items-center gap-1.5 h-9 px-3 text-xs font-medium rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-colors">
+            <span className={cn(buttonVariants({ variant: "default", size: "sm" }), "bg-emerald-700 hover:bg-emerald-800 text-white")}>
               {isUploading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (

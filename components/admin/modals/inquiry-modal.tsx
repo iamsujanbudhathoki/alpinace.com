@@ -125,7 +125,6 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
       >
         Cancel
       </Button>
@@ -133,7 +132,6 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
         type="submit"
         form="inquiry-form"
         disabled={isSubmitting}
-        className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-9 px-4 rounded-xl cursor-pointer transition-colors"
       >
         {isSubmitting ? (
           <span className="flex items-center gap-1.5">

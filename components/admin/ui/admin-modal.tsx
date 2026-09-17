@@ -14,6 +14,8 @@ interface AdminModalProps {
   onClose: () => void;
   title?: string;
   description?: string;
+  /** Optional sticky bar below the dialog title (e.g. navigation tabs) */
+  subHeader?: React.ReactNode;
   children: React.ReactNode;
   /** Sticky footer rendered outside the scrollable area (e.g. action buttons). */
   footer?: React.ReactNode;
@@ -33,6 +35,7 @@ export function AdminModal({
   onClose,
   title = "",
   description,
+  subHeader,
   children,
   footer,
   maxWidth = "xl",
@@ -101,25 +104,32 @@ export function AdminModal({
             : "bg-white text-slate-900 border-slate-200 shadow-lg rounded-xl p-0"
         } ${contentClassName}`}
       >
-        {/* ── Sticky Header ─────────────────────────────── */}
-        {hasHeader && (
+        {/* ── Sticky Header (Title, Description & SubHeader/Tabs) ─────────────── */}
+        {(hasHeader || subHeader) && (
           <div
             className={`flex-none px-6 pt-4 pb-3 border-b ${
               isDark ? "border-slate-800" : "border-slate-200"
             }`}
           >
-            <DialogHeader className="space-y-0.5 text-left pr-8">
-              {title && (
-                <DialogTitle className="text-base font-bold text-slate-900 leading-tight">
-                  {title}
-                </DialogTitle>
-              )}
-              {description && (
-                <DialogDescription className="text-xs text-slate-700 font-normal leading-normal">
-                  {description}
-                </DialogDescription>
-              )}
-            </DialogHeader>
+            {hasHeader && (
+              <DialogHeader className="space-y-0.5 text-left pr-8">
+                {title && (
+                  <DialogTitle className="text-base font-bold text-slate-900 leading-tight">
+                    {title}
+                  </DialogTitle>
+                )}
+                {description && (
+                  <DialogDescription className="text-xs text-slate-700 font-normal leading-normal">
+                    {description}
+                  </DialogDescription>
+                )}
+              </DialogHeader>
+            )}
+            {subHeader && (
+              <div className={`${hasHeader ? "mt-3" : ""}`}>
+                {subHeader}
+              </div>
+            )}
           </div>
         )}
 

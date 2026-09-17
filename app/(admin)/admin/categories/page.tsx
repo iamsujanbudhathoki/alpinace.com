@@ -442,10 +442,7 @@ export default function AdminCategoriesPage() {
             />
           </div>
 
-          <Button onClick={handleCreateNew}>
-            <Plus className="w-4 h-4" />
-            <span>Add New Category</span>
-          </Button>
+         
         </div>
 
         {/* Domain Filter Dropdown Selector */}

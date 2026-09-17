@@ -61,12 +61,43 @@ body[data-modal-open="true"] [data-slot="admin-main"] {
 body[data-modal-open="true"] [data-slot="admin-layout"] {
   pointer-events: none !important;
   user-select: none !important;
+  transition: filter 0.25s ease-out, opacity 0.25s ease-out;
 }
 
-body[data-modal-open="true"] [data-slot="admin-sidebar"],
+body[data-modal-open="true"] [data-slot="admin-sidebar-container"],
+body[data-modal-open="true"] [data-slot="admin-sidebar"] {
+  pointer-events: none !important;
+  user-select: none !important;
+  filter: grayscale(45%) brightness(0.82) contrast(90%) !important;
+  transition: filter 0.25s ease-out, opacity 0.25s ease-out;
+}
+
+/* De-emphasize bright active navigation highlights and amber icons in sidebar while modal is active */
+body[data-modal-open="true"] [data-slot="admin-sidebar"] .bg-slate-900,
+body[data-modal-open="true"] [data-slot="admin-sidebar"] .bg-slate-800 {
+  background-color: #334155 !important;
+  box-shadow: none !important;
+}
+
+body[data-modal-open="true"] [data-slot="admin-sidebar"] .text-amber-400 {
+  color: #94a3b8 !important;
+}
+
+body[data-modal-open="true"] [data-slot="admin-sidebar"] svg {
+  opacity: 0.65 !important;
+}
+
+/* Suppress tooltips on collapsed sidebar items during modal state */
+body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:opacity-100"] {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 body[data-modal-open="true"] [data-slot="admin-header"] {
   pointer-events: none !important;
   user-select: none !important;
+  filter: grayscale(35%) brightness(0.88) !important;
+  transition: filter 0.25s ease-out, opacity 0.25s ease-out;
 }
 
 

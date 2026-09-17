@@ -43,6 +43,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
     <div data-slot="admin-layout" className="h-screen w-screen overflow-hidden flex bg-slate-50/60 text-slate-900 font-sans relative">
       {/* Fixed Desktop Sidebar */}
       <div
+        data-slot="admin-sidebar-container"
         className={`hidden md:flex flex-col shrink-0 h-screen sticky top-0 bg-white border-r border-slate-200 z-20 transition-all duration-300 ease-in-out ${
           isCollapsed ? "w-16" : "w-64"
         }`}

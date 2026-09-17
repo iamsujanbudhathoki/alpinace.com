@@ -210,11 +210,11 @@ export function AdminHeader({
         <Popover>
           <PopoverTrigger
             aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
-            className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors relative cursor-pointer focus:outline-none"
+            className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors relative cursor-pointer focus:outline-none shrink-0"
           >
             <Bell className="w-4 h-4 text-slate-600" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 leading-none shadow-xs border-2 border-white pointer-events-none">
+              <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[10px] font-extrabold leading-none text-white bg-rose-600 rounded-full ring-2 ring-white shadow-xs pointer-events-none select-none">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}

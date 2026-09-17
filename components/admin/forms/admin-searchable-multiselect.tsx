@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo, ReactNode, useId } from "react";
+import React, { useState, useRef, useEffect, useMemo, ReactNode, useId, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { FormLabel } from "@/components/ui/form-label";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 
@@ -42,23 +43,88 @@ export function AdminSearchableMultiSelect({
 }: AdminSearchableMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
   const errorId = useId();
 
-  // Close dropdown when clicking outside
+  const [coords, setCoords] = useState<{
+    top?: number;
+    bottom?: number;
+    left: number;
+    width: number;
+    maxHeight: number;
+  } | null>(null);
+
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Calculate dropdown position in viewport (fixed positioning via portal)
+  const updateCoords = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    const minSpaceNeeded = 200;
+    const preferTop = spaceBelow < minSpaceNeeded && spaceAbove > spaceBelow;
+
+    if (preferTop) {
+      setCoords({
+        bottom: viewportHeight - rect.top + 4,
+        left: rect.left,
+        width: rect.width,
+        maxHeight: Math.min(260, Math.max(120, spaceAbove - 16)),
+      });
+    } else {
+      setCoords({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+        maxHeight: Math.min(260, Math.max(120, spaceBelow - 16)),
+      });
+    }
+  }, []);
+
+  // Sync coords on open, window resize, and container scroll
+  useEffect(() => {
+    if (!isOpen) return;
+    updateCoords();
+
+    function handleScrollOrResize() {
+      updateCoords();
+    }
+
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
+  }, [isOpen, updateCoords]);
+
+  // Close dropdown when clicking outside (checks container AND portal dropdown)
+  useEffect(() => {
+    if (!isOpen) return;
+
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const inContainer = containerRef.current && containerRef.current.contains(target);
+      const inDropdown = dropdownRef.current && dropdownRef.current.contains(target);
+
+      if (!inContainer && !inDropdown) {
         setIsOpen(false);
       }
     }
 
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -92,7 +158,10 @@ export function AdminSearchableMultiSelect({
     return options.filter((opt) => valSet.has(opt.value));
   }, [options, values]);
 
-  const handleToggleOption = (optValue: string) => {
+  const handleToggleOption = (optValue: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     if (disabled) return;
     if (values.includes(optValue)) {
       onChange(values.filter((v) => v !== optValue));
@@ -206,11 +275,23 @@ export function AdminSearchableMultiSelect({
         </p>
       )}
 
-      {/* Dropdown Menu Overlay */}
-      {isOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100">
+      {/* Portal-based Dropdown Menu Overlay (Fixed Position to avoid layout shift & scrollbars) */}
+      {isOpen && mounted && coords && createPortal(
+        <div
+          ref={dropdownRef}
+          style={{
+            position: "fixed",
+            ...(coords.top !== undefined ? { top: `${coords.top}px` } : {}),
+            ...(coords.bottom !== undefined ? { bottom: `${coords.bottom}px` } : {}),
+            left: `${coords.left}px`,
+            width: `${coords.width}px`,
+            maxHeight: `${coords.maxHeight}px`,
+            zIndex: 99999,
+          }}
+          className="bg-white border border-slate-200 rounded-md shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100 flex flex-col"
+        >
           {/* Search Box inside dropdown */}
-          <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+          <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2 shrink-0">
             <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <input
               ref={searchInputRef}
@@ -232,7 +313,7 @@ export function AdminSearchableMultiSelect({
           </div>
 
           {/* Options List */}
-          <div className="max-h-56 overflow-y-auto p-1 text-xs custom-scrollbar">
+          <div className="overflow-y-auto p-1 text-xs custom-scrollbar flex-1">
             {filteredOptions.length === 0 ? (
               <div className="py-4 text-center text-slate-500 text-xs font-medium">
                 {emptyText} {searchQuery ? `for "${searchQuery}"` : ""}
@@ -245,7 +326,7 @@ export function AdminSearchableMultiSelect({
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => handleToggleOption(opt.value)}
+                    onClick={(e) => handleToggleOption(opt.value, e)}
                     className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-colors cursor-pointer ${
                       isSelected
                         ? "bg-stone-100 text-stone-900 font-bold"
@@ -275,7 +356,8 @@ export function AdminSearchableMultiSelect({
               })
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo, ReactNode, useId } from "react";
+import React, { useState, useRef, useEffect, useMemo, ReactNode, useId, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { FormLabel } from "@/components/ui/form-label";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 
@@ -23,6 +24,9 @@ export function normalizeSelectValue(val: any): string {
     }
     if (typeof val.value !== "undefined") {
       return String(val.value);
+    }
+    if (typeof val.id !== "undefined") {
+      return String(val.id);
     }
   }
   return String(val);
@@ -67,14 +71,29 @@ export function AdminSearchableSelect({
 }: AdminSearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
   const [internalValue, setInternalValue] = useState<string>(() =>
     normalizeSelectValue(valueProp !== undefined ? valueProp : defaultValue)
   );
+
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
   const errorId = useId();
+
+  const [coords, setCoords] = useState<{
+    top?: number;
+    bottom?: number;
+    left: number;
+    width: number;
+    maxHeight: number;
+  } | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Keep internalValue synced when valueProp or defaultValue changes
   useEffect(() => {
@@ -89,17 +108,67 @@ export function AdminSearchableSelect({
   const rawValue = valueProp !== undefined ? valueProp : internalValue;
   const normalizedValue = useMemo(() => normalizeSelectValue(rawValue), [rawValue]);
 
-  // Close dropdown when clicking outside
+  // Calculate dropdown position in viewport (fixed positioning via portal)
+  const updateCoords = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    const minSpaceNeeded = 200;
+    const preferTop = spaceBelow < minSpaceNeeded && spaceAbove > spaceBelow;
+
+    if (preferTop) {
+      setCoords({
+        bottom: viewportHeight - rect.top + 4,
+        left: rect.left,
+        width: rect.width,
+        maxHeight: Math.min(260, Math.max(120, spaceAbove - 16)),
+      });
+    } else {
+      setCoords({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+        maxHeight: Math.min(260, Math.max(120, spaceBelow - 16)),
+      });
+    }
+  }, []);
+
+  // Sync coords on open, window resize, and container scroll
   useEffect(() => {
+    if (!isOpen) return;
+    updateCoords();
+
+    function handleScrollOrResize() {
+      updateCoords();
+    }
+
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
+  }, [isOpen, updateCoords]);
+
+  // Close dropdown when clicking outside (checks container AND portal dropdown)
+  useEffect(() => {
+    if (!isOpen) return;
+
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const inContainer = containerRef.current && containerRef.current.contains(target);
+      const inDropdown = dropdownRef.current && dropdownRef.current.contains(target);
+
+      if (!inContainer && !inDropdown) {
         setIsOpen(false);
       }
     }
 
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -136,19 +205,19 @@ export function AdminSearchableSelect({
     if (!vLower) return null;
 
     // 1. Exact value match (string comparison)
-    const exactValueMatch = options.find((opt) => String(opt.value) === normalizedValue);
+    const exactValueMatch = options.find((opt) => String(opt.value).trim() === normalizedValue.trim());
     if (exactValueMatch) return exactValueMatch;
 
     // 2. Case-insensitive value match
-    const caseValueMatch = options.find((opt) => String(opt.value).toLowerCase() === vLower);
+    const caseValueMatch = options.find((opt) => String(opt.value).trim().toLowerCase() === vLower);
     if (caseValueMatch) return caseValueMatch;
 
     // 3. Exact label match (string comparison)
-    const exactLabelMatch = options.find((opt) => opt.label === normalizedValue);
+    const exactLabelMatch = options.find((opt) => opt.label.trim() === normalizedValue.trim());
     if (exactLabelMatch) return exactLabelMatch;
 
     // 4. Case-insensitive label match
-    const caseLabelMatch = options.find((opt) => opt.label.toLowerCase() === vLower);
+    const caseLabelMatch = options.find((opt) => opt.label.trim().toLowerCase() === vLower);
     if (caseLabelMatch) return caseLabelMatch;
 
     return null;
@@ -178,15 +247,15 @@ export function AdminSearchableSelect({
 
   const isOptionSelected = (opt: SearchableSelectOption) => {
     if (!normalizedValue) return false;
-    const optVal = String(opt.value);
+    const optVal = String(opt.value).trim();
     const optValLower = optVal.toLowerCase();
-    const optLabelLower = opt.label.toLowerCase();
+    const optLabelLower = opt.label.trim().toLowerCase();
     const vLower = normalizedValue.trim().toLowerCase();
 
     return (
-      optVal === normalizedValue ||
+      optVal === normalizedValue.trim() ||
       optValLower === vLower ||
-      opt.label === normalizedValue ||
+      opt.label.trim() === normalizedValue.trim() ||
       optLabelLower === vLower
     );
   };
@@ -282,12 +351,25 @@ export function AdminSearchableSelect({
         </p>
       )}
 
-      {/* Dropdown Menu Overlay */}
-      {isOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100">
+      {/* Portal-based Dropdown Menu Overlay (Fixed Position to avoid layout shift & scrollbars) */}
+      {isOpen && mounted && coords && createPortal(
+        <div
+          ref={dropdownRef}
+          style={{
+            position: "fixed",
+            ...(coords.top !== undefined ? { top: `${coords.top}px` } : {}),
+            ...(coords.bottom !== undefined ? { bottom: `${coords.bottom}px` } : {}),
+            left: `${coords.left}px`,
+            width: `${coords.width}px`,
+            maxHeight: `${coords.maxHeight}px`,
+            zIndex: 99999,
+          }}
+          className="bg-white border border-slate-200 rounded-md shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100 flex flex-col"
+          onKeyDown={handleKeyDown}
+        >
           {/* Search Box inside dropdown */}
           {searchable && (
-            <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+            <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2 shrink-0">
               <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <input
                 ref={searchInputRef}
@@ -310,7 +392,7 @@ export function AdminSearchableSelect({
           )}
 
           {/* Options List */}
-          <div className="max-h-56 overflow-y-auto p-1 text-xs">
+          <div className="overflow-y-auto p-1 text-xs flex-1">
             {filteredOptions.length === 0 ? (
               <div className="py-4 text-center text-slate-500 text-xs font-medium">
                 {emptyText} {searchQuery ? `for "${searchQuery}"` : ""}
@@ -379,7 +461,8 @@ export function AdminSearchableSelect({
               })
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

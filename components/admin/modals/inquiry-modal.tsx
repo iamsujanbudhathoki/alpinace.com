@@ -28,6 +28,8 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     control,
     formState: { errors },
   } = useForm<InquiryFormValues>({

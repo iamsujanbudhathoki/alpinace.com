@@ -108,13 +108,11 @@ export const AdminSelectField = React.forwardRef<HTMLDivElement, AdminSelectFiel
       try {
         (onChange as any)(selectedVal, selectedOpt, syntheticEvent);
       } catch {
-        // ignore
-      }
-
-      try {
-        (onChange as any)(syntheticEvent);
-      } catch {
-        // ignore
+        try {
+          (onChange as any)(syntheticEvent);
+        } catch {
+          // ignore
+        }
       }
     };
 

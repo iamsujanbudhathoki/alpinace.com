@@ -154,7 +154,10 @@ export function AdminSearchableSelect({
     return null;
   }, [options, normalizedValue]);
 
-  const handleSelect = (option: SearchableSelectOption) => {
+  const handleSelect = (option: SearchableSelectOption, e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     setInternalValue(option.value);
     onChange?.(option.value, option);
     setIsOpen(false);
@@ -322,11 +325,11 @@ export function AdminSearchableSelect({
                       key={opt.value}
                       role="button"
                       tabIndex={0}
-                      onClick={() => handleSelect(opt)}
+                      onClick={(e) => handleSelect(opt, e)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          handleSelect(opt);
+                          handleSelect(opt, e);
                         }
                       }}
                       className="cursor-pointer"
@@ -340,7 +343,7 @@ export function AdminSearchableSelect({
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => handleSelect(opt)}
+                    onClick={(e) => handleSelect(opt, e)}
                     className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition-colors cursor-pointer ${
                       selected
                         ? "bg-slate-100 text-slate-900 font-bold"

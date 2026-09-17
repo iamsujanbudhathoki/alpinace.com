@@ -256,7 +256,7 @@ export function AdminSearchableMultiSelect({
                     </div>
 
                     {isSelected && (
-                      <span className="text-[10px] font-semibold text-stone-600 uppercase tracking-wider">
+                      <span className="text-xs font-medium text-slate-500">
                         Selected
                       </span>
                     )}

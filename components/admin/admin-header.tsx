@@ -167,7 +167,10 @@ export function AdminHeader({
     : "AA";
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-4 sticky top-0 z-header">
+    <header
+      data-slot="admin-header"
+      className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-4 sticky top-0 z-header"
+    >
       {/* Left Area: Mobile Toggle */}
       <div className="flex items-center gap-3">
         {onToggleMobileSidebar && (

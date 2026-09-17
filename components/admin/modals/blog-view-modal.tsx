@@ -151,7 +151,7 @@ export function BlogViewModal({
         {/* Excerpt Callout Block */}
         {article.excerpt && (
           <div className="space-y-1.5">
-            <span className="font-bold text-slate-900 block text-[11px] uppercase tracking-wider">
+            <span className="font-semibold text-slate-900 block text-xs">
               Article Excerpt
             </span>
             <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl text-slate-700 font-medium leading-relaxed italic">
@@ -163,7 +163,7 @@ export function BlogViewModal({
         {/* Article Body Content Preview */}
         {article.content && (
           <div className="space-y-2">
-            <span className="font-bold text-slate-900 block text-[11px] uppercase tracking-wider">
+            <span className="font-semibold text-slate-900 block text-xs">
               Content Preview
             </span>
             <div
@@ -175,7 +175,7 @@ export function BlogViewModal({
 
         {/* SEO Information Block */}
         <div className="space-y-2">
-          <span className="font-bold text-slate-900 block text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+          <span className="font-semibold text-slate-900 block text-xs flex items-center gap-1.5">
             <Globe className="w-3.5 h-3.5 text-blue-600" />
             SEO &amp; Search Engine Metadata
           </span>

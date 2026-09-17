@@ -27,6 +27,17 @@ function DialogOverlay({
   className,
   ...props
 }: DialogPrimitive.Backdrop.Props) {
+  React.useEffect(() => {
+    document.body.setAttribute("data-modal-open", "true");
+    return () => {
+      setTimeout(() => {
+        if (!document.querySelector('[data-slot="dialog-overlay"]')) {
+          document.body.removeAttribute("data-modal-open");
+        }
+      }, 0);
+    };
+  }, []);
+
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"

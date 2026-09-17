@@ -410,7 +410,7 @@ export function TripItineraryManager({
                     {/* Day Number and Title */}
                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                       <div className="sm:col-span-3">
-                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        <label className="block text-xs font-semibold text-slate-700 mb-1">
                           Day Number <span className="text-red-500">*</span>
                         </label>
                         <Input
@@ -422,7 +422,7 @@ export function TripItineraryManager({
                         />
                       </div>
                       <div className="sm:col-span-9">
-                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        <label className="block text-xs font-semibold text-slate-700 mb-1">
                           Day Title <span className="text-red-500">*</span>
                         </label>
                         <Input
@@ -445,7 +445,7 @@ export function TripItineraryManager({
 
                     {/* Day Description */}
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
                         Daily Description / Route Breakdown <span className="text-red-500">*</span>
                       </label>
                       <textarea
@@ -470,7 +470,7 @@ export function TripItineraryManager({
                     {/* Common Highlights / Fast Fields */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
                       <div>
-                        <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <label className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
                           <Mountain className="w-3 h-3 text-amber-600" />
                           <span>Max. Altitude</span>
                         </label>
@@ -484,7 +484,7 @@ export function TripItineraryManager({
                       </div>
 
                       <div>
-                        <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <label className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
                           <BedDouble className="w-3 h-3 text-amber-600" />
                           <span>Overnight / Lodging</span>
                         </label>
@@ -498,7 +498,7 @@ export function TripItineraryManager({
                       </div>
 
                       <div>
-                        <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <label className="text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
                           <Utensils className="w-3 h-3 text-amber-600" />
                           <span>Meals</span>
                         </label>
@@ -515,7 +515,7 @@ export function TripItineraryManager({
                     {/* Dynamic Custom Key-Value Details */}
                     <div className="pt-2 border-t border-slate-100 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
+                        <span className="text-xs font-semibold text-slate-700 flex items-center gap-1">
                           <Tag className="w-3 h-3 text-amber-600" />
                           <span>Custom Day Highlights &amp; Specs ({dayItem.details?.length || 0})</span>
                         </span>

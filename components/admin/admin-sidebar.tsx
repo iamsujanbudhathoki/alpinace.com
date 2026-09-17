@@ -167,7 +167,10 @@ export function AdminSidebar({
   };
 
   return (
-    <aside className="w-full bg-white text-slate-900 flex flex-col shrink-0 h-full select-none border-r border-slate-200">
+    <aside
+      data-slot="admin-sidebar"
+      className="w-full bg-white text-slate-900 flex flex-col shrink-0 h-full select-none border-r border-slate-200"
+    >
       {/* Brand Header with Top Collapsible Control */}
       <div
         className={`h-16 flex items-center border-b border-slate-200 shrink-0 transition-all ${
@@ -296,7 +299,7 @@ export function AdminSidebar({
                         }`}
                       />
                     </Link>
-                    <div className="absolute left-full ml-2.5 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 flex items-center gap-2 top-1/2 -translate-y-1/2 -translate-x-1 group-hover:translate-x-0">
+                    <div className="absolute left-full ml-2.5 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-30 flex items-center gap-2 top-1/2 -translate-y-1/2 -translate-x-1 group-hover:translate-x-0">
                       <span>{item.title}</span>
                     </div>
                   </div>

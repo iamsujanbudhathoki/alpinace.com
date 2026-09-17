@@ -656,7 +656,7 @@ export default function AdminFaqsPage() {
 
             <div className="space-y-4 text-xs">
               <div>
-                <span className="block text-[11px] font-bold text-slate-800 uppercase tracking-wider mb-1">
+                <span className="block text-xs font-semibold text-slate-700 mb-1">
                   Question
                 </span>
                 <p className="text-slate-950 font-bold text-sm leading-snug">
@@ -665,7 +665,7 @@ export default function AdminFaqsPage() {
               </div>
 
               <div>
-                <span className="block text-[11px] font-bold text-slate-800 uppercase tracking-wider mb-1">
+                <span className="block text-xs font-semibold text-slate-700 mb-1">
                   Answer
                 </span>
                 <p className="text-slate-900 font-medium leading-relaxed whitespace-pre-wrap bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -675,14 +675,14 @@ export default function AdminFaqsPage() {
 
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="block text-[10px] font-bold text-slate-800 uppercase tracking-wider mb-0.5">
+                  <span className="block text-xs font-medium text-slate-500 mb-0.5">
                     Category
                   </span>
                   <span className="font-bold text-slate-950">{viewingFaq.category || "General"}</span>
                 </div>
 
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="block text-[10px] font-bold text-slate-800 uppercase tracking-wider mb-0.5">
+                  <span className="block text-xs font-medium text-slate-500 mb-0.5">
                     Status
                   </span>
                   <span className="font-bold text-slate-950 capitalize">{viewingFaq.status}</span>

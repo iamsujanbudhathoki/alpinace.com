@@ -249,7 +249,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor, showMediaUpload = true }) => 
             <div className="absolute left-0 mt-2 w-72 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-4 animate-in fade-in zoom-in duration-200">
               <div className="space-y-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Link URL</label>
+                  <label className="text-xs font-semibold text-slate-700">Link URL</label>
                   <div className="flex gap-2">
                     <Input
                       placeholder="https://example.com"

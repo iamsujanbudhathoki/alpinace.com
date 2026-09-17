@@ -272,7 +272,7 @@ export default function CategoryMenuOrderingPage() {
 
       {/* Target Domain Navigation Tabs */}
       <div className="bg-white p-3 rounded-lg border border-slate-200 flex flex-wrap items-center gap-2.5">
-        <span className="text-xs font-bold text-slate-900 mr-2 uppercase tracking-wider text-[11px]">
+        <span className="text-xs font-semibold text-slate-700 mr-2">
           Target Domain:
         </span>
         {MARKETING_DOMAINS.map((tab) => {
@@ -320,7 +320,7 @@ export default function CategoryMenuOrderingPage() {
 
             {parentCategories.length === 0 ? (
               <div className="text-center py-10 text-xs text-slate-500 font-medium border border-dashed border-slate-200 rounded-md">
-                No active categories found under <span className="font-bold uppercase">"{selectedDomain}"</span>. Go to <Link href="/admin/categories" className="text-slate-900 underline font-semibold">All Categories</Link> to create categories for this domain.
+                No active categories found under <span className="font-bold capitalize">"{selectedDomain}"</span>. Go to <Link href="/admin/categories" className="text-slate-900 underline font-semibold">All Categories</Link> to create categories for this domain.
               </div>
             ) : (
               <div className="space-y-2">

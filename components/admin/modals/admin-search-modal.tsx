@@ -212,7 +212,7 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
           ) : results.length > 0 ? (
             groupedResults.map(([groupLabel, groupItems]) => (
               <div key={groupLabel}>
-                <div className="px-5 py-2 text-xs font-bold text-slate-800 uppercase tracking-wider bg-slate-100/90 backdrop-blur-xs border-y border-slate-200 sticky top-0 z-10">
+                <div className="px-5 py-2 text-xs font-semibold text-slate-800 bg-slate-100/90 backdrop-blur-xs border-y border-slate-200 sticky top-0 z-10">
                   {groupLabel}
                 </div>
                 <div className="divide-y divide-slate-100">

@@ -39,14 +39,45 @@
 
   /* Admin Layout & Modal Tokens */
   --z-header: 30;
+  --z-drawer: 40;
   --z-modal-overlay: 50;
   --z-modal-content: 50;
-  --z-drawer: 60;
 
   --spacing-header-height: 4rem;
   --spacing-modal-top: 50%;
   --spacing-modal-max-h: 90vh;
   --spacing-modal-fixed-h: 85vh;
+}
+
+/* ── De-emphasize Admin Layout & Sidebar when a Modal is Active ── */
+body[data-modal-open="true"] [data-slot="admin-sidebar"] {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+body[data-modal-open="true"] [data-slot="admin-header"] {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* De-emphasize high-contrast active highlights in Admin Sidebar behind backdrop */
+body[data-modal-open="true"] [data-slot="admin-sidebar"] .bg-slate-900 {
+  background-color: rgba(30, 41, 59, 0.4) !important;
+  color: rgba(148, 163, 184, 0.8) !important;
+  box-shadow: none !important;
+}
+
+body[data-modal-open="true"] [data-slot="admin-sidebar"] .bg-slate-800 {
+  background-color: rgba(30, 41, 59, 0.3) !important;
+  color: rgba(148, 163, 184, 0.8) !important;
+}
+
+body[data-modal-open="true"] [data-slot="admin-sidebar"] .text-amber-400 {
+  color: rgba(234, 179, 8, 0.4) !important;
+}
+
+body[data-modal-open="true"] [data-slot="admin-sidebar"] .text-white {
+  color: rgba(226, 232, 240, 0.6) !important;
 }
 
 @theme inline {

@@ -1102,7 +1102,7 @@ export function TrekFormModal({
             <div className="col-span-2 grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div className="col-span-2 pb-1 border-b border-slate-200 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                  <span className="text-xs font-semibold text-slate-500 block">
                     Public Marketing Route
                   </span>
                   <Link

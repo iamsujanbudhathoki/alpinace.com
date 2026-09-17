@@ -40,7 +40,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex bg-slate-50/60 text-slate-900 font-sans relative">
+    <div data-slot="admin-layout" className="h-screen w-screen overflow-hidden flex bg-slate-50/60 text-slate-900 font-sans relative">
       {/* Fixed Desktop Sidebar */}
       <div
         className={`hidden md:flex flex-col shrink-0 h-screen sticky top-0 bg-white border-r border-slate-200 z-20 transition-all duration-300 ease-in-out ${
@@ -76,7 +76,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
           isSidebarCollapsed={isCollapsed}
           onToggleDesktopSidebar={toggleDesktopSidebar}
         />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 bg-slate-50/60">
+        <main data-slot="admin-main" className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 bg-slate-50/60">
           {children}
         </main>
       </div>

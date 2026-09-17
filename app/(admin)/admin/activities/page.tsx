@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Plus, Search, Eye, Edit, Trash2, Sparkles, Image as ImageIcon, Maximize2, GitMerge, GripVertical, Save, Check, Loader2 } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, Sparkles, Image as ImageIcon, Maximize2, GitMerge, GripVertical, Save, Check, Loader2, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { ActivityItem, ActivityStatus } from "@/lib/admin-data";
 import { ActivityService } from "@/lib/services/admin-service";
@@ -221,11 +221,10 @@ export default function AdminActivitiesPage() {
         description="Create, edit, and drag-and-drop reorder activity hubs (e.g. Activities in Pokhara, Helicopter Tours, Peak Climbing)."
       >
         <div className="flex items-center gap-2">
-         
           <Button
             onClick={handleCreateNew}
             size="sm"
-            className="bg-stone-900 hover:bg-stone-800 text-white text-xs gap-1.5 cursor-pointer"
+            className="bg-slate-900 hover:bg-slate-800 text-white text-xs gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Add Activity
           </Button>
@@ -233,25 +232,42 @@ export default function AdminActivitiesPage() {
       </AdminPageHeader>
 
       {/* Stats Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-stone-200 rounded-sm p-4 space-y-1">
-          <div className="text-xs text-stone-500 font-medium ">Total Activities</div>
-          <div className="text-2xl font-bold text-stone-900">{stats.total}</div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-700">Total Activities</div>
+            <div className="text-lg font-bold text-slate-900">{stats.total}</div>
+          </div>
         </div>
-        <div className="bg-white border border-stone-200 rounded-sm p-4 space-y-1">
-          <div className="text-xs text-emerald-600 font-medium ">Active</div>
-          <div className="text-2xl font-bold text-stone-900">{stats.active}</div>
+
+        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-bold">
+            <Check className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-700">Active Activities</div>
+            <div className="text-lg font-bold text-slate-900">{stats.active}</div>
+          </div>
         </div>
-        <div className="bg-white border border-stone-200 rounded-sm p-4 space-y-1">
-          <div className="text-xs text-amber-600 font-medium ">Drafts</div>
-          <div className="text-2xl font-bold text-stone-900">{stats.draft}</div>
+
+        <div className="bg-white p-4 rounded-lg border border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center font-bold">
+            <Clock className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-slate-700">Draft Activities</div>
+            <div className="text-lg font-bold text-slate-900">{stats.draft}</div>
+          </div>
         </div>
       </div>
 
       {/* Filters & Search Toolbar */}
-      <div className="bg-white p-4 border border-stone-200 rounded-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white p-4 border border-slate-200 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -285,7 +301,7 @@ export default function AdminActivitiesPage() {
           <AdminTableHeader>
             <AdminTableRow>
               <AdminTableHead className="w-10 text-center" title="Drag to reorder">
-                <GripVertical className="w-3.5 h-3.5 mx-auto text-stone-400" />
+                <GripVertical className="w-3.5 h-3.5 mx-auto text-slate-400" />
               </AdminTableHead>
               <AdminTableHead className="w-14 text-center">Banner</AdminTableHead>
               <AdminTableHead>Name &amp; Slug</AdminTableHead>
@@ -327,12 +343,12 @@ export default function AdminActivitiesPage() {
                       isDragging
                         ? "bg-amber-50 opacity-50"
                         : isDragOver
-                        ? "bg-stone-100 border-t-2 border-stone-900"
+                        ? "bg-slate-100 border-t-2 border-slate-900"
                         : ""
                     }`}
                   >
                     <AdminTableCell
-                      className="text-center cursor-grab active:cursor-grabbing text-stone-400 hover:text-stone-700"
+                      className="text-center cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-700"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <GripVertical className="w-4 h-4 mx-auto" />
@@ -340,7 +356,7 @@ export default function AdminActivitiesPage() {
 
                     <AdminTableCell className="text-center">
                       {act.image ? (
-                        <div className="relative w-9 h-9 mx-auto rounded overflow-hidden border border-stone-200 group/img bg-stone-100">
+                        <div className="relative w-9 h-9 mx-auto rounded overflow-hidden border border-slate-200 group/img bg-slate-100">
                           <img src={act.image} alt={act.name} className="w-full h-full object-cover" />
                           <button
                             type="button"
@@ -354,7 +370,7 @@ export default function AdminActivitiesPage() {
                           </button>
                         </div>
                       ) : (
-                        <div className="w-9 h-9 mx-auto rounded border border-stone-200 bg-stone-50 flex items-center justify-center text-stone-300">
+                        <div className="w-9 h-9 mx-auto rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-300">
                           <Sparkles className="w-4 h-4" />
                         </div>
                       )}
@@ -362,13 +378,13 @@ export default function AdminActivitiesPage() {
 
                     <AdminTableCell>
                       <div className="space-y-0.5">
-                        <div className="font-semibold text-stone-900 text-xs flex items-center gap-2">
+                        <div className="font-semibold text-slate-900 text-xs flex items-center gap-2">
                           <Link
                             href={`/activities/${act.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="hover:underline hover:text-stone-600 transition-colors"
+                            className="hover:underline hover:text-slate-600 transition-colors"
                             title={`View public page for ${act.name}`}
                           >
                             {act.name}
@@ -379,18 +395,18 @@ export default function AdminActivitiesPage() {
                             </span>
                           )}
                         </div>
-                        <div className="text-[11px] font-mono text-stone-400">/{act.slug}</div>
+                        <div className="text-[11px] font-mono text-slate-400">/{act.slug}</div>
                       </div>
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <p className="text-xs text-stone-600 line-clamp-1 max-w-md">
+                      <p className="text-xs text-slate-600 line-clamp-1 max-w-md">
                         {act.description || "—"}
                       </p>
                     </AdminTableCell>
 
                     <AdminTableCell className="text-center">
-                      <span className="text-xs font-mono font-medium text-stone-600 bg-stone-100 px-2 py-0.5 rounded">
+                      <span className="text-xs font-mono font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
                         #{index + 1}
                       </span>
                     </AdminTableCell>

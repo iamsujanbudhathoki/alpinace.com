@@ -238,7 +238,12 @@ export function AdminImageUpload({
     <div className="space-y-2.5">
       {label && (
         <div className="flex items-center justify-between">
-          <label className="font-bold text-slate-900 text-xs tracking-tight">{label}</label>
+          <label
+            onClick={() => setIsLibraryOpen(true)}
+            className="font-bold text-slate-900 text-xs tracking-tight cursor-pointer"
+          >
+            {label}
+          </label>
           {value && (
             <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 inline-flex items-center gap-1">
               <Check className="w-3 h-3" />

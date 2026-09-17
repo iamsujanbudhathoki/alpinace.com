@@ -57,7 +57,14 @@ export function ImageUploader({ value = "", onChange, label = "Cover / Banner Im
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-xs">
-        <label className="block text-slate-950 font-bold">{label}</label>
+        <label
+          onClick={() => {
+            if (mode === "file") fileInputRef.current?.click();
+          }}
+          className="block text-slate-950 font-bold cursor-pointer"
+        >
+          {label}
+        </label>
         <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-[11px] font-bold text-slate-900">
           <button
             type="button"

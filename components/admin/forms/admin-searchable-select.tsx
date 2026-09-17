@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo, ReactNode } from "react";
+import React, { useState, useRef, useEffect, useMemo, ReactNode, useId } from "react";
 import { FormLabel } from "@/components/ui/form-label";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 
@@ -54,6 +54,8 @@ export function AdminSearchableSelect({
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const labelId = useId();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -135,11 +137,21 @@ export function AdminSearchableSelect({
 
   return (
     <div className={`space-y-1 relative ${className}`} ref={containerRef} onKeyDown={handleKeyDown}>
-      {label && <FormLabel required={required}>{label}</FormLabel>}
+      {label && (
+        <FormLabel
+          id={labelId}
+          required={required}
+          onClick={() => { if (!disabled) { triggerRef.current?.focus(); setIsOpen(true); } }}
+          className="cursor-pointer"
+        >
+          {label}
+        </FormLabel>
+      )}
 
       {/* Main Trigger */}
       <div
-        role="button"
+        ref={triggerRef}
+        role="combobox"
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && setIsOpen(!isOpen)}
         onKeyDown={(e) => {
@@ -148,17 +160,18 @@ export function AdminSearchableSelect({
             setIsOpen(!isOpen);
           }
         }}
-        className={`w-full flex items-center justify-between bg-slate-50/50 border ${
+        className={`w-full flex items-center justify-between bg-white border ${
           error
-            ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20"
+            ? "border-rose-500 focus-visible:ring-1 focus-visible:ring-rose-500/20"
             : isOpen
-            ? "border-amber-500 ring-2 ring-amber-500/20 bg-white"
-            : "border-slate-200 hover:border-slate-300 focus:border-amber-500 focus:ring-amber-500/20"
+            ? "border-slate-900 ring-1 ring-slate-900/10"
+            : "border-slate-300 hover:border-slate-400 focus-visible:border-slate-900 focus-visible:ring-1 focus-visible:ring-slate-900/10"
         } ${
-          disabled ? "opacity-60 cursor-not-allowed bg-slate-100" : "cursor-pointer"
-        } rounded-xl px-3 py-2 text-xs font-medium text-left transition-all outline-none`}
+          disabled ? "opacity-50 cursor-not-allowed bg-slate-50" : "cursor-pointer"
+        } rounded-md px-3 py-2 text-xs font-medium text-left transition-colors outline-none`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        aria-labelledby={label ? labelId : undefined}
       >
         <div className="flex items-center gap-2 truncate flex-1 min-w-0">
           {renderTriggerValue ? (
@@ -207,7 +220,7 @@ export function AdminSearchableSelect({
 
       {/* Dropdown Menu Overlay */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100">
+        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100">
           {/* Search Box inside dropdown */}
           {searchable && (
             <div className="p-2 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">

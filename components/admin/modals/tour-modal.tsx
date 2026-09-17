@@ -691,7 +691,15 @@ export function TourFormModal({
                   />
                 </div>
 
-                <div className="col-span-2">
+                <div>
+                  <AdminInputField
+                    label="Group Size Range"
+                    placeholder="e.g. 1 - 15 Travelers"
+                    {...register("groupSizeRange")}
+                  />
+                </div>
+
+                <div className="col-span-2 sm:col-span-3">
                   <AdminInputField
                     label="Best Season"
                     placeholder="e.g. All Year Round"
@@ -699,7 +707,7 @@ export function TourFormModal({
                   />
                 </div>
 
-                <div className="col-span-2 flex items-center gap-6 pt-1">
+                <div className="col-span-2 sm:col-span-3 flex items-center gap-6 pt-1">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -716,14 +724,6 @@ export function TourFormModal({
                     />
                     <span className="text-sm font-medium text-slate-700">Popular Package</span>
                   </label>
-                </div>
-
-                <div>
-                  <AdminInputField
-                    label="Group Size Range"
-                    placeholder="e.g. 1 - 15 Travelers"
-                    {...register("groupSizeRange")}
-                  />
                 </div>
 
                 <div>

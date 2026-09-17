@@ -705,7 +705,7 @@ export function TrekFormModal({
                   />
                 </div>
 
-                <div className="col-span-2">
+                <div className="col-span-2 sm:col-span-3">
                   <AdminInputField
                     label="Best Season"
                     required
@@ -715,7 +715,7 @@ export function TrekFormModal({
                   />
                 </div>
 
-                <div className="col-span-2 flex items-center gap-6 pt-1">
+                <div className="col-span-2 sm:col-span-3 flex items-center gap-6 pt-1">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"

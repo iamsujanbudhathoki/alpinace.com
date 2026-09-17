@@ -235,15 +235,15 @@ export default function AdminActivitiesPage() {
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white border border-stone-200 rounded-sm p-4 space-y-1">
-          <div className="text-xs text-stone-500 font-medium uppercase tracking-wider">Total Activities</div>
+          <div className="text-xs text-stone-500 font-medium ">Total Activities</div>
           <div className="text-2xl font-bold text-stone-900">{stats.total}</div>
         </div>
         <div className="bg-white border border-stone-200 rounded-sm p-4 space-y-1">
-          <div className="text-xs text-emerald-600 font-medium uppercase tracking-wider">Active</div>
+          <div className="text-xs text-emerald-600 font-medium ">Active</div>
           <div className="text-2xl font-bold text-stone-900">{stats.active}</div>
         </div>
         <div className="bg-white border border-stone-200 rounded-sm p-4 space-y-1">
-          <div className="text-xs text-amber-600 font-medium uppercase tracking-wider">Drafts</div>
+          <div className="text-xs text-amber-600 font-medium ">Drafts</div>
           <div className="text-2xl font-bold text-stone-900">{stats.draft}</div>
         </div>
       </div>

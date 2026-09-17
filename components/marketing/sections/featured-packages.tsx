@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { apiClient } from "@/lib/services/api-client";
+import { CategoryType } from "@/lib/admin-data";
 import { TravelPackage } from "@/lib/home-data";
-import { PackageStatus, CategoryType } from "@/lib/admin-data";
+import { apiClient } from "@/lib/services/api-client";
+import Autoplay from "embla-carousel-autoplay";
+import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type FeaturedTab = "popular" | "treks" | "tours" | "expeditions";
 

@@ -196,7 +196,8 @@ export function AdminHeader({
         >
           <div className="flex items-center gap-2 min-w-0">
             <Search className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors shrink-0" />
-            <span className="truncate text-slate-700 dark:text-slate-300 font-medium">Search packages, bookings, guides (⌘K)...</span>
+            <span className="truncate text-slate-700 dark:text-slate-300 font-medium hidden sm:inline">Search packages, bookings, guides (⌘K)...</span>
+            <span className="truncate text-slate-700 dark:text-slate-300 font-medium sm:hidden">Search (⌘K)...</span>
           </div>
           <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded-md shrink-0 select-none">
             ⌘K
@@ -220,7 +221,7 @@ export function AdminHeader({
             )}
           </PopoverTrigger>
 
-          <PopoverContent align="end" sideOffset={8} className="w-80 sm:w-96 p-0 border border-slate-200 shadow-xl rounded-xl bg-white overflow-hidden">
+          <PopoverContent align="end" sideOffset={8} className="w-[calc(100vw-2rem)] max-w-[360px] sm:w-96 p-0 border border-slate-200 shadow-xl rounded-xl bg-white overflow-hidden">
             {/* Popover Header */}
             <div className="p-3 px-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2">

@@ -562,7 +562,8 @@ export function BookingFormModal({
                 { label: "Pending", value: BookingPaymentStatus.PENDING },
                 { label: "Refunded", value: BookingPaymentStatus.REFUNDED },
               ]}
-              {...register("paymentStatus")}
+              value={watch("paymentStatus")}
+              onChange={(val) => setValue("paymentStatus", val as BookingPaymentStatus, { shouldValidate: true })}
             />
 
             <AdminSelectField
@@ -575,7 +576,8 @@ export function BookingFormModal({
                 { label: "Completed", value: BookingStatus.COMPLETED },
                 { label: "Cancelled", value: BookingStatus.CANCELLED },
               ]}
-              {...register("bookingStatus")}
+              value={watch("bookingStatus")}
+              onChange={(val) => setValue("bookingStatus", val as BookingStatus, { shouldValidate: true })}
             />
 
             <AdminSelectField
@@ -586,7 +588,8 @@ export function BookingFormModal({
                 { label: "Processing", value: BookingPermitStatus.PROCESSING },
                 { label: "Docs Pending", value: BookingPermitStatus.PENDING_DOCUMENT },
               ]}
-              {...register("permitStatus")}
+              value={watch("permitStatus")}
+              onChange={(val) => setValue("permitStatus", val as BookingPermitStatus, { shouldValidate: true })}
             />
 
             <AdminInputField

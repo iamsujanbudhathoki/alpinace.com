@@ -67,22 +67,27 @@ export function AdminSearchableSelect({
 }: AdminSearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [internalValue, setInternalValue] = useState<string>(defaultValue || "");
+  const [internalValue, setInternalValue] = useState<string>(() =>
+    normalizeSelectValue(valueProp !== undefined ? valueProp : defaultValue)
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
   const errorId = useId();
 
+  // Keep internalValue synced when valueProp or defaultValue changes
+  useEffect(() => {
+    if (valueProp !== undefined) {
+      setInternalValue(normalizeSelectValue(valueProp));
+    } else if (defaultValue !== undefined) {
+      setInternalValue(normalizeSelectValue(defaultValue));
+    }
+  }, [valueProp, defaultValue]);
+
   // Controlled if valueProp is defined, otherwise uncontrolled via internalValue
   const rawValue = valueProp !== undefined ? valueProp : internalValue;
   const normalizedValue = useMemo(() => normalizeSelectValue(rawValue), [rawValue]);
-
-  useEffect(() => {
-    if (valueProp === undefined && defaultValue !== undefined) {
-      setInternalValue(defaultValue);
-    }
-  }, [valueProp, defaultValue]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -150,18 +155,14 @@ export function AdminSearchableSelect({
   }, [options, normalizedValue]);
 
   const handleSelect = (option: SearchableSelectOption) => {
-    if (valueProp === undefined) {
-      setInternalValue(option.value);
-    }
+    setInternalValue(option.value);
     onChange?.(option.value, option);
     setIsOpen(false);
   };
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (valueProp === undefined) {
-      setInternalValue("");
-    }
+    setInternalValue("");
     onChange?.("", null);
     setSearchQuery("");
   };

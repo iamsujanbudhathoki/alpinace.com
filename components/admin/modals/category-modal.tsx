@@ -300,7 +300,8 @@ export function CategoryFormModal({
                   { label: "Blogs", value: CategoryType.BLOGS },
                   { label: "Media", value: CategoryType.MEDIA },
                 ]}
-                {...register("type")}
+                value={watch("type")}
+                onChange={(val) => setValue("type", val as CategoryType, { shouldValidate: true })}
               />
             </div>
 
@@ -340,7 +341,8 @@ export function CategoryFormModal({
                   { label: "Active", value: CategoryStatus.ACTIVE },
                   { label: "Draft", value: CategoryStatus.DRAFT },
                 ]}
-                {...register("status")}
+                value={watch("status")}
+                onChange={(val) => setValue("status", val as CategoryStatus, { shouldValidate: true })}
               />
             </div>
 

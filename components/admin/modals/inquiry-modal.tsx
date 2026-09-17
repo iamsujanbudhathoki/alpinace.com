@@ -213,7 +213,8 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
               { label: "Other / Custom Wilderness", value: "Other / Custom Wilderness" },
             ]}
             error={errors.interestedTrip?.message}
-            {...register("interestedTrip")}
+            value={watch("interestedTrip")}
+            onChange={(val) => setValue("interestedTrip", val, { shouldValidate: true })}
           />
 
           <AdminSelectField
@@ -226,7 +227,8 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
               { label: "General Inquiry", value: InquiryType.GENERAL },
             ]}
             error={errors.type?.message}
-            {...register("type")}
+            value={watch("type")}
+            onChange={(val) => setValue("type", val as InquiryType, { shouldValidate: true })}
           />
 
           <AdminSelectField
@@ -239,7 +241,8 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
               { label: "6+ Travelers (Expedition Team)", value: "6" },
             ]}
             error={errors.groupSize?.message}
-            {...register("groupSize")}
+            value={String(watch("groupSize") || 1)}
+            onChange={(val) => setValue("groupSize", Number(val) || 1, { shouldValidate: true })}
           />
 
           <div className="col-span-2">

@@ -80,7 +80,7 @@ export const AdminSelectField = React.forwardRef<HTMLDivElement, AdminSelectFiel
       error,
       required,
       options = [],
-      value,
+      value: valueProp,
       onChange,
       placeholder = "Select...",
       searchPlaceholder = "Search options...",
@@ -88,17 +88,33 @@ export const AdminSelectField = React.forwardRef<HTMLDivElement, AdminSelectFiel
       allowClear = false,
       disabled = false,
       className = "",
-      name,
+      name: nameProp,
       ...restProps
     },
     ref
   ) => {
-    const rawVal = value !== undefined ? value : (restProps as any).value;
+    const fieldName = nameProp || (restProps as any).name;
+    const rawVal = valueProp !== undefined ? valueProp : (restProps as any).value;
     const stringVal = normalizeSelectValue(rawVal);
 
     const handleSelectChange = (selectedVal: string, selectedOpt?: SearchableSelectOption | null) => {
-      if (onChange) {
-        (onChange as any)(selectedVal, selectedOpt);
+      if (!onChange) return;
+
+      const syntheticEvent = {
+        target: { name: fieldName || "", value: selectedVal },
+        currentTarget: { name: fieldName || "", value: selectedVal },
+      };
+
+      try {
+        (onChange as any)(selectedVal, selectedOpt, syntheticEvent);
+      } catch {
+        // ignore
+      }
+
+      try {
+        (onChange as any)(syntheticEvent);
+      } catch {
+        // ignore
       }
     };
 

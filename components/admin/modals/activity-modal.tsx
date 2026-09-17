@@ -296,7 +296,8 @@ export function ActivityFormModal({
                 { label: "Active", value: ActivityStatus.ACTIVE },
                 { label: "Draft", value: ActivityStatus.DRAFT },
               ]}
-              {...register("status", { required: "Status is required" })}
+              value={watch("status")}
+              onChange={(val) => setValue("status", val as ActivityStatus, { shouldValidate: true })}
               error={errors.status?.message}
             />
 

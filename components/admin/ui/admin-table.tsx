@@ -376,7 +376,7 @@ export function AdminTablePagination({
           <ChevronLeft className="w-3.5 h-3.5 mr-1" />
           Previous
         </Button>
-        <span className="px-2.5 py-1 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900">
+        <span className="px-2.5 py-1 bg-white border border-slate-300 rounded-md text-xs font-bold text-slate-900">
           {currentPage} / {safeTotalPages}
         </span>
         <Button

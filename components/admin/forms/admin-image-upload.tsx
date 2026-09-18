@@ -595,7 +595,7 @@ export function AdminImageUpload({
                     type="button"
                     disabled={mediaPage <= 1}
                     onClick={() => setMediaPage((p) => Math.max(1, p - 1))}
-                    className="h-7 px-2 sm:px-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    className="h-7 px-2 sm:px-2.5 rounded-md border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
                   >
                     ← <span className="hidden sm:inline">Prev</span>
                   </button>
@@ -613,7 +613,7 @@ export function AdminImageUpload({
                           key={p}
                           type="button"
                           onClick={() => setMediaPage(p)}
-                          className={`h-7 w-7 rounded-lg border text-[11px] font-bold transition-colors cursor-pointer ${mediaPage === p
+                          className={`h-7 w-7 rounded-md border text-[11px] font-bold transition-colors cursor-pointer ${mediaPage === p
                               ? "bg-slate-900 border-slate-900 text-white"
                               : "border-slate-200 text-slate-700 bg-white hover:bg-slate-100"
                             }`}
@@ -629,7 +629,7 @@ export function AdminImageUpload({
                     type="button"
                     disabled={mediaPage >= mediaTotalPages}
                     onClick={() => setMediaPage((p) => Math.min(mediaTotalPages, p + 1))}
-                    className="h-7 px-2 sm:px-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    className="h-7 px-2 sm:px-2.5 rounded-md border border-slate-200 text-[11px] font-bold text-slate-700 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
                   >
                     <span className="hidden sm:inline">Next</span> →
                   </button>

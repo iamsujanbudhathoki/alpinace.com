@@ -332,10 +332,10 @@ export function AdminImageUpload({
           </div>
           <div>
             <p className="text-xs font-bold text-slate-900">
-              Choose from Media Library
+              Select from Gallery / Media Library
             </p>
             <p className="text-[11px] text-slate-500 font-medium mt-0.5 max-w-xs">
-              Select an image from category options in your Media Library.
+              Choose an existing image from your centralized Gallery/Media Library.
             </p>
           </div>
           <div className="pt-1">
@@ -350,7 +350,7 @@ export function AdminImageUpload({
               className="text-xs font-bold h-8 px-3.5 bg-white border-slate-300 hover:bg-slate-50 text-slate-800 shadow-2xs cursor-pointer flex items-center gap-1.5"
             >
               <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
-              <span>Choose from Library</span>
+              <span>Select from Gallery</span>
             </Button>
           </div>
         </div>
@@ -415,7 +415,7 @@ export function AdminImageUpload({
           title="Media Library"
           description={
             libraryOnly
-              ? "Select an image from category options in your Media Library."
+              ? "Select an image from your centralized Gallery/Media Library."
               : "Select a cover photo or upload new media."
           }
           maxWidth="2xl"

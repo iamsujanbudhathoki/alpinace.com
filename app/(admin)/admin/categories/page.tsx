@@ -1,35 +1,34 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Plus, Search, Eye, Edit, Trash2, Tag, Compass, Mountain, MapPin, BookOpen, Image as ImageIcon, GitMerge, Maximize2, Check, X, ChevronRight, ChevronDown, CornerDownRight } from "lucide-react";
-import { toast } from "sonner";
+import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
+import { CategoryFormModal, DeleteCategoryModal } from "@/components/admin/modals/category-modal";
+import { AdminInlineSelect } from "@/components/admin/ui/admin-inline-select";
+import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
+import {
+  AdminActionButton,
+  AdminTable,
+  AdminTableActions,
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableContainer,
+  AdminTableEmpty,
+  AdminTableHead,
+  AdminTableHeader,
+  AdminTableLoading,
+  AdminTablePagination,
+  AdminTableRow,
+} from "@/components/admin/ui/admin-table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { CategoryItem, CategoryStatus, CategoryType } from "@/lib/admin-data";
 import { CategoryService } from "@/lib/services/admin-service";
 import { ApiResponse } from "@/lib/services/api-client";
 import { categoryCache } from "@/lib/services/category-cache";
 import { openSingleImage } from "@/lib/utils/lightbox";
-import { CategoryFormModal, DeleteCategoryModal } from "@/components/admin/modals/category-modal";
-import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
-import { AdminInlineSelect } from "@/components/admin/ui/admin-inline-select";
-import {
-  AdminTableContainer,
-  AdminTable,
-  AdminTableHeader,
-  AdminTableHead,
-  AdminTableBody,
-  AdminTableRow,
-  AdminTableCell,
-  AdminTableEmpty,
-  AdminTableLoading,
-  AdminTableActions,
-  AdminActionButton,
-  AdminTablePagination,
-} from "@/components/admin/ui/admin-table";
-import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
-import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { BookOpen, Check, ChevronDown, ChevronRight, Compass, CornerDownRight, GitMerge, Image as ImageIcon, MapPin, Maximize2, Mountain, Plus, Search, Tag, X } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<CategoryItem[]>([]);

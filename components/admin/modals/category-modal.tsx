@@ -37,7 +37,6 @@ export function CategoryFormModal({
 }: CategoryFormModalProps) {
   const [editingMode, setEditingMode] = useState(isEditing);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const [formError, setFormError] = useState<string | null>(null);
   const {
@@ -120,35 +119,6 @@ export function CategoryFormModal({
     setFormError(null);
     setIsSubmitting(false);
     onClose();
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const file = files[0];
-    setIsUploadingImage(true);
-
-    try {
-      const res = await MediaService.uploadFile(file);
-      const url = res?.data?.url || (res as any)?.url;
-      const mediaId = res?.data?.id;
-      if (url || mediaId) {
-        setValue("image", url || "");
-        setValue("mediaId", mediaId || "");
-        toast.success("Category image uploaded successfully");
-      }
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to upload category image");
-    } finally {
-      setIsUploadingImage(false);
-      e.target.value = "";
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setValue("image", "");
-    setValue("mediaId", "");
-    toast.info("Category image removed");
   };
 
   const onSubmit = async (values: CategoryFormValues) => {
@@ -392,6 +362,7 @@ export function CategoryFormModal({
                   setValue("mediaId", mediaId || "", { shouldValidate: true });
                 }}
                 error={errors.image?.message}
+                libraryOnly={true}
               />
             </div>
           </div>

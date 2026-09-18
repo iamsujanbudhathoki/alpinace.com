@@ -239,22 +239,6 @@ export function FeaturedPackages({
     return `/trekking/${pkg.slug}`;
   };
 
-  const getExploreAllLink = (tab: FeaturedTab) => {
-    switch (tab) {
-      case "popular":
-        return { href: "/trekking", label: "View All Popular Packages" };
-      case "tours":
-        return { href: "/tours", label: "View All Tours" };
-      case "expeditions":
-        return { href: "/expeditions", label: "View All Expeditions" };
-      case "treks":
-      default:
-        return { href: "/trekking", label: "View All Treks" };
-    }
-  };
-
-  const exploreInfo = getExploreAllLink(activeTab);
-
   const tabs: { key: FeaturedTab; label: string; iconUrl: string }[] = [
     { key: "popular", label: "Popular", iconUrl: "/icons/popular-fire.png" },
     { key: "treks", label: "Trekkings", iconUrl: "/icons/trekking.png" },
@@ -309,19 +293,6 @@ export function FeaturedPackages({
               })}
             </div>
           </div>
-
-          {/* Desktop View All CTA Link - Absolutely positioned to avoid disrupting center alignment */}
-          {!loading && currentPackages.length > 0 && (
-            <div className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 shrink-0">
-              <Link
-                href={exploreInfo.href}
-                className="text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-950 transition-colors inline-flex items-center gap-1.5 group whitespace-nowrap"
-              >
-                <span className="group-hover:underline underline-offset-4 decoration-yellow-400">{exploreInfo.label}</span>
-                <span className="text-yellow-500 font-bold group-hover:translate-x-0.5 transition-transform">&rarr;</span>
-              </Link>
-            </div>
-          )}
         </div>
 
         {/* Horizontal Showcase / Carousel Container */}
@@ -368,12 +339,6 @@ export function FeaturedPackages({
                   ? "No popular packages available currently."
                   : "No featured routes in this category currently."}
               </p>
-              <Link
-                href={exploreInfo.href}
-                className="inline-block text-xs font-semibold text-stone-900 hover:text-yellow-600 hover:underline"
-              >
-                {exploreInfo.label} &rarr;
-              </Link>
             </div>
           ) : currentPackages.length === 1 ? (
             /* Single item centered layout */
@@ -522,19 +487,6 @@ export function FeaturedPackages({
             </div>
           )}
         </div>
-
-        {/* Mobile Centered View All Action */}
-        {!loading && currentPackages.length > 0 && (
-          <div className="flex md:hidden justify-center pt-6 sm:pt-8">
-            <Link
-              href={exploreInfo.href}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-stone-200 hover:bg-yellow-400 hover:border-yellow-400 text-stone-900 text-xs font-semibold transition-all shadow-xs active:scale-95"
-            >
-              <span>{exploreInfo.label}</span>
-              <span className="text-yellow-500 group-hover:text-stone-950 font-bold">&rarr;</span>
-            </Link>
-          </div>
-        )}
       </div>
     </section>
   );

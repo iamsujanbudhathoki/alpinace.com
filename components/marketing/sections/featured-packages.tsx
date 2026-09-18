@@ -349,9 +349,9 @@ export function FeaturedPackages({
                   <Link
                     key={pkg.id}
                     href={packageHref}
-                    className="group flex flex-col bg-white rounded-2xl border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-yellow-400/60 hover:-translate-y-1 hover:shadow-[0_16px_32px_-6px_rgba(0,0,0,0.12)]"
+                    className="group flex flex-col bg-white rounded-xl border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_32px_-6px_rgba(0,0,0,0.12)]"
                   >
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-900">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-900">
                       <Image
                         src={pkg.image || "/mountain-placeholder.jpg"}
                         alt={pkg.title}
@@ -420,10 +420,10 @@ export function FeaturedPackages({
                       <Link
                         href={packageHref}
                         onClick={handleCardClick}
-                        className="group flex flex-col h-full bg-white rounded-2xl border border-stone-200/90 overflow-hidden transition-all duration-300 ease-out hover:border-yellow-400/60 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
+                        className="group flex flex-col h-full bg-white rounded-xl border border-stone-200/90 overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
                       >
                         {/* Taller Mountain Image Frame */}
-                        <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-900">
+                        <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-900">
                           <Image
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}

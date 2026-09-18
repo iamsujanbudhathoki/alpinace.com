@@ -399,17 +399,7 @@ export function SiteHeader() {
                       <div
                         onMouseEnter={handleDropdownMouseEnter}
                         onMouseLeave={handleDropdownMouseLeave}
-                        className={`absolute top-full pt-3 z-50 animate-in fade-in duration-150 ease-out ${
-                          link.items && link.items.length > 0
-                            ? "right-0"
-                            : link.label.toUpperCase().includes("TREK")
-                            ? "-left-16 xl:-left-12"
-                            : link.label.toUpperCase().includes("TOUR")
-                            ? "-left-48 xl:-left-36"
-                            : link.label.toUpperCase().includes("EXPEDITION")
-                            ? "-left-72 xl:-left-60"
-                            : "left-0"
-                        }`}
+                        className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50 animate-in fade-in duration-150 ease-out"
                       >
                         <div
                           className={`bg-white text-black rounded-2xl shadow-2xl border border-stone-200/90 p-6 overflow-hidden ${

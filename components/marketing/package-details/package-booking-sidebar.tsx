@@ -120,7 +120,11 @@ export function PackageBookingSidebar({
                 <span className="text-xs font-semibold text-stone-600">
                   Rate ({travelers} {travelers === 1 ? "Traveler" : "Travelers"}):
                 </span>
-             
+                {activeTier && (
+                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-xs shrink-0">
+                    Group Rate
+                  </span>
+                )}
               </div>
               <button
                 type="button"
@@ -370,11 +374,7 @@ export function PackageBookingSidebar({
             <div className="flex items-center justify-between type-body-sm text-stone-500">
               <span className="flex items-center gap-1.5">
                 <span>Rate ({travelers} {travelers === 1 ? "traveler" : "travelers"} × US${perPersonCalculated.toLocaleString()})</span>
-                {activeTier && (
-                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-100/90 px-1.5 py-0.5 rounded-xs">
-                    Group rate
-                  </span>
-                )}
+               
               </span>
               <span className="font-semibold text-stone-900">US${totalPrice.toLocaleString()}</span>
             </div>

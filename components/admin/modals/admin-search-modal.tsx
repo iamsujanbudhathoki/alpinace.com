@@ -417,12 +417,6 @@ export function AdminSearchModal({ isOpen, onClose }: AdminSearchModalProps) {
               : "Quick navigation"}
           </span>
           <div className="flex items-center gap-3 text-[11px]">
-            <span className="hidden sm:inline-flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 text-[10px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-700 dark:text-slate-300 shadow-2xs">
-                ↑↓
-              </kbd>{" "}
-              navigate
-            </span>
             <span className="inline-flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 text-[10px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-slate-700 dark:text-slate-300 shadow-2xs">
                 ↵

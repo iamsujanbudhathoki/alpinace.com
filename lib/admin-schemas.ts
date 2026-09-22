@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { validateGroupPricingTiers } from "./pricing-util";
 import {
   TripDifficulty,
   PackageStatus,
@@ -15,6 +16,13 @@ import {
   CategoryType,
   CategoryStatus,
 } from "./admin-data";
+
+export const groupPricingTierSchema = z.object({
+  id: z.string().optional(),
+  minTravelers: z.preprocess((val) => Number(val), z.number().int().min(1, "Min travelers must be at least 1")),
+  maxTravelers: z.preprocess((val) => Number(val), z.number().int().min(1, "Max travelers must be at least 1")),
+  pricePerPerson: z.preprocess((val) => Number(val), z.number().min(0.01, "Price per person must be greater than 0")),
+});
 
 export const itineraryDaySchema = z.object({
   day: z.preprocess((val) => Number(val) || 1, z.number().min(1, "Day number must be at least 1")),
@@ -113,6 +121,19 @@ export const trekSchema = z.object({
   mapImage: z.string().optional(),
   mapMediaId: z.string().optional(),
   packageFiles: z.array(packageFileSchema).optional(),
+  groupPricingEnabled: z.boolean().default(false),
+  groupPricing: z.array(groupPricingTierSchema).optional(),
+}).superRefine((data, ctx) => {
+  if (data.groupPricingEnabled) {
+    const res = validateGroupPricingTiers(data.groupPricing, true);
+    if (!res.valid) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: res.error || "Invalid group pricing configuration",
+        path: ["groupPricing"],
+      });
+    }
+  }
 });
 
 export type TrekFormValues = z.infer<typeof trekSchema>;
@@ -178,6 +199,19 @@ export const tourSchema = z.object({
   mapImage: z.string().optional(),
   mapMediaId: z.string().optional(),
   packageFiles: z.array(packageFileSchema).optional(),
+  groupPricingEnabled: z.boolean().default(false),
+  groupPricing: z.array(groupPricingTierSchema).optional(),
+}).superRefine((data, ctx) => {
+  if (data.groupPricingEnabled) {
+    const res = validateGroupPricingTiers(data.groupPricing, true);
+    if (!res.valid) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: res.error || "Invalid group pricing configuration",
+        path: ["groupPricing"],
+      });
+    }
+  }
 });
 
 export type TourFormValues = z.infer<typeof tourSchema>;
@@ -245,6 +279,19 @@ export const expeditionSchema = z.object({
   mapImage: z.string().optional(),
   mapMediaId: z.string().optional(),
   packageFiles: z.array(packageFileSchema).optional(),
+  groupPricingEnabled: z.boolean().default(false),
+  groupPricing: z.array(groupPricingTierSchema).optional(),
+}).superRefine((data, ctx) => {
+  if (data.groupPricingEnabled) {
+    const res = validateGroupPricingTiers(data.groupPricing, true);
+    if (!res.valid) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: res.error || "Invalid group pricing configuration",
+        path: ["groupPricing"],
+      });
+    }
+  }
 });
 
 export type ExpeditionFormValues = z.infer<typeof expeditionSchema>;
@@ -255,6 +302,8 @@ export const bookingSchema = z.object({
   guestPhone: z.string().min(5, "Contact phone number is required"),
   country: z.string().min(2, "Country is required"),
   packageName: z.string().min(1, "Please select an item to reserve"),
+  packageId: z.string().optional(),
+  packageSlug: z.string().optional(),
   packageType: z.nativeEnum(BookingPackageType),
   startDate: z.string().min(4, "Start date is required"),
   endDate: z.string().min(4, "End date is required"),

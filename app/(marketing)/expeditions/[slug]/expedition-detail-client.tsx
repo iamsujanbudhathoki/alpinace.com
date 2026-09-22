@@ -23,6 +23,7 @@ import {
   FaqStatus,
   TripDepartureDate,
 } from "@/lib/admin-data";
+import { calculateApplicablePrice } from "@/lib/pricing-util";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -136,10 +137,13 @@ export function ExpeditionDetailClient({
   }, [expedition]);
 
   // Price calculations
-  const baseCostPerPerson = expedition?.priceUSD || 0;
-  const totalPrice = useMemo(() => {
-    return Math.round(baseCostPerPerson * calculatorClimbers);
-  }, [baseCostPerPerson, calculatorClimbers]);
+  const applicablePricing = useMemo(() => {
+    if (!expedition) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
+    return calculateApplicablePrice(expedition, calculatorClimbers);
+  }, [expedition, calculatorClimbers]);
+
+  const perPersonCalculated = applicablePricing.pricePerPerson;
+  const totalPrice = applicablePricing.totalPrice;
 
   // Inclusions vs Exclusions parsed from backend
   const costIncludes = useMemo(() => {
@@ -333,7 +337,6 @@ export function ExpeditionDetailClient({
   };
 
   const peakMeters = expedition.peakHeightM || expedition.maxAltitudeMeters || 8000;
-  const perPersonCalculated = Math.round(totalPrice / Math.max(1, calculatorClimbers));
 
   return (
     <div className="min-h-screen bg-white pb-24 lg:pb-20">
@@ -489,6 +492,10 @@ export function ExpeditionDetailClient({
               onResetBooked={() => setIsBooked(false)}
               onResetInquired={() => setIsInquired(false)}
               onInquirySuccess={() => setIsInquired(true)}
+              basePriceUSD={expedition.priceUSD}
+              groupPricingEnabled={expedition.groupPricingEnabled}
+              groupPricing={expedition.groupPricing}
+              departureDates={expedition.departureDates}
             />
           </div>
         </div>
@@ -550,6 +557,7 @@ export function ExpeditionDetailClient({
         onClose={() => setIsBookingModalOpen(false)}
         onSuccess={() => setIsBooked(true)}
         trip={{
+          id: expedition.id,
           title: expedition.title,
           slug: expedition.slug,
           region: expedition.region,
@@ -559,6 +567,8 @@ export function ExpeditionDetailClient({
           priceUSD: expedition.priceUSD,
           image: expedition.image,
           categoryType: BookingPackageType.EXPEDITION,
+          groupPricingEnabled: expedition.groupPricingEnabled,
+          groupPricing: expedition.groupPricing,
         }}
         initialTravelers={calculatorClimbers}
         initialDate={selectedDeparture?.startDate}

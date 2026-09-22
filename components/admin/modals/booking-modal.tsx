@@ -24,6 +24,7 @@ import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
+import { calculateApplicablePrice } from "@/lib/pricing-util";
 
 interface BookingFormModalProps {
   isOpen: boolean;
@@ -217,7 +218,8 @@ export function BookingFormModal({
     if (item) {
       // Auto-calculate Total USD
       const size = Number(getValues("groupSize")) || 1;
-      const calculatedTotal = (item.priceUSD || 0) * size;
+      const pricing = calculateApplicablePrice(item, size);
+      const calculatedTotal = pricing.error ? (item.priceUSD || 0) * size : pricing.totalPrice;
       setValue("totalAmountUSD", calculatedTotal, { shouldValidate: true });
 
       // Auto-calculate End Date if Start Date is set
@@ -248,7 +250,11 @@ export function BookingFormModal({
     const newSize = Number(e.target.value) || 1;
     setValue("groupSize", newSize, { shouldValidate: true });
     if (selectedItemObj && selectedItemObj.priceUSD) {
-      setValue("totalAmountUSD", selectedItemObj.priceUSD * newSize, { shouldValidate: true });
+      const pricing = calculateApplicablePrice(selectedItemObj, newSize);
+      const calculatedTotal = pricing.error
+        ? (selectedItemObj.priceUSD || 0) * newSize
+        : pricing.totalPrice;
+      setValue("totalAmountUSD", calculatedTotal, { shouldValidate: true });
     }
   };
 

@@ -57,6 +57,8 @@ export {
   PackageStatus as ExpeditionStatus,
 };
 
+export type { GroupPricingTier } from "./pricing-util";
+
 export enum TourType {
   CULTURAL_HERITAGE = "cultural_heritage",
   LUXURY_WELLNESS = "luxury_wellness",

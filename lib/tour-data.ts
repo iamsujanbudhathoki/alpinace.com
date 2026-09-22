@@ -1,4 +1,4 @@
-import { PackageRegion, PackageStatus, TourType, TripDifficulty, TripDepartureDate, TripPackageFile } from "./admin-data";
+import { PackageRegion, PackageStatus, TourType, TripDifficulty, TripDepartureDate, TripPackageFile, GroupPricingTier } from "./admin-data";
 import { TripFaqItem, TripItineraryDay, TripReviewItem } from "./trek-data";
 
 export { TourType };
@@ -18,6 +18,8 @@ export interface TourItem {
   difficulty?: TripDifficulty;
   bestSeason: string;
   priceUSD: number;
+  groupPricingEnabled?: boolean;
+  groupPricing?: GroupPricingTier[];
   transportation?: string;
   startEndLocation?: string;
   accommodation?: string;

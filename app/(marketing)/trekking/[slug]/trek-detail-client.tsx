@@ -17,6 +17,7 @@ import {
   SettingService,
 } from "@/lib/services/admin-service";
 import { FaqItem, FaqStatus, BookingPackageType, InquiryType, TripDepartureDate, PackageStatus } from "@/lib/admin-data";
+import { calculateApplicablePrice } from "@/lib/pricing-util";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -305,10 +306,13 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
   }, [availableTabs]);
 
   // Price calculations
-  const baseCostPerPerson = trek?.priceUSD || 0;
-  const totalPrice = useMemo(() => {
-    return Math.round(baseCostPerPerson * calculatorTravelers);
-  }, [calculatorTravelers, baseCostPerPerson]);
+  const applicablePricing = useMemo(() => {
+    if (!trek) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
+    return calculateApplicablePrice(trek, calculatorTravelers);
+  }, [trek, calculatorTravelers]);
+
+  const perPersonCalculated = applicablePricing.pricePerPerson;
+  const totalPrice = applicablePricing.totalPrice;
 
   if (loading) {
     return <PackageDetailSkeleton />;
@@ -322,8 +326,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     setSelectedDeparture(dateSlot);
     setIsBookingModalOpen(true);
   };
-
-  const perPersonCalculated = Math.round(totalPrice / Math.max(1, calculatorTravelers));
 
   return (
     <div className="min-h-screen bg-white pb-24 lg:pb-20">
@@ -479,6 +481,10 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               onResetBooked={() => setIsBooked(false)}
               onResetInquired={() => setIsInquired(false)}
               onInquirySuccess={() => setIsInquired(true)}
+              basePriceUSD={trek.priceUSD}
+              groupPricingEnabled={trek.groupPricingEnabled}
+              groupPricing={trek.groupPricing}
+              departureDates={trek.departureDates}
             />
           </div>
         </div>
@@ -528,6 +534,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         onClose={() => setIsBookingModalOpen(false)}
         onSuccess={() => setIsBooked(true)}
         trip={{
+          id: trek.id,
           title: trek.title,
           slug: trek.slug,
           region: trek.region,
@@ -537,6 +544,8 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
           priceUSD: trek.priceUSD,
           image: trek.image,
           categoryType: BookingPackageType.TREKKING,
+          groupPricingEnabled: trek.groupPricingEnabled,
+          groupPricing: trek.groupPricing,
         }}
         initialTravelers={calculatorTravelers}
         initialDate={selectedDeparture?.startDate}

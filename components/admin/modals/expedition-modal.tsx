@@ -220,6 +220,8 @@ export function ExpeditionModal({
         mapImage: data.mapImage || "",
         mapMediaId: data.mapMediaId || "",
         packageFiles: Array.isArray(data.packageFiles) ? data.packageFiles : [],
+        groupPricingEnabled: Boolean(data.groupPricingEnabled),
+        groupPricing: Array.isArray(data.groupPricing) ? data.groupPricing : [],
         image: data.image || "",
         coverMediaId: data.coverMediaId || "",
         metaTitle: data.metaTitle || "",
@@ -265,6 +267,8 @@ export function ExpeditionModal({
         mapImage: "",
         mapMediaId: "",
         packageFiles: [],
+        groupPricingEnabled: false,
+        groupPricing: [],
         image: "",
         coverMediaId: "",
         metaTitle: "",
@@ -333,6 +337,8 @@ export function ExpeditionModal({
           isPopular: values.isPopular ?? false,
           country: values.country || "Nepal",
           activity: values.activity || TripActivity.PEAK_CLIMBING,
+          groupPricingEnabled: Boolean(values.groupPricingEnabled),
+          groupPricing: values.groupPricing || [],
           galleryMediaIds: values.galleryMediaIds || initData.galleryMediaIds || [],
           mapMediaId: values.mapMediaId || initData.mapMediaId,
           coverMediaId: values.coverMediaId || initData.coverMediaId,
@@ -374,7 +380,8 @@ export function ExpeditionModal({
     errors.durationDays ||
     errors.priceUSD ||
     errors.shortDesc ||
-    errors.peakHeightM
+    errors.peakHeightM ||
+    errors.groupPricing
   );
   const hasItineraryErrors = isSubmitted && !!(
     errors.itinerary &&

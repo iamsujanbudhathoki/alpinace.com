@@ -210,6 +210,8 @@ export function TrekModal({
         mapImage: initialData.mapImage || "",
         mapMediaId: initialData.mapMediaId || "",
         packageFiles: Array.isArray(initialData.packageFiles) ? initialData.packageFiles : [],
+        groupPricingEnabled: Boolean(initialData.groupPricingEnabled),
+        groupPricing: Array.isArray(initialData.groupPricing) ? initialData.groupPricing : [],
         image: initialData.image || "",
         coverMediaId: initialData.coverMediaId || "",
         metaTitle: initialData.metaTitle || "",
@@ -251,6 +253,8 @@ export function TrekModal({
         mapImage: "",
         mapMediaId: "",
         packageFiles: [],
+        groupPricingEnabled: false,
+        groupPricing: [],
         image: "",
         coverMediaId: "",
         metaTitle: "",
@@ -308,6 +312,8 @@ export function TrekModal({
         mapImage: values.mapImage,
         mapMediaId: values.mapMediaId || (initialData?.mapMediaId ? initialData.mapMediaId : undefined),
         packageFiles: values.packageFiles || [],
+        groupPricingEnabled: Boolean(values.groupPricingEnabled),
+        groupPricing: values.groupPricing || [],
         image: values.image || "",
         coverMediaId: values.coverMediaId || (initialData?.coverMediaId ? initialData.coverMediaId : undefined),
         metaTitle: values.metaTitle,
@@ -350,7 +356,8 @@ export function TrekModal({
     errors.region ||
     errors.durationDays ||
     errors.priceUSD ||
-    errors.shortDesc
+    errors.shortDesc ||
+    errors.groupPricing
   );
   const hasItineraryErrors = isSubmitted && !!(
     errors.itinerary &&

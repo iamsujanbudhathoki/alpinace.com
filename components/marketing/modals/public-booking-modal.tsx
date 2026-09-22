@@ -21,12 +21,14 @@ import { BookingFormValues } from "@/lib/admin-schemas";
 import { BookingService } from "@/lib/services/admin-service";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
 import { TurnstileWidget } from "@/components/ui/turnstile-widget";
+import { GroupPricingTier, calculateApplicablePrice, getMaxGroupTravelers } from "@/lib/pricing-util";
 
 export interface PublicBookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
   trip: {
+    id?: string;
     title: string;
     slug: string;
     region: string;
@@ -36,6 +38,8 @@ export interface PublicBookingModalProps {
     priceUSD: number;
     image?: string;
     categoryType?: BookingPackageType;
+    groupPricingEnabled?: boolean;
+    groupPricing?: GroupPricingTier[];
   };
   initialTravelers?: number;
   initialDate?: string;
@@ -128,11 +132,18 @@ export function PublicBookingModal({
     return d.toISOString().split("T")[0];
   }, [startDate, trip.durationDays]);
 
-  const baseCostPerPerson = trip.priceUSD || 0;
+  const pricingResult = useMemo(() => {
+    return calculateApplicablePrice(trip, travelers);
+  }, [trip, travelers]);
 
-  const totalPriceUSD = useMemo(() => {
-    return Math.round(baseCostPerPerson * travelers);
-  }, [travelers, baseCostPerPerson]);
+  const maxAllowedTravelers = useMemo(() => {
+    return trip.groupPricingEnabled && trip.groupPricing && trip.groupPricing.length > 0
+      ? getMaxGroupTravelers(trip, 20)
+      : 20;
+  }, [trip]);
+
+  const unitCostPerPerson = pricingResult.pricePerPerson;
+  const totalPriceUSD = pricingResult.totalPrice;
 
   const depositUSD = useMemo(() => {
     return Math.round(totalPriceUSD * 0.25);
@@ -198,6 +209,8 @@ export function PublicBookingModal({
         guestEmail: guestEmail.trim(),
         guestPhone: guestPhone.trim(),
         country: country.trim(),
+        packageId: trip.id,
+        packageSlug: trip.slug,
         packageName: trip.title,
         packageType: trip.categoryType || BookingPackageType.TREKKING,
         startDate,
@@ -352,6 +365,12 @@ export function PublicBookingModal({
               </div>
             )}
 
+            {pricingResult.error && (
+              <div className="mb-4 p-3 rounded-md bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900">
+                {pricingResult.error}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
               {/* Row 1: Departure Date & Travelers */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -400,13 +419,18 @@ export function PublicBookingModal({
                     </div>
                     <button
                       type="button"
-                      disabled={travelers >= 12}
-                      onClick={() => setTravelers((prev) => Math.min(12, prev + 1))}
+                      disabled={travelers >= maxAllowedTravelers}
+                      onClick={() => setTravelers((prev) => Math.min(maxAllowedTravelers, prev + 1))}
                       className="w-10 h-[38px] flex items-center justify-center rounded-md border border-stone-300 text-stone-800 font-bold text-base hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                     >
                       +
                     </button>
                   </div>
+                  {trip.groupPricingEnabled && travelers >= maxAllowedTravelers && (
+                    <p className="text-[11px] text-stone-500 font-medium mt-1">
+                      Max online booking: {maxAllowedTravelers} pax. For larger groups, please contact us for custom rates.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -530,15 +554,22 @@ export function PublicBookingModal({
               {/* Price Summary */}
               <div className="bg-stone-50 border border-stone-200 rounded-md p-4 space-y-2 text-xs">
                 <div className="flex items-center justify-between text-stone-600 font-medium">
-                  <span>{travelers} × ${baseCostPerPerson.toLocaleString()} USD</span>
-                  <span className="text-stone-900 font-semibold">${totalPriceUSD.toLocaleString()} USD</span>
+                  <div className="flex items-center gap-1.5">
+                    <span>Rate ({travelers} {travelers === 1 ? "traveler" : "travelers"} × US${unitCostPerPerson.toLocaleString()} / person)</span>
+                    {pricingResult.applicableTier && (
+                      <span className="text-[10px] uppercase font-bold text-emerald-800 bg-emerald-100/90 px-1.5 py-0.2 rounded">
+                        Tier Applied
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-stone-900 font-semibold">US${totalPriceUSD.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between border-t border-stone-200 pt-2 text-sm font-bold text-stone-900">
                   <span>Estimated Total</span>
-                  <span className="text-stone-900 font-bold">${totalPriceUSD.toLocaleString()} USD</span>
+                  <span className="text-stone-900 font-bold">US${totalPriceUSD.toLocaleString()}</span>
                 </div>
                 <p className="text-[11px] text-stone-500 font-medium pt-0.5">
-                  No upfront charge required. A 25% deposit (${depositUSD.toLocaleString()} USD) secures your trip once permits are verified.
+                  No upfront charge required. A 25% deposit (US${depositUSD.toLocaleString()}) secures your trip once permits are verified.
                 </p>
               </div>
 
@@ -561,7 +592,7 @@ export function PublicBookingModal({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !turnstileToken}
+                  disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
                   className="btn-accent text-xs px-6 py-2.5 disabled:opacity-50"
                 >
                   {isSubmitting ? (

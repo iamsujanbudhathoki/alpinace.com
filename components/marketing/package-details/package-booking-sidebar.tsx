@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   ShieldCheck,
   MessageSquare,
@@ -8,9 +8,12 @@ import {
   Plus,
   ArrowRight,
   Check,
+  Heart,
+  Calendar,
 } from "lucide-react";
 import { PackageInquiryModal } from "./package-inquiry-modal";
 import { InquiryType } from "@/lib/admin-data";
+import { GroupPricingTier, getLowestGroupPrice, getMaxGroupTravelers } from "@/lib/pricing-util";
 
 export interface BookingAddonItem {
   id: string;
@@ -38,6 +41,11 @@ export interface PackageBookingSidebarProps {
   onResetBooked?: () => void;
   onResetInquired?: () => void;
   onInquirySuccess?: () => void;
+  basePriceUSD?: number;
+  groupPricingEnabled?: boolean;
+  groupPricing?: GroupPricingTier[];
+  departureDates?: any[];
+  onCheckAvailability?: () => void;
 }
 
 export function PackageBookingSidebar({
@@ -57,10 +65,33 @@ export function PackageBookingSidebar({
   onResetBooked,
   onResetInquired,
   onInquirySuccess,
+  basePriceUSD,
+  groupPricingEnabled = false,
+  groupPricing = [],
+  departureDates = [],
+  onCheckAvailability,
 }: PackageBookingSidebarProps) {
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
+  const [isGroupPricingOpen, setIsGroupPricingOpen] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
 
   const perPersonCalculated = Math.round(totalPrice / Math.max(1, travelers));
+
+  const sortedTiers = useMemo(() => {
+    if (!groupPricing || !Array.isArray(groupPricing)) return [];
+    return [...groupPricing].sort(
+      (a, b) => Number(a.minTravelers) - Number(b.minTravelers)
+    );
+  }, [groupPricing]);
+
+  const hasGroupPricing = Boolean(groupPricingEnabled && sortedTiers.length > 0);
+  const lowestPrice = useMemo(() => {
+    if (!hasGroupPricing) return perPersonCalculated;
+    return getLowestGroupPrice(sortedTiers, basePriceUSD || perPersonCalculated);
+  }, [hasGroupPricing, sortedTiers, basePriceUSD, perPersonCalculated]);
+
+  const standardBasePrice = basePriceUSD || perPersonCalculated;
+  const showDiscount = hasGroupPricing && standardBasePrice > lowestPrice;
 
   const handleInquirySuccess = () => {
     onInquirySuccess?.();
@@ -70,33 +101,129 @@ export function PackageBookingSidebar({
     <aside className="w-full">
       <div className="bg-white border border-stone-200 rounded-sm shadow-md overflow-hidden">
         {/* Pricing Header */}
-        <div className="bg-yellow-400/10 border-b border-yellow-400/20 p-4.5 sm:p-5 relative overflow-hidden">
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="type-caption text-stone-900 font-bold uppercase tracking-wider">
-              Trip Rate
-            </span>
-            <span className="type-caption text-stone-600 font-medium">
-              {durationDays} Days Total
-            </span>
-          </div>
+        {hasGroupPricing ? (
+          <div className="bg-white border-b border-stone-200 p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-semibold text-stone-500">
+                Price from:
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsLiked(!isLiked)}
+                aria-label="Save to favorites"
+                className="text-sky-600 hover:text-sky-700 transition-colors p-1"
+              >
+                <Heart
+                  className={`w-5 h-5 ${isLiked ? "fill-sky-600 text-sky-600" : "text-sky-600"}`}
+                />
+              </button>
+            </div>
 
-          <div className="flex items-baseline gap-1.5 mt-1.5">
-            <span className="text-xl sm:text-2xl font-bold font-heading tracking-tight text-stone-900">
-              ${perPersonCalculated.toLocaleString()}
-            </span>
-            <span className="type-caption text-stone-600">
-              USD / person
-            </span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl sm:text-3xl font-bold font-heading tracking-tight text-emerald-600">
+                US${lowestPrice.toLocaleString()}
+              </span>
+              {showDiscount && (
+                <span className="text-base sm:text-lg line-through text-stone-400 font-medium">
+                  US${standardBasePrice.toLocaleString()}
+                </span>
+              )}
+              <span className="text-xs font-bold text-stone-500">P/P</span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-yellow-400/10 border-b border-yellow-400/20 p-4.5 sm:p-5 relative overflow-hidden">
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <span className="type-caption text-stone-900 font-bold uppercase tracking-wider">
+                Trip Rate
+              </span>
+              <span className="type-caption text-stone-600 font-medium">
+                {durationDays} Days Total
+              </span>
+            </div>
+
+            <div className="flex items-baseline gap-1.5 mt-1.5">
+              <span className="text-xl sm:text-2xl font-bold font-heading tracking-tight text-stone-900">
+                ${perPersonCalculated.toLocaleString()}
+              </span>
+              <span className="type-caption text-stone-600">
+                USD / person
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Booking Console Body */}
         <div className="p-4.5 sm:p-5 space-y-4">
+          {/* Collapsible Group Pricing Section */}
+          {hasGroupPricing && (
+            <div className="border border-stone-200 rounded-sm overflow-hidden bg-white shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setIsGroupPricingOpen(!isGroupPricingOpen)}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 text-left font-semibold text-stone-900 text-xs sm:text-sm hover:bg-stone-50 transition-colors cursor-pointer"
+              >
+                <span className="font-heading font-bold text-stone-900">
+                  We offer group price
+                </span>
+                <span className="text-emerald-700 font-bold text-lg leading-none">
+                  {isGroupPricingOpen ? "−" : "+"}
+                </span>
+              </button>
+
+              {isGroupPricingOpen && (
+                <div className="px-2.5 pb-2.5 pt-0.5 space-y-1">
+                  {sortedTiers.map((tier, idx) => {
+                    const isApplicable =
+                      travelers >= Number(tier.minTravelers) &&
+                      travelers <= Number(tier.maxTravelers);
+                    const paxText =
+                      Number(tier.minTravelers) === Number(tier.maxTravelers)
+                        ? `${tier.minTravelers} pax`
+                        : `${tier.minTravelers} – ${tier.maxTravelers} pax`;
+
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => onTravelersChange(Number(tier.minTravelers))}
+                        className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded text-xs transition-all cursor-pointer text-left ${
+                          isApplicable
+                            ? "bg-emerald-50 text-emerald-950 font-bold border-l-2 border-emerald-600 shadow-2xs"
+                            : "text-stone-700 hover:bg-stone-50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className={isApplicable ? "font-bold text-emerald-950" : "font-medium text-stone-700"}>
+                            {paxText}
+                          </span>
+                          {isApplicable && (
+                            <span className="text-[9px] uppercase font-bold text-emerald-800 bg-emerald-100/90 px-1 py-0.2 rounded">
+                              Current
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <span className={isApplicable ? "font-bold font-heading text-emerald-900" : "font-semibold text-stone-800"}>
+                            US${Number(tier.pricePerPerson).toLocaleString()}
+                          </span>
+                          <span className="text-[10px] text-stone-400 ml-0.5 font-normal">
+                            / person
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Travelers Stepper */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="type-caption text-stone-900 font-bold">
-                Travelers
+                No. of Traveler
               </label>
             </div>
 
@@ -117,14 +244,40 @@ export function PackageBookingSidebar({
 
               <button
                 type="button"
-                disabled={travelers >= 16}
-                onClick={() => onTravelersChange(Math.min(16, travelers + 1))}
+                disabled={travelers >= (hasGroupPricing ? getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20) : 20)}
+                onClick={() =>
+                  onTravelersChange(
+                    Math.min(
+                      hasGroupPricing
+                        ? getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20)
+                        : 20,
+                      travelers + 1,
+                    )
+                  )
+                }
                 aria-label="Increase traveler count"
                 className="w-10 h-10 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
               >
                 <Plus className="w-4 h-4" strokeWidth={2} />
               </button>
             </div>
+
+            {hasGroupPricing &&
+              travelers >=
+                getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20) && (
+                <p className="text-[11px] text-stone-500 font-medium pt-0.5">
+                  Planning for a group larger than{" "}
+                  {getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20)}?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setIsInquiryModalOpen(true)}
+                    className="text-emerald-700 hover:text-emerald-800 underline font-semibold cursor-pointer"
+                  >
+                    Send an inquiry
+                  </button>{" "}
+                  for custom private group rates.
+                </p>
+              )}
           </div>
 
           {/* Add-ons */}
@@ -166,30 +319,29 @@ export function PackageBookingSidebar({
           {/* Calculation Breakdown */}
           <div className="pt-3 border-t border-stone-200 space-y-1.5">
             <div className="flex items-center justify-between type-body-sm text-stone-500">
-              <span>Base Rate ({travelers} × ${perPersonCalculated.toLocaleString()})</span>
-              <span className="font-semibold text-stone-900">${totalPrice.toLocaleString()} USD</span>
+              <span>Rate ({travelers} {travelers === 1 ? "traveler" : "travelers"} × US${perPersonCalculated.toLocaleString()} / person)</span>
+              <span className="font-semibold text-stone-900">US${totalPrice.toLocaleString()}</span>
             </div>
 
             <div className="flex items-baseline justify-between pt-2 border-t border-stone-200">
               <div>
                 <span className="type-caption text-stone-900 font-bold block">
-                  Total Investment
+                  Total Price
                 </span>
                 <span className="type-body-sm text-stone-400">
                   Guaranteed rate
                 </span>
               </div>
               <div className="text-right">
-                <span className="type-heading-xl text-stone-900">
-                  ${totalPrice.toLocaleString()}{" "}
-                  <span className="text-xs font-normal text-stone-500">USD</span>
+                <span className="type-heading-xl text-stone-900 font-bold">
+                  US${totalPrice.toLocaleString()}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Action CTAs & Independent Post-Submission Confirmation States */}
-          <div className="space-y-3 pt-1">
+          {/* Action CTAs & Post-Submission Confirmation States */}
+          <div className="space-y-2.5 pt-1">
             {/* 1. BOOKING BUTTON OR BOOKING CONFIRMATION */}
             {isBooked ? (
               <div className="p-4 rounded-sm bg-emerald-50 border border-emerald-200/80 space-y-2.5 animate-in fade-in duration-200">
@@ -216,52 +368,105 @@ export function PackageBookingSidebar({
                   </button>
                 )}
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={onBookClick}
-                className="btn-accent w-full text-xs sm:text-sm flex items-center justify-center gap-2 group"
-              >
-                <span>{bookButtonLabel}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
-              </button>
-            )}
+            ) : hasGroupPricing ? (
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={onBookClick}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
+                >
+                  <span>BOOK NOW</span>
+                </button>
 
-            {/* 2. INQUIRY BUTTON OR INQUIRY CONFIRMATION */}
-            {isInquired ? (
-              <div className="p-4 rounded-md bg-yellow-50 border border-yellow-200 space-y-2.5 animate-in fade-in duration-200">
-                <div className="flex items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                    <Check className="w-4 h-4 text-yellow-400" strokeWidth={2.5} />
+                <button
+                  type="button"
+                  onClick={onBookClick}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
+                >
+                  <span>ADD TO CART</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onCheckAvailability) {
+                      onCheckAvailability();
+                    } else {
+                      const depSection = document.getElementById("departures");
+                      if (depSection) {
+                        depSection.scrollIntoView({ behavior: "smooth" });
+                      } else {
+                        onBookClick();
+                      }
+                    }
+                  }}
+                  className="w-full bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
+                >
+                  <span>CHECK AVAILABILITY</span>
+                </button>
+
+                {isInquired ? (
+                  <div className="p-3 rounded-xs bg-yellow-50 border border-yellow-200 text-xs text-stone-800 font-medium text-center">
+                    Inquiry submitted! We’ll contact you shortly.
                   </div>
-                  <div className="space-y-0.5 min-w-0">
-                    <h4 className="text-xs sm:text-sm font-bold text-stone-900 leading-snug">
-                      Thank you for your inquiry!
-                    </h4>
-                    <p className="text-xs text-stone-700 leading-relaxed font-medium">
-                      We’ll get back to you shortly.
-                    </p>
-                  </div>
-                </div>
-                {onResetInquired && (
+                ) : (
                   <button
                     type="button"
-                    onClick={onResetInquired}
-                    className="text-[11px] font-semibold text-stone-900 hover:underline cursor-pointer pt-1 block"
+                    onClick={() => setIsInquiryModalOpen(true)}
+                    className="w-full bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
                   >
-                    Send another question or inquiry
+                    <span>SEND INQUIRY</span>
                   </button>
                 )}
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={() => setIsInquiryModalOpen(true)}
-                className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
-                <span>Ask a Question / Custom Dates</span>
-              </button>
+              /* Non-group pricing default CTAs */
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={onBookClick}
+                  className="btn-accent w-full text-xs sm:text-sm flex items-center justify-center gap-2 group"
+                >
+                  <span>{bookButtonLabel}</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
+                </button>
+
+                {isInquired ? (
+                  <div className="p-4 rounded-md bg-yellow-50 border border-yellow-200 space-y-2.5 animate-in fade-in duration-200">
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                        <Check className="w-4 h-4 text-yellow-400" strokeWidth={2.5} />
+                      </div>
+                      <div className="space-y-0.5 min-w-0">
+                        <h4 className="text-xs sm:text-sm font-bold text-stone-900 leading-snug">
+                          Thank you for your inquiry!
+                        </h4>
+                        <p className="text-xs text-stone-700 leading-relaxed font-medium">
+                          We’ll get back to you shortly.
+                        </p>
+                      </div>
+                    </div>
+                    {onResetInquired && (
+                      <button
+                        type="button"
+                        onClick={onResetInquired}
+                        className="text-[11px] font-semibold text-stone-900 hover:underline cursor-pointer pt-1 block"
+                      >
+                        Send another question or inquiry
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsInquiryModalOpen(true)}
+                    className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
+                    <span>Ask a Question / Custom Dates</span>
+                  </button>
+                )}
+              </div>
             )}
           </div>
 

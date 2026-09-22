@@ -12,6 +12,7 @@ import {
 import { TourItem, initialToursData } from "@/lib/tour-data";
 import { FaqService, SettingService, TourService } from "@/lib/services/admin-service";
 import { BookingPackageType, InquiryType, FaqItem, FaqStatus, TripDepartureDate } from "@/lib/admin-data";
+import { calculateApplicablePrice } from "@/lib/pricing-util";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -115,10 +116,13 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
   }, [tour]);
 
   // Price calculations
-  const baseCostPerPerson = tour?.priceUSD || 0;
-  const totalPrice = useMemo(() => {
-    return Math.round(baseCostPerPerson * calculatorTravelers);
-  }, [baseCostPerPerson, calculatorTravelers]);
+  const applicablePricing = useMemo(() => {
+    if (!tour) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
+    return calculateApplicablePrice(tour, calculatorTravelers);
+  }, [tour, calculatorTravelers]);
+
+  const perPersonCalculated = applicablePricing.pricePerPerson;
+  const totalPrice = applicablePricing.totalPrice;
 
   // Inclusions vs Exclusions parsed from backend
   const costIncludes = useMemo(() => {
@@ -303,8 +307,6 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     setIsBookingModalOpen(true);
   };
 
-  const perPersonCalculated = Math.round(totalPrice / Math.max(1, calculatorTravelers));
-
   return (
     <div className="min-h-screen bg-white pb-24 lg:pb-20">
       {/* 1. HERO HEADER */}
@@ -459,6 +461,10 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               onResetBooked={() => setIsBooked(false)}
               onResetInquired={() => setIsInquired(false)}
               onInquirySuccess={() => setIsInquired(true)}
+              basePriceUSD={tour.priceUSD}
+              groupPricingEnabled={tour.groupPricingEnabled}
+              groupPricing={tour.groupPricing}
+              departureDates={tour.departureDates}
             />
           </div>
         </div>
@@ -520,6 +526,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
         onClose={() => setIsBookingModalOpen(false)}
         onSuccess={() => setIsBooked(true)}
         trip={{
+          id: tour.id,
           title: tour.title,
           slug: tour.slug,
           region: tour.region,
@@ -529,6 +536,8 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
           priceUSD: tour.priceUSD,
           image: tour.image,
           categoryType: BookingPackageType.TOUR,
+          groupPricingEnabled: tour.groupPricingEnabled,
+          groupPricing: tour.groupPricing,
         }}
         initialTravelers={calculatorTravelers}
         initialDate={selectedDeparture?.startDate}

@@ -2,6 +2,7 @@
 
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { TripDepartureDatesManager } from "@/components/admin/forms/trip-departure-dates-manager";
+import { TripGroupPricingManager } from "@/components/admin/forms/trip-group-pricing-manager";
 import { TripGalleryManager } from "@/components/admin/forms/trip-gallery-manager";
 import { TripMapManager } from "@/components/admin/forms/trip-map-manager";
 import { TripFilesManager } from "@/components/admin/forms/trip-files-manager";
@@ -155,6 +156,19 @@ export function PackageDetailView({
           <div
             className="prose prose-sm max-w-none text-slate-800 leading-relaxed font-normal bg-slate-50 p-3.5 rounded-lg border border-slate-200"
             dangerouslySetInnerHTML={{ __html: packageData.shortDesc }}
+          />
+        </div>
+      )}
+
+      {/* Group Pricing Section */}
+      {packageData.groupPricingEnabled && (
+        <div className="pt-1">
+          <TripGroupPricingManager
+            enabled={true}
+            onEnabledChange={() => {}}
+            tiers={packageData.groupPricing || []}
+            onChange={() => {}}
+            readOnly
           />
         </div>
       )}

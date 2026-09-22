@@ -1,7 +1,7 @@
-import { PackageStatus, PackageRegion, TripDifficulty, TripDepartureDate, TripPackageFile } from "./admin-data";
+import { PackageStatus, PackageRegion, TripDifficulty, TripDepartureDate, TripPackageFile, GroupPricingTier } from "./admin-data";
 
 export type TrekDifficulty = TripDifficulty;
-export type { TripDepartureDate, TripPackageFile };
+export type { TripDepartureDate, TripPackageFile, GroupPricingTier };
 
 export interface TripItineraryDetail {
   label: string;
@@ -55,6 +55,8 @@ export interface TrekItem {
   difficulty: TripDifficulty;
   bestSeason: string;
   priceUSD: number;
+  groupPricingEnabled?: boolean;
+  groupPricing?: GroupPricingTier[];
   isFeatured?: boolean;
   isPopular?: boolean;
   startEndLocation?: string;

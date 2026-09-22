@@ -9,6 +9,7 @@ import { AdminSearchableMultiSelect } from "@/components/admin/forms/admin-searc
 import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
 import { AppRichTextEditor } from "@/components/admin/rich-text/rich-text-editor";
 import { PackageStatus, TripDifficulty, TripActivity } from "@/lib/admin-data";
+import { TripGroupPricingManager } from "@/components/admin/forms/trip-group-pricing-manager";
 import { Controller } from "react-hook-form";
 
 interface PackageBasicInfoTabProps {
@@ -248,6 +249,30 @@ export function PackageBasicInfoTab({
           error={errors.bestSeason?.message as string}
           {...register("bestSeason")}
         />
+      </div>
+
+      {/* Reusable Group Pricing Manager */}
+      <div className="col-span-2 sm:col-span-3 pt-2 pb-1">
+        <Controller
+          name="groupPricing"
+          control={control}
+          render={({ field }) => (
+            <TripGroupPricingManager
+              enabled={Boolean(watch("groupPricingEnabled"))}
+              onEnabledChange={(val) =>
+                setValue("groupPricingEnabled", val, { shouldValidate: true })
+              }
+              tiers={field.value || []}
+              onChange={(newTiers) => field.onChange(newTiers)}
+              readOnly={!editingMode}
+            />
+          )}
+        />
+        {errors.groupPricing?.message && (
+          <p className="text-xs font-semibold text-rose-600 mt-1">
+            {errors.groupPricing.message as string}
+          </p>
+        )}
       </div>
 
       <div className="col-span-2 sm:col-span-3 flex items-center gap-6 pt-1">

@@ -73,7 +73,6 @@ export function PackageBookingSidebar({
 }: PackageBookingSidebarProps) {
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
   const [isGroupPricingOpen, setIsGroupPricingOpen] = useState(true);
-  const [isLiked, setIsLiked] = useState(false);
 
   const perPersonCalculated = Math.round(totalPrice / Math.max(1, travelers));
 
@@ -126,16 +125,7 @@ export function PackageBookingSidebar({
                   </span>
                 )}
               </div>
-              <button
-                type="button"
-                onClick={() => setIsLiked(!isLiked)}
-                aria-label="Save to favorites"
-                className="text-sky-600 hover:text-sky-700 transition-colors p-1 shrink-0"
-              >
-                <Heart
-                  className={`w-5 h-5 ${isLiked ? "fill-sky-600 text-sky-600" : "text-sky-600"}`}
-                />
-              </button>
+           
             </div>
 
             <div className="flex items-baseline gap-2 mt-1">

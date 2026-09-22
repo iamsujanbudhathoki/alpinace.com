@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { PackageInquiryModal } from "./package-inquiry-modal";
 import { InquiryType } from "@/lib/admin-data";
-import { GroupPricingTier, getLowestGroupPrice, getMaxGroupTravelers } from "@/lib/pricing-util";
+import { GroupPricingTier, getMaxGroupTravelers } from "@/lib/pricing-util";
 
 export interface BookingAddonItem {
   id: string;
@@ -85,13 +85,7 @@ export function PackageBookingSidebar({
     );
   }, [hasGroupPricing, groupPricing]);
 
-  const lowestPrice = useMemo(() => {
-    if (!hasGroupPricing || !sortedTiers) return perPersonCalculated;
-    return getLowestGroupPrice(sortedTiers, basePriceUSD ?? perPersonCalculated);
-  }, [hasGroupPricing, sortedTiers, basePriceUSD, perPersonCalculated]);
-
   const standardBasePrice = basePriceUSD ?? perPersonCalculated;
-  const showDiscount = hasGroupPricing && standardBasePrice > lowestPrice;
 
   const activeTier = useMemo(() => {
     if (!hasGroupPricing || !sortedTiers) return null;
@@ -134,12 +128,6 @@ export function PackageBookingSidebar({
               )}
               <span className="text-xs font-bold text-stone-500">P/P</span>
             </div>
-
-            {lowestPrice < perPersonCalculated && (
-              <p className="text-xs text-stone-500 mt-1">
-                From <span className="font-semibold text-stone-800">US${lowestPrice.toLocaleString()}</span> for larger groups
-              </p>
-            )}
           </div>
         ) : (
           <div className="bg-yellow-400/10 border-b border-yellow-400/20 p-4.5 sm:p-5 relative overflow-hidden">
@@ -224,11 +212,11 @@ export function PackageBookingSidebar({
 
                         <div className="flex items-baseline gap-1 text-right shrink-0">
                           <span
-                            className={
+                            className={`text-sm ${
                               isApplicable
-                                ? "text-emerald-950 font-bold text-sm"
+                                ? "text-emerald-950 font-bold"
                                 : "text-stone-900 font-medium"
-                            }
+                            }`}
                           >
                             US${Number(tier.pricePerPerson).toLocaleString()}
                           </span>
@@ -286,29 +274,17 @@ export function PackageBookingSidebar({
                     )
                   )
                 }
+                title={
+                  travelers >= (hasGroupPricing ? getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20) : 20)
+                    ? `Maximum group size (${getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20)}) reached for online booking`
+                    : "Increase traveler count"
+                }
                 aria-label="Increase traveler count"
                 className="w-10 h-10 rounded-sm bg-white border border-stone-200 text-stone-900 font-bold hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center transition-all shadow-sm"
               >
                 <Plus className="w-4 h-4" strokeWidth={2} />
               </button>
             </div>
-
-            {hasGroupPricing &&
-              travelers >=
-              getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20) && (
-                <p className="text-xs text-stone-500 font-medium pt-0.5">
-                  Planning for a group larger than{" "}
-                  {getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20)}?{" "}
-                  <button
-                    type="button"
-                    onClick={() => setIsInquiryModalOpen(true)}
-                    className="text-emerald-700 hover:text-emerald-800 underline font-semibold cursor-pointer"
-                  >
-                    Send an inquiry
-                  </button>{" "}
-                  for custom private group rates.
-                </p>
-              )}
           </div>
 
           {/* Add-ons */}

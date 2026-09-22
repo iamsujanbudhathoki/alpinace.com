@@ -205,8 +205,8 @@ export function TripGroupPricingManager({
           {/* Pricing Tiers Table */}
           <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
             <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                Pricing Tiers
+              <span className="text-xs font-semibold text-slate-900">
+                Pricing tiers
               </span>
               {!readOnly && editingIndex === null && (
                 <Button
@@ -223,10 +223,10 @@ export function TripGroupPricingManager({
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-100/75 border-b border-slate-200 text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                <thead className="bg-slate-100/75 border-b border-slate-200 text-slate-700 font-semibold text-xs">
                   <tr>
-                    <th className="py-2.5 px-4">Traveler Range</th>
-                    <th className="py-2.5 px-4">Price Per Person</th>
+                    <th className="py-2.5 px-4">Traveler range</th>
+                    <th className="py-2.5 px-4">Price per person</th>
                     {!readOnly && (
                       <th className="py-2.5 px-4 text-right">Actions</th>
                     )}
@@ -343,7 +343,7 @@ export function TripGroupPricingManager({
             <div className="p-4 bg-slate-50 border border-slate-300 rounded-xl space-y-3.5 shadow-xs">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                 <h4 className="text-xs font-semibold text-slate-900">
-                  {editingIndex === -1 ? "Add Pricing Tier" : "Edit Pricing Tier"}
+                  {editingIndex === -1 ? "Add pricing tier" : "Edit pricing tier"}
                 </h4>
                 <span className="text-xs text-slate-600 font-medium">
                   Continuous coverage required
@@ -360,7 +360,7 @@ export function TripGroupPricingManager({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-800 mb-1">
-                    Minimum Travelers <span className="text-rose-500">*</span>
+                    Minimum travelers <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -375,7 +375,7 @@ export function TripGroupPricingManager({
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-800 mb-1">
-                    Maximum Travelers <span className="text-rose-500">*</span>
+                    Maximum travelers <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -390,7 +390,7 @@ export function TripGroupPricingManager({
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-800 mb-1">
-                    Price Per Person (USD) <span className="text-rose-500">*</span>
+                    Price per person (USD) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -439,7 +439,7 @@ export function TripGroupPricingManager({
                   onClick={handleSaveTier}
                   className="bg-emerald-700 hover:bg-emerald-800 text-white h-8 text-xs px-4 font-medium"
                 >
-                  {editingIndex === -1 ? "Save Tier" : "Update Tier"}
+                  {editingIndex === -1 ? "Save tier" : "Update tier"}
                 </Button>
               </div>
             </div>
@@ -462,7 +462,7 @@ export function TripGroupPricingManager({
             setTierToDelete(null);
           }
         }}
-        title="Delete Pricing Tier"
+        title="Delete pricing tier"
         description={
           tierToDelete
             ? `Are you sure you want to delete the pricing tier for ${

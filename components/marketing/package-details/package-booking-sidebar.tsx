@@ -120,11 +120,7 @@ export function PackageBookingSidebar({
                 <span className="text-xs font-semibold text-stone-600">
                   Rate ({travelers} {travelers === 1 ? "Traveler" : "Travelers"}):
                 </span>
-                {activeTier && (
-                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-xs shrink-0">
-                    Group Rate
-                  </span>
-                )}
+             
               </div>
               <button
                 type="button"
@@ -242,12 +238,7 @@ export function PackageBookingSidebar({
                           >
                             {paxText}
                           </span>
-                          {isApplicable && (
-                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 bg-emerald-100/90 border border-emerald-300/60 px-2 py-0.5 rounded-xs shrink-0">
-                              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                              Active
-                            </span>
-                          )}
+                        
                         </div>
 
                         <div className="flex items-baseline gap-1 text-right shrink-0">

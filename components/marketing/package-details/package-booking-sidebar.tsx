@@ -94,6 +94,17 @@ export function PackageBookingSidebar({
   const standardBasePrice = basePriceUSD ?? perPersonCalculated;
   const showDiscount = hasGroupPricing && standardBasePrice > lowestPrice;
 
+  const activeTier = useMemo(() => {
+    if (!hasGroupPricing || !sortedTiers) return null;
+    return (
+      sortedTiers.find(
+        (tier) =>
+          travelers >= Number(tier.minTravelers) &&
+          travelers <= Number(tier.maxTravelers)
+      ) || null
+    );
+  }, [hasGroupPricing, sortedTiers, travelers]);
+
   const handleInquirySuccess = () => {
     onInquirySuccess?.();
   };
@@ -105,14 +116,21 @@ export function PackageBookingSidebar({
         {hasGroupPricing ? (
           <div className="bg-white border-b border-stone-200 p-4 sm:p-5">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-semibold text-stone-500">
-                Price from:
-              </span>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
+                <span className="text-xs font-semibold text-stone-600">
+                  Rate ({travelers} {travelers === 1 ? "Traveler" : "Travelers"}):
+                </span>
+                {activeTier && (
+                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-xs shrink-0">
+                    Group Rate
+                  </span>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => setIsLiked(!isLiked)}
                 aria-label="Save to favorites"
-                className="text-sky-600 hover:text-sky-700 transition-colors p-1"
+                className="text-sky-600 hover:text-sky-700 transition-colors p-1 shrink-0"
               >
                 <Heart
                   className={`w-5 h-5 ${isLiked ? "fill-sky-600 text-sky-600" : "text-sky-600"}`}
@@ -121,16 +139,22 @@ export function PackageBookingSidebar({
             </div>
 
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl sm:text-3xl font-bold font-heading tracking-tight text-emerald-600">
-                US${lowestPrice.toLocaleString()}
+              <span className="text-2xl sm:text-3xl font-bold font-heading tracking-tight text-emerald-700">
+                US${perPersonCalculated.toLocaleString()}
               </span>
-              {showDiscount && (
+              {standardBasePrice > perPersonCalculated && (
                 <span className="text-base sm:text-lg line-through text-stone-400 font-medium">
                   US${standardBasePrice.toLocaleString()}
                 </span>
               )}
               <span className="text-xs font-bold text-stone-500">P/P</span>
             </div>
+
+            {lowestPrice < perPersonCalculated && (
+              <p className="text-xs text-stone-500 mt-1">
+                From <span className="font-semibold text-stone-800">US${lowestPrice.toLocaleString()}</span> for larger groups
+              </p>
+            )}
           </div>
         ) : (
           <div className="bg-yellow-400/10 border-b border-yellow-400/20 p-4.5 sm:p-5 relative overflow-hidden">
@@ -164,9 +188,19 @@ export function PackageBookingSidebar({
                 onClick={() => setIsGroupPricingOpen(!isGroupPricingOpen)}
                 className="w-full flex items-center justify-between px-3.5 py-2.5 text-left font-semibold text-stone-900 text-xs sm:text-sm hover:bg-stone-50 transition-colors cursor-pointer"
               >
-                <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
-                  We offer group price
-                </span>
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
+                  <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
+                    We offer group price
+                  </span>
+                  {activeTier && (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-xs shrink-0">
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                      {activeTier.minTravelers === activeTier.maxTravelers
+                        ? `${activeTier.minTravelers} pax`
+                        : `${activeTier.minTravelers}–${activeTier.maxTravelers} pax`}
+                    </span>
+                  )}
+                </div>
                 <span className="text-stone-500 flex items-center justify-center">
                   {isGroupPricingOpen ? (
                     <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
@@ -192,17 +226,50 @@ export function PackageBookingSidebar({
                         key={idx}
                         type="button"
                         onClick={() => onTravelersChange(Number(tier.minTravelers))}
-                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs transition-colors cursor-pointer text-left ${isApplicable
-                            ? "bg-stone-50 text-stone-900 font-semibold"
-                            : "text-stone-700 hover:bg-stone-50/60"
-                          }`}
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs transition-all cursor-pointer text-left ${
+                          isApplicable
+                            ? "bg-emerald-50/90 text-stone-950 border-l-[3px] border-emerald-600 pl-3 font-semibold shadow-2xs"
+                            : "text-stone-700 hover:bg-stone-50/80 border-l-[3px] border-transparent pl-3"
+                        }`}
                       >
-                        <span className={isApplicable ? "text-stone-900 font-semibold" : "text-stone-700 font-normal"}>
-                          {paxText}
-                        </span>
-                        <span className={isApplicable ? "text-stone-900 font-bold" : "text-stone-900 font-medium"}>
-                          US${Number(tier.pricePerPerson).toLocaleString()}
-                        </span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span
+                            className={
+                              isApplicable
+                                ? "text-stone-950 font-bold"
+                                : "text-stone-700 font-normal"
+                            }
+                          >
+                            {paxText}
+                          </span>
+                          {isApplicable && (
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 bg-emerald-100/90 border border-emerald-300/60 px-2 py-0.5 rounded-xs shrink-0">
+                              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                              Active
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-baseline gap-1 text-right shrink-0">
+                          <span
+                            className={
+                              isApplicable
+                                ? "text-emerald-950 font-bold text-sm"
+                                : "text-stone-900 font-medium"
+                            }
+                          >
+                            US${Number(tier.pricePerPerson).toLocaleString()}
+                          </span>
+                          <span
+                            className={`text-xs ${
+                              isApplicable
+                                ? "text-emerald-800 font-medium"
+                                : "text-stone-500 font-normal"
+                            }`}
+                          >
+                            / person
+                          </span>
+                        </div>
                       </button>
                     );
                   })}
@@ -257,7 +324,7 @@ export function PackageBookingSidebar({
             {hasGroupPricing &&
               travelers >=
               getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20) && (
-                <p className="text-[11px] text-stone-500 font-medium pt-0.5">
+                <p className="text-xs text-stone-500 font-medium pt-0.5">
                   Planning for a group larger than{" "}
                   {getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20)}?{" "}
                   <button
@@ -310,7 +377,14 @@ export function PackageBookingSidebar({
           {/* Calculation Breakdown */}
           <div className="pt-3 border-t border-stone-200 space-y-1.5">
             <div className="flex items-center justify-between type-body-sm text-stone-500">
-              <span>Rate ({travelers} {travelers === 1 ? "traveler" : "travelers"} × US${perPersonCalculated.toLocaleString()} / person)</span>
+              <span className="flex items-center gap-1.5">
+                <span>Rate ({travelers} {travelers === 1 ? "traveler" : "travelers"} × US${perPersonCalculated.toLocaleString()})</span>
+                {activeTier && (
+                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-100/90 px-1.5 py-0.5 rounded-xs">
+                    Group rate
+                  </span>
+                )}
+              </span>
               <span className="font-semibold text-stone-900">US${totalPrice.toLocaleString()}</span>
             </div>
 
@@ -353,7 +427,7 @@ export function PackageBookingSidebar({
                   <button
                     type="button"
                     onClick={onResetBooked}
-                    className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 underline cursor-pointer pt-1 block"
+                    className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 underline cursor-pointer pt-1 block"
                   >
                     Start a new booking request
                   </button>
@@ -413,7 +487,7 @@ export function PackageBookingSidebar({
                       <button
                         type="button"
                         onClick={onResetInquired}
-                        className="text-[11px] font-semibold text-stone-900 hover:underline cursor-pointer pt-1 block"
+                        className="text-xs font-semibold text-stone-900 hover:underline cursor-pointer pt-1 block"
                       >
                         Send another question or inquiry
                       </button>
@@ -450,14 +524,14 @@ export function PackageBookingSidebar({
       {/* Mobile Fixed Bottom Action Bar */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200 px-4 py-2.5 shadow-lg flex items-center justify-between gap-3">
         <div className="flex flex-col justify-center min-w-0">
-          <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider truncate">
+          <span className="text-xs text-stone-500 font-bold uppercase tracking-wider truncate">
             {durationDays} Days · Rate
           </span>
           <div className="flex items-baseline gap-1 truncate">
             <span className="text-base sm:text-lg font-bold font-heading text-stone-900">
               ${perPersonCalculated.toLocaleString()}
             </span>
-            <span className="text-[11px] text-stone-500 font-medium truncate">
+            <span className="text-xs text-stone-500 font-medium truncate">
               USD / person
             </span>
           </div>

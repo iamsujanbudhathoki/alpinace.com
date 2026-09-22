@@ -19,7 +19,6 @@ export function PackageTrekMap({ mapImage, title }: PackageTrekMapProps) {
             Route Map
           </h2>
         </div>
-
       </div>
 
       <div

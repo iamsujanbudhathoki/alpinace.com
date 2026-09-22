@@ -134,7 +134,7 @@ export function PackageBookingSidebar({
         ) : (
           <div className="bg-yellow-400/10 border-b border-yellow-400/20 p-4.5 sm:p-5 relative overflow-hidden">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="type-caption text-stone-900 font-bold uppercase tracking-wider">
+              <span className="type-caption text-stone-900 font-bold">
                 Trip Rate
               </span>
               <span className="type-caption text-stone-600 font-medium">
@@ -143,7 +143,7 @@ export function PackageBookingSidebar({
             </div>
 
             <div className="flex items-baseline gap-1.5 mt-1.5">
-              <span className="text-xl sm:text-2xl font-bold font-heading tracking-tight text-stone-900">
+              <span className="text-xl sm:text-2xl font-bold font-heading text-stone-900">
                 ${perPersonCalculated.toLocaleString()}
               </span>
               <span className="type-caption text-stone-600">
@@ -163,16 +163,20 @@ export function PackageBookingSidebar({
                 onClick={() => setIsGroupPricingOpen(!isGroupPricingOpen)}
                 className="w-full flex items-center justify-between px-3.5 py-2.5 text-left font-semibold text-stone-900 text-xs sm:text-sm hover:bg-stone-50 transition-colors cursor-pointer"
               >
-                <span className="font-heading font-bold text-stone-900">
+                <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
                   We offer group price
                 </span>
-                <span className="text-emerald-700 font-bold text-lg leading-none">
-                  {isGroupPricingOpen ? "−" : "+"}
+                <span className="text-stone-500 flex items-center justify-center">
+                  {isGroupPricingOpen ? (
+                    <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  ) : (
+                    <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  )}
                 </span>
               </button>
 
               {isGroupPricingOpen && (
-                <div className="px-2.5 pb-2.5 pt-0.5 space-y-1">
+                <div className="border-t border-stone-200 divide-y divide-stone-100">
                   {sortedTiers.map((tier, idx) => {
                     const isApplicable =
                       travelers >= Number(tier.minTravelers) &&
@@ -180,37 +184,25 @@ export function PackageBookingSidebar({
                     const paxText =
                       Number(tier.minTravelers) === Number(tier.maxTravelers)
                         ? `${tier.minTravelers} pax`
-                        : `${tier.minTravelers} – ${tier.maxTravelers} pax`;
+                        : `${tier.minTravelers} - ${tier.maxTravelers} pax`;
 
                     return (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => onTravelersChange(Number(tier.minTravelers))}
-                        className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded text-xs transition-all cursor-pointer text-left ${
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs transition-colors cursor-pointer text-left ${
                           isApplicable
-                            ? "bg-emerald-50 text-emerald-950 font-medium border-l-2 border-emerald-600 shadow-2xs"
-                            : "text-stone-700 hover:bg-stone-50"
+                            ? "bg-stone-50 text-stone-900 font-semibold"
+                            : "text-stone-700 hover:bg-stone-50/60"
                         }`}
                       >
-                        <div className="flex items-center gap-1.5">
-                          <span className={isApplicable ? "font-semibold text-emerald-950" : "font-medium text-stone-700"}>
-                            {paxText}
-                          </span>
-                          {isApplicable && (
-                            <span className="text-[9px] uppercase font-semibold text-emerald-800 bg-emerald-100/90 px-1 py-0.2 rounded">
-                              Current
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <span className={isApplicable ? "font-semibold text-emerald-900" : "font-medium text-stone-800"}>
-                            US${Number(tier.pricePerPerson).toLocaleString()}
-                          </span>
-                          <span className="text-[10px] text-stone-400 ml-0.5 font-normal">
-                            / person
-                          </span>
-                        </div>
+                        <span className={isApplicable ? "text-stone-900 font-semibold" : "text-stone-700 font-normal"}>
+                          {paxText}
+                        </span>
+                        <span className={isApplicable ? "text-stone-900 font-bold" : "text-stone-900 font-medium"}>
+                          US${Number(tier.pricePerPerson).toLocaleString()}
+                        </span>
                       </button>
                     );
                   })}

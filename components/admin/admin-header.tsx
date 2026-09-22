@@ -192,14 +192,18 @@ export function AdminHeader({
           type="button"
           onClick={() => setIsSearchModalOpen(true)}
           aria-label="Global search command palette (Command K)"
-          className="w-full bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white text-xs rounded-md pl-3 pr-2.5 py-1.5 flex items-center justify-between transition-all cursor-pointer font-medium group"
+          className="w-full bg-slate-50 dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-xs rounded-md pl-3 pr-2.5 py-1.5 flex items-center justify-between transition-all cursor-pointer group shadow-2xs"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <Search className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors shrink-0" />
-            <span className="truncate text-slate-700 dark:text-slate-300 font-medium hidden sm:inline">Search packages, bookings, guides (⌘K)...</span>
-            <span className="truncate text-slate-700 dark:text-slate-300 font-medium sm:hidden">Search (⌘K)...</span>
+            <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors shrink-0" />
+            <span className="truncate text-slate-500 dark:text-slate-400 font-normal hidden sm:inline">
+              Search packages, bookings, inquiries...
+            </span>
+            <span className="truncate text-slate-500 dark:text-slate-400 font-normal sm:hidden">
+              Search...
+            </span>
           </div>
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded-md shrink-0 select-none">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded shadow-2xs shrink-0 select-none">
             ⌘K
           </kbd>
         </button>

@@ -360,9 +360,6 @@ export function PackageBookingSidebar({
                 <span className="type-caption text-stone-900 font-bold block">
                   Total Price
                 </span>
-                <span className="type-body-sm text-stone-400">
-                  Guaranteed rate
-                </span>
               </div>
               <div className="text-right">
                 <span className="type-heading-xl text-stone-900 font-bold">

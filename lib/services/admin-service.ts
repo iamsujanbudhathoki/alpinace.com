@@ -584,6 +584,14 @@ function cleanPackagePayload(data: any) {
   if (rest.isFeatured !== undefined) payload.isFeatured = Boolean(rest.isFeatured);
   if (rest.isPopular !== undefined) payload.isPopular = Boolean(rest.isPopular);
   if (Array.isArray(rest.packageFiles)) payload.packageFiles = rest.packageFiles;
+  if (Array.isArray(rest.groupPricing)) {
+    payload.groupPricing = rest.groupPricing.map((tier: any) => ({
+      ...(tier.id ? { id: String(tier.id) } : {}),
+      minTravelers: Number(tier.minTravelers),
+      maxTravelers: Number(tier.maxTravelers),
+      pricePerPerson: Number(tier.pricePerPerson),
+    }));
+  }
 
   delete payload.totalBookings;
   delete payload.rating;

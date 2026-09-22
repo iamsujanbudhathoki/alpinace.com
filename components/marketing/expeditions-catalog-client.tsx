@@ -11,7 +11,6 @@ import { ExpeditionItem } from "@/lib/expedition-data";
 import { ExpeditionService, PackageFilterService, PackageFilterOptions, CategoryService } from "@/lib/services/admin-service";
 import { PackageGridSkeleton } from "@/components/marketing/skeletons/package-grid-skeleton";
 import { CategoryType, PackageStatus, PackageSortOption } from "@/lib/admin-data";
-import { getLowestGroupPrice } from "@/lib/pricing-util";
 
 interface ExpeditionsCatalogClientProps {
   initialExpeditions: ExpeditionItem[];
@@ -126,8 +125,6 @@ export function ExpeditionsCatalogClient({
           maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
           climbingGrade: p.climbingGrade || p.difficulty || "Grade 4",
           priceUSD: Number(p.priceUSD || 0),
-          groupPricingEnabled: Boolean(p.groupPricingEnabled),
-          groupPricing: Array.isArray(p.groupPricing) ? p.groupPricing : [],
           rating: Number(p.rating || 5),
           reviewsCount: Number(p.reviewsCount || 0),
           image: p.image || "",
@@ -208,10 +205,8 @@ export function ExpeditionsCatalogClient({
 
     // Sort list
     list.sort((a, b) => {
-      const priceA = a.groupPricingEnabled && a.groupPricing && a.groupPricing.length > 0 ? getLowestGroupPrice(a.groupPricing, a.priceUSD || 0) : (a.priceUSD || 0);
-      const priceB = b.groupPricingEnabled && b.groupPricing && b.groupPricing.length > 0 ? getLowestGroupPrice(b.groupPricing, b.priceUSD || 0) : (b.priceUSD || 0);
-      if (sortBy === PackageSortOption.PRICE_ASC) return priceA - priceB;
-      if (sortBy === PackageSortOption.PRICE_DESC) return priceB - priceA;
+      if (sortBy === PackageSortOption.PRICE_ASC) return (a.priceUSD || 0) - (b.priceUSD || 0);
+      if (sortBy === PackageSortOption.PRICE_DESC) return (b.priceUSD || 0) - (a.priceUSD || 0);
       if (sortBy === PackageSortOption.DURATION) return (a.durationDays || 0) - (b.durationDays || 0);
       return (b.rating || 5) - (a.rating || 5);
     });
@@ -529,14 +524,9 @@ export function ExpeditionsCatalogClient({
                         <div className="p-4 pt-0 border-t border-stone-100 mt-2">
                           <div className="flex items-center justify-between pt-2.5">
                             <div>
-                              <span className="text-[11px] text-stone-500 block">
-                                {exp.groupPricingEnabled && exp.groupPricing && exp.groupPricing.length > 0 ? "Price from" : "From"}
-                              </span>
+                              <span className="text-[11px] text-stone-500 block">From</span>
                               <span className="text-base font-bold text-stone-900">
-                                ${(exp.groupPricingEnabled && exp.groupPricing && exp.groupPricing.length > 0
-                                  ? getLowestGroupPrice(exp.groupPricing, exp.priceUSD || 0)
-                                  : (exp.priceUSD || 0)
-                                ).toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
+                                ${exp.priceUSD?.toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
                               </span>
                             </div>
 

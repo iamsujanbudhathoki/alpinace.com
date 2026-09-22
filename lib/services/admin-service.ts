@@ -585,23 +585,10 @@ function cleanPackagePayload(data: any) {
   if (rest.isPopular !== undefined) payload.isPopular = Boolean(rest.isPopular);
   if (Array.isArray(rest.packageFiles)) payload.packageFiles = rest.packageFiles;
   if (rest.groupPricingEnabled !== undefined) {
-    payload.groupPricingEnabled = Boolean(rest.groupPricingEnabled);
+    payload.groupPricingEnabled = rest.groupPricingEnabled;
   }
-  let groupPricingArray = rest.groupPricing;
-  if (typeof groupPricingArray === "string") {
-    try {
-      groupPricingArray = JSON.parse(groupPricingArray);
-    } catch {
-      groupPricingArray = [];
-    }
-  }
-  if (Array.isArray(groupPricingArray)) {
-    payload.groupPricing = groupPricingArray.map((tier: any) => ({
-      ...(tier.id ? { id: String(tier.id) } : {}),
-      minTravelers: Number(tier.minTravelers),
-      maxTravelers: Number(tier.maxTravelers),
-      pricePerPerson: Number(tier.pricePerPerson),
-    }));
+  if (rest.groupPricing !== undefined) {
+    payload.groupPricing = rest.groupPricing;
   }
 
   delete payload.totalBookings;
@@ -641,31 +628,8 @@ export function formatBackendTrek(p: any): TrekItem {
     difficulty: p.difficulty,
     bestSeason: p.bestSeason,
     priceUSD: Number(p.priceUSD),
-    groupPricingEnabled: Boolean(p.groupPricingEnabled),
-    groupPricing: Array.isArray(p.groupPricing)
-      ? p.groupPricing.map((tier: any) => ({
-          ...(tier.id ? { id: String(tier.id) } : {}),
-          minTravelers: Number(tier.minTravelers),
-          maxTravelers: Number(tier.maxTravelers),
-          pricePerPerson: Number(tier.pricePerPerson),
-        }))
-      : typeof p.groupPricing === "string"
-      ? (() => {
-          try {
-            const parsed = JSON.parse(p.groupPricing);
-            return Array.isArray(parsed)
-              ? parsed.map((tier: any) => ({
-                  ...(tier.id ? { id: String(tier.id) } : {}),
-                  minTravelers: Number(tier.minTravelers),
-                  maxTravelers: Number(tier.maxTravelers),
-                  pricePerPerson: Number(tier.pricePerPerson),
-                }))
-              : [];
-          } catch {
-            return [];
-          }
-        })()
-      : [],
+    groupPricingEnabled: p.groupPricingEnabled,
+    groupPricing: p.groupPricing,
     startEndLocation: p.startEndLocation,
     accommodation: p.accommodation,
     meals: p.meals,
@@ -714,31 +678,8 @@ export function formatBackendPackage(p: any): PackageItem {
     maxAltitudeMeters: Number(p.maxAltitudeMeters || p.peakHeightM || 0),
     difficulty: p.difficulty,
     priceUSD: Number(p.priceUSD),
-    groupPricingEnabled: Boolean(p.groupPricingEnabled),
-    groupPricing: Array.isArray(p.groupPricing)
-      ? p.groupPricing.map((tier: any) => ({
-          ...(tier.id ? { id: String(tier.id) } : {}),
-          minTravelers: Number(tier.minTravelers),
-          maxTravelers: Number(tier.maxTravelers),
-          pricePerPerson: Number(tier.pricePerPerson),
-        }))
-      : typeof p.groupPricing === "string"
-      ? (() => {
-          try {
-            const parsed = JSON.parse(p.groupPricing);
-            return Array.isArray(parsed)
-              ? parsed.map((tier: any) => ({
-                  ...(tier.id ? { id: String(tier.id) } : {}),
-                  minTravelers: Number(tier.minTravelers),
-                  maxTravelers: Number(tier.maxTravelers),
-                  pricePerPerson: Number(tier.pricePerPerson),
-                }))
-              : [];
-          } catch {
-            return [];
-          }
-        })()
-      : [],
+    groupPricingEnabled: p.groupPricingEnabled,
+    groupPricing: p.groupPricing,
     status: p.status,
     isFeatured: Boolean(p.isFeatured),
     isPopular: Boolean(p.isPopular),

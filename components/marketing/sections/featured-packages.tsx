@@ -2,7 +2,6 @@
 
 import { CategoryType } from "@/lib/admin-data";
 import { TravelPackage } from "@/lib/home-data";
-import { getLowestGroupPrice } from "@/lib/pricing-util";
 import { apiClient } from "@/lib/services/api-client";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
@@ -144,8 +143,6 @@ export function FeaturedPackages({
           maxAltitudeMeters: Number(p.maxAltitudeMeters || 0),
           difficulty: p.difficulty,
           priceUSD: Number(p.priceUSD || 0),
-          groupPricingEnabled: Boolean(p.groupPricingEnabled),
-          groupPricing: Array.isArray(p.groupPricing) ? p.groupPricing : [],
           rating: Number(p.rating || 5),
           reviewsCount: Number(p.reviewsCount || 0),
           image: p.image,
@@ -388,14 +385,9 @@ export function FeaturedPackages({
                       </div>
                       <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
                         <div>
-                          <span className="text-[11px] text-stone-400 block font-medium">
-                            {pkg.groupPricingEnabled && pkg.groupPricing && pkg.groupPricing.length > 0 ? "Price from" : "From"}
-                          </span>
+                          <span className="text-[11px] text-stone-400 block font-medium">From</span>
                           <span className="text-base font-bold text-stone-900">
-                            ${(pkg.groupPricingEnabled && pkg.groupPricing && pkg.groupPricing.length > 0
-                              ? getLowestGroupPrice(pkg.groupPricing, pkg.priceUSD || 0)
-                              : (pkg.priceUSD || 0)
-                            ).toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
+                            ${pkg.priceUSD.toLocaleString()} <span className="text-xs font-normal text-stone-500">USD</span>
                           </span>
                         </div>
                         <span className="text-xs font-semibold text-stone-900 group-hover:text-yellow-600 group-hover:underline inline-flex items-center gap-1">
@@ -474,14 +466,9 @@ export function FeaturedPackages({
                           {/* Pricing & CTA */}
                           <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between">
                             <div>
-                              <span className="text-[11px] text-stone-400 block font-medium">
-                                {pkg.groupPricingEnabled && pkg.groupPricing && pkg.groupPricing.length > 0 ? "Price from" : "From"}
-                              </span>
+                              <span className="text-[11px] text-stone-400 block font-medium">From</span>
                               <span className="text-base sm:text-lg font-bold text-stone-900">
-                                ${(pkg.groupPricingEnabled && pkg.groupPricing && pkg.groupPricing.length > 0
-                                  ? getLowestGroupPrice(pkg.groupPricing, pkg.priceUSD || 0)
-                                  : (pkg.priceUSD || 0)
-                                ).toLocaleString()}{" "}
+                                ${pkg.priceUSD ? pkg.priceUSD.toLocaleString() : "0"}{" "}
                                 <span className="text-xs font-normal text-stone-500">USD</span>
                               </span>
                             </div>

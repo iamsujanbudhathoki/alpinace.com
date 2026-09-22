@@ -66,8 +66,8 @@ export function PackageBookingSidebar({
   onResetInquired,
   onInquirySuccess,
   basePriceUSD,
-  groupPricingEnabled = false,
-  groupPricing = [],
+  groupPricingEnabled,
+  groupPricing,
   departureDates = [],
   onCheckAvailability,
 }: PackageBookingSidebarProps) {
@@ -77,20 +77,21 @@ export function PackageBookingSidebar({
 
   const perPersonCalculated = Math.round(totalPrice / Math.max(1, travelers));
 
+  const hasGroupPricing = Boolean(groupPricingEnabled && groupPricing && groupPricing.length > 0);
+
   const sortedTiers = useMemo(() => {
-    if (!groupPricing || !Array.isArray(groupPricing)) return [];
+    if (!hasGroupPricing || !groupPricing) return null;
     return [...groupPricing].sort(
       (a, b) => Number(a.minTravelers) - Number(b.minTravelers)
     );
-  }, [groupPricing]);
+  }, [hasGroupPricing, groupPricing]);
 
-  const hasGroupPricing = Boolean(groupPricingEnabled && sortedTiers.length > 0);
   const lowestPrice = useMemo(() => {
-    if (!hasGroupPricing) return perPersonCalculated;
-    return getLowestGroupPrice(sortedTiers, basePriceUSD || perPersonCalculated);
+    if (!hasGroupPricing || !sortedTiers) return perPersonCalculated;
+    return getLowestGroupPrice(sortedTiers, basePriceUSD ?? perPersonCalculated);
   }, [hasGroupPricing, sortedTiers, basePriceUSD, perPersonCalculated]);
 
-  const standardBasePrice = basePriceUSD || perPersonCalculated;
+  const standardBasePrice = basePriceUSD ?? perPersonCalculated;
   const showDiscount = hasGroupPricing && standardBasePrice > lowestPrice;
 
   const handleInquirySuccess = () => {
@@ -156,7 +157,7 @@ export function PackageBookingSidebar({
         {/* Booking Console Body */}
         <div className="p-4.5 sm:p-5 space-y-4">
           {/* Collapsible Group Pricing Section */}
-          {hasGroupPricing && (
+          {hasGroupPricing && sortedTiers && (
             <div className="border border-stone-200 rounded-sm overflow-hidden bg-white shadow-2xs">
               <button
                 type="button"
@@ -191,11 +192,10 @@ export function PackageBookingSidebar({
                         key={idx}
                         type="button"
                         onClick={() => onTravelersChange(Number(tier.minTravelers))}
-                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs transition-colors cursor-pointer text-left ${
-                          isApplicable
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs transition-colors cursor-pointer text-left ${isApplicable
                             ? "bg-stone-50 text-stone-900 font-semibold"
                             : "text-stone-700 hover:bg-stone-50/60"
-                        }`}
+                          }`}
                       >
                         <span className={isApplicable ? "text-stone-900 font-semibold" : "text-stone-700 font-normal"}>
                           {paxText}
@@ -256,7 +256,7 @@ export function PackageBookingSidebar({
 
             {hasGroupPricing &&
               travelers >=
-                getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20) && (
+              getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20) && (
                 <p className="text-[11px] text-stone-500 font-medium pt-0.5">
                   Planning for a group larger than{" "}
                   {getMaxGroupTravelers({ groupPricingEnabled, groupPricing }, 20)}?{" "}
@@ -282,11 +282,10 @@ export function PackageBookingSidebar({
                 {addons.map((addon) => (
                   <label
                     key={addon.id}
-                    className={`p-2.5 rounded-sm border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${
-                      addon.checked
+                    className={`p-2.5 rounded-sm border flex items-center justify-between gap-2.5 cursor-pointer transition-all ${addon.checked
                         ? "bg-stone-50 border-stone-400"
                         : "bg-white border-stone-200 hover:border-stone-300"
-                    }`}
+                      }`}
                   >
                     <div className="min-w-0 pr-2">
                       <span className="type-heading-md text-stone-900 block">
@@ -369,34 +368,6 @@ export function PackageBookingSidebar({
                 >
                   <span>BOOK NOW</span>
                 </button>
-
-                <button
-                  type="button"
-                  onClick={onBookClick}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
-                >
-                  <span>ADD TO CART</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onCheckAvailability) {
-                      onCheckAvailability();
-                    } else {
-                      const depSection = document.getElementById("departures");
-                      if (depSection) {
-                        depSection.scrollIntoView({ behavior: "smooth" });
-                      } else {
-                        onBookClick();
-                      }
-                    }
-                  }}
-                  className="w-full bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
-                >
-                  <span>CHECK AVAILABILITY</span>
-                </button>
-
                 {isInquired ? (
                   <div className="p-3 rounded-xs bg-yellow-50 border border-yellow-200 text-xs text-stone-800 font-medium text-center">
                     Inquiry submitted! We’ll contact you shortly.

@@ -192,14 +192,6 @@ export function PackageBookingSidebar({
                   <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
                     We offer group price
                   </span>
-                  {activeTier && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-xs shrink-0">
-                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                      {activeTier.minTravelers === activeTier.maxTravelers
-                        ? `${activeTier.minTravelers} pax`
-                        : `${activeTier.minTravelers}–${activeTier.maxTravelers} pax`}
-                    </span>
-                  )}
                 </div>
                 <span className="text-stone-500 flex items-center justify-center">
                   {isGroupPricingOpen ? (
@@ -374,7 +366,6 @@ export function PackageBookingSidebar({
             <div className="flex items-center justify-between type-body-sm text-stone-500">
               <span className="flex items-center gap-1.5">
                 <span>Rate ({travelers} {travelers === 1 ? "traveler" : "travelers"} × US${perPersonCalculated.toLocaleString()})</span>
-               
               </span>
               <span className="font-semibold text-stone-900">US${totalPrice.toLocaleString()}</span>
             </div>

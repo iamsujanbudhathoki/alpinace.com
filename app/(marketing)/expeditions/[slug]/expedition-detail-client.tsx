@@ -23,7 +23,7 @@ import {
   FaqStatus,
   TripDepartureDate,
 } from "@/lib/admin-data";
-import { calculateApplicablePrice } from "@/lib/pricing-util";
+import { calculateApplicablePrice, getLowestGroupPrice } from "@/lib/pricing-util";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -346,7 +346,16 @@ export function ExpeditionDetailClient({
         image={expedition.image}
         backHref="/expeditions"
         backLabel="Back to Expeditions"
-        priceUSD={expedition.priceUSD}
+        priceUSD={
+          expedition.groupPricingEnabled && expedition.groupPricing && expedition.groupPricing.length > 0
+            ? getLowestGroupPrice(expedition.groupPricing, expedition.priceUSD)
+            : expedition.priceUSD
+        }
+        priceLabel={
+          expedition.groupPricingEnabled && expedition.groupPricing && expedition.groupPricing.length > 0
+            ? "Price from"
+            : "Starting Price"
+        }
         bookButtonLabel="Book Expedition"
         onBookClick={() => setIsBookingModalOpen(true)}
         isBooked={isBooked}

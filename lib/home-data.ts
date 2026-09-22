@@ -1,4 +1,5 @@
 import { TripDifficulty, PackageStatus, CategoryType } from "./admin-data";
+import { GroupPricingTier } from "./pricing-util";
 
 export interface TravelPackage {
   id: string;
@@ -11,6 +12,8 @@ export interface TravelPackage {
   maxAltitudeMeters: number;
   difficulty: TripDifficulty;
   priceUSD: number;
+  groupPricingEnabled?: boolean;
+  groupPricing?: GroupPricingTier[];
   rating: number;
   reviewsCount: number;
   image: string;

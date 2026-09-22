@@ -161,12 +161,12 @@ export function PackageDetailView({
       )}
 
       {/* Group Pricing Section */}
-      {packageData.groupPricingEnabled && (
+      {(Boolean(packageData.groupPricingEnabled) || (Array.isArray(packageData.groupPricing) && packageData.groupPricing.length > 0)) && (
         <div className="pt-1">
           <TripGroupPricingManager
-            enabled={true}
+            enabled={Boolean(packageData.groupPricingEnabled ?? (packageData.groupPricing && packageData.groupPricing.length > 0))}
             onEnabledChange={() => {}}
-            tiers={packageData.groupPricing || []}
+            tiers={Array.isArray(packageData.groupPricing) ? packageData.groupPricing : []}
             onChange={() => {}}
             readOnly
           />

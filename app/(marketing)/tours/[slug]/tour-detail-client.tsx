@@ -12,7 +12,7 @@ import {
 import { TourItem, initialToursData } from "@/lib/tour-data";
 import { FaqService, SettingService, TourService } from "@/lib/services/admin-service";
 import { BookingPackageType, InquiryType, FaqItem, FaqStatus, TripDepartureDate } from "@/lib/admin-data";
-import { calculateApplicablePrice } from "@/lib/pricing-util";
+import { calculateApplicablePrice, getLowestGroupPrice } from "@/lib/pricing-util";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -315,7 +315,16 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
         image={tour.image}
         backHref="/tours"
         backLabel="Back to Tours"
-        priceUSD={tour.priceUSD}
+        priceUSD={
+          tour.groupPricingEnabled && tour.groupPricing && tour.groupPricing.length > 0
+            ? getLowestGroupPrice(tour.groupPricing, tour.priceUSD)
+            : tour.priceUSD
+        }
+        priceLabel={
+          tour.groupPricingEnabled && tour.groupPricing && tour.groupPricing.length > 0
+            ? "Price from"
+            : "Starting Price"
+        }
         bookButtonLabel="Book Tour"
         onBookClick={() => setIsBookingModalOpen(true)}
         isBooked={isBooked}

@@ -17,7 +17,7 @@ import {
   SettingService,
 } from "@/lib/services/admin-service";
 import { FaqItem, FaqStatus, BookingPackageType, InquiryType, TripDepartureDate, PackageStatus } from "@/lib/admin-data";
-import { calculateApplicablePrice } from "@/lib/pricing-util";
+import { calculateApplicablePrice, getLowestGroupPrice } from "@/lib/pricing-util";
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
@@ -335,7 +335,16 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         image={trek.image}
         backHref="/trekking"
         backLabel="Back to Treks"
-        priceUSD={trek.priceUSD}
+        priceUSD={
+          trek.groupPricingEnabled && trek.groupPricing && trek.groupPricing.length > 0
+            ? getLowestGroupPrice(trek.groupPricing, trek.priceUSD)
+            : trek.priceUSD
+        }
+        priceLabel={
+          trek.groupPricingEnabled && trek.groupPricing && trek.groupPricing.length > 0
+            ? "Price from"
+            : "Starting Price"
+        }
         bookButtonLabel="Book Trek"
         onBookClick={() => setIsBookingModalOpen(true)}
         isBooked={isBooked}

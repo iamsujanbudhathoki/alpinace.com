@@ -17,6 +17,7 @@ export enum PackageSortOption {
 }
 
 import { COUNTRY_LIST } from "./country-list";
+import { GroupPricingTier } from "./pricing-util";
 
 export const FILTER_ALL = "All";
 
@@ -251,6 +252,8 @@ export interface PackageItem {
   addonsText?: string;
   usefulInfoText?: string;
   departureDates?: TripDepartureDate[];
+  groupPricingEnabled?: boolean;
+  groupPricing?: GroupPricingTier[];
   galleryImages?: string[];
   galleryMediaIds?: string[];
   mapImage?: string;

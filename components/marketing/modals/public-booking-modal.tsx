@@ -557,7 +557,7 @@ export function PublicBookingModal({
                   <div className="flex items-center gap-1.5">
                     <span>Rate ({travelers} {travelers === 1 ? "traveler" : "travelers"} × US${unitCostPerPerson.toLocaleString()} / person)</span>
                     {pricingResult.applicableTier && (
-                      <span className="text-[10px] uppercase font-bold text-emerald-800 bg-emerald-100/90 px-1.5 py-0.2 rounded">
+                      <span className="text-[10px] uppercase font-semibold text-emerald-800 bg-emerald-100/90 px-1.5 py-0.2 rounded">
                         Tier Applied
                       </span>
                     )}

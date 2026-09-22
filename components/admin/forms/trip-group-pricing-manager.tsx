@@ -12,7 +12,7 @@ import {
   Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AdminInputField } from "@/components/admin/forms/admin-form-fields";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { GroupPricingTier, validateGroupPricingTiers } from "@/lib/pricing-util";
 
 export interface TripGroupPricingManagerProps {
@@ -31,6 +31,11 @@ export function TripGroupPricingManager({
   readOnly = false,
 }: TripGroupPricingManagerProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [tierToDelete, setTierToDelete] = useState<{
+    index: number;
+    tier: GroupPricingTier;
+  } | null>(null);
+
   const [formData, setFormData] = useState<GroupPricingTier>({
     minTravelers: 1,
     maxTravelers: 1,
@@ -141,10 +146,10 @@ export function TripGroupPricingManager({
       {/* Header & Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">
+          <h3 className="text-sm font-semibold text-slate-900">
             Group Pricing
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-600 mt-0.5">
             Configure tiered per-person rates based on group size.
           </p>
         </div>
@@ -157,7 +162,7 @@ export function TripGroupPricingManager({
               onChange={(e) => onEnabledChange(e.target.checked)}
               className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer"
             />
-            <span className="text-xs font-semibold text-slate-800">
+            <span className="text-xs font-semibold text-slate-900">
               Enable group pricing
             </span>
           </label>
@@ -168,24 +173,30 @@ export function TripGroupPricingManager({
         <div className="space-y-3">
           {/* Validation Alert */}
           {!validation.valid && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
+            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold">Configuration Error</p>
-                <p className="mt-0.5">{validation.error}</p>
+                <p className="font-semibold text-rose-950">Configuration Error</p>
+                <p className="mt-0.5 text-rose-800 font-normal">{validation.error}</p>
               </div>
             </div>
           )}
 
           {/* Valid Summary */}
           {validation.valid && tiers.length > 0 && (
-            <div className="px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between">
+            <div className="px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span className="font-medium">
-                  Valid continuous coverage: <strong>{tiers[0].minTravelers}</strong> to{" "}
-                  <strong>{tiers[tiers.length - 1].maxTravelers}</strong> travelers ({tiers.length}{" "}
-                  {tiers.length === 1 ? "tier" : "tiers"}).
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                <span className="text-xs text-emerald-900 font-medium">
+                  Continuous coverage:{" "}
+                  <span className="font-semibold text-emerald-950">
+                    {tiers[0].minTravelers}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-semibold text-emerald-950">
+                    {tiers[tiers.length - 1].maxTravelers}
+                  </span>{" "}
+                  travelers ({tiers.length} {tiers.length === 1 ? "tier" : "tiers"}).
                 </span>
               </div>
             </div>
@@ -193,8 +204,8 @@ export function TripGroupPricingManager({
 
           {/* Pricing Tiers Table */}
           <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-            <div className="px-4 py-3 bg-slate-50/70 border-b border-slate-200 flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                 Pricing Tiers
               </span>
               {!readOnly && editingIndex === null && (
@@ -202,7 +213,7 @@ export function TripGroupPricingManager({
                   type="button"
                   size="sm"
                   onClick={handleStartAdd}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white gap-1.5 text-xs h-7.5 px-2.5 shadow-xs"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white gap-1.5 text-xs h-7.5 px-2.5 shadow-xs font-medium cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add pricing tier</span>
@@ -212,7 +223,7 @@ export function TripGroupPricingManager({
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-100/60 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider">
+                <thead className="bg-slate-100/75 border-b border-slate-200 text-slate-700 font-semibold text-xs uppercase tracking-wider">
                   <tr>
                     <th className="py-2.5 px-4">Traveler Range</th>
                     <th className="py-2.5 px-4">Price Per Person</th>
@@ -226,10 +237,12 @@ export function TripGroupPricingManager({
                     <tr>
                       <td
                         colSpan={readOnly ? 2 : 3}
-                        className="py-8 text-center text-slate-500 font-medium"
+                        className="py-8 text-center"
                       >
-                        <p className="text-sm font-semibold text-slate-700">No pricing tiers configured yet</p>
-                        <p className="text-xs text-slate-400 mt-1">
+                        <p className="text-xs font-semibold text-slate-800">
+                          No pricing tiers configured yet
+                        </p>
+                        <p className="text-xs text-slate-600 mt-1 font-normal">
                           Click &quot;Add pricing tier&quot; to set up tiered rates for your groups.
                         </p>
                       </td>
@@ -244,32 +257,32 @@ export function TripGroupPricingManager({
                       return (
                         <tr
                           key={tier.id || idx}
-                          className={`hover:bg-slate-50/60 transition-colors ${
-                            editingIndex === idx ? "bg-amber-50/40" : ""
+                          className={`hover:bg-slate-50 transition-colors ${
+                            editingIndex === idx ? "bg-amber-50/50" : ""
                           }`}
                         >
-                          <td className="py-3 px-4 font-semibold text-slate-900">
-                            <span className="inline-block bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-xs border border-slate-200">
+                          <td className="py-2.5 px-4">
+                            <span className="inline-flex items-center text-xs font-semibold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-300">
                               {rangeLabel}
                             </span>
                           </td>
-                          <td className="py-3 px-4">
-                            <span className="font-bold text-emerald-700 text-sm">
+                          <td className="py-2.5 px-4">
+                            <span className="font-semibold text-emerald-700 text-xs sm:text-sm">
                               US${Number(tier.pricePerPerson).toLocaleString()}
                             </span>
-                            <span className="text-slate-500 text-[11px] ml-1">
+                            <span className="text-slate-600 text-xs ml-1 font-normal">
                               / person
                             </span>
                           </td>
                           {!readOnly && (
-                            <td className="py-3 px-4 text-right">
+                            <td className="py-2.5 px-4 text-right">
                               <div className="flex items-center justify-end gap-1">
                                 <button
                                   type="button"
                                   disabled={idx === 0}
                                   onClick={() => handleMoveTier(idx, "up")}
                                   title="Move up"
-                                  className="p-1 rounded text-slate-400 hover:text-slate-700 disabled:opacity-20 hover:bg-slate-100 cursor-pointer"
+                                  className="p-1.5 rounded text-slate-600 hover:text-slate-900 disabled:opacity-25 hover:bg-slate-100 cursor-pointer transition-colors"
                                 >
                                   <ArrowUp className="w-3.5 h-3.5" />
                                 </button>
@@ -278,7 +291,7 @@ export function TripGroupPricingManager({
                                   disabled={idx === tiers.length - 1}
                                   onClick={() => handleMoveTier(idx, "down")}
                                   title="Move down"
-                                  className="p-1 rounded text-slate-400 hover:text-slate-700 disabled:opacity-20 hover:bg-slate-100 cursor-pointer"
+                                  className="p-1.5 rounded text-slate-600 hover:text-slate-900 disabled:opacity-25 hover:bg-slate-100 cursor-pointer transition-colors"
                                 >
                                   <ArrowDown className="w-3.5 h-3.5" />
                                 </button>
@@ -286,15 +299,15 @@ export function TripGroupPricingManager({
                                   type="button"
                                   onClick={() => handleStartEdit(idx)}
                                   title="Edit tier"
-                                  className="p-1 rounded text-slate-500 hover:text-slate-900 hover:bg-slate-100 cursor-pointer ml-1"
+                                  className="p-1.5 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer ml-1 transition-colors"
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => handleDeleteTier(idx)}
+                                  onClick={() => setTierToDelete({ index: idx, tier })}
                                   title="Delete tier"
-                                  className="p-1 rounded text-rose-500 hover:text-rose-700 hover:bg-rose-50 cursor-pointer"
+                                  className="p-1.5 rounded text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer transition-colors"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -311,12 +324,12 @@ export function TripGroupPricingManager({
 
             {/* Bottom Actions when empty and not editing */}
             {!readOnly && tiers.length === 0 && editingIndex === null && (
-              <div className="p-3 bg-slate-50/60 border-t border-slate-200 flex justify-center">
+              <div className="p-3 bg-slate-50 border-t border-slate-200 flex justify-center">
                 <Button
                   type="button"
                   size="sm"
                   onClick={handleStartAdd}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white gap-1.5 text-xs h-8 px-4"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white gap-1.5 text-xs h-8 px-4 font-medium cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add pricing tier</span>
@@ -329,66 +342,81 @@ export function TripGroupPricingManager({
           {editingIndex !== null && !readOnly && (
             <div className="p-4 bg-slate-50 border border-slate-300 rounded-xl space-y-3.5 shadow-xs">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                <h4 className="text-xs font-bold text-slate-900">
+                <h4 className="text-xs font-semibold text-slate-900">
                   {editingIndex === -1 ? "Add Pricing Tier" : "Edit Pricing Tier"}
                 </h4>
-                <span className="text-[11px] text-slate-500">
+                <span className="text-xs text-slate-600 font-medium">
                   Continuous coverage required
                 </span>
               </div>
 
               {editError && (
-                <div className="p-2.5 rounded-md bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
+                <div className="p-2.5 rounded-md bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 font-normal">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>{editError}</span>
                 </div>
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <AdminInputField
-                  label="Minimum Travelers"
-                  type="number"
-                  min={1}
-                  required
-                  value={formData.minTravelers}
-                  onChange={(e) =>
-                    setFormData({ ...formData, minTravelers: Number(e.target.value) })
-                  }
-                />
-                <AdminInputField
-                  label="Maximum Travelers"
-                  type="number"
-                  min={formData.minTravelers}
-                  required
-                  value={formData.maxTravelers}
-                  onChange={(e) =>
-                    setFormData({ ...formData, maxTravelers: Number(e.target.value) })
-                  }
-                />
-                <AdminInputField
-                  label="Price Per Person (USD)"
-                  type="number"
-                  min={1}
-                  required
-                  value={formData.pricePerPerson}
-                  onChange={(e) =>
-                    setFormData({ ...formData, pricePerPerson: Number(e.target.value) })
-                  }
-                />
+                <div>
+                  <label className="block text-xs font-semibold text-slate-800 mb-1">
+                    Minimum Travelers <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    required
+                    value={formData.minTravelers}
+                    onChange={(e) =>
+                      setFormData({ ...formData, minTravelers: Number(e.target.value) })
+                    }
+                    className="w-full bg-white border border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 rounded-md px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-800 mb-1">
+                    Maximum Travelers <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min={formData.minTravelers}
+                    required
+                    value={formData.maxTravelers}
+                    onChange={(e) =>
+                      setFormData({ ...formData, maxTravelers: Number(e.target.value) })
+                    }
+                    className="w-full bg-white border border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 rounded-md px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-800 mb-1">
+                    Price Per Person (USD) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    required
+                    value={formData.pricePerPerson}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pricePerPerson: Number(e.target.value) })
+                    }
+                    className="w-full bg-white border border-slate-300 focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 rounded-md px-3 py-2 text-slate-900 font-medium text-xs focus:outline-none transition-colors"
+                  />
+                </div>
               </div>
 
               {/* Helpful preview sentence */}
-              <div className="text-[11px] text-slate-500 bg-white p-2.5 rounded border border-slate-200">
+              <div className="text-xs text-slate-700 bg-white p-2.5 rounded-md border border-slate-200">
                 Summary:{" "}
-                <strong className="text-slate-800">
+                <span className="font-semibold text-slate-900">
                   {formData.minTravelers === formData.maxTravelers
                     ? `${formData.minTravelers} traveler`
                     : `${formData.minTravelers} – ${formData.maxTravelers} travelers`}
-                </strong>{" "}
+                </span>{" "}
                 will be charged{" "}
-                <strong className="text-emerald-700">
+                <span className="font-semibold text-emerald-800">
                   US${Number(formData.pricePerPerson || 0).toLocaleString()}
-                </strong>{" "}
+                </span>{" "}
                 per person.
               </div>
 
@@ -401,7 +429,7 @@ export function TripGroupPricingManager({
                     setEditingIndex(null);
                     setEditError(null);
                   }}
-                  className="h-8 text-xs px-3"
+                  className="h-8 text-xs px-3 font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 border-slate-300"
                 >
                   Cancel
                 </Button>
@@ -409,7 +437,7 @@ export function TripGroupPricingManager({
                   type="button"
                   size="sm"
                   onClick={handleSaveTier}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white h-8 text-xs px-4"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white h-8 text-xs px-4 font-medium"
                 >
                   {editingIndex === -1 ? "Save Tier" : "Update Tier"}
                 </Button>
@@ -418,11 +446,36 @@ export function TripGroupPricingManager({
           )}
         </div>
       ) : (
-        <div className="p-4 rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-500 bg-slate-50/50">
-          <Info className="w-4 h-4 mx-auto mb-1 text-slate-400" />
+        <div className="p-4 rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-700 bg-slate-50">
+          <Info className="w-4 h-4 mx-auto mb-1.5 text-slate-500" />
           Group pricing is currently disabled. The package will use the standard base price per person for all group sizes.
         </div>
       )}
+
+      {/* Confirmation Dialog on Tier Deletion */}
+      <AdminConfirmModal
+        isOpen={tierToDelete !== null}
+        onClose={() => setTierToDelete(null)}
+        onConfirm={() => {
+          if (tierToDelete !== null) {
+            handleDeleteTier(tierToDelete.index);
+            setTierToDelete(null);
+          }
+        }}
+        title="Delete Pricing Tier"
+        description={
+          tierToDelete
+            ? `Are you sure you want to delete the pricing tier for ${
+                Number(tierToDelete.tier.minTravelers) === Number(tierToDelete.tier.maxTravelers)
+                  ? `${tierToDelete.tier.minTravelers} traveler`
+                  : `${tierToDelete.tier.minTravelers} – ${tierToDelete.tier.maxTravelers} travelers`
+              } (US$${Number(tierToDelete.tier.pricePerPerson).toLocaleString()} / person)?`
+            : "Are you sure you want to delete this pricing tier?"
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

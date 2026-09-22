@@ -189,22 +189,22 @@ export function PackageBookingSidebar({
                         onClick={() => onTravelersChange(Number(tier.minTravelers))}
                         className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded text-xs transition-all cursor-pointer text-left ${
                           isApplicable
-                            ? "bg-emerald-50 text-emerald-950 font-bold border-l-2 border-emerald-600 shadow-2xs"
+                            ? "bg-emerald-50 text-emerald-950 font-medium border-l-2 border-emerald-600 shadow-2xs"
                             : "text-stone-700 hover:bg-stone-50"
                         }`}
                       >
                         <div className="flex items-center gap-1.5">
-                          <span className={isApplicable ? "font-bold text-emerald-950" : "font-medium text-stone-700"}>
+                          <span className={isApplicable ? "font-semibold text-emerald-950" : "font-medium text-stone-700"}>
                             {paxText}
                           </span>
                           {isApplicable && (
-                            <span className="text-[9px] uppercase font-bold text-emerald-800 bg-emerald-100/90 px-1 py-0.2 rounded">
+                            <span className="text-[9px] uppercase font-semibold text-emerald-800 bg-emerald-100/90 px-1 py-0.2 rounded">
                               Current
                             </span>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className={isApplicable ? "font-bold font-heading text-emerald-900" : "font-semibold text-stone-800"}>
+                          <span className={isApplicable ? "font-semibold text-emerald-900" : "font-medium text-stone-800"}>
                             US${Number(tier.pricePerPerson).toLocaleString()}
                           </span>
                           <span className="text-[10px] text-stone-400 ml-0.5 font-normal">

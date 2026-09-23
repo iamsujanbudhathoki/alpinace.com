@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, Trash2, Eye, Mail, MessageSquare } from "lucide-react";
+import { Plus, Trash2, Mail, MessageSquare, Tag, Send } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
 import { InquiryFormValues } from "@/lib/admin-schemas";
@@ -14,7 +14,8 @@ import { AdminTablePagination } from "@/components/admin/ui/admin-table";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import {
   InquiryFormModal,
-  ReplyInquiryModal,
+  UpdateInquiryStatusModal,
+  ReplyInquiryEmailModal,
   DeleteInquiryModal,
 } from "@/components/admin/modals/inquiry-modal";
 import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
@@ -37,7 +38,8 @@ export default function AdminInquiriesPage() {
 
   // Modal States
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [activeInquiry, setActiveInquiry] = useState<Inquiry | null>(null);
+  const [statusInquiry, setStatusInquiry] = useState<Inquiry | null>(null);
+  const [replyInquiry, setReplyInquiry] = useState<Inquiry | null>(null);
   const [deletingInquiry, setDeletingInquiry] = useState<Inquiry | null>(null);
 
   // Debounce search query
@@ -91,8 +93,7 @@ export default function AdminInquiriesPage() {
     if (targetId && inquiries.length > 0) {
       const match = inquiries.find((i) => i.id === targetId);
       if (match) {
-        setActiveInquiry(match);
-        setIsFormOpen(true);
+        setStatusInquiry(match);
         if (typeof window !== "undefined") {
           window.history.replaceState(null, "", window.location.pathname);
         }
@@ -107,13 +108,16 @@ export default function AdminInquiriesPage() {
         setInquiries((prev) =>
           prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq))
         );
-        if (activeInquiry && activeInquiry.id === id) {
-          setActiveInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+        if (statusInquiry && statusInquiry.id === id) {
+          setStatusInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
         }
-        toast.success(res.message);
+        if (replyInquiry && replyInquiry.id === id) {
+          setReplyInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+        }
+        toast.success(res.message || "Inquiry status updated successfully");
         return true;
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to update inquiry status");
         return false;
       }
     } catch (err: any) {
@@ -122,32 +126,18 @@ export default function AdminInquiriesPage() {
     }
   };
 
-  const handleSendQuote = async (id: string, message: string, status: InquiryStatus): Promise<boolean> => {
+  const handleSendReply = async (id: string, message: string): Promise<boolean> => {
     try {
-      if (status) {
-        const statusRes = await InquiryService.update(id, { status });
-        if (!statusRes.success) {
-          toast.error(statusRes.message || "Failed to update inquiry status");
-          return false;
-        }
-      }
-
       const res = await InquiryService.sendQuote(id, { message });
       if (res.success) {
-        setInquiries((prev) =>
-          prev.map((inq) => (inq.id === id ? { ...inq, status } : inq))
-        );
-        if (activeInquiry && activeInquiry.id === id) {
-          setActiveInquiry((prev) => (prev ? { ...prev, status } : null));
-        }
-        toast.success(res.message || "Custom quote email dispatched successfully!");
+        toast.success(res.message || "Email reply dispatched successfully!");
         return true;
       } else {
-        toast.error(res.message || "Failed to process quote dispatch.");
+        toast.error(res.message || "Failed to send email reply.");
         return false;
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to process quote dispatch.");
+      toast.error(err.message || "Failed to send email reply.");
       return false;
     }
   };
@@ -198,15 +188,11 @@ export default function AdminInquiriesPage() {
         toast.success(res.message || "Inquiry record deleted successfully");
         return true;
       } else {
-        const msg = res.message || "Failed to delete inquiry";
-        setDeleteError(msg);
-        toast.error(msg);
+        setDeleteError(res.message || "Failed to delete inquiry");
         return false;
       }
     } catch (err: any) {
-      const msg = err.message || "Failed to delete inquiry";
-      setDeleteError(msg);
-      toast.error(msg);
+      setDeleteError(err.message || "Failed to delete inquiry");
       return false;
     } finally {
       setIsDeleting(false);
@@ -217,12 +203,15 @@ export default function AdminInquiriesPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <AdminPageHeader
-        title="Inquiries & Lead Management"
-        description="Review inbound travel leads, dispatch custom quotes, and track customer communication."
+        title="Customer Inquiries"
+        description="Monitor custom trek requests, quotes, lead qualifications, and general client questions."
       >
-        <Button onClick={() => setIsFormOpen(true)}>
-          <Plus className="w-4 h-4 mr-1.5" />
-          Log Manual Inquiry
+        <Button
+          onClick={() => setIsFormOpen(true)}
+          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Log New Inquiry</span>
         </Button>
       </AdminPageHeader>
 
@@ -324,27 +313,38 @@ export default function AdminInquiriesPage() {
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                      <Mail className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-1.5 text-xs text-slate-600 min-w-0">
+                      <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span className="truncate max-w-28 font-medium">{inq.email}</span>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setActiveInquiry(inq)}
-                        className="text-xs font-semibold text-slate-800 border-slate-200 hover:bg-slate-100 cursor-pointer"
+                        onClick={() => setStatusInquiry(inq)}
+                        className="text-xs font-semibold text-slate-800 border-slate-200 hover:bg-slate-100 cursor-pointer h-8 px-2.5"
+                        title="Update Lead Status"
                       >
-                        <Eye className="w-3.5 h-3.5 mr-1 text-slate-700" />
-                        View &amp; Reply
+                        <Tag className="w-3.5 h-3.5 mr-1 text-slate-600" />
+                        Update Status
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setReplyInquiry(inq)}
+                        className="text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 cursor-pointer h-8 px-2.5"
+                        title="Reply via Email"
+                      >
+                        <Send className="w-3.5 h-3.5 mr-1 text-white" />
+                        Reply Email
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setDeletingInquiry(inq)}
+                        onClick={() => handlePromptDelete(inq)}
                         className="h-8 w-8 p-0 text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer"
+                        title="Delete Inquiry"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -384,12 +384,18 @@ export default function AdminInquiriesPage() {
         onSave={handleSaveInquiry}
       />
 
-      <ReplyInquiryModal
-        isOpen={activeInquiry !== null}
-        onClose={() => setActiveInquiry(null)}
-        inquiry={activeInquiry}
+      <UpdateInquiryStatusModal
+        isOpen={statusInquiry !== null}
+        onClose={() => setStatusInquiry(null)}
+        inquiry={statusInquiry}
         onUpdateStatus={handleUpdateStatus}
-        onSendQuote={handleSendQuote}
+      />
+
+      <ReplyInquiryEmailModal
+        isOpen={replyInquiry !== null}
+        onClose={() => setReplyInquiry(null)}
+        inquiry={replyInquiry}
+        onSendReply={handleSendReply}
       />
 
       <DeleteInquiryModal

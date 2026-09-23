@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Send, Mail, Phone, Globe, Loader2 } from "lucide-react";
+import { Send, Mail, Phone, Globe, Loader2, CheckCircle, Tag } from "lucide-react";
 import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
 import { inquirySchema, InquiryFormValues } from "@/lib/admin-schemas";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
@@ -271,54 +271,171 @@ export function InquiryFormModal({ isOpen, onClose, onSave }: InquiryFormModalPr
   );
 }
 
-interface ReplyInquiryModalProps {
+interface UpdateInquiryStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   inquiry: Inquiry | null;
   onUpdateStatus: (id: string, newStatus: InquiryStatus) => Promise<boolean> | void;
-  onSendQuote?: (id: string, message: string, status: InquiryStatus) => Promise<boolean>;
 }
 
-export function ReplyInquiryModal({
+export function UpdateInquiryStatusModal({
   isOpen,
   onClose,
   inquiry,
   onUpdateStatus,
-  onSendQuote,
-}: ReplyInquiryModalProps) {
-  const [selectedStatus, setSelectedStatus] = useState<InquiryStatus>(inquiry?.status || InquiryStatus.NEW);
-  const [replyText, setReplyText] = useState("");
-  const [isSending, setIsSending] = useState(false);
+}: UpdateInquiryStatusModalProps) {
+  const [selectedStatus, setSelectedStatus] = useState<InquiryStatus>(
+    inquiry?.status || InquiryStatus.NEW
+  );
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (inquiry) {
       setSelectedStatus(inquiry.status);
-      setReplyText("");
     }
   }, [inquiry, isOpen]);
 
-  const handleStatusClick = async (st: InquiryStatus) => {
-    if (!inquiry) return;
-    setSelectedStatus(st);
-    await onUpdateStatus(inquiry.id, st);
+  const handleSaveStatus = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inquiry || isUpdating) return;
+
+    setIsUpdating(true);
+    try {
+      const res = await onUpdateStatus(inquiry.id, selectedStatus);
+      if (res !== false) {
+        onClose();
+      }
+    } catch (err) {
+      console.error("Status update error:", err);
+    } finally {
+      setIsUpdating(false);
+    }
   };
+
+  const statusOptions = Object.values(InquiryStatus).map((st) => ({
+    label: st,
+    value: st,
+  }));
+
+  const footer = (
+    <div className="flex items-center justify-end gap-2 w-full">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onClose}
+        disabled={isUpdating}
+        className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        form="update-inquiry-status-form"
+        disabled={isUpdating}
+        className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-lg cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-50"
+      >
+        {isUpdating ? (
+          <>
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <span>Updating...</span>
+          </>
+        ) : (
+          <>
+            <CheckCircle className="w-3.5 h-3.5" />
+            <span>Save Status</span>
+          </>
+        )}
+      </Button>
+    </div>
+  );
+
+  return (
+    <AdminModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Update Lead Status"
+      description={inquiry ? `Lead for ${inquiry.guestName} • ${inquiry.interestedTrip}` : undefined}
+      maxWidth="md"
+      footer={footer}
+    >
+      {inquiry && (
+        <form id="update-inquiry-status-form" onSubmit={handleSaveStatus} className="space-y-4 py-1 text-xs">
+          {/* Quick Context Summary */}
+          <div className="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500 font-medium">Guest Name</span>
+              <span className="font-bold text-slate-900">{inquiry.guestName}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500 font-medium">Email</span>
+              <span className="font-semibold text-slate-800">{inquiry.email}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500 font-medium">Trip / Region</span>
+              <span className="font-medium text-slate-800">{inquiry.interestedTrip}</span>
+            </div>
+            <div className="flex items-center justify-between pt-1 border-t border-slate-200/60">
+              <span className="text-slate-500 font-medium">Current Status</span>
+              <AdminStatusBadge status={inquiry.status} />
+            </div>
+          </div>
+
+          {/* Reusable Select Field */}
+          <div className="space-y-1.5 pt-1">
+            <AdminSelectField
+              label="Lead Status"
+              required
+              options={statusOptions}
+              value={selectedStatus}
+              onChange={(val) => setSelectedStatus(val as InquiryStatus)}
+            />
+            <p className="text-[11px] text-slate-500 font-normal">
+              Change the pipeline status of this inquiry. This action updates only the status record and does not send an email.
+            </p>
+          </div>
+        </form>
+      )}
+    </AdminModal>
+  );
+}
+
+interface ReplyInquiryEmailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  inquiry: Inquiry | null;
+  onSendReply: (id: string, message: string) => Promise<boolean>;
+}
+
+export function ReplyInquiryEmailModal({
+  isOpen,
+  onClose,
+  inquiry,
+  onSendReply,
+}: ReplyInquiryEmailModalProps) {
+  const [replyText, setReplyText] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (inquiry && isOpen) {
+      setReplyText("");
+      setError(null);
+    }
+  }, [inquiry, isOpen]);
 
   const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inquiry || isSending) return;
 
+    if (!replyText.trim()) {
+      setError("Reply message is required");
+      return;
+    }
+
     setIsSending(true);
+    setError(null);
     try {
-      let success = false;
-      const hasMessage = replyText.trim().length > 0;
-
-      if (hasMessage && onSendQuote) {
-        success = await onSendQuote(inquiry.id, replyText, selectedStatus);
-      } else {
-        const res = await onUpdateStatus(inquiry.id, selectedStatus);
-        success = res !== false;
-      }
-
+      const success = await onSendReply(inquiry.id, replyText.trim());
       if (success) {
         setReplyText("");
         onClose();
@@ -330,30 +447,34 @@ export function ReplyInquiryModal({
     }
   };
 
-  const replyFooter = (
+  const footer = (
     <div className="flex items-center justify-end gap-2 w-full">
       <Button
         type="button"
         variant="outline"
         onClick={onClose}
+        disabled={isSending}
         className="text-xs font-semibold h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
       >
-        Close
+        Cancel
       </Button>
       <Button
         type="submit"
-        form="reply-inquiry-form"
-        disabled={isSending}
+        form="reply-inquiry-email-form"
+        disabled={isSending || !replyText.trim()}
         className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-4 rounded-lg cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-50"
       >
-        <Send className="w-3.5 h-3.5" />
-        <span>
-          {isSending
-            ? "Saving..."
-            : replyText.trim()
-              ? "Dispatch Quote Email"
-              : "Save Status Update"}
-        </span>
+        {isSending ? (
+          <>
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <span>Sending...</span>
+          </>
+        ) : (
+          <>
+            <Send className="w-3.5 h-3.5" />
+            <span>Send Email Reply</span>
+          </>
+        )}
       </Button>
     </div>
   );
@@ -362,96 +483,75 @@ export function ReplyInquiryModal({
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Inquiry from ${inquiry?.guestName}`}
-      description={`${inquiry?.interestedTrip} • Received ${inquiry?.createdAt}`}
-      maxWidth="2xl"
-      footer={replyFooter}
+      title="Reply via Email"
+      description={inquiry ? `Compose and send an email reply to ${inquiry.guestName}` : undefined}
+      maxWidth="xl"
+      footer={footer}
     >
-      <div className="space-y-5 py-2 text-xs">
-        <div className="flex items-center justify-between bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-          <div className="space-y-1">
-            <span className="text-slate-500 font-medium block">Contact Email:</span>
-            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-slate-500" />
-              <span>{inquiry?.email}</span>
+      {inquiry && (
+        <form id="reply-inquiry-email-form" onSubmit={handleSendReply} className="space-y-4 py-1 text-xs">
+          {/* Recipient Details & Metadata */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200">
+            <div className="space-y-1">
+              <span className="text-slate-500 font-medium block">Recipient Email</span>
+              <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span className="truncate">{inquiry.email}</span>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <span className="text-slate-500 font-medium block">Guest Name &amp; Phone</span>
+              <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span className="truncate">{inquiry.guestName} {inquiry.phone ? `(${inquiry.phone})` : ""}</span>
+              </div>
+            </div>
+
+            <div className="space-y-1 sm:col-span-2 pt-1 border-t border-slate-200/60">
+              <span className="text-slate-500 font-medium block">Trip of Interest &amp; Dates</span>
+              <div className="font-medium text-slate-800 flex items-center gap-2">
+                <span className="font-semibold text-slate-900">{inquiry.interestedTrip}</span>
+                <span>&bull;</span>
+                <span>{inquiry.travelDates} ({inquiry.groupSize} Pax)</span>
+              </div>
             </div>
           </div>
 
+          {/* Original Guest Message Preview */}
           <div className="space-y-1">
-            <span className="text-slate-500 font-medium block">Phone / WhatsApp:</span>
-            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-slate-500" />
-              <span>{inquiry?.phone}</span>
+            <span className="font-bold text-slate-900 block">Original Guest Inquiry:</span>
+            <div className="text-slate-800 font-medium bg-slate-50/60 border border-slate-200 p-3 rounded-xl leading-relaxed italic max-h-32 overflow-y-auto">
+              &ldquo;{inquiry.message}&rdquo;
             </div>
           </div>
 
+          {/* Email Compose Field using AdminTextareaField */}
           <div className="space-y-1">
-            <span className="text-slate-500 font-medium block">Country &amp; Group:</span>
-            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-slate-500" />
-              <span>{inquiry?.country} ({inquiry?.groupSize} Pax)</span>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <span className="text-slate-500 font-medium block">Type &amp; Status:</span>
-            <div className="flex items-center gap-1.5">
-              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                {inquiry?.type || InquiryType.GENERAL}
-              </span>
-              <AdminStatusBadge status={selectedStatus} />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
-          <span className="font-bold text-slate-900 block">Guest Message &amp; Requirements:</span>
-          <p className="text-slate-800 font-medium bg-slate-50/60 border border-slate-200 p-3 rounded-xl leading-relaxed italic">
-            &ldquo;{inquiry?.message}&rdquo;
-          </p>
-        </div>
-
-        <div className="space-y-1.5 pt-2 border-t border-slate-100">
-          <span className="font-bold text-slate-900 block">Update Lead Status:</span>
-          <div className="flex flex-wrap gap-2">
-            {Object.values(InquiryStatus).map((st) => (
-              <Button
-                key={st}
-                type="button"
-                size="sm"
-                onClick={() => handleStatusClick(st)}
-                className={`text-xs h-8 px-3 rounded-lg cursor-pointer ${selectedStatus === st
-                  ? "bg-slate-900 text-white font-bold"
-                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-medium"
-                  }`}
-              >
-                {st}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        <form id="reply-inquiry-form" onSubmit={handleSendReply} className="space-y-3 pt-2 border-t border-slate-100">
-          <div className="space-y-0.5">
-            <label className="font-bold text-slate-900 block">Send Custom Quote &amp; Dispatch Email</label>
-            <p className="text-slate-500 font-normal">
-              {replyText.trim()
-                ? `Will email quote to ${inquiry?.email} and mark status as "${selectedStatus}".`
-                : `Leave blank to only update lead status to "${selectedStatus}" without sending an email.`}
+            <AdminTextareaField
+              label="Email Reply Message"
+              required
+              rows={5}
+              value={replyText}
+              onChange={(e) => {
+                setReplyText(e.target.value);
+                if (error) setError(null);
+              }}
+              placeholder={`Draft your custom quote, pricing, or itinerary reply to ${inquiry.email}...`}
+              error={error || undefined}
+            />
+            <p className="text-[11px] text-slate-500 font-normal">
+              This message will be emailed directly to <strong>{inquiry.email}</strong>. It does not change the lead status.
             </p>
           </div>
-          <textarea
-            rows={4}
-            value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
-            placeholder={`Draft custom quote itinerary and pricing details to ${inquiry?.email}...`}
-            className="w-full bg-slate-50/60 border border-slate-200 rounded-xl p-3 text-slate-900 font-medium text-xs leading-relaxed focus:outline-none focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all placeholder:text-slate-400"
-          />
         </form>
-      </div>
+      )}
     </AdminModal>
   );
 }
+
+// Backward-compatible alias
+export const ReplyInquiryModal = ReplyInquiryEmailModal;
 
 interface DeleteInquiryModalProps {
   isOpen: boolean;

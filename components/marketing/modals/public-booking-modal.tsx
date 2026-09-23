@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Loader2, CheckCircle2, AlertTriangle, Send } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -20,7 +20,7 @@ import {
 import { BookingFormValues } from "@/lib/admin-schemas";
 import { BookingService } from "@/lib/services/admin-service";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
-import { TurnstileWidget } from "@/components/ui/turnstile-widget";
+import { TurnstileWidget, TurnstileWidgetRef } from "@/components/ui/turnstile-widget";
 import { GroupPricingTier, calculateApplicablePrice, getMaxGroupTravelers } from "@/lib/pricing-util";
 
 export interface PublicBookingModalProps {
@@ -68,6 +68,7 @@ export function PublicBookingModal({
   const [country, setCountry] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
@@ -233,12 +234,16 @@ export function PublicBookingModal({
         const msg = res.message || "Failed to submit booking request. Please try again.";
         setErrorMessage(msg);
         toast.error(msg);
+        turnstileRef.current?.reset();
+        setTurnstileToken("");
       }
     } catch (err: any) {
       console.error("Booking error:", err);
       const msg = err?.message || "Something went wrong while sending your request.";
       setErrorMessage(msg);
       toast.error(msg);
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
     } finally {
       setIsSubmitting(false);
     }
@@ -574,6 +579,7 @@ export function PublicBookingModal({
               </div>
 
               <TurnstileWidget
+                ref={turnstileRef}
                 onVerify={(t) => setTurnstileToken(t)}
                 onExpire={() => setTurnstileToken('')}
                 onError={() => setTurnstileToken('')}

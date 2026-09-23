@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { InquiryService } from "@/lib/services/admin-service";
 import { COUNTRY_OPTIONS } from "@/lib/country-list";
 import { InquiryType } from "@/lib/admin-data";
-import { TurnstileWidget } from "@/components/ui/turnstile-widget";
+import { TurnstileWidget, TurnstileWidgetRef } from "@/components/ui/turnstile-widget";
 import { BookingAddonItem } from "./package-booking-sidebar";
 
 export interface PackageInquiryModalProps {
@@ -40,6 +40,7 @@ export function PackageInquiryModal({
   const [inquiryCountry, setInquiryCountry] = useState("");
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetRef>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; phone?: string; message?: string }>({});
@@ -99,12 +100,16 @@ export function PackageInquiryModal({
         const msg = res?.message || "Failed to send inquiry. Please try again.";
         setErrorMessage(msg);
         toast.error(msg);
+        turnstileRef.current?.reset();
+        setTurnstileToken("");
       }
     } catch (err: any) {
       console.error("Inquiry error:", err);
       const msg = err?.message || "Failed to send inquiry. Please try again or contact us directly.";
       setErrorMessage(msg);
       toast.error(msg);
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
     } finally {
       setIsSubmitting(false);
     }
@@ -247,6 +252,7 @@ export function PackageInquiryModal({
             )}
 
             <TurnstileWidget
+              ref={turnstileRef}
               onVerify={(t) => setTurnstileToken(t)}
               onExpire={() => setTurnstileToken('')}
               onError={() => setTurnstileToken('')}

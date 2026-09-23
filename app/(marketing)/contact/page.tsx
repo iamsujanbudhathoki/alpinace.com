@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle, Clock } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { InquiryService } from '@/lib/services/admin-service';
 import { useSettings } from '@/lib/settings-context';
 import { FormLabel } from '@/components/ui/form-label';
-import { TurnstileWidget } from '@/components/ui/turnstile-widget';
+import { TurnstileWidget, TurnstileWidgetRef } from '@/components/ui/turnstile-widget';
 import { cn } from '@/lib/utils';
 import { COUNTRY_OPTIONS } from '@/lib/country-list';
 
@@ -39,6 +39,7 @@ export default function ContactView() {
   const { settings } = useSettings();
   const [submitted, setSubmitted] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
   const {
     register,
@@ -84,10 +85,14 @@ export default function ContactView() {
         toast.success(res.message || "Your inquiry has been submitted! Our team will reach out shortly.");
       } else {
         toast.error(res?.message || "Failed to submit inquiry. Please try again.");
+        turnstileRef.current?.reset();
+        setTurnstileToken('');
       }
     } catch (err: any) {
       console.error("Failed to submit inquiry:", err);
       toast.error(err?.message || "Failed to submit inquiry. Please try again or message via WhatsApp.");
+      turnstileRef.current?.reset();
+      setTurnstileToken('');
     }
   };
 
@@ -369,6 +374,7 @@ export default function ContactView() {
                 </div>
 
                 <TurnstileWidget
+                  ref={turnstileRef}
                   onVerify={(token) => setTurnstileToken(token)}
                   onExpire={() => setTurnstileToken('')}
                   onError={() => setTurnstileToken('')}

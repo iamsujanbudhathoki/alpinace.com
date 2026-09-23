@@ -945,6 +945,15 @@ function cleanBookingPayload(data: any) {
       payload.specialRequests = undefined;
     }
   }
+  if (rest.packageId !== undefined && rest.packageId) {
+    payload.packageId = String(rest.packageId).trim();
+  }
+  if (rest.packageSlug !== undefined && rest.packageSlug) {
+    payload.packageSlug = String(rest.packageSlug).trim();
+  }
+  if (rest.cfTurnstileToken !== undefined && rest.cfTurnstileToken) {
+    payload.cfTurnstileToken = String(rest.cfTurnstileToken).trim();
+  }
 
   return payload;
 }
@@ -1031,6 +1040,9 @@ export const InquiryService = {
       ...(data.type ? { type: data.type } : {}),
       ...(data.status ? { status: data.status } : {}),
       ...(data.notes ? { notes: data.notes } : {}),
+      ...((data as any).cfTurnstileToken
+        ? { cfTurnstileToken: String((data as any).cfTurnstileToken).trim() }
+        : {}),
     };
     return apiClient.post<Inquiry>("/inquiries", payload);
   },

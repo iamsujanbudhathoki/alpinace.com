@@ -314,6 +314,7 @@ export const bookingSchema = z.object({
   assignedGuide: z.string().optional(),
   permitStatus: z.nativeEnum(BookingPermitStatus),
   specialRequests: z.string().optional(),
+  cfTurnstileToken: z.string().optional(),
 });
 
 export type BookingFormValues = z.infer<typeof bookingSchema>;
@@ -330,6 +331,7 @@ export const inquirySchema = z.object({
   status: z.nativeEnum(InquiryStatus).optional(),
   type: z.nativeEnum(InquiryType).optional(),
   notes: z.string().optional(),
+  cfTurnstileToken: z.string().optional(),
 });
 
 export type InquiryFormValues = z.infer<typeof inquirySchema>;

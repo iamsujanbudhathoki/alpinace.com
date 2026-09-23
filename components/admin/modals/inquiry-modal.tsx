@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Send, Mail, Phone, Globe, Loader2, CheckCircle, Tag } from "lucide-react";
-import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
-import { inquirySchema, InquiryFormValues } from "@/lib/admin-schemas";
-import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
-import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
+import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
+import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
+import { InquiryFormValues, inquirySchema } from "@/lib/admin-schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle, Loader2, Mail, Phone, Send } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { COUNTRY_OPTIONS } from "@/lib/country-list";
 
 interface InquiryFormModalProps {
   isOpen: boolean;
@@ -285,7 +284,7 @@ export function UpdateInquiryStatusModal({
   onUpdateStatus,
 }: UpdateInquiryStatusModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<InquiryStatus>(
-    inquiry?.status || InquiryStatus.NEW
+    inquiry ? inquiry.status : ("" as InquiryStatus)
   );
   const [isUpdating, setIsUpdating] = useState(false);
 

@@ -14,8 +14,8 @@ import {
   ChevronDown,
   Images,
   FileText,
-  Calendar,
-  Inbox,
+  CalendarCheck,
+  MessageSquare,
   HelpCircle,
   Users,
   Info,
@@ -34,13 +34,32 @@ interface NavItem {
   badge?: string | number | null;
 }
 
-const navGroups: { items: NavItem[] }[] = [
+interface NavGroup {
+  label?: string;
+  items: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
   {
     items: [
       {
         title: "Overview",
         href: "/admin",
         icon: LayoutGrid,
+      },
+    ],
+  },
+  {
+    items: [
+      {
+        title: "Bookings",
+        href: "/admin/bookings",
+        icon: CalendarCheck,
+      },
+      {
+        title: "Inquiries",
+        href: "/admin/inquiries",
+        icon: MessageSquare,
       },
     ],
   },
@@ -62,28 +81,23 @@ const navGroups: { items: NavItem[] }[] = [
         icon: Mountain,
       },
       {
-        title: "Categories",
-        href: "/admin/categories",
-        icon: FolderTree,
-      },
-      {
         title: "Activities",
         href: "/admin/activities",
         icon: Sparkles,
+      },
+      {
+        title: "Categories",
+        href: "/admin/categories",
+        icon: FolderTree,
       },
     ],
   },
   {
     items: [
       {
-        title: "Bookings",
-        href: "/admin/bookings",
-        icon: Calendar,
-      },
-      {
-        title: "Inquiries",
-        href: "/admin/inquiries",
-        icon: Inbox,
+        title: "Blogs & Articles",
+        href: "/admin/blogs",
+        icon: FileText,
       },
       {
         title: "Media Library",
@@ -91,14 +105,9 @@ const navGroups: { items: NavItem[] }[] = [
         icon: Images,
       },
       {
-        title: "Blogs & Articles",
-        href: "/admin/blogs",
-        icon: FileText,
-      },
-      {
-        title: "FAQs & Guides",
-        href: "/admin/faqs",
-        icon: HelpCircle,
+        title: "Testimonials",
+        href: "/admin/testimonials",
+        icon: MessageSquareQuote,
       },
       {
         title: "Team Members",
@@ -106,9 +115,9 @@ const navGroups: { items: NavItem[] }[] = [
         icon: Users,
       },
       {
-        title: "Testimonials",
-        href: "/admin/testimonials",
-        icon: MessageSquareQuote,
+        title: "FAQs & Guides",
+        href: "/admin/faqs",
+        icon: HelpCircle,
       },
       {
         title: "About Us",
@@ -265,8 +274,13 @@ export function AdminSidebar({
         {navGroups.map((group, gIdx) => (
           <div
             key={gIdx}
-            className={`space-y-1 ${gIdx > 0 ? "pt-3 border-t border-slate-200" : ""}`}
+            className={`space-y-1 ${gIdx > 0 ? "pt-2.5 border-t border-slate-200" : ""}`}
           >
+            {!isCollapsed && group.label && (
+              <div className="px-2.5 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 select-none">
+                {group.label}
+              </div>
+            )}
             {group.items.map((item) => {
               const Icon = item.icon;
               const isCategories = item.href === "/admin/categories";

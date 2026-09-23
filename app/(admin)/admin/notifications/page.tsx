@@ -17,8 +17,10 @@ import {
   Calendar,
   MessageSquare,
   Info,
+  Clock,
 } from "lucide-react";
 import { NotificationService, AppNotification } from "@/lib/services/admin-service";
+import { formatNotificationTime, formatDateTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -110,19 +112,6 @@ export default function AdminNotificationsPage() {
     }
   };
 
-  const formatDate = (dateStr: string) => {
-    try {
-      return new Date(dateStr).toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return dateStr;
-    }
-  };
 
   return (
     <div className="space-y-6 pb-12">
@@ -265,8 +254,12 @@ export default function AdminNotificationsPage() {
                         <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
                       )}
                     </div>
-                    <span className="text-[11px] text-slate-400 font-medium">
-                      {formatDate(notif.createdAt)}
+                    <span
+                      className="text-[11px] text-slate-400 font-medium flex items-center gap-1 shrink-0"
+                      title={formatDateTime(notif.createdAt)}
+                    >
+                      <Clock className="w-3 h-3 text-slate-400" />
+                      <span>{formatNotificationTime(notif.createdAt)}</span>
                     </span>
                   </div>
 

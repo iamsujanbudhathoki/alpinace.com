@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/lib/admin-auth-context";
 import { AdminSearchModal } from "@/components/admin/modals/admin-search-modal";
 import { NotificationService, AppNotification } from "@/lib/services/admin-service";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateTime, formatNotificationTime } from "@/lib/utils";
 import {
   Search,
   Bell,
@@ -17,6 +17,7 @@ import {
   ChevronDown,
   Check,
   Inbox,
+  Clock,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
@@ -284,8 +285,12 @@ export function AdminHeader({
                         >
                           {notif.title}
                         </span>
-                        <span className="text-[11px] text-slate-400 font-normal shrink-0">
-                          {formatDate(notif.createdAt)}
+                        <span
+                          className="text-[11px] text-slate-400 font-normal shrink-0 flex items-center gap-1"
+                          title={formatDateTime(notif.createdAt)}
+                        >
+                          <Clock className="w-3 h-3 text-slate-400" />
+                          <span>{formatNotificationTime(notif.createdAt)}</span>
                         </span>
                       </div>
                       <p

@@ -69,9 +69,6 @@ const HERO_PHRASES = [
 ];
 
 export function Hero({
-  initialTreks = [],
-  initialTours = [],
-  initialExpeditions = [],
 }: HeroProps) {
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);

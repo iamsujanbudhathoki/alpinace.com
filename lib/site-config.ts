@@ -47,10 +47,10 @@ export const siteConfig = {
     postalCode: "",
     addressCountry: "NP",
   },
-  title: `${SITE_SHORT_NAME} | Nepal Trekking, Historical Tours & Peak Expeditions`,
+  title: `Alpine Ace Treks & Expeditions | Nepal Trekking, Tours & Mountaineering`,
   tagline: SITE_TAGLINE,
   description:
-    "Expert-guided trekking, cultural tours, and mountaineering expeditions in Nepal. Planned directly from our Kathmandu office with certified guides, comfortable teahouses, and safety-first logistics.",
+    "Alpine Ace Treks & Expeditions (AlpineAce) is a premier Kathmandu-based agency offering expert-guided trekking in Nepal, cultural tours, and mountaineering expeditions with certified local Sherpa guides, comfortable teahouses, and safety-first logistics.",
   keywords: [
     "Alpine Ace",
     "AlpineAce",

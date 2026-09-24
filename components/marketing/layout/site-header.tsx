@@ -626,22 +626,6 @@ export function SiteHeader() {
           {/* Menu Panel Content */}
           <div className="relative z-10 bg-black text-white w-full h-full overflow-y-auto overscroll-contain flex flex-col justify-between p-5 sm:p-6 shadow-xl border-t border-stone-800">
             <div className="space-y-4">
-              {/* Mobile Header Logo */}
-              <div className="flex items-center gap-3 pb-3 border-b border-stone-800">
-                <Image
-                  src={settings.siteLogo || "/logo.jpg"}
-                  alt={settings.siteName || "AlpineAce Logo"}
-                  width={36}
-                  height={36}
-                  priority
-                  unoptimized={Boolean(settings.siteLogo && (settings.siteLogo.startsWith("http") || settings.siteLogo.startsWith("data:")))}
-                  className="h-9 w-9 object-cover rounded-md border border-stone-700 bg-white"
-                />
-                <span className="font-heading text-base font-bold text-white">
-                  {settings.siteName || "Alpine Ace"}
-                </span>
-              </div>
-
               {/* Mobile Navigation Links Accordion */}
               <nav className="space-y-1" aria-label="Mobile navigation links">
                 {navLinks.map((link) => {

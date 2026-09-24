@@ -340,14 +340,14 @@ export function Hero({
           ref={searchContainerRef}
           className="relative z-30 w-full max-w-3xl lg:max-w-4xl"
         >
-          <div className="bg-white/95 backdrop-blur-xl border border-stone-200/90 rounded-2xl shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] p-3 sm:p-4 space-y-3 transition-all duration-300">
+          <div className="bg-white/95 backdrop-blur-xl border border-stone-200/90 rounded-2xl shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] p-2.5 sm:p-3 lg:p-4 space-y-0 lg:space-y-3 transition-all duration-300">
             
             {/* Primary Hero Search Bar */}
-            <div className="relative flex items-center bg-stone-50 hover:bg-stone-50/90 focus-within:bg-white border border-stone-200/90 focus-within:border-stone-400 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 transition-all shadow-2xs">
+            <div className="relative flex items-center bg-stone-50 hover:bg-stone-50/90 focus-within:bg-white border border-stone-200/90 focus-within:border-stone-400 rounded-xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 transition-all shadow-2xs">
               {isSearching ? (
-                <Loader2 className="h-5 w-5 animate-spin text-stone-500 shrink-0 mr-3" />
+                <Loader2 className="h-5 w-5 animate-spin text-stone-500 shrink-0 mr-2.5 sm:mr-3" />
               ) : (
-                <Search className="h-5 w-5 text-stone-400 shrink-0 mr-3" />
+                <Search className="h-5 w-5 text-stone-400 shrink-0 mr-2.5 sm:mr-3" />
               )}
               <input
                 ref={inputRef}
@@ -363,31 +363,35 @@ export function Hero({
                   }
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Where do you want to explore? (e.g. Everest, Annapurna, Mustang)"
+                placeholder="Where do you want to explore? (e.g. Everest, Annapurna)"
                 className="w-full bg-transparent text-stone-900 placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none"
                 aria-label="Search destination or trip"
               />
-              {query ? (
+              {query && (
                 <button
                   type="button"
                   onClick={() => {
                     setQuery("");
                     inputRef.current?.focus();
                   }}
-                  className="p-1 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-2"
+                  className="p-1 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-1.5"
                   aria-label="Clear keyword search"
                 >
                   <X className="h-4 w-4" />
                 </button>
-              ) : (
-                <span className="hidden sm:inline-block text-xs text-stone-400 font-medium shrink-0 ml-2 select-none">
-                  Press Enter ↵
-                </span>
               )}
+              <button
+                type="button"
+                onClick={handleSearchSubmit}
+                className="inline-flex items-center justify-center bg-stone-900 hover:bg-stone-800 text-white rounded-lg px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ml-2 shadow-xs active:scale-95"
+                aria-label="Search"
+              >
+                <span>Search</span>
+              </button>
             </div>
 
-            {/* Visually Secondary Refinement Filters Bar */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-0.5">
+            {/* Refinement Filters Bar - Only visible on Laptop and Desktop (lg+) */}
+            <div className="hidden lg:grid grid-cols-3 gap-2.5 pt-0.5">
               {/* Category Select Dropdown */}
               <div
                 className={`group relative flex items-center rounded-xl px-3.5 py-2.5 transition-all border ${
@@ -407,7 +411,9 @@ export function Hero({
                 <select
                   value={selectedCategory}
                   onChange={(e) => {
-                    setSelectedCategory(e.target.value as any);
+                    setSelectedCategory(
+                      e.target.value as "All" | "Trek" | "Tour" | "Expedition"
+                    );
                     setSelectedIndex(-1);
                   }}
                   className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-6"
@@ -511,9 +517,9 @@ export function Hero({
               </div>
             </div>
 
-            {/* Reset Active Filters Action (if applicable) */}
+            {/* Reset Active Filters Action (Desktop/Laptop only) */}
             {isAnyFilterActive && (
-              <div className="flex items-center justify-between pt-1 text-xs text-stone-500 border-t border-stone-100">
+              <div className="hidden lg:flex items-center justify-between pt-1 text-xs text-stone-500 border-t border-stone-100">
                 <span className="text-[11px] font-normal text-stone-400">
                   Showing refined results
                 </span>
@@ -535,25 +541,25 @@ export function Hero({
           {isOpen && (query.trim().length >= 2 || isAnyFilterActive) && (
             <div className="absolute left-0 right-0 top-full mt-3 bg-white border border-stone-200 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in-50 slide-in-from-top-2 duration-150 text-left">
 
-              {/* Active Filter Summary Bar */}
-              <div className="px-4 py-2.5 bg-stone-50 border-b border-stone-200 flex flex-wrap items-center justify-between text-xs text-stone-500 gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-stone-700">Active filters:</span>
-                  <span className="bg-stone-200/70 text-stone-800 px-2 py-0.5 rounded-md font-medium">
-                    {selectedCategory === "All" ? "All Categories" : selectedCategory}
-                  </span>
-                  {priceRange !== "all" && (
+              {/* Active Filter Summary Bar (Desktop/Laptop only) */}
+              {isAnyFilterActive && (
+                <div className="hidden lg:flex px-4 py-2.5 bg-stone-50 border-b border-stone-200 flex-wrap items-center justify-between text-xs text-stone-500 gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-stone-700">Active filters:</span>
                     <span className="bg-stone-200/70 text-stone-800 px-2 py-0.5 rounded-md font-medium">
-                      {PRICE_OPTIONS.find((p) => p.value === priceRange)?.label}
+                      {selectedCategory === "All" ? "All Categories" : selectedCategory}
                     </span>
-                  )}
-                  {durationRange !== "all" && (
-                    <span className="bg-stone-200/70 text-stone-800 px-2 py-0.5 rounded-md font-medium">
-                      {DURATION_OPTIONS.find((d) => d.value === durationRange)?.label}
-                    </span>
-                  )}
-                </div>
-                {isAnyFilterActive && (
+                    {priceRange !== "all" && (
+                      <span className="bg-stone-200/70 text-stone-800 px-2 py-0.5 rounded-md font-medium">
+                        {PRICE_OPTIONS.find((p) => p.value === priceRange)?.label}
+                      </span>
+                    )}
+                    {durationRange !== "all" && (
+                      <span className="bg-stone-200/70 text-stone-800 px-2 py-0.5 rounded-md font-medium">
+                        {DURATION_OPTIONS.find((d) => d.value === durationRange)?.label}
+                      </span>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={handleResetFilters}
@@ -561,8 +567,8 @@ export function Hero({
                   >
                     Clear all
                   </button>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Results List */}
               <div className="max-h-[360px] overflow-y-auto divide-y divide-stone-100 custom-scrollbar">

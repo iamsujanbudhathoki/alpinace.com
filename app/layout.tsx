@@ -16,6 +16,7 @@ const poppins = Poppins({
 });
 
 import { Toaster } from "sonner";
+import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import { SettingsProvider } from "@/lib/settings-context";
 import { SiteAnalytics } from "@/components/common/site-analytics";
 
@@ -173,19 +174,9 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <GoogleTagManager gtmId={siteConfig.gtmId} />
+      {siteConfig.gaId && <GoogleAnalytics gaId={siteConfig.gaId} />}
       <head>
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-35E6ELH493" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-35E6ELH493');
-            `,
-          }}
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
@@ -199,6 +190,15 @@ export default function RootLayout({
         className="min-h-full flex flex-col font-sans bg-background text-foreground"
         suppressHydrationWarning
       >
+        {/* Google Tag Manager (noscript fallback for JS-disabled browsers) */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${siteConfig.gtmId}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <SettingsProvider>
           <SiteAnalytics />
           <TopLoaderProvider>{children}</TopLoaderProvider>

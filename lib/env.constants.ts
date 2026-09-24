@@ -24,6 +24,12 @@ export const ENV_SITE_EMAIL =
 export const ENV_SITE_TAGLINE =
   process.env.NEXT_PUBLIC_SITE_TAGLINE || "Guided Himalayan Treks & High Altitude Expeditions";
 
+export const ENV_GTM_ID =
+  process.env.NEXT_PUBLIC_GTM_ID || "GTM-PSN45B6H";
+
+export const ENV_GA_ID =
+  process.env.NEXT_PUBLIC_GA_ID || "G-35E6ELH493";
+
 /**
  * Standard website domain constant (e.g. https://alpineacetreks.com)
  */

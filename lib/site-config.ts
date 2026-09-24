@@ -1,10 +1,11 @@
 import {
-  ENV_SITE_URL,
   ENV_SITE_DOMAIN,
   ENV_SITE_NAME,
   ENV_SITE_SHORT_NAME,
   ENV_SITE_EMAIL,
   ENV_SITE_TAGLINE,
+  ENV_GTM_ID,
+  ENV_GA_ID,
   websiteDomain,
 } from "@/lib/env.constants";
 
@@ -16,10 +17,14 @@ export const SITE_SHORT_NAME = ENV_SITE_SHORT_NAME;
 export const SITE_TAGLINE = ENV_SITE_TAGLINE;
 export const SITE_EMAIL = ENV_SITE_EMAIL;
 export const SITE_SUPPORT_EMAIL = `support@${ENV_SITE_DOMAIN}` as const;
+export const GTM_ID = ENV_GTM_ID;
+export const GA_ID = ENV_GA_ID;
 
 export const siteConfig = {
   name: SITE_SHORT_NAME,
   fullName: SITE_NAME,
+  gtmId: GTM_ID,
+  gaId: GA_ID,
   alternateNames: [
     "Alpine Ace",
     "AlpineAce",

@@ -1,29 +1,29 @@
 "use client";
 
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { AdminSearchResultItem, AdminSearchService } from "@/lib/services/admin-service";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
-  Calendar,
+  Search,
+  X,
+  MapPin,
+  Mountain,
   Compass,
-  CornerDownLeft,
-  FileText,
+  Calendar,
+  User,
   FolderTree,
-  HelpCircle,
+  FileText,
   Images,
   LayoutGrid,
   Loader2,
-  MapPin,
   MessageSquare,
-  Mountain,
-  Search,
-  User,
   Users,
-  X,
+  HelpCircle,
+  CornerDownLeft,
   type LucideIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { AdminSearchService, AdminSearchResultItem } from "@/lib/services/admin-service";
+import { cn } from "@/lib/utils";
 
 interface AdminSearchModalProps {
   isOpen: boolean;

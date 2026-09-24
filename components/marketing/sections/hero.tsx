@@ -364,27 +364,23 @@ export function Hero({
                 className="w-full bg-transparent text-stone-900 placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none"
                 aria-label="Search destination or trip"
               />
-              {query && (
+              {query ? (
                 <button
                   type="button"
                   onClick={() => {
                     setQuery("");
                     inputRef.current?.focus();
                   }}
-                  className="p-1 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-1.5"
+                  className="p-1 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-2"
                   aria-label="Clear keyword search"
                 >
                   <X className="h-4 w-4" />
                 </button>
+              ) : (
+                <span className="hidden sm:inline-block text-xs text-stone-400 font-medium shrink-0 ml-2 select-none">
+                  Press Enter ↵
+                </span>
               )}
-              <button
-                type="button"
-                onClick={handleSearchSubmit}
-                className="inline-flex items-center justify-center bg-stone-900 hover:bg-stone-800 text-white rounded-lg px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ml-2 shadow-xs active:scale-95"
-                aria-label="Search"
-              >
-                <span>Search</span>
-              </button>
             </div>
 
             {/* Refinement Filters Bar - Only visible on Laptop and Desktop (lg+) */}

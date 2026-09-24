@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, FolderOpen, Tag, Check, Loader2 } from "lucide-react";
+import { Search, Eye, Edit, Trash2, Copy, UploadCloud, Image as ImageIcon, FolderOpen, Tag, Check, Loader2, FileText, ImageOff, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
@@ -22,6 +22,7 @@ interface MediaAsset {
   categoryName?: string;
   category: string;
   url: string;
+  mimeType?: string;
   description?: string;
   altText?: string;
   fileSize: string;
@@ -29,8 +30,37 @@ interface MediaAsset {
   createdAt: string;
 }
 
+const isImageMedia = (asset: MediaAsset): boolean => {
+  if (asset.mimeType) {
+    if (asset.mimeType.startsWith("image/")) return true;
+    if (
+      asset.mimeType.includes("pdf") ||
+      asset.mimeType.includes("word") ||
+      asset.mimeType.includes("document") ||
+      asset.mimeType.includes("sheet") ||
+      asset.mimeType.includes("zip") ||
+      asset.mimeType.includes("text")
+    ) {
+      return false;
+    }
+  }
+  const cleanUrl = (asset.url || "").split("?")[0].toLowerCase();
+  const imageExtensions = [".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif", ".svg", ".bmp"];
+  return imageExtensions.some((ext) => cleanUrl.endsWith(ext));
+};
+
+const getFileExtension = (url: string, title?: string): string => {
+  const clean = (url.split("?")[0] || title || "").toLowerCase();
+  const parts = clean.split(".");
+  if (parts.length > 1) {
+    return parts.pop()?.toUpperCase() || "FILE";
+  }
+  return "FILE";
+};
+
 export default function AdminMediaPage() {
   const [assets, setAssets] = useState<MediaAsset[]>([]);
+  const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
   const [allAssetsForStats, setAllAssetsForStats] = useState<MediaAsset[]>([]);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,6 +117,7 @@ export default function AdminMediaPage() {
     categoryName: m.categoryName ?? "",
     category: m.categoryName ?? "",
     url: m.url,
+    mimeType: m.mimeType ?? m.mime_type ?? "",
     description: m.description ?? "",
     altText: m.altText ?? m.title ?? m.name ?? "",
     fileSize: m.fileSize ? `${(Number(m.fileSize) / 1024).toFixed(1)} KB` : "0 KB",
@@ -133,8 +164,10 @@ export default function AdminMediaPage() {
       const list = assets.length > 0 ? assets : allAssetsForStats;
       const match = list.find((a) => a.id === targetId);
       if (match) {
-        if (match.url) {
+        if (match.url && isImageMedia(match)) {
           openSingleImage(match.url, match.title);
+        } else if (match.url) {
+          window.open(match.url, "_blank");
         } else {
           setActiveAsset(match);
           setIsEditModalOpen(true);
@@ -217,9 +250,14 @@ export default function AdminMediaPage() {
   };
 
   const handleOpenLightbox = (asset: MediaAsset, triggerEl?: HTMLElement) => {
-    const position = assets.findIndex((a) => a.id === asset.id);
+    if (!isImageMedia(asset)) {
+      window.open(asset.url, "_blank");
+      return;
+    }
+    const imageAssets = assets.filter(isImageMedia);
+    const position = imageAssets.findIndex((a) => a.id === asset.id);
     openLightbox({
-      items: assets.map((a) => ({
+      items: imageAssets.map((a) => ({
         img: a.url,
         thumb: a.url,
         caption: `${a.title}${a.dimensions ? ` • ${a.dimensions}` : ""}${a.category ? ` • ${a.category}` : ""}`,
@@ -452,23 +490,47 @@ export default function AdminMediaPage() {
                 </div>
 
                 {/* Media Thumbnail Container */}
-                <div className="relative aspect-video bg-slate-100 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={asset.url}
-                    alt={asset.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                <div className="relative aspect-video bg-slate-100 overflow-hidden flex items-center justify-center">
+                  {!isImageMedia(asset) ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 p-4 text-center">
+                      <div className="w-10 h-10 rounded-xl bg-white shadow-xs border border-slate-200 flex items-center justify-center mb-1.5 text-slate-700">
+                        <FileText className="w-5 h-5 text-slate-700" />
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                        {getFileExtension(asset.url, asset.title)} Document
+                      </span>
+                    </div>
+                  ) : failedImageIds.has(asset.id) ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 p-4 text-center border border-slate-200/60">
+                      <ImageOff className="w-6 h-6 text-slate-400 mb-1" />
+                      <span className="text-[11px] font-semibold text-slate-600">Image unavailable</span>
+                      <span className="text-[9px] text-slate-400 mt-0.5 max-w-[180px] truncate">
+                        {asset.url.split("/").pop()}
+                      </span>
+                    </div>
+                  ) : (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={encodeURI(asset.url)}
+                      alt={asset.title}
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                      onError={() => {
+                        setFailedImageIds((prev) => new Set(prev).add(asset.id));
+                      }}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
 
                   {/* Circular Hover Actions */}
-                  <div className="absolute inset-0 bg-slate-950/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5">
+                  <div className="absolute inset-0 bg-slate-950/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5 z-20">
                     <button
                       type="button"
                       onClick={(e) => handleOpenLightbox(asset, e.currentTarget as HTMLElement)}
-                      title="View Fullscreen Lightbox"
+                      title={isImageMedia(asset) ? "View Fullscreen Lightbox" : "Open Document"}
                       className="w-9 h-9 bg-white text-slate-900 hover:bg-slate-100 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer"
                     >
-                      <Eye className="w-4 h-4 text-slate-700" />
+                      {isImageMedia(asset) ? <Eye className="w-4 h-4 text-slate-700" /> : <ExternalLink className="w-4 h-4 text-slate-700" />}
                     </button>
 
                     <button

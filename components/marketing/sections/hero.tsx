@@ -340,11 +340,11 @@ export function Hero({
           <div className="bg-white/95 backdrop-blur-xl border border-stone-200/90 rounded-2xl shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] p-2.5 sm:p-3 lg:p-4 space-y-0 lg:space-y-3 transition-all duration-300">
             
             {/* Primary Hero Search Bar */}
-            <div className="relative flex items-center bg-stone-50 hover:bg-stone-50/90 focus-within:bg-white border border-stone-200/90 focus-within:border-stone-400 rounded-xl px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 transition-all shadow-2xs">
+            <div className="relative flex items-center bg-stone-50 hover:bg-stone-50/90 focus-within:bg-white border border-stone-200/90 focus-within:border-stone-400 rounded-xl px-2.5 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3.5 transition-all shadow-2xs">
               {isSearching ? (
-                <Loader2 className="h-5 w-5 animate-spin text-stone-500 shrink-0 mr-2.5 sm:mr-3" />
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-stone-500 shrink-0 mr-2 sm:mr-3" />
               ) : (
-                <Search className="h-5 w-5 text-stone-400 shrink-0 mr-2.5 sm:mr-3" />
+                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-stone-400 shrink-0 mr-2 sm:mr-3" />
               )}
               <input
                 ref={inputRef}
@@ -361,26 +361,30 @@ export function Hero({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Where do you want to explore? (e.g. Everest, Annapurna)"
-                className="w-full bg-transparent text-stone-900 placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none"
+                className="w-full min-w-0 bg-transparent text-stone-900 placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none truncate"
                 aria-label="Search destination or trip"
               />
-              {query ? (
+              {query && (
                 <button
                   type="button"
                   onClick={() => {
                     setQuery("");
                     inputRef.current?.focus();
                   }}
-                  className="p-1 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-2"
+                  className="p-1 sm:p-1.5 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-1 sm:ml-1.5"
                   aria-label="Clear keyword search"
                 >
                   <X className="h-4 w-4" />
                 </button>
-              ) : (
-                <span className="hidden sm:inline-block text-xs text-stone-400 font-medium shrink-0 ml-2 select-none">
-                  Press Enter ↵
-                </span>
               )}
+              <button
+                type="button"
+                onClick={handleSearchSubmit}
+                className="inline-flex items-center justify-center bg-stone-900 hover:bg-stone-800 text-white rounded-lg p-2 sm:p-2.5 transition-all cursor-pointer shrink-0 ml-1.5 sm:ml-2 shadow-xs active:scale-95"
+                aria-label="Search destination or trip"
+              >
+                <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              </button>
             </div>
 
             {/* Refinement Filters Bar - Only visible on Laptop and Desktop (lg+) */}

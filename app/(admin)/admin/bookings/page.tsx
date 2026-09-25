@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Download, Plus, Tag, ExternalLink } from "lucide-react";
+import { Download, Plus, Tag, ExternalLink, Workflow, GitBranch } from "lucide-react";
 import { Booking, BookingStatus, BookingPackageType, BookingPaymentStatus, PackageItem } from "@/lib/admin-data";
 import { TrekItem } from "@/lib/trek-data";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
 import { BookingFormModal, DeleteBookingModal } from "@/components/admin/modals/booking-modal";
+import { BookingStatusFlowModal } from "@/components/admin/modals/booking-status-flow-modal";
 import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,6 +75,7 @@ export default function AdminBookingsPage() {
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
+  const [statusFlowBooking, setStatusFlowBooking] = useState<Booking | null>(null);
 
   // Load package options for links/modals
   useEffect(() => {
@@ -463,16 +465,31 @@ export default function AdminBookingsPage() {
                       />
                     </AdminTableCell>
                     <AdminTableCell>
-                      <AdminInlineSelect
-                        value={bkg.bookingStatus}
-                        options={STATUS_OPTIONS}
-                        onChange={(newVal) => handleInlineStatusChange(bkg, newVal)}
-                        variant="badge"
-                        title="Click to change booking status"
-                      />
+                      <div className="flex items-center gap-1.5">
+                        <AdminInlineSelect
+                          value={bkg.bookingStatus}
+                          options={STATUS_OPTIONS}
+                          onChange={(newVal) => handleInlineStatusChange(bkg, newVal)}
+                          variant="badge"
+                          title="Click to quick-change status"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setStatusFlowBooking(bkg)}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-md text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer shrink-0"
+                          title="Manage Status Workflow"
+                        >
+                          <Workflow className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </AdminTableCell>
                     <AdminTableCell align="right">
                       <AdminTableActions>
+                        <AdminActionButton
+                          icon={<Workflow className="w-3.5 h-3.5 text-emerald-600" />}
+                          onClick={() => setStatusFlowBooking(bkg)}
+                          title="Manage Status Workflow"
+                        />
                         <AdminActionButton
                           variant="view"
                           onClick={() => {
@@ -540,6 +557,18 @@ export default function AdminBookingsPage() {
         guestName={deletingBooking?.guestName}
         isDeleting={isDeleting}
         error={deleteError}
+      />
+
+      <BookingStatusFlowModal
+        isOpen={Boolean(statusFlowBooking)}
+        onClose={() => setStatusFlowBooking(null)}
+        booking={statusFlowBooking}
+        onStatusUpdated={(updated) => {
+          setBookings((prev) =>
+            prev.map((b) => (b.id === updated.id ? updated : b))
+          );
+          setStatusFlowBooking(updated);
+        }}
       />
     </div>
   );

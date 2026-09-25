@@ -24,6 +24,7 @@ import {
   ShieldCheck,
   Award,
   Info,
+  Calendar,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -289,7 +290,7 @@ interface UpdateInquiryStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   inquiry: Inquiry | null;
-  onUpdateStatus: (id: string, newStatus: InquiryStatus) => Promise<boolean> | void;
+  onUpdateStatus: (id: string, newStatus: InquiryStatus, notes?: string) => Promise<boolean> | void;
 }
 
 const INQUIRY_PHASES = [
@@ -300,7 +301,6 @@ const INQUIRY_PHASES = [
     title: "Phase 1: New Lead Received",
     message: "A fresh inquiry has arrived. Review traveler preferences, requested trip region, and target travel dates.",
     actionRecommendation: "Reach out via email or phone to confirm requirements, then move to Contacted.",
-    icon: Clock,
   },
   {
     status: InquiryStatus.CONTACTED,
@@ -309,7 +309,6 @@ const INQUIRY_PHASES = [
     title: "Phase 2: Initial Contact Made",
     message: "Initial outreach has been initiated with the traveler. Discussion regarding fitness, budget, group size, and route customization is ongoing.",
     actionRecommendation: "Prepare a tailored proposal and quote, then advance to Quote Sent.",
-    icon: FileCheck2,
   },
   {
     status: InquiryStatus.QUOTE_SENT,
@@ -318,7 +317,6 @@ const INQUIRY_PHASES = [
     title: "Phase 3: Itinerary & Quotation Sent",
     message: "A formal itinerary proposal with package inclusions and pricing has been dispatched to the prospective guest.",
     actionRecommendation: "Follow up to answer questions. When the guest accepts and commits, transition to Booked.",
-    icon: ShieldCheck,
   },
   {
     status: InquiryStatus.BOOKED,
@@ -327,7 +325,6 @@ const INQUIRY_PHASES = [
     title: "Phase 4: Converted to Confirmed Booking",
     message: "Lead successfully converted! The client accepted the proposal and a formal booking reservation has been created.",
     actionRecommendation: "Manage trip execution through the Admin Bookings ledger.",
-    icon: Award,
   },
   {
     status: InquiryStatus.CLOSED,
@@ -336,7 +333,6 @@ const INQUIRY_PHASES = [
     title: "Phase 5: Lead Concluded / Archived",
     message: "Communication is concluded or archived. Keep records available for future seasonal re-engagement.",
     actionRecommendation: "Lead lifecycle completed.",
-    icon: CheckCircle2,
   },
 ];
 
@@ -347,12 +343,14 @@ export function UpdateInquiryStatusModal({
   onUpdateStatus,
 }: UpdateInquiryStatusModalProps) {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
+  const [transitionNote, setTransitionNote] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (inquiry && isOpen) {
       const idx = INQUIRY_PHASES.findIndex((p) => p.status === inquiry.status);
       setActiveStepIndex(idx >= 0 ? idx : 0);
+      setTransitionNote(inquiry.notes || "");
     }
   }, [inquiry, isOpen]);
 
@@ -368,7 +366,7 @@ export function UpdateInquiryStatusModal({
     if (!inquiry || isUpdating) return;
     setIsUpdating(true);
     try {
-      const res = await onUpdateStatus(inquiry.id, targetStatus);
+      const res = await onUpdateStatus(inquiry.id, targetStatus, transitionNote.trim() || undefined);
       if (res !== false) {
         toast.success(`Inquiry status updated to "${targetStatus}"`);
         const newIdx = INQUIRY_PHASES.findIndex((p) => p.status === targetStatus);
@@ -381,93 +379,78 @@ export function UpdateInquiryStatusModal({
     }
   };
 
-  const subHeader = (
-    <div className="bg-slate-50/80 border-b border-slate-200 px-6 py-4">
-      <div className="relative">
-        <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-200 -z-0" />
-        <div className="relative z-10 flex items-center justify-between">
-          {INQUIRY_PHASES.map((phase, idx) => {
-            const isCompletedBefore = currentLeadPhaseIndex >= 0 && idx < currentLeadPhaseIndex;
-            const isCurrent = inquiry.status === phase.status;
-            const isSelected = activeStepIndex === idx;
+  const tabsNav = (
+    <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 modal-scroll">
+      {INQUIRY_PHASES.map((phase, idx) => {
+        const isActive = activeStepIndex === idx;
+        const isCurrent = inquiry.status === phase.status;
+        const isCompletedBefore = currentLeadPhaseIndex >= 0 && idx < currentLeadPhaseIndex;
 
-            let circleClass = "bg-white border-2 border-slate-300 text-slate-500 hover:border-slate-400";
-            if (isCompletedBefore) {
-              circleClass = "bg-emerald-600 border-2 border-emerald-600 text-white";
-            } else if (isCurrent) {
-              circleClass = "bg-slate-900 border-2 border-slate-900 text-white shadow-sm ring-4 ring-slate-900/10";
-            } else if (isSelected) {
-              circleClass = "bg-emerald-50 border-2 border-emerald-600 text-emerald-700 shadow-sm ring-4 ring-emerald-600/15";
-            }
-
-            return (
-              <button
-                key={phase.status}
-                type="button"
-                onClick={() => setActiveStepIndex(idx)}
-                className="group flex flex-col items-center focus:outline-none cursor-pointer"
-                title={`Click to view ${phase.label} details`}
+        return (
+          <button
+            key={phase.status}
+            type="button"
+            onClick={() => setActiveStepIndex(idx)}
+            className={`px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
+              isActive
+                ? "bg-slate-900 text-white shadow-xs"
+                : isCurrent
+                ? "bg-slate-100 text-slate-900 border border-slate-300 font-bold"
+                : isCompletedBefore
+                ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70"
+            }`}
+          >
+            {isCompletedBefore ? (
+              <Check className="w-3.5 h-3.5 text-slate-500" />
+            ) : (
+              <span className="text-[11px] opacity-75">{phase.stepNumber}.</span>
+            )}
+            <span>{phase.label}</span>
+            {isCurrent && (
+              <span
+                className={`text-[9px] uppercase px-1.5 py-0.5 rounded font-bold tracking-wider ${
+                  isActive
+                    ? "bg-slate-700 text-slate-100"
+                    : "bg-slate-800 text-white"
+                }`}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all ${circleClass}`}>
-                  {isCompletedBefore ? <Check className="w-4 h-4 stroke-[2.5]" /> : <span>{phase.stepNumber}</span>}
-                </div>
-                <div className="mt-1.5 flex flex-col items-center">
-                  <span
-                    className={`text-xs font-semibold whitespace-nowrap ${
-                      isSelected ? "text-slate-900 font-bold" : isCurrent ? "text-slate-900" : "text-slate-600"
-                    }`}
-                  >
-                    {phase.label}
-                  </span>
-                  {isCurrent && (
-                    <span className="text-[10px] font-bold uppercase text-emerald-600 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.2 rounded-full mt-0.5">
-                      Current
-                    </span>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+                Current
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 
   const footer = (
-    <div className="flex items-center justify-between w-full gap-2">
+    <div className="flex items-center justify-between w-full gap-3">
       <div className="flex items-center gap-2">
         <Button
           type="button"
           variant="outline"
-          size="sm"
           onClick={() => setActiveStepIndex((prev) => Math.max(0, prev - 1))}
           disabled={activeStepIndex === 0 || isUpdating}
-          className="h-8.5 px-3 text-xs font-semibold text-slate-700 border-slate-200"
         >
-          <ArrowLeft className="w-3.5 h-3.5 mr-1" />
           Back
         </Button>
         <Button
           type="button"
           variant="outline"
-          size="sm"
           onClick={() => setActiveStepIndex((prev) => Math.min(INQUIRY_PHASES.length - 1, prev + 1))}
           disabled={activeStepIndex === INQUIRY_PHASES.length - 1 || isUpdating}
-          className="h-8.5 px-3 text-xs font-semibold text-slate-700 border-slate-200"
         >
           Next
-          <ArrowRight className="w-3.5 h-3.5 ml-1" />
         </Button>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 ml-auto">
         <Button
           type="button"
-          variant="ghost"
-          size="sm"
+          variant="outline"
           onClick={onClose}
           disabled={isUpdating}
-          className="h-8.5 px-3 text-xs font-semibold text-slate-600"
         >
           Close
         </Button>
@@ -475,20 +458,21 @@ export function UpdateInquiryStatusModal({
         {!isViewingCurrent ? (
           <Button
             type="button"
-            size="sm"
             onClick={() => handleApplyStatus(currentViewedPhase.status)}
             disabled={isUpdating}
-            className="h-8.5 px-4 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white"
           >
-            {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <Check className="w-3.5 h-3.5 mr-1.5" />}
+            {isUpdating ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+            ) : (
+              <Check className="w-3.5 h-3.5 mr-1.5" />
+            )}
             Set Status to &ldquo;{currentViewedPhase.label}&rdquo;
           </Button>
         ) : isLastPhase ? (
           <Button
             type="button"
-            size="sm"
             onClick={onClose}
-            className="h-8.5 px-4 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-slate-900 hover:bg-slate-800 text-white"
           >
             <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
             Lead Completed
@@ -496,12 +480,14 @@ export function UpdateInquiryStatusModal({
         ) : (
           <Button
             type="button"
-            size="sm"
             onClick={() => nextPhase && handleApplyStatus(nextPhase.status)}
             disabled={isUpdating}
-            className="h-8.5 px-4 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
           >
-            {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <ArrowRight className="w-3.5 h-3.5 mr-1.5" />}
+            {isUpdating ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+            ) : (
+              <Check className="w-3.5 h-3.5 mr-1.5" />
+            )}
             Advance to {nextPhase?.label}
           </Button>
         )}
@@ -509,82 +495,101 @@ export function UpdateInquiryStatusModal({
     </div>
   );
 
-  const PhaseIcon = currentViewedPhase.icon;
-
   return (
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
       title="Inquiry Status Workflow"
       description={`Lead for ${inquiry.guestName} • ${inquiry.interestedTrip}`}
-      subHeader={subHeader}
+      subHeader={tabsNav}
       footer={footer}
-      maxWidth="lg"
+      maxWidth="2xl"
     >
       <div className="space-y-4 py-1 text-xs">
-        {/* Phase Header Card */}
-        <div
-          className={`rounded-xl border p-4 transition-all duration-200 ${
-            isViewingCurrent
-              ? "border-emerald-300 bg-gradient-to-r from-emerald-50/70 via-white to-white shadow-2xs"
-              : "border-slate-200 bg-white"
-          }`}
-        >
-          <div className="flex items-start gap-3.5">
-            <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
-                isViewingCurrent ? "bg-emerald-600 text-white border-emerald-600" : "bg-slate-100 text-slate-700 border-slate-200"
-              }`}
-            >
-              <PhaseIcon className="w-5 h-5" />
+        {/* Lead Context Snapshot */}
+        <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div className="space-y-1">
+            <span className="text-slate-500 font-semibold block text-[11px]">Traveler Contact</span>
+            <div className="font-semibold text-slate-900 text-sm">{inquiry.guestName}</div>
+            <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+              <Mail className="w-3.5 h-3.5 text-slate-400" />
+              <span>{inquiry.email}</span>
             </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm font-bold text-slate-900">{currentViewedPhase.title}</h3>
-                <AdminStatusBadge status={currentViewedPhase.status} />
-                {isViewingCurrent && (
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md">
-                    Current Status
-                  </span>
-                )}
+            {inquiry.phone && (
+              <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+                <Phone className="w-3.5 h-3.5 text-slate-400" />
+                <span>{inquiry.phone}</span>
               </div>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">{currentViewedPhase.message}</p>
-            </div>
+            )}
+            <div className="text-slate-500 font-medium text-[11px]">{inquiry.country}</div>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500">
+          <div className="space-y-1">
+            <span className="text-slate-500 font-semibold block text-[11px]">Trip &amp; Schedule</span>
+            <div className="font-semibold text-slate-900 text-sm truncate">{inquiry.interestedTrip}</div>
+            <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <span>{inquiry.travelDates}</span>
+            </div>
+            <div className="font-medium text-slate-700">
+              {inquiry.groupSize} {inquiry.groupSize === 1 ? "Traveler" : "Travelers"} &bull; {inquiry.type || "General"}
+            </div>
+          </div>
+        </div>
+
+        {/* Original Guest Message */}
+        {inquiry.message && (
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+            <span className="text-slate-500 font-semibold block text-[11px]">Original Inquiry Message</span>
+            <p className="text-slate-700 leading-relaxed italic text-xs">
+              &ldquo;{inquiry.message}&rdquo;
+            </p>
+          </div>
+        )}
+
+        {/* Phase Details Card */}
+        <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-slate-900 text-sm">
+                Phase {currentViewedPhase.stepNumber}: {currentViewedPhase.title}
+              </h3>
+              <AdminStatusBadge status={currentViewedPhase.status} />
+            </div>
+            {isViewingCurrent && (
+              <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
+                Current Status
+              </span>
+            )}
+          </div>
+
+          <p className="text-slate-600 leading-relaxed text-xs">
+            {currentViewedPhase.message}
+          </p>
+
+          <div className="pt-2 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500">
             <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
             <p>{currentViewedPhase.actionRecommendation}</p>
           </div>
-        </div>
 
-        {/* Lead Context Snapshot */}
-        <div className="bg-slate-50/80 p-3.5 rounded-xl border border-slate-200 space-y-2">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-            <div>
-              <span className="text-[11px] text-slate-500 block">Traveler</span>
-              <span className="font-bold text-slate-900 truncate block mt-0.5">{inquiry.guestName}</span>
-              <span className="text-[10px] text-slate-400 block truncate">{inquiry.email}</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-500 block">Destination & Dates</span>
-              <span className="font-semibold text-slate-900 block mt-0.5 truncate">{inquiry.interestedTrip}</span>
-              <span className="text-[10px] text-slate-400 block truncate">{inquiry.travelDates}</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-slate-500 block">Group Size & Type</span>
-              <span className="font-semibold text-slate-900 block mt-0.5">
-                {inquiry.groupSize} {inquiry.groupSize === 1 ? "Traveler" : "Travelers"}
+          {!isViewingCurrent && (
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-slate-500 text-[11px]">
+              <span>
+                Current lead status: <strong className="text-slate-800">{inquiry.status}</strong>
               </span>
-              <span className="text-[10px] text-slate-500 block">{inquiry.type || "General"}</span>
-            </div>
-          </div>
-          {inquiry.message && (
-            <div className="pt-2 border-t border-slate-200/70 text-[11px] text-slate-600 italic bg-white p-2 rounded-lg border border-slate-200/60">
-              &ldquo;{inquiry.message}&rdquo;
+              <span className="text-slate-400">Click &ldquo;Set Status&rdquo; below to update.</span>
             </div>
           )}
         </div>
+
+        {/* Transition Note Textarea */}
+        <AdminTextareaField
+          label="Transition Note / Remarks (Optional)"
+          rows={3}
+          placeholder="Add follow-up notes, discussion remarks, or next steps for this lead..."
+          value={transitionNote}
+          onChange={(e) => setTransitionNote(e.target.value)}
+        />
       </div>
     </AdminModal>
   );

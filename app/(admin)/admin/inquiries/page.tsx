@@ -101,18 +101,18 @@ export default function AdminInquiriesPage() {
     }
   }, [targetId, inquiries]);
 
-  const handleUpdateStatus = async (id: string, newStatus: InquiryStatus): Promise<boolean> => {
+  const handleUpdateStatus = async (id: string, newStatus: InquiryStatus, notes?: string): Promise<boolean> => {
     try {
-      const res = await InquiryService.update(id, { status: newStatus });
+      const res = await InquiryService.update(id, { status: newStatus, notes });
       if (res.success) {
         setInquiries((prev) =>
-          prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq))
+          prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus, notes: notes !== undefined ? notes : inq.notes } : inq))
         );
         if (statusInquiry && statusInquiry.id === id) {
-          setStatusInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+          setStatusInquiry((prev) => (prev ? { ...prev, status: newStatus, notes: notes !== undefined ? notes : prev.notes } : null));
         }
         if (replyInquiry && replyInquiry.id === id) {
-          setReplyInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+          setReplyInquiry((prev) => (prev ? { ...prev, status: newStatus, notes: notes !== undefined ? notes : prev.notes } : null));
         }
         toast.success(res.message || "Inquiry status updated successfully");
         return true;

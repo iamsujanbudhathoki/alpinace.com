@@ -98,11 +98,10 @@ export enum BookingPaymentStatus {
 export enum BookingStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
+  IN_REVIEW = "in_review",
   ACTIVE = "active",
   COMPLETED = "completed",
   CANCELLED = "cancelled",
-  IN_REVIEW = "in_review",
-  ACTIVE_TREK = "active_trek",
 }
 
 export enum BookingPermitStatus {

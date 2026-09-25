@@ -29,6 +29,7 @@ export function getStatusBadgeStyle(status?: string): string {
   switch (normalized) {
     case "confirmed":
     case "active":
+    case "completed":
     case "paid":
     case "issued":
     case "available":

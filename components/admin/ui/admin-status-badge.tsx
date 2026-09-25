@@ -15,6 +15,7 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
   switch (normalized) {
     case "confirmed":
     case "active":
+    case "completed":
     case "paid":
     case "issued":
     case "available":
@@ -56,8 +57,9 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
 
   // Friendly human label overrides for clean presentation
   const STATUS_LABEL_MAP: Record<string, string> = {
-    in_review: "Pending",
-    "in review": "Pending",
+    in_review: "In Review",
+    "in review": "In Review",
+    pending: "Pending",
     active_trek: "Active",
     "active trek": "Active",
     pending_document: "Docs Pending",

@@ -14,7 +14,6 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
   const normalized = raw.toLowerCase().replace(/_/g, " ");
   switch (normalized) {
     case "confirmed":
-    case "active":
     case "completed":
     case "paid":
     case "issued":
@@ -25,11 +24,15 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
       styleClass = "bg-emerald-50 text-emerald-800 border-emerald-200/80 font-semibold";
       dotClass = "bg-emerald-500";
       break;
-    case "deposit paid":
+    case "active":
     case "active trek":
+    case "on mountain":
+      styleClass = "bg-blue-50 text-blue-800 border-blue-200/80 font-semibold";
+      dotClass = "bg-blue-500";
+      break;
+    case "deposit paid":
     case "featured":
     case "processing":
-    case "on mountain":
     case "new":
     case "moderate":
       styleClass = "bg-amber-50 text-amber-800 border-amber-200/80 font-semibold";

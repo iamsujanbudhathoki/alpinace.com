@@ -476,7 +476,7 @@ export default function AdminBookingsPage() {
                         <button
                           type="button"
                           onClick={() => setStatusFlowBooking(bkg)}
-                          className="inline-flex items-center justify-center w-6 h-6 rounded-md text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer shrink-0"
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-md text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
                           title="Manage Status Workflow"
                         >
                           <Workflow className="w-3.5 h-3.5" />
@@ -486,7 +486,7 @@ export default function AdminBookingsPage() {
                     <AdminTableCell align="right">
                       <AdminTableActions>
                         <AdminActionButton
-                          icon={<Workflow className="w-3.5 h-3.5 text-emerald-600" />}
+                          icon={<Workflow className="w-3.5 h-3.5 text-slate-600" />}
                           onClick={() => setStatusFlowBooking(bkg)}
                           title="Manage Status Workflow"
                         />

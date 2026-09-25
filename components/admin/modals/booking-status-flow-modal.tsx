@@ -9,7 +9,7 @@ import {
 import { BookingService } from "@/lib/services/admin-service";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
-import { AdminInputField } from "@/components/admin/forms/admin-form-fields";
+import { AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -199,7 +199,7 @@ export function BookingStatusFlowModal({
     await handleApplyStatus(BookingStatus.PENDING);
   };
 
-  // Phase navigation subHeader matching existing admin tab patterns (e.g. trek-modal)
+  // Phase navigation subHeader matching existing admin tab patterns
   const tabsNav = (
     <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 modal-scroll">
       {phases.map((phase, idx) => {
@@ -219,20 +219,26 @@ export function BookingStatusFlowModal({
               isActive
                 ? "bg-slate-900 text-white shadow-xs"
                 : isCurrent
-                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold"
+                ? "bg-slate-100 text-slate-900 border border-slate-300 font-bold"
                 : isCompletedBefore
                 ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
                 : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70"
             }`}
           >
             {isCompletedBefore ? (
-              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              <Check className="w-3.5 h-3.5 text-slate-500" />
             ) : (
               <span className="text-[11px] opacity-75">{phase.step}.</span>
             )}
             <span>{phase.label}</span>
             {isCurrent && (
-              <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-emerald-600 text-white font-bold tracking-wider">
+              <span
+                className={`text-[9px] uppercase px-1.5 py-0.5 rounded font-bold tracking-wider ${
+                  isActive
+                    ? "bg-slate-700 text-slate-100"
+                    : "bg-slate-800 text-white"
+                }`}
+              >
                 Current
               </span>
             )}
@@ -304,7 +310,7 @@ export function BookingStatusFlowModal({
           <Button
             type="button"
             onClick={onClose}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-slate-900 hover:bg-slate-800 text-white"
           >
             <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
             Booking Completed
@@ -403,7 +409,7 @@ export function BookingStatusFlowModal({
               <AdminStatusBadge status={currentViewedPhase.status} />
             </div>
             {isViewingCurrent && (
-              <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
                 Current Status
               </span>
             )}
@@ -423,10 +429,11 @@ export function BookingStatusFlowModal({
           )}
         </div>
 
-        {/* Status Transition Note - standard AdminInputField */}
-        <AdminInputField
+        {/* Status Transition Note - AdminTextareaField */}
+        <AdminTextareaField
           label="Transition Note (Optional)"
-          placeholder="e.g. Deposit verified via bank transfer, permits processed..."
+          rows={3}
+          placeholder="Add notes or remarks regarding this status transition (e.g. deposit confirmed, permits acquired, client notified)..."
           value={transitionNote}
           onChange={(e) => setTransitionNote(e.target.value)}
         />

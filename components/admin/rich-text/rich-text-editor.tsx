@@ -25,6 +25,7 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  AlignJustify,
   Link as LinkIcon,
   Table as TableIcon,
   Trash2,
@@ -226,6 +227,13 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor, showMediaUpload = true }) => 
           title="Align Right"
         >
           <AlignRight className="h-4 w-4" />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+          active={editor.isActive({ textAlign: 'justify' })}
+          title="Justify"
+        >
+          <AlignJustify className="h-4 w-4" />
         </ToolbarButton>
       </div>
 
@@ -432,7 +440,8 @@ export const AppRichTextEditor = ({
         placeholder,
       }),
       TextAlign.configure({
-        types: ['heading', 'paragraph'],
+        types: ['heading', 'paragraph', 'blockquote'],
+        alignments: ['left', 'center', 'right', 'justify'],
       }),
       Link.configure({
         openOnClick: false,

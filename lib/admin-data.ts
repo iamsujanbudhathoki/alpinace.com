@@ -193,6 +193,16 @@ export interface Booking {
   assignedGuide?: string;
   permitStatus: BookingPermitStatus;
   specialRequests?: string;
+  statusNote?: string | null;
+}
+
+export interface BookingWorkflowPhase {
+  status: BookingStatus;
+  step: number;
+  label: string;
+  title: string;
+  description: string;
+  allowedTransitions: BookingStatus[];
 }
 
 export interface TripDepartureDate {

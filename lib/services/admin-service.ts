@@ -4,6 +4,8 @@ import {
   BlogArticle,
   BlogStatus,
   Booking,
+  BookingStatus,
+  BookingWorkflowPhase,
   CategoryItem,
   CategoryStatus,
   CategoryType,
@@ -998,6 +1000,17 @@ export const BookingService = {
 
   async delete(id: string): Promise<ApiResponse<boolean>> {
     return apiClient.delete<boolean>(`/admin/bookings/${id}`);
+  },
+
+  async getWorkflowPhases(): Promise<ApiResponse<BookingWorkflowPhase[]>> {
+    return apiClient.get<BookingWorkflowPhase[]>("/admin/bookings/workflow/phases");
+  },
+
+  async updateWorkflow(
+    id: string,
+    data: { status: BookingStatus; note?: string }
+  ): Promise<ApiResponse<Booking>> {
+    return apiClient.put<Booking>(`/admin/bookings/${id}/workflow`, data);
   },
 };
 

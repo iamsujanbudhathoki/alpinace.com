@@ -4,7 +4,6 @@ import {
   BlogArticle,
   BlogStatus,
   Booking,
-  BookingStatus,
   CategoryItem,
   CategoryStatus,
   CategoryType,
@@ -930,11 +929,7 @@ function cleanBookingPayload(data: any) {
     payload.totalAmountUSD = Number(rest.totalAmountUSD);
   }
   if (rest.paymentStatus !== undefined) payload.paymentStatus = rest.paymentStatus;
-  if (rest.bookingStatus !== undefined) {
-    let bs = rest.bookingStatus as any;
-    if (bs === "active_trek") bs = BookingStatus.ACTIVE;
-    payload.bookingStatus = bs;
-  }
+  if (rest.bookingStatus !== undefined) payload.bookingStatus = rest.bookingStatus;
   if (rest.assignedGuide !== undefined) {
     if (typeof rest.assignedGuide === "string" && rest.assignedGuide.trim() !== "") {
       payload.assignedGuide = rest.assignedGuide.trim();

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Booking,
   BookingStatus,
@@ -9,19 +9,21 @@ import {
 import { BookingService } from "@/lib/services/admin-service";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
+import { AdminInputField } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
   Check,
-  CheckCircle2,
-  ArrowLeft,
-  ArrowRight,
+  CheckCircle,
   Loader2,
   AlertTriangle,
   RotateCcw,
+  Mail,
+  Phone,
+  Calendar,
 } from "lucide-react";
 
-// Default fallback phases matching backend source of truth
+// Fallback phases matching backend source of truth
 const DEFAULT_PHASES: BookingWorkflowPhase[] = [
   {
     status: BookingStatus.PENDING,
@@ -85,7 +87,7 @@ export function BookingStatusFlowModal({
   const [showCancelPrompt, setShowCancelPrompt] = useState<boolean>(false);
   const [cancelReason, setCancelReason] = useState<string>("");
 
-  // Fetch workflow definition from backend when modal opens
+  // Load official phases from backend when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
@@ -126,7 +128,11 @@ export function BookingStatusFlowModal({
   const isCancelled = booking.bookingStatus === BookingStatus.CANCELLED;
   const currentViewedPhase = phases[activeStepIndex] || phases[0];
 
-  // Apply workflow transition through backend API
+  const isViewingCurrent = currentViewedPhase.status === booking.bookingStatus;
+  const isLastPhase = activeStepIndex === phases.length - 1;
+  const nextPhase = !isLastPhase ? phases[activeStepIndex + 1] : null;
+
+  // Transition handler
   const handleApplyStatus = async (targetStatus: BookingStatus) => {
     if (!booking || isUpdating) return;
     setIsUpdating(true);
@@ -193,120 +199,77 @@ export function BookingStatusFlowModal({
     await handleApplyStatus(BookingStatus.PENDING);
   };
 
-  // Stepper Header
-  const subHeader = (
-    <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
-      <div className="relative">
-        <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-200 -z-0" />
-        <div className="relative z-10 flex items-center justify-between">
-          {phases.map((phase, idx) => {
-            const isCompletedBefore =
-              !isCancelled &&
-              currentBookingPhaseIndex >= 0 &&
-              idx < currentBookingPhaseIndex;
-            const isCurrentBookingStatus =
-              !isCancelled && booking.bookingStatus === phase.status;
-            const isSelected = activeStepIndex === idx;
+  // Phase navigation subHeader matching existing admin tab patterns (e.g. trek-modal)
+  const tabsNav = (
+    <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 modal-scroll">
+      {phases.map((phase, idx) => {
+        const isActive = activeStepIndex === idx;
+        const isCurrent = booking.bookingStatus === phase.status;
+        const isCompletedBefore =
+          !isCancelled &&
+          currentBookingPhaseIndex >= 0 &&
+          idx < currentBookingPhaseIndex;
 
-            let circleClass =
-              "bg-white border-2 border-slate-300 text-slate-500 hover:border-slate-400";
-            if (isCompletedBefore) {
-              circleClass = "bg-emerald-600 border-2 border-emerald-600 text-white";
-            } else if (isCurrentBookingStatus) {
-              circleClass = "bg-slate-900 border-2 border-slate-900 text-white shadow-xs ring-4 ring-slate-900/10";
-            } else if (isSelected) {
-              circleClass = "bg-white border-2 border-emerald-600 text-emerald-700 shadow-xs ring-4 ring-emerald-600/15";
-            }
-
-            return (
-              <button
-                key={phase.status}
-                type="button"
-                onClick={() => setActiveStepIndex(idx)}
-                className="group flex flex-col items-center focus:outline-none cursor-pointer"
-                title={`View ${phase.label}`}
-              >
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all ${circleClass}`}
-                >
-                  {isCompletedBefore ? (
-                    <Check className="w-4 h-4 stroke-[2.5]" />
-                  ) : (
-                    <span>{phase.step}</span>
-                  )}
-                </div>
-
-                <div className="mt-1.5 flex flex-col items-center">
-                  <span
-                    className={`text-xs whitespace-nowrap ${
-                      isSelected
-                        ? "text-slate-900 font-bold"
-                        : isCurrentBookingStatus
-                        ? "text-slate-900 font-semibold"
-                        : "text-slate-500 group-hover:text-slate-800"
-                    }`}
-                  >
-                    {phase.label}
-                  </span>
-                  {isCurrentBookingStatus && (
-                    <span className="text-[10px] font-bold uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full mt-0.5">
-                      Current
-                    </span>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+        return (
+          <button
+            key={phase.status}
+            type="button"
+            onClick={() => setActiveStepIndex(idx)}
+            className={`px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
+              isActive
+                ? "bg-slate-900 text-white shadow-xs"
+                : isCurrent
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold"
+                : isCompletedBefore
+                ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70"
+            }`}
+          >
+            {isCompletedBefore ? (
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+            ) : (
+              <span className="text-[11px] opacity-75">{phase.step}.</span>
+            )}
+            <span>{phase.label}</span>
+            {isCurrent && (
+              <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-emerald-600 text-white font-bold tracking-wider">
+                Current
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 
-  const isViewingCurrent = currentViewedPhase.status === booking.bookingStatus;
-  const isLastPhase = activeStepIndex === phases.length - 1;
-  const nextPhase = !isLastPhase ? phases[activeStepIndex + 1] : null;
-
-  // Modal Footer
+  // Modal Footer matching existing modal patterns
   const footer = (
-    <div className="flex items-center justify-between w-full gap-3">
-      {/* Step navigation */}
+    <div className="flex items-center justify-between gap-3 w-full">
       <div className="flex items-center gap-2">
         <Button
           type="button"
           variant="outline"
-          size="sm"
           onClick={handlePrevPhase}
           disabled={activeStepIndex === 0 || isUpdating}
-          className="h-8.5 px-3 text-xs font-semibold text-slate-700 border-slate-200"
         >
-          <ArrowLeft className="w-3.5 h-3.5 mr-1" />
           Back
         </Button>
         <Button
           type="button"
           variant="outline"
-          size="sm"
           onClick={handleNextPhase}
           disabled={activeStepIndex === phases.length - 1 || isUpdating}
-          className="h-8.5 px-3 text-xs font-semibold text-slate-700 border-slate-200"
         >
           Next
-          <ArrowRight className="w-3.5 h-3.5 ml-1" />
         </Button>
-        <span className="text-xs text-slate-400 ml-2 hidden sm:inline">
-          Phase {activeStepIndex + 1} of {phases.length}
-        </span>
       </div>
 
-      {/* Primary actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 ml-auto">
         <Button
           type="button"
-          variant="ghost"
-          size="sm"
+          variant="outline"
           onClick={onClose}
           disabled={isUpdating}
-          className="h-8.5 px-3 text-xs font-semibold text-slate-600"
         >
           Close
         </Button>
@@ -314,10 +277,8 @@ export function BookingStatusFlowModal({
         {isCancelled ? (
           <Button
             type="button"
-            size="sm"
             onClick={handleReactivate}
             disabled={isUpdating}
-            className="h-8.5 px-4 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
           >
             {isUpdating ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
@@ -329,10 +290,8 @@ export function BookingStatusFlowModal({
         ) : !isViewingCurrent ? (
           <Button
             type="button"
-            size="sm"
             onClick={() => handleApplyStatus(currentViewedPhase.status)}
             disabled={isUpdating}
-            className="h-8.5 px-4 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white"
           >
             {isUpdating ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
@@ -344,25 +303,22 @@ export function BookingStatusFlowModal({
         ) : isLastPhase ? (
           <Button
             type="button"
-            size="sm"
             onClick={onClose}
-            className="h-8.5 px-4 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-            Workflow Completed
+            <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
+            Booking Completed
           </Button>
         ) : (
           <Button
             type="button"
-            size="sm"
             onClick={() => nextPhase && handleApplyStatus(nextPhase.status)}
             disabled={isUpdating}
-            className="h-8.5 px-4 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
           >
             {isUpdating ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
             ) : (
-              <ArrowRight className="w-3.5 h-3.5 mr-1.5" />
+              <Check className="w-3.5 h-3.5 mr-1.5" />
             )}
             Advance to {nextPhase?.label}
           </Button>
@@ -376,145 +332,111 @@ export function BookingStatusFlowModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Booking Status Workflow"
-      description={`Reference: ${booking.reference} • ${booking.guestName} • ${booking.packageName}`}
-      subHeader={subHeader}
+      description={`Reference: ${booking.reference} • ${booking.guestName}`}
+      subHeader={tabsNav}
       footer={footer}
-      maxWidth="lg"
+      maxWidth="2xl"
     >
       <div className="space-y-4 py-1 text-xs">
-        {/* Cancelled Notice */}
+        {/* Cancelled Banner if applicable */}
         {isCancelled && (
-          <div className="rounded-lg border border-rose-200 bg-rose-50 p-3.5 flex items-start justify-between gap-3">
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 flex items-center justify-between gap-3">
             <div>
-              <p className="font-semibold text-rose-900">This booking is currently Cancelled</p>
-              <p className="text-rose-700 mt-0.5">
-                Standard progression is halted. You can reactivate this booking to return it to the active lifecycle.
-              </p>
+              <span className="font-bold block">Booking is Cancelled</span>
+              <span className="text-[11px] text-rose-700">
+                Workflow progression is halted. Reactivating moves the booking back to Pending.
+              </span>
             </div>
             <Button
               type="button"
               variant="outline"
-              size="xs"
+              size="sm"
               onClick={handleReactivate}
               disabled={isUpdating}
-              className="border-rose-300 text-rose-800 hover:bg-rose-100 shrink-0"
+              className="border-rose-300 text-rose-800 hover:bg-rose-100"
             >
               Reactivate
             </Button>
           </div>
         )}
 
-        {/* Current Phase Details Card */}
-        <div
-          className={`rounded-lg border p-4 ${
-            isViewingCurrent
-              ? "border-emerald-300 bg-emerald-50/40"
-              : "border-slate-200 bg-white"
-          }`}
-        >
-          <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
+        {/* Booking Summary Box - matching booking-modal.tsx exactly */}
+        <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div className="space-y-1">
+            <span className="text-slate-500 font-semibold block text-[11px]">Guest Details</span>
+            <div className="font-semibold text-slate-900 text-sm">{booking.guestName}</div>
+            <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+              <Mail className="w-3.5 h-3.5 text-slate-400" />
+              <span>{booking.guestEmail}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+              <Phone className="w-3.5 h-3.5 text-slate-400" />
+              <span>{booking.guestPhone}</span>
+            </div>
+            <div className="text-slate-500 font-medium text-[11px]">{booking.country}</div>
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-slate-500 font-semibold block text-[11px]">Package &amp; Dates</span>
+            <div className="font-semibold text-slate-900 text-sm">{booking.packageName}</div>
+            <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <span>{booking.startDate} &rarr; {booking.endDate}</span>
+            </div>
+            <div className="font-medium text-slate-700">
+              {booking.groupSize} {booking.groupSize === 1 ? "Traveler" : "Travelers"} &bull; ${Number(booking.totalAmountUSD || 0).toLocaleString()} USD
+            </div>
+            <div className="flex items-center gap-2 pt-0.5">
+              <AdminStatusBadge status={booking.paymentStatus} />
+              <AdminStatusBadge status={booking.permitStatus} />
+            </div>
+          </div>
+        </div>
+
+        {/* Phase Details Card */}
+        <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2.5">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-slate-900">
+              <h3 className="font-bold text-slate-900 text-sm">
                 Phase {currentViewedPhase.step}: {currentViewedPhase.title}
               </h3>
               <AdminStatusBadge status={currentViewedPhase.status} />
             </div>
             {isViewingCurrent && (
-              <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
                 Current Status
               </span>
             )}
           </div>
 
-          <p className="text-xs text-slate-600 leading-relaxed">
+          <p className="text-slate-600 leading-relaxed text-xs">
             {currentViewedPhase.description}
           </p>
 
           {!isViewingCurrent && !isCancelled && (
-            <div className="mt-3 pt-3 border-t border-slate-200/60 flex items-center justify-between text-slate-600">
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-slate-500 text-[11px]">
               <span>
-                Booking is currently <strong className="text-slate-900">{booking.bookingStatus}</strong>.
+                Current database status: <strong className="text-slate-800">{booking.bookingStatus}</strong>
               </span>
-              <Button
-                type="button"
-                size="xs"
-                onClick={() => handleApplyStatus(currentViewedPhase.status)}
-                disabled={isUpdating}
-                className="bg-slate-900 hover:bg-slate-800 text-white font-semibold h-7 px-3"
-              >
-                {isUpdating ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
-                Set to this Phase
-              </Button>
+              <span className="text-slate-400">Click &ldquo;Set Status&rdquo; below to transition.</span>
             </div>
           )}
         </div>
 
-        {/* Transition Note Input */}
-        <div className="rounded-lg border border-slate-200 bg-white p-3.5 space-y-1.5">
-          <label className="text-xs font-semibold text-slate-800 block">
-            Status Transition Note (Optional)
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. Deposit verified via bank wire, permits submitted to park office..."
-            value={transitionNote}
-            onChange={(e) => setTransitionNote(e.target.value)}
-            className="w-full text-xs h-8.5 px-3 rounded-md border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900"
-          />
-          <p className="text-[11px] text-slate-500">
-            This note will be saved with the status update and recorded in the audit trail.
-          </p>
-        </div>
+        {/* Status Transition Note - standard AdminInputField */}
+        <AdminInputField
+          label="Transition Note (Optional)"
+          placeholder="e.g. Deposit verified via bank transfer, permits processed..."
+          value={transitionNote}
+          onChange={(e) => setTransitionNote(e.target.value)}
+        />
 
-        {/* Compact Booking Context */}
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3.5">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div>
-              <span className="text-[11px] text-slate-500 block">Guest</span>
-              <span className="font-semibold text-slate-900 block truncate" title={booking.guestName}>
-                {booking.guestName}
-              </span>
-              <span className="text-[10px] text-slate-400 block truncate">{booking.guestEmail}</span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-500 block">Dates & Size</span>
-              <span className="font-semibold text-slate-900 block">
-                {booking.groupSize} {booking.groupSize === 1 ? "Traveler" : "Travelers"}
-              </span>
-              <span className="text-[10px] text-slate-500 block truncate">
-                {booking.startDate} &rarr; {booking.endDate}
-              </span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-500 block">Payment</span>
-              <div className="mt-0.5">
-                <AdminStatusBadge status={booking.paymentStatus} />
-              </div>
-              <span className="text-[10px] text-slate-600 block mt-0.5 font-medium">
-                ${Number(booking.totalAmountUSD || 0).toLocaleString()} USD
-              </span>
-            </div>
-
-            <div>
-              <span className="text-[11px] text-slate-500 block">Permit & Guide</span>
-              <div className="mt-0.5">
-                <AdminStatusBadge status={booking.permitStatus} />
-              </div>
-              <span className="text-[10px] text-slate-600 block mt-0.5 truncate" title={booking.assignedGuide || "Unassigned"}>
-                {booking.assignedGuide ? `Guide: ${booking.assignedGuide}` : "Unassigned"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Cancellation Section */}
+        {/* Discreet Cancellation Toggle */}
         {!isCancelled && (
           <div className="pt-1">
             {!showCancelPrompt ? (
-              <div className="flex items-center justify-between text-xs text-slate-500 px-1">
-                <span>Need to reject or cancel this booking?</span>
+              <div className="flex items-center justify-between text-[11px] text-slate-500 px-0.5">
+                <span>Need to reject or cancel this reservation?</span>
                 <button
                   type="button"
                   onClick={() => setShowCancelPrompt(true)}
@@ -524,9 +446,9 @@ export function BookingStatusFlowModal({
                 </button>
               </div>
             ) : (
-              <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 space-y-2">
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-rose-900 flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-rose-900 flex items-center gap-1.5">
                     <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
                     Confirm Cancellation
                   </span>
@@ -543,27 +465,25 @@ export function BookingStatusFlowModal({
                   placeholder="Reason for cancellation (optional)..."
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  className="w-full text-xs h-8 px-2.5 rounded border border-rose-200 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full text-xs h-8 px-3 rounded-md border border-rose-200 bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-rose-500"
                 />
                 <div className="flex items-center justify-end gap-2">
                   <Button
                     type="button"
                     variant="outline"
-                    size="xs"
+                    size="sm"
                     onClick={() => setShowCancelPrompt(false)}
-                    className="h-7 text-xs"
                   >
                     Keep Booking
                   </Button>
                   <Button
                     type="button"
                     variant="destructive"
-                    size="xs"
+                    size="sm"
                     onClick={handleConfirmCancel}
                     disabled={isUpdating}
-                    className="h-7 text-xs"
                   >
-                    {isUpdating ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+                    {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : null}
                     Confirm Cancel
                   </Button>
                 </div>

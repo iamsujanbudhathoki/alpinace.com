@@ -28,7 +28,6 @@ export function getStatusBadgeStyle(status?: string): string {
 
   switch (normalized) {
     case "confirmed":
-    case "active":
     case "completed":
     case "paid":
     case "issued":
@@ -37,10 +36,11 @@ export function getStatusBadgeStyle(status?: string): string {
     case "published":
     case "easy":
       return "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100/80 hover:border-emerald-300 font-semibold";
+    case "active":
+    case "on mountain":
+      return "bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100/80 hover:border-blue-300 font-semibold";
     case "deposit paid":
     case "deposit_paid":
-    case "active trek":
-    case "active_trek":
     case "featured":
     case "processing":
     case "on mountain":

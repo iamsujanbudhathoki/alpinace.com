@@ -25,7 +25,6 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
       dotClass = "bg-emerald-500";
       break;
     case "active":
-    case "active trek":
     case "on mountain":
       styleClass = "bg-blue-50 text-blue-800 border-blue-200/80 font-semibold";
       dotClass = "bg-blue-500";
@@ -63,8 +62,7 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     in_review: "In Review",
     "in review": "In Review",
     pending: "Pending",
-    active_trek: "Active",
-    "active trek": "Active",
+    active: "Active",
     pending_document: "Docs Pending",
     "pending document": "Docs Pending",
     deposit_paid: "Deposit Paid",

@@ -1,12 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { ChevronUp } from "lucide-react";
 import { useSettings } from "@/lib/settings-context";
 
 export function FloatingWhatsApp() {
+  const pathname = usePathname();
   const { settings } = useSettings();
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Check if current page is a tour, trek, or expedition detail page
+  const isDetailPage = Boolean(
+    pathname &&
+      (pathname.startsWith("/trekking/") ||
+        pathname.startsWith("/tours/") ||
+        pathname.startsWith("/expeditions/")) &&
+      pathname.split("/").filter(Boolean).length >= 2
+  );
 
   const rawNumber = settings.whatsappNumber || "";
   const cleanNumber = rawNumber.replace(/\D/g, "");
@@ -34,14 +45,16 @@ export function FloatingWhatsApp() {
     : null;
 
   return (
-    <div className="fixed bottom-24 sm:bottom-8 right-4 sm:right-6 z-50 flex flex-col items-center gap-2.5 print:hidden">
-      {/* Scroll To Top Button */}
+    <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-center gap-2.5 print:hidden">
+      {/* Scroll To Top Button - On mobile detail pages, hide it so only one button (WhatsApp) is shown */}
       {showScrollTop && (
         <button
           type="button"
           onClick={scrollToTop}
           aria-label="Scroll to top of page"
-          className="w-11 h-11 sm:w-12 sm:h-12 bg-black/90 hover:bg-black text-white rounded-full shadow-lg border border-stone-800 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 animate-in fade-in zoom-in-90 duration-200"
+          className={`${
+            isDetailPage ? "hidden sm:flex" : "flex"
+          } w-11 h-11 sm:w-12 sm:h-12 bg-black/90 hover:bg-black text-white rounded-full shadow-lg border border-stone-800 items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 animate-in fade-in zoom-in-90 duration-200`}
         >
           <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0" />
         </button>
@@ -64,3 +77,4 @@ export function FloatingWhatsApp() {
     </div>
   );
 }
+

@@ -49,17 +49,8 @@ export function ContextualDetailHeader({
 
       {/* Right Column Action Controls */}
       <div className="shrink-0 flex items-center gap-3">
-       
-        {detailNav.onBookClick && (
-          <button
-            type="button"
-            onClick={detailNav.onBookClick}
-            className="btn-accent shrink-0 shadow-2xs"
-          >
-            <span className="hidden sm:inline">{detailNav.bookButtonLabel || "Book Now"}</span>
-            <span className="sm:hidden">Book</span>
-          </button>
-        )}
+
+
         <button
           type="button"
           onClick={onMobileMenuToggle}

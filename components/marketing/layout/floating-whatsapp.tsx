@@ -34,7 +34,7 @@ export function FloatingWhatsApp() {
     : null;
 
   return (
-    <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-center gap-2.5 print:hidden">
+    <div className="fixed bottom-24 sm:bottom-8 right-4 sm:right-6 z-50 flex flex-col items-center gap-2.5 print:hidden">
       {/* Scroll To Top Button */}
       {showScrollTop && (
         <button

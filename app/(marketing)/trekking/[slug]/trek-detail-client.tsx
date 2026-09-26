@@ -508,35 +508,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         />
       )}
 
-      {/* 5. MOBILE STICKY BOOKING ACTION BAR (< 1024px) */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-stone-200 py-2 px-4 z-30 shadow-lg flex items-center justify-between gap-3 pb-3">
-        <div className="min-w-0">
-          <span className="type-caption text-stone-700 font-semibold block truncate">
-            Estimated Rate ({trek.durationDays} Days)
-          </span>
-          <div className="flex items-baseline gap-1">
-            <span className="type-heading-xl text-stone-900">
-              ${perPersonCalculated.toLocaleString()}
-            </span>
-            <span className="type-caption text-stone-700 font-bold">USD / person</span>
-          </div>
-        </div>
-        {isBooked ? (
-          <div className="bg-emerald-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-xs flex items-center gap-1.5 shrink-0">
-            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
-            <span>Booking Submitted</span>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setIsBookingModalOpen(true)}
-            className="btn-accent text-xs px-3.5 py-2 shrink-0"
-          >
-            Book Trek
-          </button>
-        )}
-      </div>
-
       {/* 6. BOOKING MODAL */}
       <PublicBookingModal
         isOpen={isBookingModalOpen}

@@ -40,8 +40,8 @@
   /* Admin Layout & Modal Tokens */
   --z-header: 30;
   --z-drawer: 40;
-  --z-modal-overlay: 50;
-  --z-modal-content: 60;
+  --z-modal-overlay: 200;
+  --z-modal-content: 210;
 
   --spacing-header-height: 4rem;
   --spacing-modal-top: 50%;

@@ -490,7 +490,7 @@ export function PackageBookingSidebar({
           <button
             type="button"
             onClick={onBookClick}
-            className="btn-accent text-xs py-2 px-4 min-h-10 flex items-center gap-1.5"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-4 min-h-10 flex items-center gap-1.5 rounded-lg transition-colors cursor-pointer shadow-xs"
           >
             <span>{bookButtonLabel}</span>
             <ArrowRight className="w-3.5 h-3.5 shrink-0" />

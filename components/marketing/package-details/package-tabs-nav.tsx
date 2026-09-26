@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface TabItem {
   key: string;
@@ -27,6 +27,9 @@ export function PackageTabsNav({
   const containerRef = useRef<HTMLDivElement>(null);
   const activeBtnRef = useRef<HTMLButtonElement | null>(null);
 
+  const [isDragging, setIsDragging] = useState(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
   const hasDraggedRef = useRef(false);
 
   // Native non-passive wheel handler to map vertical wheel to horizontal scroll without jumping page

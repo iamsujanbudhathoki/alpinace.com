@@ -339,7 +339,7 @@ export function Hero({
           <div className="lg:bg-white/95 lg:backdrop-blur-xl lg:border lg:border-stone-200/90 lg:rounded-2xl lg:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] lg:p-4 lg:space-y-3">
             
             {/* Primary Hero Search Bar */}
-            <div className="relative flex items-center border-0 border-b border-white/40 focus-within:border-white/80 lg:border lg:bg-stone-50 lg:hover:bg-stone-50/90 lg:focus-within:bg-white lg:border-stone-200/90 lg:focus-within:border-stone-400 lg:rounded-xl px-1 lg:px-5 py-3 lg:py-3.5 transition-colors lg:shadow-2xs">
+            <div className="relative flex items-center bg-white/15 backdrop-blur-sm border border-white/25 focus-within:bg-white/20 focus-within:border-white/50 rounded-xl px-4 py-3 transition-colors lg:bg-stone-50 lg:backdrop-blur-none lg:hover:bg-stone-50/90 lg:focus-within:bg-white lg:border-stone-200/90 lg:focus-within:border-stone-400 lg:px-5 lg:py-3.5 lg:shadow-2xs">
               {isSearching ? (
                 <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white/70 lg:text-stone-500 shrink-0 mr-3" />
               ) : (
@@ -521,29 +521,6 @@ export function Hero({
                 </button>
               </div>
             )}
-          </div>
-
-          {/* Mobile-only: Popular destination quick-fills */}
-          <div className="flex lg:hidden items-center justify-center flex-wrap gap-x-3 gap-y-1 mt-4">
-            <span className="text-white/40 text-[10px] font-semibold tracking-widest uppercase">Popular</span>
-            {["Everest Base Camp", "Annapurna Circuit", "Manaslu"].map((dest, i, arr) => (
-              <span key={dest} className="inline-flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQuery(dest);
-                    setSelectedIndex(-1);
-                    inputRef.current?.focus();
-                  }}
-                  className="text-white/65 hover:text-white/90 text-xs font-normal transition-colors cursor-pointer"
-                >
-                  {dest}
-                </button>
-                {i < arr.length - 1 && (
-                  <span className="text-white/25 text-xs" aria-hidden>·</span>
-                )}
-              </span>
-            ))}
           </div>
 
 

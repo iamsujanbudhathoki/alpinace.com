@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import {
   Booking,
+  BookingStepStatus,
   PackageItem,
 } from "@/lib/admin-data";
 import { DashboardService, BookingService, ExpeditionService } from "@/lib/services/admin-service";
@@ -229,7 +230,15 @@ export default function AdminDashboardPage() {
                           ${bkg.totalAmountUSD.toLocaleString()}
                         </AdminTableCell>
                         <AdminTableCell align="right">
-                          <AdminStatusBadge status={bkg.bookingStatus} />
+                          <AdminStatusBadge
+                            status={
+                              Array.isArray(bkg.steps) && bkg.steps.length > 0
+                                ? (bkg.steps.find((s) => s.status !== BookingStepStatus.COMPLETED && s.status !== BookingStepStatus.CANCELLED)?.status ||
+                                   bkg.steps[bkg.steps.length - 1]?.status ||
+                                   BookingStepStatus.COMPLETED)
+                                : BookingStepStatus.PENDING
+                            }
+                          />
                         </AdminTableCell>
                       </AdminTableRow>
                     ))

@@ -4,6 +4,8 @@ import {
   BlogArticle,
   BlogStatus,
   Booking,
+  BookingStep,
+  BookingStepStatus,
   BookingStatus,
   BookingWorkflowPhase,
   CategoryItem,
@@ -12,11 +14,16 @@ import {
   FaqItem,
   FaqStatus,
   Inquiry,
-  InquiryStatus,
+  InquiryStep,
+  InquiryStepStatus,
   InquiryType,
+  InquiryWorkflowPhase,
   MenuCategoryDto,
   NotificationType,
   PackageItem,
+  TeamMemberStatus,
+  TestimonialStatus,
+  AboutUsStatus,
 } from "@/lib/admin-data";
 import {
   BlogFormValues,
@@ -931,7 +938,12 @@ function cleanBookingPayload(data: any) {
     payload.totalAmountUSD = Number(rest.totalAmountUSD);
   }
   if (rest.paymentStatus !== undefined) payload.paymentStatus = rest.paymentStatus;
-  if (rest.bookingStatus !== undefined) payload.bookingStatus = rest.bookingStatus;
+  if (rest.steps !== undefined && Array.isArray(rest.steps)) {
+    payload.steps = rest.steps.map((s: { status: string; message?: string }) => ({
+      status: s.status as BookingStepStatus,
+      message: s.message || "",
+    }));
+  }
   if (rest.assignedGuide !== undefined) {
     if (typeof rest.assignedGuide === "string" && rest.assignedGuide.trim() !== "") {
       payload.assignedGuide = rest.assignedGuide.trim();
@@ -1008,7 +1020,12 @@ export const BookingService = {
 
   async updateWorkflow(
     id: string,
-    data: { status: BookingStatus; note?: string }
+    data: {
+      stepIndex?: number;
+      status?: BookingStepStatus | string;
+      message?: string;
+      steps?: BookingStep[];
+    }
   ): Promise<ApiResponse<Booking>> {
     return apiClient.put<Booking>(`/admin/bookings/${id}/workflow`, data);
   },
@@ -1016,7 +1033,7 @@ export const BookingService = {
 
 export const InquiryService = {
   async getAll(params?: {
-    status?: InquiryStatus | "All";
+    status?: InquiryStepStatus | string | "All";
     type?: InquiryType | "All";
     search?: string;
     limit?: number;
@@ -1051,7 +1068,7 @@ export const InquiryService = {
       groupSize: Number(data.groupSize) || 1,
       message: String(data.message || "").trim(),
       ...(data.type ? { type: data.type } : {}),
-      ...(data.status ? { status: data.status } : {}),
+      ...(data.steps ? { steps: data.steps } : {}),
       ...(data.notes ? { notes: data.notes } : {}),
       ...((data as any).cfTurnstileToken
         ? { cfTurnstileToken: String((data as any).cfTurnstileToken).trim() }
@@ -1060,8 +1077,24 @@ export const InquiryService = {
     return apiClient.post<Inquiry>("/inquiries", payload);
   },
 
-  async update(id: string, data: { status?: Inquiry["status"]; notes?: string }): Promise<ApiResponse<Inquiry>> {
+  async update(id: string, data: { steps?: InquiryStep[]; type?: InquiryType; notes?: string }): Promise<ApiResponse<Inquiry>> {
     return apiClient.put<Inquiry>(`/admin/inquiries/${id}`, data);
+  },
+
+  async getWorkflowPhases(): Promise<ApiResponse<InquiryWorkflowPhase[]>> {
+    return apiClient.get<InquiryWorkflowPhase[]>("/admin/inquiries/workflow/phases");
+  },
+
+  async updateWorkflow(
+    id: string,
+    data: {
+      stepIndex?: number;
+      status?: InquiryStepStatus | string;
+      message?: string;
+      steps?: InquiryStep[];
+    }
+  ): Promise<ApiResponse<Inquiry>> {
+    return apiClient.put<Inquiry>(`/admin/inquiries/${id}/workflow`, data);
   },
 
   async sendQuote(id: string, data: { message: string }): Promise<ApiResponse<any>> {
@@ -1440,7 +1473,7 @@ export interface TeamMemberItem {
   avatar?: string;
   avatarMediaId?: string;
   experience?: string;
-  status: "active" | "inactive";
+  status: TeamMemberStatus;
   order: number;
   createdAt?: string;
   updatedAt?: string;
@@ -1453,7 +1486,7 @@ export interface TeamMemberFormValues {
   avatar?: string;
   avatarMediaId?: string;
   experience?: string;
-  status?: "active" | "inactive";
+  status?: TeamMemberStatus;
   order?: number;
 }
 
@@ -1533,7 +1566,7 @@ export interface TestimonialItem {
   avatar?: string;
   avatarMediaId?: string;
   rating: number;
-  status: "active" | "inactive";
+  status: TestimonialStatus;
   order: number;
 }
 
@@ -1546,7 +1579,7 @@ export interface TestimonialFormValues {
   avatar?: string;
   avatarMediaId?: string;
   rating?: number;
-  status?: "active" | "inactive";
+  status?: TestimonialStatus;
   order?: number;
 }
 
@@ -1647,7 +1680,7 @@ export interface AboutUsData {
   vision?: string;
   values?: AboutUsValueItem[];
   stats?: AboutUsStatItem[];
-  status?: "published" | "draft";
+  status?: AboutUsStatus;
 
   // Essential Core Meta SEO Fields
   metaTitle?: string;

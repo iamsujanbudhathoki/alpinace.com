@@ -3,6 +3,14 @@
 import React, { useState, useId } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  BookingPaymentStatus,
+  BookingPermitStatus,
+  BookingStatus,
+  BookingStepStatus,
+  BlogStatus,
+  PackageStatus,
+} from "@/lib/admin-data";
 
 export interface InlineSelectOption {
   value: string;
@@ -27,40 +35,40 @@ export function getStatusBadgeStyle(status?: string): string {
   const normalized = raw.toLowerCase().replace(/_/g, " ");
 
   switch (normalized) {
-    case "confirmed":
-    case "completed":
-    case "paid":
-    case "issued":
-    case "available":
+    case BookingStatus.CONFIRMED:
+    case BookingStepStatus.COMPLETED:
+    case BookingPaymentStatus.PAID:
+    case BookingPermitStatus.ISSUED:
+    case BlogStatus.PUBLISHED:
     case "booked":
-    case "published":
+    case "available":
     case "easy":
       return "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100/80 hover:border-emerald-300 font-semibold";
-    case "active":
+    case BookingStepStatus.ACTIVE:
+    case BookingStepStatus.IN_PROGRESS.replace(/_/g, " "):
+    case "in progress":
     case "on mountain":
       return "bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100/80 hover:border-blue-300 font-semibold";
-    case "deposit paid":
-    case "deposit_paid":
-    case "featured":
-    case "processing":
-    case "on mountain":
+    case BookingPaymentStatus.DEPOSIT_PAID.replace(/_/g, " "):
+    case BookingPaymentStatus.DEPOSIT_PAID:
+    case BookingPermitStatus.PROCESSING:
     case "new":
+    case "featured":
     case "moderate":
       return "bg-slate-100 text-slate-800 border-slate-200 hover:bg-slate-200/60 hover:border-slate-300 font-semibold";
-    case "in review":
-    case "in_review":
+    case BookingStatus.IN_REVIEW.replace(/_/g, " "):
+    case BookingStatus.IN_REVIEW:
     case "quote sent":
-    case "quote_sent":
-    case "draft":
-    case "pending":
-    case "archived":
+    case PackageStatus.DRAFT:
+    case BookingStepStatus.PENDING:
+    case BlogStatus.ARCHIVED:
     case "challenging":
       return "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/60 hover:border-slate-300 font-medium";
-    case "cancelled":
+    case BookingStepStatus.CANCELLED:
     case "closed":
-    case "refunded":
-    case "pending document":
-    case "pending_document":
+    case BookingPaymentStatus.REFUNDED:
+    case BookingPermitStatus.PENDING_DOCUMENT.replace(/_/g, " "):
+    case BookingPermitStatus.PENDING_DOCUMENT:
     case "strenuous":
     case "extreme":
       return "bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100/80 hover:border-rose-300 font-semibold";

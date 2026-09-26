@@ -7,9 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Mail, Phone, Globe, Calendar, Loader2, Footprints, Mountain, Compass, Info, ExternalLink } from "lucide-react";
 import {
   Booking,
+  BookingStep,
+  BookingStepStatus,
   BookingPackageType,
   BookingPaymentStatus,
-  BookingStatus,
   BookingPermitStatus,
   PackageItem,
   PackageStatus,
@@ -73,7 +74,6 @@ export function BookingFormModal({
       groupSize: 1,
       totalAmountUSD: 0,
       paymentStatus: BookingPaymentStatus.PENDING,
-      bookingStatus: BookingStatus.IN_REVIEW,
       assignedGuide: "",
       permitStatus: BookingPermitStatus.PROCESSING,
       specialRequests: "",
@@ -163,7 +163,6 @@ export function BookingFormModal({
         groupSize: initialData.groupSize,
         totalAmountUSD: initialData.totalAmountUSD,
         paymentStatus: initialData.paymentStatus,
-        bookingStatus: initialData.bookingStatus,
         assignedGuide: initialData.assignedGuide || "",
         permitStatus: initialData.permitStatus,
         specialRequests: initialData.specialRequests || "",
@@ -181,7 +180,6 @@ export function BookingFormModal({
         groupSize: 1,
         totalAmountUSD: 0,
         paymentStatus: BookingPaymentStatus.PENDING,
-        bookingStatus: BookingStatus.IN_REVIEW,
         assignedGuide: "",
         permitStatus: BookingPermitStatus.PROCESSING,
         specialRequests: "",
@@ -276,7 +274,13 @@ export function BookingFormModal({
         groupSize: Number(values.groupSize),
         totalAmountUSD: Number(values.totalAmountUSD),
         paymentStatus: values.paymentStatus,
-        bookingStatus: values.bookingStatus,
+        steps: initialData?.steps || [
+          { status: BookingStepStatus.COMPLETED, message: "Booking request received" },
+          { status: BookingStepStatus.PENDING, message: "" },
+          { status: BookingStepStatus.PENDING, message: "" },
+          { status: BookingStepStatus.PENDING, message: "" },
+          { status: BookingStepStatus.PENDING, message: "" },
+        ],
         assignedGuide: values.assignedGuide ? values.assignedGuide.trim() : undefined,
         permitStatus: values.permitStatus,
         specialRequests: values.specialRequests ? values.specialRequests.trim() : undefined,
@@ -566,21 +570,6 @@ export function BookingFormModal({
               ]}
               value={watch("paymentStatus")}
               onChange={(val) => setValue("paymentStatus", val as BookingPaymentStatus, { shouldValidate: true })}
-            />
-
-            <AdminSelectField
-              label="Booking Status"
-              error={errors.bookingStatus?.message}
-              options={[
-                { label: "Confirmed", value: BookingStatus.CONFIRMED },
-                { label: "Pending", value: BookingStatus.PENDING },
-                { label: "In Review", value: BookingStatus.IN_REVIEW },
-                { label: "Active", value: BookingStatus.ACTIVE },
-                { label: "Completed", value: BookingStatus.COMPLETED },
-                { label: "Cancelled", value: BookingStatus.CANCELLED },
-              ]}
-              value={watch("bookingStatus")}
-              onChange={(val) => setValue("bookingStatus", val as BookingStatus, { shouldValidate: true })}
             />
 
             <AdminSelectField

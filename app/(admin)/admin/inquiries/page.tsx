@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Plus, Trash2, Mail, MessageSquare, Tag, Send } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
+import {
+  Inquiry,
+  InquiryStep,
+  BookingStepStatus,
+  InquiryType,
+} from "@/lib/admin-data";
 import { InquiryFormValues } from "@/lib/admin-schemas";
 import { toast } from "sonner";
 import { InquiryService } from "@/lib/services/admin-service";
@@ -21,6 +26,45 @@ import {
 import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+
+const INQUIRY_STEP_NAMES = ["New Lead", "Contacted", "Quote Sent", "Booked", "Closed"];
+
+function getInquiryWorkflowSummary(steps?: InquiryStep[]) {
+  if (!steps || !Array.isArray(steps) || steps.length === 0) {
+    return {
+      activeStepNumber: 1,
+      activeStepName: "New Lead",
+      activeStatus: BookingStepStatus.PENDING,
+      activeMessage: "",
+      completedCount: 0,
+    };
+  }
+
+  const completedCount = steps.filter((s) => s.status === BookingStepStatus.COMPLETED).length;
+  if (completedCount === steps.length) {
+    return {
+      activeStepNumber: 5,
+      activeStepName: "Closed",
+      activeStatus: BookingStepStatus.COMPLETED,
+      activeMessage: steps[4]?.message || "",
+      completedCount,
+    };
+  }
+
+  const activeIdx = steps.findIndex(
+    (s) =>
+      s.status !== BookingStepStatus.COMPLETED &&
+      s.status !== BookingStepStatus.CANCELLED
+  );
+  const idx = activeIdx >= 0 ? activeIdx : 0;
+  return {
+    activeStepNumber: idx + 1,
+    activeStepName: INQUIRY_STEP_NAMES[idx] || `Step ${idx + 1}`,
+    activeStatus: steps[idx]?.status || BookingStepStatus.PENDING,
+    activeMessage: steps[idx]?.message || "",
+    completedCount,
+  };
+}
 
 export default function AdminInquiriesPage() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -60,7 +104,7 @@ export default function AdminInquiriesPage() {
     setLoading(true);
     try {
       const data = await InquiryService.getAll({
-        status: statusFilter === "All" ? undefined : (statusFilter as InquiryStatus),
+        status: statusFilter === "All" ? undefined : statusFilter,
         type: typeFilter === "All" ? undefined : (typeFilter as InquiryType),
         search: debouncedSearch,
         page,
@@ -101,28 +145,15 @@ export default function AdminInquiriesPage() {
     }
   }, [targetId, inquiries]);
 
-  const handleUpdateStatus = async (id: string, newStatus: InquiryStatus, notes?: string): Promise<boolean> => {
-    try {
-      const res = await InquiryService.update(id, { status: newStatus, notes });
-      if (res.success) {
-        setInquiries((prev) =>
-          prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus, notes: notes !== undefined ? notes : inq.notes } : inq))
-        );
-        if (statusInquiry && statusInquiry.id === id) {
-          setStatusInquiry((prev) => (prev ? { ...prev, status: newStatus, notes: notes !== undefined ? notes : prev.notes } : null));
-        }
-        if (replyInquiry && replyInquiry.id === id) {
-          setReplyInquiry((prev) => (prev ? { ...prev, status: newStatus, notes: notes !== undefined ? notes : prev.notes } : null));
-        }
-        toast.success(res.message || "Inquiry status updated successfully");
-        return true;
-      } else {
-        toast.error(res.message || "Failed to update inquiry status");
-        return false;
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update inquiry status");
-      return false;
+  const handleWorkflowUpdated = (updatedInquiry: Inquiry) => {
+    setInquiries((prev) =>
+      prev.map((inq) => (inq.id === updatedInquiry.id ? updatedInquiry : inq))
+    );
+    if (statusInquiry && statusInquiry.id === updatedInquiry.id) {
+      setStatusInquiry(updatedInquiry);
+    }
+    if (replyInquiry && replyInquiry.id === updatedInquiry.id) {
+      setReplyInquiry(updatedInquiry);
     }
   };
 
@@ -131,6 +162,7 @@ export default function AdminInquiriesPage() {
       const res = await InquiryService.sendQuote(id, { message });
       if (res.success) {
         toast.success(res.message || "Email reply dispatched successfully!");
+        await loadInquiries();
         return true;
       } else {
         toast.error(res.message || "Failed to send email reply.");
@@ -222,16 +254,16 @@ export default function AdminInquiriesPage() {
         searchPlaceholder="Search guest, email, or trip..."
       >
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-          {/* Status Dropdown Filter */}
+          {/* Step Status Dropdown Filter */}
           <AdminFilterSelect
-            label="Status:"
+            label="Step Status:"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="All">All Statuses</option>
-            {Object.values(InquiryStatus).map((st) => (
+            <option value="All">All Step Statuses</option>
+            {Object.values(BookingStepStatus).map((st) => (
               <option key={st} value={st}>
-                {st}
+                {st.charAt(0).toUpperCase() + st.slice(1).replace(/_/g, " ")}
               </option>
             ))}
           </AdminFilterSelect>
@@ -271,6 +303,8 @@ export default function AdminInquiriesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {inquiries.map((inq, idx) => {
               const serialNumber = (page - 1) * limit + idx + 1;
+              const summary = getInquiryWorkflowSummary(inq.steps);
+
               return (
                 <Card
                   key={inq.id}
@@ -294,7 +328,12 @@ export default function AdminInquiriesPage() {
                           {inq.country} &bull; {formatDate(inq.createdAt)}
                         </div>
                       </div>
-                      <AdminStatusBadge status={inq.status} />
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <AdminStatusBadge status={summary.activeStatus} />
+                        <span className="text-[10px] font-semibold text-slate-500">
+                          Step {summary.activeStepNumber}: {summary.activeStepName}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="bg-slate-50 p-3 rounded-lg border border-slate-200/80 space-y-1.5 text-xs">
@@ -307,6 +346,22 @@ export default function AdminInquiriesPage() {
                         <span>Group: {inq.groupSize} Pax</span>
                       </div>
                     </div>
+
+                    {/* Step Progress & Message */}
+                    <div className="bg-slate-50/80 px-3 py-2 rounded-lg border border-slate-200/80 flex items-center justify-between text-[11px] text-slate-600 gap-2">
+                      <span className="font-semibold text-slate-700">
+                        Step {summary.activeStepNumber}/5: {summary.activeStepName}
+                      </span>
+                      <span className="text-[11px] font-medium text-slate-500">
+                        {summary.completedCount}/5 steps done
+                      </span>
+                    </div>
+
+                    {summary.activeMessage && (
+                      <div className="text-[11px] text-slate-600 italic px-1 truncate">
+                        Remark: &ldquo;{summary.activeMessage}&rdquo;
+                      </div>
+                    )}
 
                     <p className="text-xs text-slate-600 line-clamp-3 font-normal leading-relaxed italic bg-slate-50/50 p-3 rounded-lg border border-slate-100">
                       &ldquo;{inq.message}&rdquo;
@@ -325,10 +380,10 @@ export default function AdminInquiriesPage() {
                         size="sm"
                         onClick={() => setStatusInquiry(inq)}
                         className="text-xs font-semibold text-slate-800 border-slate-200 hover:bg-slate-100 cursor-pointer h-8 px-2.5"
-                        title="Update Lead Status"
+                        title="Update Inquiry Steps"
                       >
                         <Tag className="w-3.5 h-3.5 mr-1 text-slate-600" />
-                        Update Status
+                        Workflow Steps
                       </Button>
                       <Button
                         size="sm"
@@ -388,7 +443,7 @@ export default function AdminInquiriesPage() {
         isOpen={statusInquiry !== null}
         onClose={() => setStatusInquiry(null)}
         inquiry={statusInquiry}
-        onUpdateStatus={handleUpdateStatus}
+        onStatusUpdated={handleWorkflowUpdated}
       />
 
       <ReplyInquiryEmailModal

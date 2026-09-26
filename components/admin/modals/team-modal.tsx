@@ -5,6 +5,7 @@ import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save } from "lucide-react";
 import { TeamMemberItem, TeamMemberFormValues } from "@/lib/services/admin-service";
+import { TeamMemberStatus } from "@/lib/admin-data";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ export function TeamModal({
     bio: "",
     avatar: "",
     experience: "",
-    status: "active",
+    status: TeamMemberStatus.ACTIVE,
     order: 0,
   });
 
@@ -45,7 +46,7 @@ export function TeamModal({
         bio: memberToEdit.bio || "",
         avatar: memberToEdit.avatar || "",
         experience: memberToEdit.experience || "",
-        status: memberToEdit.status || "active",
+        status: memberToEdit.status || TeamMemberStatus.ACTIVE,
         order: memberToEdit.order ?? 0,
       });
     } else {
@@ -55,7 +56,7 @@ export function TeamModal({
         bio: "",
         avatar: "",
         experience: "",
-        status: "active",
+        status: TeamMemberStatus.ACTIVE,
         order: 0,
       });
     }
@@ -206,10 +207,10 @@ export function TeamModal({
           <AdminSelectField
             label="Active Status"
             value={formData.status}
-            onChange={(val) => setFormData({ ...formData, status: val as "active" | "inactive" })}
+            onChange={(val) => setFormData({ ...formData, status: val as TeamMemberStatus })}
             options={[
-              { label: "Active (Visible on Website)", value: "active" },
-              { label: "Inactive (Hidden)", value: "inactive" },
+              { label: "Active (Visible on Website)", value: TeamMemberStatus.ACTIVE },
+              { label: "Inactive (Hidden)", value: TeamMemberStatus.INACTIVE },
             ]}
           />
         </div>

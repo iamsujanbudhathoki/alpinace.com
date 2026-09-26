@@ -154,12 +154,19 @@ export enum BlogStatus {
   ARCHIVED = "archived",
 }
 
-export enum InquiryStatus {
-  NEW = "New",
-  CONTACTED = "Contacted",
-  QUOTE_SENT = "Quote Sent",
-  BOOKED = "Booked",
-  CLOSED = "Closed",
+export enum TeamMemberStatus {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+}
+
+export enum TestimonialStatus {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+}
+
+export enum AboutUsStatus {
+  PUBLISHED = "published",
+  DRAFT = "draft",
 }
 
 export enum NotificationType {
@@ -175,6 +182,33 @@ export type PaymentStatus = BookingPaymentStatus;
 export type PermitStatus = BookingPermitStatus;
 export type PackageDifficulty = TripDifficulty;
 
+export enum BookingStepStatus {
+  PENDING = "pending",
+  IN_PROGRESS = "in_progress",
+  ACTIVE = "active",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+}
+
+export { BookingStepStatus as InquiryStepStatus };
+
+export interface BookingStep {
+  status: BookingStepStatus;
+  message: string;
+}
+
+export interface InquiryStep {
+  status: BookingStepStatus;
+  message: string;
+}
+
+export interface InquiryWorkflowPhase {
+  step: number;
+  label: string;
+  title: string;
+  description: string;
+}
+
 export interface Booking {
   id: string;
   reference: string;
@@ -189,20 +223,24 @@ export interface Booking {
   groupSize: number;
   totalAmountUSD: number;
   paymentStatus: BookingPaymentStatus;
-  bookingStatus: BookingStatus;
+  steps: BookingStep[];
   assignedGuide?: string;
   permitStatus: BookingPermitStatus;
   specialRequests?: string;
-  statusNote?: string | null;
 }
 
 export interface BookingWorkflowPhase {
-  status: BookingStatus;
   step: number;
   label: string;
   title: string;
   description: string;
-  allowedTransitions: BookingStatus[];
+}
+
+export enum DepartureDateStatus {
+  GUARANTEED = "guaranteed",
+  AVAILABLE = "available",
+  LIMITED = "limited",
+  FULL = "full",
 }
 
 export interface TripDepartureDate {
@@ -210,7 +248,7 @@ export interface TripDepartureDate {
   startDate: string;
   endDate: string;
   priceUSD?: number;
-  status?: string;
+  status?: DepartureDateStatus | string;
   seatsAvailable?: number;
   notes?: string;
 }
@@ -311,7 +349,7 @@ export interface Inquiry {
   groupSize: number;
   message: string;
   createdAt: string;
-  status: InquiryStatus;
+  steps: InquiryStep[];
   type?: InquiryType;
   notes?: string;
 }

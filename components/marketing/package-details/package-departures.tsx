@@ -2,7 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TripDepartureDate } from "@/lib/admin-data";
+import { TripDepartureDate, DepartureDateStatus } from "@/lib/admin-data";
 
 interface PackageDeparturesProps {
   dates: TripDepartureDate[];
@@ -11,10 +11,10 @@ interface PackageDeparturesProps {
 }
 
 const STATUS_BADGES: Record<string, { label: string; bg: string }> = {
-  guaranteed: { label: "Guaranteed", bg: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-  available: { label: "Available", bg: "bg-blue-50 text-blue-800 border-blue-200" },
-  limited: { label: "Limited Seats", bg: "bg-yellow-50 text-stone-900 border-yellow-300 font-semibold" },
-  full: { label: "Full", bg: "bg-rose-50 text-rose-800 border-rose-200" },
+  [DepartureDateStatus.GUARANTEED]: { label: "Guaranteed", bg: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  [DepartureDateStatus.AVAILABLE]: { label: "Available", bg: "bg-blue-50 text-blue-800 border-blue-200" },
+  [DepartureDateStatus.LIMITED]: { label: "Limited Seats", bg: "bg-yellow-50 text-stone-900 border-yellow-300 font-semibold" },
+  [DepartureDateStatus.FULL]: { label: "Full", bg: "bg-rose-50 text-rose-800 border-rose-200" },
 };
 
 export function PackageDepartures({
@@ -47,7 +47,7 @@ export function PackageDepartures({
 
       <div className="divide-y divide-stone-200">
         {dates.map((item, idx) => {
-          const statusConfig = STATUS_BADGES[item.status || "guaranteed"] || STATUS_BADGES.guaranteed;
+          const statusConfig = STATUS_BADGES[item.status || DepartureDateStatus.GUARANTEED] || STATUS_BADGES[DepartureDateStatus.GUARANTEED];
           const displayPrice = item.priceUSD || defaultPrice;
 
           return (
@@ -89,7 +89,7 @@ export function PackageDepartures({
                   </div>
                 )}
 
-                {onBookDate && item.status !== "full" && (
+                {onBookDate && item.status !== DepartureDateStatus.FULL && (
                   <button
                     type="button"
                     onClick={() => onBookDate(item)}

@@ -9,12 +9,14 @@ import {
   BookingPaymentStatus,
   BookingStatus,
   BookingPermitStatus,
-  InquiryStatus,
+  BookingStepStatus,
   InquiryType,
   BlogStatus,
   FaqStatus,
   CategoryType,
   CategoryStatus,
+  AboutUsStatus,
+  DepartureDateStatus,
 } from "./admin-data";
 
 export const groupPricingTierSchema = z.object({
@@ -46,7 +48,7 @@ export const departureDateSchema = z.object({
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   priceUSD: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : undefined), z.number().optional()),
-  status: z.string().optional(),
+  status: z.nativeEnum(DepartureDateStatus).default(DepartureDateStatus.GUARANTEED).optional(),
   seatsAvailable: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : undefined), z.number().optional()),
   notes: z.string().optional(),
 });
@@ -310,7 +312,14 @@ export const bookingSchema = z.object({
   groupSize: z.preprocess((val) => Number(val) || 1, z.number().min(1, "Group size must be at least 1")),
   totalAmountUSD: z.preprocess((val) => (val !== undefined && val !== "" ? Number(val) : 0), z.number().min(0, "Total amount cannot be negative")),
   paymentStatus: z.nativeEnum(BookingPaymentStatus),
-  bookingStatus: z.nativeEnum(BookingStatus),
+  steps: z
+    .array(
+      z.object({
+        status: z.nativeEnum(BookingStepStatus),
+        message: z.string().optional().default(""),
+      })
+    )
+    .optional(),
   assignedGuide: z.string().optional(),
   permitStatus: z.nativeEnum(BookingPermitStatus),
   specialRequests: z.string().optional(),
@@ -318,6 +327,11 @@ export const bookingSchema = z.object({
 });
 
 export type BookingFormValues = z.infer<typeof bookingSchema>;
+
+export const inquiryStepSchema = z.object({
+  status: z.nativeEnum(BookingStepStatus),
+  message: z.string().optional().default(""),
+});
 
 export const inquirySchema = z.object({
   guestName: z.string().min(2, "Guest name must be at least 2 characters"),
@@ -328,12 +342,13 @@ export const inquirySchema = z.object({
   travelDates: z.string().min(2, "Travel dates are required"),
   groupSize: z.preprocess((val) => Number(val), z.number().min(1, "Group size must be at least 1")),
   message: z.string().min(5, "Message must be at least 5 characters"),
-  status: z.nativeEnum(InquiryStatus).optional(),
+  steps: z.array(inquiryStepSchema).optional(),
   type: z.nativeEnum(InquiryType).optional(),
   notes: z.string().optional(),
   cfTurnstileToken: z.string().optional(),
 });
 
+export type InquiryStepFormValues = z.infer<typeof inquiryStepSchema>;
 export type InquiryFormValues = z.infer<typeof inquirySchema>;
 
 
@@ -421,7 +436,7 @@ export const aboutUsSchema = z.object({
       })
     )
     .optional(),
-  status: z.enum(["published", "draft"]).default("published"),
+  status: z.nativeEnum(AboutUsStatus).default(AboutUsStatus.PUBLISHED),
 
   // Essential Core Meta SEO Fields
   metaTitle: z

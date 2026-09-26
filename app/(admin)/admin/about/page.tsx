@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AboutUsData, AboutUsService, MediaService } from "@/lib/services/admin-service";
+import { AboutUsStatus } from "@/lib/admin-data";
 import { websiteDomain } from "@/lib/env.constants";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,7 @@ export default function AdminAboutUsPage() {
     vision: "",
     values: [],
     stats: [],
-    status: "published",
+    status: AboutUsStatus.PUBLISHED,
 
     // Core Meta SEO
     metaTitle: "",
@@ -70,7 +71,7 @@ export default function AdminAboutUsPage() {
             vision: data.vision || "",
             values: Array.isArray(data.values) ? data.values : [],
             stats: Array.isArray(data.stats) ? data.stats : [],
-            status: data.status || "published",
+            status: data.status || AboutUsStatus.PUBLISHED,
             metaTitle: data.metaTitle || "",
             metaDescription: data.metaDescription || "",
             metaKeywords: data.metaKeywords || "",

@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Download, Plus, Tag, ExternalLink, Workflow, GitBranch } from "lucide-react";
-import { Booking, BookingStatus, BookingPackageType, BookingPaymentStatus, PackageItem } from "@/lib/admin-data";
+import {
+  Booking,
+  BookingStep,
+  BookingStepStatus,
+  BookingPackageType,
+  BookingPaymentStatus,
+  PackageItem,
+} from "@/lib/admin-data";
 import { TrekItem } from "@/lib/trek-data";
 import { toast } from "sonner";
 import { BookingService, TrekService, TourService, ExpeditionService } from "@/lib/services/admin-service";
@@ -12,6 +19,7 @@ import { ApiResponse } from "@/lib/services/api-client";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminFilterBar } from "@/components/admin/ui/admin-filter-bar";
 import { AdminInlineSelect, InlineSelectOption } from "@/components/admin/ui/admin-inline-select";
+import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { BookingFormModal, DeleteBookingModal } from "@/components/admin/modals/booking-modal";
 import { BookingStatusFlowModal } from "@/components/admin/modals/booking-status-flow-modal";
 import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
@@ -44,14 +52,49 @@ const PAYMENT_OPTIONS: InlineSelectOption[] = [
   { value: BookingPaymentStatus.REFUNDED, label: "Refunded" },
 ];
 
-const STATUS_OPTIONS: InlineSelectOption[] = [
-  { value: BookingStatus.CONFIRMED, label: "Confirmed" },
-  { value: BookingStatus.PENDING, label: "Pending" },
-  { value: BookingStatus.IN_REVIEW, label: "In Review" },
-  { value: BookingStatus.ACTIVE, label: "Active" },
-  { value: BookingStatus.COMPLETED, label: "Completed" },
-  { value: BookingStatus.CANCELLED, label: "Cancelled" },
+const STEP_STATUS_FILTER_OPTIONS: InlineSelectOption[] = [
+  { value: BookingStepStatus.COMPLETED, label: "Completed" },
+  { value: BookingStepStatus.IN_PROGRESS, label: "In Progress" },
+  { value: BookingStepStatus.ACTIVE, label: "Active" },
+  { value: BookingStepStatus.PENDING, label: "Pending" },
+  { value: BookingStepStatus.CANCELLED, label: "Cancelled" },
 ];
+
+const STEP_NAMES = ["Request", "Review", "Confirmed", "Active", "Completed"];
+
+function getBookingWorkflowSummary(steps?: BookingStep[]) {
+  if (!steps || !Array.isArray(steps) || steps.length === 0) {
+    return {
+      activeStepNumber: 1,
+      activeStepName: "Request",
+      activeStatus: BookingStepStatus.PENDING,
+      completedCount: 0,
+    };
+  }
+
+  const completedCount = steps.filter((s) => s.status === BookingStepStatus.COMPLETED).length;
+  if (completedCount === steps.length) {
+    return {
+      activeStepNumber: 5,
+      activeStepName: "Completed",
+      activeStatus: BookingStepStatus.COMPLETED,
+      completedCount,
+    };
+  }
+
+  const activeIdx = steps.findIndex(
+    (s) =>
+      s.status !== BookingStepStatus.COMPLETED &&
+      s.status !== BookingStepStatus.CANCELLED
+  );
+  const idx = activeIdx >= 0 ? activeIdx : 0;
+  return {
+    activeStepNumber: idx + 1,
+    activeStepName: STEP_NAMES[idx] || `Step ${idx + 1}`,
+    activeStatus: steps[idx]?.status || BookingStepStatus.PENDING,
+    completedCount,
+  };
+}
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -233,22 +276,6 @@ export default function AdminBookingsPage() {
     }
   };
 
-  const handleInlineStatusChange = async (bkg: Booking, newStatus: string) => {
-    try {
-      const res = await BookingService.update(bkg.id, { bookingStatus: newStatus as BookingStatus });
-      if (res.success) {
-        setBookings((prev) =>
-          prev.map((b) => (b.id === bkg.id ? { ...b, bookingStatus: newStatus as BookingStatus } : b))
-        );
-        toast.success(`Booking ${bkg.reference} marked as ${newStatus}`);
-      } else {
-        toast.error(res.message || "Failed to update status");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update status");
-    }
-  };
-
   const handleInlinePaymentChange = async (bkg: Booking, newPayment: string) => {
     try {
       const res = await BookingService.update(bkg.id, {
@@ -317,7 +344,10 @@ export default function AdminBookingsPage() {
       b.endDate,
       b.totalAmountUSD,
       b.paymentStatus,
-      b.bookingStatus,
+      (() => {
+        const s = getBookingWorkflowSummary(b.steps);
+        return `Step ${s.activeStepNumber}: ${s.activeStepName} (${s.activeStatus})`;
+      })(),
     ]);
 
     const csvContent =
@@ -381,17 +411,16 @@ export default function AdminBookingsPage() {
         </AdminFilterSelect>
 
         <AdminFilterSelect
-          label="Status:"
+          label="Step Status:"
           value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
         >
           <option value="All">All Statuses</option>
-          <option value={BookingStatus.CONFIRMED}>Confirmed</option>
-          <option value={BookingStatus.PENDING}>Pending</option>
-          <option value={BookingStatus.IN_REVIEW}>In Review</option>
-          <option value={BookingStatus.ACTIVE}>Active</option>
-          <option value={BookingStatus.COMPLETED}>Completed</option>
-          <option value={BookingStatus.CANCELLED}>Cancelled</option>
+          <option value={BookingStepStatus.COMPLETED}>Completed</option>
+          <option value={BookingStepStatus.IN_PROGRESS}>In Progress</option>
+          <option value={BookingStepStatus.ACTIVE}>Active</option>
+          <option value={BookingStepStatus.PENDING}>Pending</option>
+          <option value={BookingStepStatus.CANCELLED}>Cancelled</option>
         </AdminFilterSelect>
       </AdminFilterBar>
 
@@ -407,7 +436,7 @@ export default function AdminBookingsPage() {
               <AdminTableHead>Dates &amp; Group</AdminTableHead>
               <AdminTableHead>Total Amount</AdminTableHead>
               <AdminTableHead>Payment</AdminTableHead>
-              <AdminTableHead>Status</AdminTableHead>
+              <AdminTableHead>Workflow Steps</AdminTableHead>
               <AdminTableHead align="right">Actions</AdminTableHead>
             </tr>
           </AdminTableHeader>
@@ -465,23 +494,31 @@ export default function AdminBookingsPage() {
                       />
                     </AdminTableCell>
                     <AdminTableCell>
-                      <div className="flex items-center gap-1.5">
-                        <AdminInlineSelect
-                          value={bkg.bookingStatus}
-                          options={STATUS_OPTIONS}
-                          onChange={(newVal) => handleInlineStatusChange(bkg, newVal)}
-                          variant="badge"
-                          title="Click to quick-change status"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setStatusFlowBooking(bkg)}
-                          className="inline-flex items-center justify-center w-6 h-6 rounded-md text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
-                          title="Manage Status Workflow"
-                        >
-                          <Workflow className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      {(() => {
+                        const summary = getBookingWorkflowSummary(bkg.steps);
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => setStatusFlowBooking(bkg)}
+                            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer group text-left w-full max-w-[210px]"
+                            title="Click to view & manage individual step statuses"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="font-semibold text-slate-800 text-xs truncate">
+                                {summary.activeStepNumber}. {summary.activeStepName}
+                              </div>
+                              <div className="text-[10px] text-slate-500 font-medium">
+                                {summary.completedCount}/5 steps done
+                              </div>
+                            </div>
+                            <AdminStatusBadge
+                              status={summary.activeStatus}
+                              className="shrink-0 text-[10px] py-0 px-1.5"
+                            />
+                            <Workflow className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 shrink-0 ml-0.5" />
+                          </button>
+                        );
+                      })()}
                     </AdminTableCell>
                     <AdminTableCell align="right">
                       <AdminTableActions>

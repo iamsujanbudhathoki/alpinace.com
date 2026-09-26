@@ -31,6 +31,7 @@ import {
   Compass,
 } from "lucide-react";
 import { adminTestimonialsApi, TestimonialItem } from "@/lib/services/admin-service";
+import { TestimonialStatus } from "@/lib/admin-data";
 import { TestimonialModal } from "@/components/admin/modals/testimonial-modal";
 import { TestimonialViewModal } from "@/components/admin/modals/testimonial-view-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
@@ -255,8 +256,8 @@ export default function AdminTestimonialsPage() {
           }}
         >
           <option value="All">All Testimonials ({totalItems})</option>
-          <option value="active">Active Only</option>
-          <option value="inactive">Inactive Only</option>
+          <option value={TestimonialStatus.ACTIVE}>Active Only</option>
+          <option value={TestimonialStatus.INACTIVE}>Inactive Only</option>
         </AdminFilterSelect>
       </div>
 

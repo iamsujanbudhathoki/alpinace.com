@@ -6,8 +6,9 @@ import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminStatusBadge } from "@/components/admin/ui/admin-status-badge";
 import { Button } from "@/components/ui/button";
-import { Inquiry, InquiryStatus, InquiryType } from "@/lib/admin-data";
+import { Inquiry, InquiryStep, InquiryStepStatus, InquiryWorkflowPhase, BookingStepStatus, InquiryType } from "@/lib/admin-data";
 import { InquiryFormValues, inquirySchema } from "@/lib/admin-schemas";
+import { InquiryService } from "@/lib/services/admin-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CheckCircle,
@@ -25,6 +26,7 @@ import {
   Award,
   Info,
   Calendar,
+  Save,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -290,147 +292,273 @@ interface UpdateInquiryStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   inquiry: Inquiry | null;
-  onUpdateStatus: (id: string, newStatus: InquiryStatus, notes?: string) => Promise<boolean> | void;
+  onStatusUpdated?: (updatedInquiry: Inquiry) => void;
+  onUpdateStatus?: (id: string, newStatus: any, notes?: string) => Promise<boolean> | void;
 }
 
-const INQUIRY_PHASES = [
+const DEFAULT_INQUIRY_PHASES: InquiryWorkflowPhase[] = [
   {
-    status: InquiryStatus.NEW,
-    stepNumber: 1,
-    label: "New",
-    title: "Phase 1: New Lead Received",
-    message: "A fresh inquiry has arrived. Review traveler preferences, requested trip region, and target travel dates.",
-    actionRecommendation: "Reach out via email or phone to confirm requirements, then move to Contacted.",
+    step: 1,
+    label: "New Lead",
+    title: "New Lead Received",
+    description:
+      "Initial inquiry received from client. Review requested trip, travel dates, and group size.",
   },
   {
-    status: InquiryStatus.CONTACTED,
-    stepNumber: 2,
+    step: 2,
     label: "Contacted",
-    title: "Phase 2: Initial Contact Made",
-    message: "Initial outreach has been initiated with the traveler. Discussion regarding fitness, budget, group size, and route customization is ongoing.",
-    actionRecommendation: "Prepare a tailored proposal and quote, then advance to Quote Sent.",
+    title: "Initial Contact Made",
+    description:
+      "Direct communication initiated with traveler via email or phone to qualify requirements.",
   },
   {
-    status: InquiryStatus.QUOTE_SENT,
-    stepNumber: 3,
+    step: 3,
     label: "Quote Sent",
-    title: "Phase 3: Itinerary & Quotation Sent",
-    message: "A formal itinerary proposal with package inclusions and pricing has been dispatched to the prospective guest.",
-    actionRecommendation: "Follow up to answer questions. When the guest accepts and commits, transition to Booked.",
+    title: "Itinerary & Quotation Sent",
+    description:
+      "Detailed proposal, pricing, and customized itinerary dispatched to the client.",
   },
   {
-    status: InquiryStatus.BOOKED,
-    stepNumber: 4,
+    step: 4,
     label: "Booked",
-    title: "Phase 4: Converted to Confirmed Booking",
-    message: "Lead successfully converted! The client accepted the proposal and a formal booking reservation has been created.",
-    actionRecommendation: "Manage trip execution through the Admin Bookings ledger.",
+    title: "Converted to Booking",
+    description:
+      "Client accepted quote and proceeded to confirm a trip booking.",
   },
   {
-    status: InquiryStatus.CLOSED,
-    stepNumber: 5,
+    step: 5,
     label: "Closed",
-    title: "Phase 5: Lead Concluded / Archived",
-    message: "Communication is concluded or archived. Keep records available for future seasonal re-engagement.",
-    actionRecommendation: "Lead lifecycle completed.",
+    title: "Inquiry Concluded",
+    description:
+      "Inquiry fulfilled, finalized, or archived.",
   },
+];
+
+const STEP_STATUS_OPTIONS = [
+  { label: "Pending", value: BookingStepStatus.PENDING },
+  { label: "In Progress", value: BookingStepStatus.IN_PROGRESS },
+  { label: "Active", value: BookingStepStatus.ACTIVE },
+  { label: "Completed", value: BookingStepStatus.COMPLETED },
+  { label: "Cancelled", value: BookingStepStatus.CANCELLED },
 ];
 
 export function UpdateInquiryStatusModal({
   isOpen,
   onClose,
   inquiry,
+  onStatusUpdated,
   onUpdateStatus,
 }: UpdateInquiryStatusModalProps) {
-  const [activeStepIndex, setActiveStepIndex] = useState(0);
-  const [transitionNote, setTransitionNote] = useState("");
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [phases, setPhases] = useState<InquiryWorkflowPhase[]>(DEFAULT_INQUIRY_PHASES);
+  const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
+  const [localSteps, setLocalSteps] = useState<InquiryStep[]>([]);
+  const [inquiryNotes, setInquiryNotes] = useState<string>("");
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
+  // Load workflow phases dynamically from backend
   useEffect(() => {
-    if (inquiry && isOpen) {
-      const idx = INQUIRY_PHASES.findIndex((p) => p.status === inquiry.status);
-      setActiveStepIndex(idx >= 0 ? idx : 0);
-      setTransitionNote(inquiry.notes || "");
+    if (!isOpen) return;
+
+    let isMounted = true;
+    async function loadPhases() {
+      try {
+        const res = await InquiryService.getWorkflowPhases();
+        if (isMounted && res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setPhases(res.data);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch inquiry workflow phases, using default:", err);
+      }
     }
-  }, [inquiry, isOpen]);
+
+    loadPhases();
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen]);
+
+  // Synchronize local steps with inquiry data
+  useEffect(() => {
+    if (isOpen && inquiry) {
+      const initialized: InquiryStep[] = [0, 1, 2, 3, 4].map((i) => {
+        const existing = inquiry.steps?.[i];
+        return {
+          status:
+            existing?.status ||
+            (i === 0 ? BookingStepStatus.COMPLETED : BookingStepStatus.PENDING),
+          message: existing?.message || "",
+        };
+      });
+      setLocalSteps(initialized);
+
+      // Find first non-completed step or default to 0
+      const firstIncomplete = initialized.findIndex(
+        (s) =>
+          s.status !== BookingStepStatus.COMPLETED &&
+          s.status !== BookingStepStatus.CANCELLED
+      );
+      setActiveStepIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
+      setInquiryNotes(inquiry.notes || "");
+    }
+  }, [isOpen, inquiry]);
 
   if (!inquiry) return null;
 
-  const currentLeadPhaseIndex = INQUIRY_PHASES.findIndex((p) => p.status === inquiry.status);
-  const currentViewedPhase = INQUIRY_PHASES[activeStepIndex];
-  const isViewingCurrent = currentViewedPhase.status === inquiry.status;
-  const isLastPhase = activeStepIndex === INQUIRY_PHASES.length - 1;
-  const nextPhase = !isLastPhase ? INQUIRY_PHASES[activeStepIndex + 1] : null;
+  const currentViewedPhase = phases[activeStepIndex] || phases[0];
+  const currentStepData = localSteps[activeStepIndex] || {
+    status: BookingStepStatus.PENDING,
+    message: "",
+  };
 
-  const handleApplyStatus = async (targetStatus: InquiryStatus) => {
+  const updateCurrentStatus = (newStatus: BookingStepStatus) => {
+    setLocalSteps((prev) => {
+      const copy = [...prev];
+      copy[activeStepIndex] = {
+        ...copy[activeStepIndex],
+        status: newStatus,
+      };
+      return copy;
+    });
+  };
+
+  const updateCurrentMessage = (newMessage: string) => {
+    setLocalSteps((prev) => {
+      const copy = [...prev];
+      copy[activeStepIndex] = {
+        ...copy[activeStepIndex],
+        message: newMessage,
+      };
+      return copy;
+    });
+  };
+
+  const handleSaveAll = async () => {
     if (!inquiry || isUpdating) return;
     setIsUpdating(true);
     try {
-      const res = await onUpdateStatus(inquiry.id, targetStatus, transitionNote.trim() || undefined);
-      if (res !== false) {
-        toast.success(`Inquiry status updated to "${targetStatus}"`);
-        const newIdx = INQUIRY_PHASES.findIndex((p) => p.status === targetStatus);
-        if (newIdx >= 0) setActiveStepIndex(newIdx);
+      const res = await InquiryService.updateWorkflow(inquiry.id, {
+        steps: localSteps,
+      });
+
+      if (res.success && res.data) {
+        if (inquiryNotes !== (inquiry.notes || "")) {
+          await InquiryService.update(inquiry.id, { notes: inquiryNotes.trim() });
+          res.data.notes = inquiryNotes.trim();
+        }
+        toast.success("Inquiry step statuses & messages saved successfully");
+        onStatusUpdated?.(res.data);
+      } else {
+        toast.error(res.message || "Failed to update inquiry steps");
       }
-    } catch (err) {
-      console.error("Status update error:", err);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update inquiry steps");
     } finally {
       setIsUpdating(false);
     }
   };
 
+  const handleQuickStatusChange = async (targetStatus: BookingStepStatus) => {
+    if (!inquiry || isUpdating) return;
+    setIsUpdating(true);
+    try {
+      const updatedSteps = [...localSteps];
+      updatedSteps[activeStepIndex] = {
+        ...updatedSteps[activeStepIndex],
+        status: targetStatus,
+      };
+      setLocalSteps(updatedSteps);
+
+      const res = await InquiryService.updateWorkflow(inquiry.id, {
+        stepIndex: activeStepIndex,
+        status: targetStatus,
+        message: updatedSteps[activeStepIndex].message,
+      });
+
+      if (res.success && res.data) {
+        toast.success(
+          `Step ${activeStepIndex + 1} (${currentViewedPhase.label}) status set to "${targetStatus}"`
+        );
+        onStatusUpdated?.(res.data);
+      } else {
+        toast.error(res.message || "Failed to update step status");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update step status");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleNextPhase = () => {
+    if (activeStepIndex < phases.length - 1) {
+      setActiveStepIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevPhase = () => {
+    if (activeStepIndex > 0) {
+      setActiveStepIndex((prev) => prev - 1);
+    }
+  };
+
+  // Status dot color helper
+  const getStatusDotColor = (status: BookingStepStatus | string) => {
+    switch (status) {
+      case BookingStepStatus.COMPLETED:
+        return "bg-emerald-500";
+      case BookingStepStatus.IN_PROGRESS:
+      case BookingStepStatus.ACTIVE:
+        return "bg-blue-500";
+      case BookingStepStatus.CANCELLED:
+        return "bg-rose-500";
+      default:
+        return "bg-slate-400";
+    }
+  };
+
+  // Phase navigation subHeader tabs
   const tabsNav = (
     <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 modal-scroll">
-      {INQUIRY_PHASES.map((phase, idx) => {
+      {phases.map((phase, idx) => {
         const isActive = activeStepIndex === idx;
-        const isCurrent = inquiry.status === phase.status;
-        const isCompletedBefore = currentLeadPhaseIndex >= 0 && idx < currentLeadPhaseIndex;
+        const stepStatus = localSteps[idx]?.status || BookingStepStatus.PENDING;
+        const isCompleted = stepStatus === BookingStepStatus.COMPLETED;
 
         return (
           <button
-            key={phase.status}
+            key={phase.step}
             type="button"
             onClick={() => setActiveStepIndex(idx)}
             className={`px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
               isActive
                 ? "bg-slate-900 text-white shadow-xs"
-                : isCurrent
-                ? "bg-slate-100 text-slate-900 border border-slate-300 font-bold"
-                : isCompletedBefore
-                ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70"
+                : isCompleted
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
+                : "bg-slate-100/80 text-slate-700 hover:bg-slate-200/80 border border-slate-200"
             }`}
           >
-            {isCompletedBefore ? (
-              <Check className="w-3.5 h-3.5 text-slate-500" />
+            {isCompleted ? (
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
             ) : (
-              <span className="text-[11px] opacity-75">{phase.stepNumber}.</span>
+              <span className={`w-2 h-2 rounded-full shrink-0 ${getStatusDotColor(stepStatus)}`} />
             )}
-            <span>{phase.label}</span>
-            {isCurrent && (
-              <span
-                className={`text-[9px] uppercase px-1.5 py-0.5 rounded font-bold tracking-wider ${
-                  isActive
-                    ? "bg-slate-700 text-slate-100"
-                    : "bg-slate-800 text-white"
-                }`}
-              >
-                Current
-              </span>
-            )}
+            <span>
+              {phase.step}. {phase.label}
+            </span>
           </button>
         );
       })}
     </div>
   );
 
+  // Modal Footer
   const footer = (
-    <div className="flex items-center justify-between w-full gap-3">
+    <div className="flex items-center justify-between gap-3 w-full">
       <div className="flex items-center gap-2">
         <Button
           type="button"
           variant="outline"
-          onClick={() => setActiveStepIndex((prev) => Math.max(0, prev - 1))}
+          onClick={handlePrevPhase}
           disabled={activeStepIndex === 0 || isUpdating}
         >
           Back
@@ -438,59 +566,31 @@ export function UpdateInquiryStatusModal({
         <Button
           type="button"
           variant="outline"
-          onClick={() => setActiveStepIndex((prev) => Math.min(INQUIRY_PHASES.length - 1, prev + 1))}
-          disabled={activeStepIndex === INQUIRY_PHASES.length - 1 || isUpdating}
+          onClick={handleNextPhase}
+          disabled={activeStepIndex === phases.length - 1 || isUpdating}
         >
           Next
         </Button>
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onClose}
-          disabled={isUpdating}
-        >
+        <Button type="button" variant="outline" onClick={onClose} disabled={isUpdating}>
           Close
         </Button>
 
-        {!isViewingCurrent ? (
-          <Button
-            type="button"
-            onClick={() => handleApplyStatus(currentViewedPhase.status)}
-            disabled={isUpdating}
-          >
-            {isUpdating ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
-            ) : (
-              <Check className="w-3.5 h-3.5 mr-1.5" />
-            )}
-            Set Status to &ldquo;{currentViewedPhase.label}&rdquo;
-          </Button>
-        ) : isLastPhase ? (
-          <Button
-            type="button"
-            onClick={onClose}
-            className="bg-slate-900 hover:bg-slate-800 text-white"
-          >
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-            Lead Completed
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            onClick={() => nextPhase && handleApplyStatus(nextPhase.status)}
-            disabled={isUpdating}
-          >
-            {isUpdating ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
-            ) : (
-              <Check className="w-3.5 h-3.5 mr-1.5" />
-            )}
-            Advance to {nextPhase?.label}
-          </Button>
-        )}
+        <Button
+          type="button"
+          onClick={handleSaveAll}
+          disabled={isUpdating}
+          className="bg-slate-900 hover:bg-slate-800 text-white"
+        >
+          {isUpdating ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+          ) : (
+            <Save className="w-3.5 h-3.5 mr-1.5" />
+          )}
+          Save Workflow Steps
+        </Button>
       </div>
     </div>
   );
@@ -499,14 +599,14 @@ export function UpdateInquiryStatusModal({
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Inquiry Status Workflow"
+      title="Inquiry Workflow Steps"
       description={`Lead for ${inquiry.guestName} • ${inquiry.interestedTrip}`}
       subHeader={tabsNav}
       footer={footer}
       maxWidth="2xl"
     >
       <div className="space-y-4 py-1 text-xs">
-        {/* Lead Context Snapshot */}
+        {/* Inquiry Summary Box */}
         <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
           <div className="space-y-1">
             <span className="text-slate-500 font-semibold block text-[11px]">Traveler Contact</span>
@@ -547,48 +647,144 @@ export function UpdateInquiryStatusModal({
           </div>
         )}
 
-        {/* Phase Details Card */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2.5">
+        {/* Active Step Details & Status/Message Editor */}
+        <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-4 shadow-2xs">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-slate-900 text-sm">
-                Phase {currentViewedPhase.stepNumber}: {currentViewedPhase.title}
-              </h3>
-              <AdminStatusBadge status={currentViewedPhase.status} />
+            <div>
+              <div className="text-[11px] text-slate-500 font-semibold tracking-wider uppercase">
+                Step {currentViewedPhase.step} of {phases.length}
+              </div>
+              <h3 className="font-bold text-slate-900 text-base">{currentViewedPhase.title}</h3>
             </div>
-            {isViewingCurrent && (
-              <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
-                Current Status
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              <AdminStatusBadge status={currentStepData.status} />
+            </div>
           </div>
 
           <p className="text-slate-600 leading-relaxed text-xs">
-            {currentViewedPhase.message}
+            {currentViewedPhase.description}
           </p>
 
-          <div className="pt-2 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-500">
-            <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-            <p>{currentViewedPhase.actionRecommendation}</p>
+          {/* Step Status Selector and Quick Actions */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+            <AdminSelectField
+              label={`Step ${currentViewedPhase.step} Status`}
+              value={currentStepData.status}
+              onChange={(val) => updateCurrentStatus(val as BookingStepStatus)}
+              options={STEP_STATUS_OPTIONS}
+            />
+
+            <div className="flex flex-col justify-end space-y-1.5">
+              <span className="text-slate-500 font-medium text-[11px]">Quick Status Action</span>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={currentStepData.status === BookingStepStatus.COMPLETED ? "default" : "outline"}
+                  onClick={() => handleQuickStatusChange(BookingStepStatus.COMPLETED)}
+                  disabled={isUpdating}
+                  className="text-xs h-8 cursor-pointer flex-1"
+                >
+                  <CheckCircle className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                  Completed
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={currentStepData.status === BookingStepStatus.IN_PROGRESS ? "default" : "outline"}
+                  onClick={() => handleQuickStatusChange(BookingStepStatus.IN_PROGRESS)}
+                  disabled={isUpdating}
+                  className="text-xs h-8 cursor-pointer flex-1"
+                >
+                  <Clock className="w-3.5 h-3.5 mr-1 text-blue-600" />
+                  In Progress
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={currentStepData.status === BookingStepStatus.CANCELLED ? "default" : "outline"}
+                  onClick={() => handleQuickStatusChange(BookingStepStatus.CANCELLED)}
+                  disabled={isUpdating}
+                  className="text-xs h-8 cursor-pointer text-rose-600 hover:text-rose-700"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
           </div>
 
-          {!isViewingCurrent && (
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-slate-500 text-[11px]">
-              <span>
-                Current lead status: <strong className="text-slate-800">{inquiry.status}</strong>
-              </span>
-              <span className="text-slate-400">Click &ldquo;Set Status&rdquo; below to update.</span>
-            </div>
-          )}
+          {/* Step Message / Remarks Input */}
+          <AdminTextareaField
+            label={`Step ${currentViewedPhase.step} Message / Remarks`}
+            rows={3}
+            placeholder={`Add notes or messages for "${currentViewedPhase.title}" (e.g. Discussed itinerary via WhatsApp, quotation email sent, confirmed booking reservation)...`}
+            value={currentStepData.message}
+            onChange={(e) => updateCurrentMessage(e.target.value)}
+          />
         </div>
 
-        {/* Transition Note Textarea */}
+        {/* All Steps Summary Overview */}
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between text-[11px] text-slate-500 px-1 font-semibold">
+            <span>
+              Workflow Steps Overview (
+              {localSteps.filter((s) => s.status === BookingStepStatus.COMPLETED).length}/
+              {phases.length} completed)
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            {phases.map((p, idx) => {
+              const step = localSteps[idx] || {
+                status: BookingStepStatus.PENDING,
+                message: "",
+              };
+              const isSelected = activeStepIndex === idx;
+
+              return (
+                <div
+                  key={p.step}
+                  onClick={() => setActiveStepIndex(idx)}
+                  className={`p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    isSelected
+                      ? "bg-slate-50/80 border-slate-300 ring-1 ring-slate-300"
+                      : "bg-white border-slate-200/80 hover:bg-slate-50/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${getStatusDotColor(step.status)}`} />
+                    <div className="min-w-0">
+                      <div className="font-semibold text-slate-900 text-xs flex items-center gap-1.5">
+                        <span>
+                          {p.step}. {p.title}
+                        </span>
+                      </div>
+                      {step.message ? (
+                        <p className="text-[11px] text-slate-600 truncate max-w-md mt-0.5">
+                          {step.message}
+                        </p>
+                      ) : (
+                        <p className="text-[11px] text-slate-400 italic mt-0.5">No message recorded</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 flex items-center gap-2">
+                    <AdminStatusBadge status={step.status} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* General Internal Notes */}
         <AdminTextareaField
-          label="Transition Note / Remarks (Optional)"
-          rows={3}
-          placeholder="Add follow-up notes, discussion remarks, or next steps for this lead..."
-          value={transitionNote}
-          onChange={(e) => setTransitionNote(e.target.value)}
+          label="Internal Notes (General)"
+          rows={2}
+          placeholder="Add general notes or internal remarks about this customer inquiry..."
+          value={inquiryNotes}
+          onChange={(e) => setInquiryNotes(e.target.value)}
         />
       </div>
     </AdminModal>

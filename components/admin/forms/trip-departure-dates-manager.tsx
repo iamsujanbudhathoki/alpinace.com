@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus, Trash2, Calendar, DollarSign, Users, AlertCircle, CheckCircle2, Info, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TripDepartureDate } from "@/lib/admin-data";
+import { TripDepartureDate, DepartureDateStatus } from "@/lib/admin-data";
 
 interface TripDepartureDatesManagerProps {
   dates: TripDepartureDate[];
@@ -13,10 +13,10 @@ interface TripDepartureDatesManagerProps {
 }
 
 const STATUS_OPTIONS = [
-  { value: "guaranteed", label: "Guaranteed Departure", color: "bg-emerald-100 text-emerald-800 border-emerald-300" },
-  { value: "available", label: "Available", color: "bg-blue-100 text-blue-800 border-blue-300" },
-  { value: "limited", label: "Limited Seats", color: "bg-amber-100 text-amber-800 border-amber-300" },
-  { value: "full", label: "Fully Booked", color: "bg-rose-100 text-rose-800 border-rose-300" },
+  { value: DepartureDateStatus.GUARANTEED, label: "Guaranteed Departure", color: "bg-emerald-100 text-emerald-800 border-emerald-300" },
+  { value: DepartureDateStatus.AVAILABLE, label: "Available", color: "bg-blue-100 text-blue-800 border-blue-300" },
+  { value: DepartureDateStatus.LIMITED, label: "Limited Seats", color: "bg-amber-100 text-amber-800 border-amber-300" },
+  { value: DepartureDateStatus.FULL, label: "Fully Booked", color: "bg-rose-100 text-rose-800 border-rose-300" },
 ];
 
 export function TripDepartureDatesManager({
@@ -30,7 +30,7 @@ export function TripDepartureDatesManager({
     startDate: "",
     endDate: "",
     priceUSD: defaultPrice || undefined,
-    status: "guaranteed",
+    status: DepartureDateStatus.GUARANTEED,
     seatsAvailable: 10,
     notes: "",
   });
@@ -40,7 +40,7 @@ export function TripDepartureDatesManager({
       startDate: new Date().toISOString().split("T")[0],
       endDate: new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
       priceUSD: defaultPrice || undefined,
-      status: "guaranteed",
+      status: DepartureDateStatus.GUARANTEED,
       seatsAvailable: 10,
       notes: "",
     });
@@ -158,8 +158,8 @@ export function TripDepartureDatesManager({
                 Availability Status
               </label>
               <select
-                value={formData.status || "guaranteed"}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                value={formData.status || DepartureDateStatus.GUARANTEED}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as DepartureDateStatus })}
                 className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 bg-white"
               >
                 {STATUS_OPTIONS.map((opt) => (

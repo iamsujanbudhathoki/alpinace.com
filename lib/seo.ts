@@ -4,6 +4,7 @@ import { TrekItem } from "@/lib/trek-data";
 import { TourItem } from "@/lib/tour-data";
 import { ExpeditionItem } from "@/lib/expedition-data";
 import { BlogPost } from "@/lib/home-data";
+import { PackageStatus, TeamMemberStatus } from "@/lib/admin-data";
 
 type AnyPackageItem = TrekItem | TourItem | ExpeditionItem | any;
 
@@ -151,7 +152,7 @@ export function generatePackageMetadata({
   const keywords = Array.from(new Set([...rawKeywords, ...defaultKeywords]));
   const primaryImage = normalizeImageUrl(item.image || item.coverMediaId);
 
-  const isIndexed = item.status !== "draft" && item.status !== "inactive";
+  const isIndexed = item.status !== PackageStatus.DRAFT && item.status !== TeamMemberStatus.INACTIVE;
 
   return {
     title: { absolute: titleString },

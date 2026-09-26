@@ -5,6 +5,7 @@ import Image from "next/image";
 import { PhoneCall } from "lucide-react";
 import { useSettings } from "@/lib/settings-context";
 import { adminTeamsApi, TeamMemberItem } from "@/lib/services/admin-service";
+import { TeamMemberStatus } from "@/lib/admin-data";
 
 export function ExpertCtaSection() {
   const { settings } = useSettings();
@@ -21,7 +22,7 @@ export function ExpertCtaSection() {
   useEffect(() => {
     async function loadTeam() {
       try {
-        const res = await adminTeamsApi.getPublicAll({ status: "active" });
+        const res = await adminTeamsApi.getPublicAll({ status: TeamMemberStatus.ACTIVE });
         const list = Array.isArray(res)
           ? res
           : Array.isArray((res as any)?.items)

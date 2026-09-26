@@ -1,5 +1,6 @@
 import { generateStaticMetadata, normalizeImageUrl } from "@/lib/seo";
 import { AboutUsData, AboutUsService, adminTeamsApi } from "@/lib/services/admin-service";
+import { TeamMemberStatus } from "@/lib/admin-data";
 import type { Metadata } from "next";
 import Image from "next/image";
 
@@ -65,7 +66,7 @@ export default async function AboutView() {
 
   let team: { name: string; role: string; desc: string; image: string; badge: string }[] = [];
   try {
-    const res = await adminTeamsApi.getPublicAll({ status: "active" });
+    const res = await adminTeamsApi.getPublicAll({ status: TeamMemberStatus.ACTIVE });
     const teamList = Array.isArray(res)
       ? res
       : Array.isArray((res as any)?.items)

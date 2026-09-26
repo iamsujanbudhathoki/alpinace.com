@@ -29,6 +29,7 @@ import {
   Award,
 } from "lucide-react";
 import { adminTeamsApi, TeamMemberItem } from "@/lib/services/admin-service";
+import { TeamMemberStatus } from "@/lib/admin-data";
 import { TeamModal } from "@/components/admin/modals/team-modal";
 import { TeamViewModal } from "@/components/admin/modals/team-view-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
@@ -253,8 +254,8 @@ export default function AdminTeamsPage() {
           }}
         >
           <option value="All">All Members ({totalItems})</option>
-          <option value="active">Active Only</option>
-          <option value="inactive">Inactive Only</option>
+          <option value={TeamMemberStatus.ACTIVE}>Active Only</option>
+          <option value={TeamMemberStatus.INACTIVE}>Inactive Only</option>
         </AdminFilterSelect>
       </div>
 

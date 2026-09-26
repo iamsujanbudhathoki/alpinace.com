@@ -6,6 +6,7 @@ import AutoScroll from "embla-carousel-auto-scroll";
 import { ChevronLeft, ChevronRight, Star, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import { adminTestimonialsApi, SettingService, TestimonialItem } from "@/lib/services/admin-service";
+import { TestimonialStatus } from "@/lib/admin-data";
 import { Testimonial } from "@/lib/home-data";
 
 function getReviewHeadline(content: string, tripName?: string): string {
@@ -46,7 +47,7 @@ export function TestimonialsSection() {
     let isMounted = true;
     async function loadTestimonials() {
       try {
-        const fetched = await adminTestimonialsApi.getPublicAll({ status: "active" });
+        const fetched = await adminTestimonialsApi.getPublicAll({ status: TestimonialStatus.ACTIVE });
         const list = Array.isArray(fetched)
           ? fetched
           : Array.isArray((fetched as any)?.items)

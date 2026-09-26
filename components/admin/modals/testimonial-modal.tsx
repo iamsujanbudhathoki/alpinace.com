@@ -5,6 +5,7 @@ import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save, Star } from "lucide-react";
 import { TestimonialItem, TestimonialFormValues, adminTestimonialsApi } from "@/lib/services/admin-service";
+import { TestimonialStatus } from "@/lib/admin-data";
 import { AdminImageUpload } from "@/components/admin/forms/admin-image-upload";
 import { AdminInputField, AdminSelectField, AdminTextareaField } from "@/components/admin/forms/admin-form-fields";
 import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
@@ -31,7 +32,7 @@ export function TestimonialModal({
     content: "",
     avatar: "",
     rating: 5,
-    status: "active",
+    status: TestimonialStatus.ACTIVE,
     order: 0,
   });
 
@@ -50,7 +51,7 @@ export function TestimonialModal({
         content: testimonialToEdit.content || "",
         avatar: testimonialToEdit.avatar || "",
         rating: testimonialToEdit.rating ?? 5,
-        status: testimonialToEdit.status || "active",
+        status: testimonialToEdit.status || TestimonialStatus.ACTIVE,
         order: testimonialToEdit.order ?? 0,
       });
     } else {
@@ -62,7 +63,7 @@ export function TestimonialModal({
         content: "",
         avatar: "",
         rating: 5,
-        status: "active",
+        status: TestimonialStatus.ACTIVE,
         order: 0,
       });
     }
@@ -248,10 +249,10 @@ export function TestimonialModal({
           <AdminSelectField
             label="Active Status"
             value={formData.status}
-            onChange={(val) => setFormData({ ...formData, status: val as "active" | "inactive" })}
+            onChange={(val) => setFormData({ ...formData, status: val as TestimonialStatus })}
             options={[
-              { label: "Active (Visible on Website)", value: "active" },
-              { label: "Inactive (Hidden)", value: "inactive" },
+              { label: "Active (Visible on Website)", value: TestimonialStatus.ACTIVE },
+              { label: "Inactive (Hidden)", value: TestimonialStatus.INACTIVE },
             ]}
           />
         </div>

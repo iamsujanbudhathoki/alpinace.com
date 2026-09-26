@@ -8,7 +8,6 @@ import {
   Calendar,
   BedDouble,
   ShieldAlert,
-  Check,
 } from "lucide-react";
 import { TrekItem, initialTreksData } from "@/lib/trek-data";
 import {

@@ -7,7 +7,6 @@ import {
   Calendar,
   Compass,
   Utensils,
-  Check,
 } from "lucide-react";
 import { TourItem, initialToursData } from "@/lib/tour-data";
 import { FaqService, SettingService, TourService } from "@/lib/services/admin-service";

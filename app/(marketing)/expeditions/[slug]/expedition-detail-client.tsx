@@ -7,7 +7,6 @@ import {
   Mountain,
   ShieldCheck,
   Compass,
-  Check,
 } from "lucide-react";
 import { ExpeditionItem, initialExpeditionsData } from "@/lib/expedition-data";
 import {

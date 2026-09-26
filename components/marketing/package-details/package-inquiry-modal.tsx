@@ -117,9 +117,9 @@ export function PackageInquiryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent showCloseButton onCloseClick={onClose} className="sm:max-w-lg w-[96vw] sm:w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white rounded-lg sm:rounded-xl shadow-xl border border-stone-200">
+      <DialogContent showCloseButton onCloseClick={onClose} className="sm:max-w-lg w-[94vw] sm:w-full max-h-[80dvh] sm:max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white rounded-xl shadow-xl border border-stone-200">
         {/* Header */}
-        <div className="bg-stone-50 border-b border-stone-200 px-5 sm:px-7 py-4 sm:py-4.5 pr-12 shrink-0">
+        <div className="bg-stone-50 border-b border-stone-200 px-4.5 sm:px-7 py-3 sm:py-4.5 pr-12 shrink-0">
           <DialogTitle className="font-heading text-base sm:text-lg font-bold text-stone-900">
             Inquire About Trip
           </DialogTitle>
@@ -128,7 +128,7 @@ export function PackageInquiryModal({
           </DialogDescription>
         </div>
 
-        <div className="p-5 sm:p-7 overflow-y-auto max-h-[calc(92vh-70px)]">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-7 space-y-3.5 sm:space-y-4">
           {errorMessage && (
             <div className="mb-4 p-3 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
               {errorMessage}

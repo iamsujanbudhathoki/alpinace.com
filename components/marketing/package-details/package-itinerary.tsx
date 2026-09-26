@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  Mountain,
+  Utensils,
+  BedDouble,
+  Clock,
+  Compass,
+  MapPin,
+  Footprints,
+} from "lucide-react";
 import { TripItineraryDay, TripItineraryDetail } from "@/lib/trek-data";
 
 export type { TripItineraryDay, TripItineraryDetail };
@@ -53,12 +62,94 @@ export function PackageItinerary({
           const formattedDayLabel = `Day ${String(dayNum).padStart(2, "0")}`;
           const isOpen = isAllExpanded || openDay === dayNum;
 
-          // Collect specs
-          const specs: { label: string; value: string }[] = [];
-          if (day.maxAltitude) specs.push({ label: "Altitude", value: day.maxAltitude });
-          if (day.accommodation || day.overnight)
-            specs.push({ label: "Stay", value: day.accommodation || day.overnight || "" });
-          if (day.meals) specs.push({ label: "Meals", value: day.meals });
+          // Resolve Altitude
+          const altitudeVal = day.maxAltitude || day.altitude;
+
+          // Resolve Duration / Walking Time
+          const durationVal =
+            day.duration ||
+            day.walkingTime ||
+            day.walkingHours ||
+            day.time ||
+            day.details?.find((d) => /duration|walking|hours|time/i.test(d.label))?.value;
+
+          // Resolve Accommodation
+          const stayVal = day.accommodation || day.overnight || day.stay || day.lodging;
+
+          // Resolve Meals
+          const mealsVal = day.meals || day.meal;
+
+          // Collect specs with dedicated icons and styling
+          const specs: {
+            icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+            iconColor: string;
+            label: string;
+            value: string;
+          }[] = [];
+
+          if (altitudeVal) {
+            specs.push({
+              icon: Mountain,
+              iconColor: "text-amber-600",
+              label: "Altitude",
+              value: altitudeVal,
+            });
+          }
+
+          if (durationVal) {
+            specs.push({
+              icon: Clock,
+              iconColor: "text-blue-600",
+              label: "Duration",
+              value: durationVal,
+            });
+          }
+
+          if (stayVal) {
+            specs.push({
+              icon: BedDouble,
+              iconColor: "text-violet-600",
+              label: "Stay",
+              value: stayVal,
+            });
+          }
+
+          if (mealsVal) {
+            specs.push({
+              icon: Utensils,
+              iconColor: "text-emerald-600",
+              label: "Meals",
+              value: mealsVal,
+            });
+          }
+
+          // Custom key-value highlights if defined
+          if (day.details && Array.isArray(day.details)) {
+            for (const d of day.details) {
+              if (!d.label || !d.value) continue;
+              if (/duration|walking|hours|time/i.test(d.label) && durationVal) continue;
+              if (/altitude/i.test(d.label) && altitudeVal) continue;
+              if (/meal/i.test(d.label) && mealsVal) continue;
+              if (/stay|lodging|hotel|accommodation/i.test(d.label) && stayVal) continue;
+
+              let CustomIcon = Compass;
+              let customColor = "text-stone-600";
+              if (/distance|km|miles/i.test(d.label)) {
+                CustomIcon = Footprints;
+                customColor = "text-teal-600";
+              } else if (/location|place/i.test(d.label)) {
+                CustomIcon = MapPin;
+                customColor = "text-rose-600";
+              }
+
+              specs.push({
+                icon: CustomIcon,
+                iconColor: customColor,
+                label: d.label,
+                value: d.value,
+              });
+            }
+          }
 
           return (
             <article key={idx} className="relative group">
@@ -69,12 +160,37 @@ export function PackageItinerary({
               <button
                 type="button"
                 onClick={() => setOpenDay(openDay === dayNum ? 0 : dayNum)}
-                className="w-full text-left cursor-pointer group flex items-center justify-between gap-3 py-2 min-h-[44px]"
+                className="w-full text-left cursor-pointer group flex items-start justify-between gap-3 py-2 min-h-[44px]"
               >
-                <div className="space-y-0.5 min-w-0">
-                  <span className="type-caption text-stone-900 font-bold block">
-                    {formattedDayLabel}
-                  </span>
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="type-caption text-stone-900 font-bold block">
+                      {formattedDayLabel}
+                    </span>
+
+                    {/* Quick Highlights with Icons in Header */}
+                    {altitudeVal && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-600 bg-stone-100/90 px-2 py-0.5 rounded border border-stone-200/70">
+                        <Mountain className="w-3 h-3 text-amber-600 shrink-0" strokeWidth={2.2} />
+                        <span>{altitudeVal}</span>
+                      </span>
+                    )}
+
+                    {durationVal && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-600 bg-stone-100/90 px-2 py-0.5 rounded border border-stone-200/70">
+                        <Clock className="w-3 h-3 text-blue-600 shrink-0" strokeWidth={2.2} />
+                        <span>{durationVal}</span>
+                      </span>
+                    )}
+
+                    {mealsVal && (
+                      <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-stone-600 bg-stone-100/90 px-2 py-0.5 rounded border border-stone-200/70">
+                        <Utensils className="w-3 h-3 text-emerald-600 shrink-0" strokeWidth={2.2} />
+                        <span>{mealsVal}</span>
+                      </span>
+                    )}
+                  </div>
+
                   <h3 className="type-heading-md text-stone-900 group-hover:underline transition-colors">
                     {day.title || `Day ${dayNum} Schedule`}
                   </h3>
@@ -82,7 +198,7 @@ export function PackageItinerary({
 
                 <div className="flex items-center gap-1.5 shrink-0 self-center">
                   <ChevronDown
-                    className={`h-3.5 w-3.5 text-stone-400 group-hover:text-stone-700 transition-transform duration-200 ${
+                    className={`h-4 w-4 text-stone-400 group-hover:text-stone-700 transition-transform duration-200 ${
                       isOpen ? "rotate-180 text-stone-700" : ""
                     }`}
                     strokeWidth={2}
@@ -97,9 +213,9 @@ export function PackageItinerary({
                 }`}
               >
                 <div className="overflow-hidden">
-                  <div className="space-y-2.5 pt-0.5 pb-1">
+                  <div className="space-y-3 pt-0.5 pb-1">
                     {day.description ? (
-                      <p className="type-body whitespace-pre-line">
+                      <p className="type-body whitespace-pre-line text-stone-700 leading-relaxed">
                         {day.description}
                       </p>
                     ) : (
@@ -108,15 +224,22 @@ export function PackageItinerary({
                       </p>
                     )}
 
-                    {/* Day Metadata Footer */}
+                    {/* Day Metadata Chips with Icons */}
                     {specs.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-2 border-t border-stone-100/80">
-                        {specs.map((spec, sIdx) => (
-                          <div key={sIdx} className="flex items-center gap-1 text-xs text-stone-500">
-                            <span className="font-medium text-stone-400">{spec.label}:</span>
-                            <span className="font-semibold text-stone-700">{spec.value}</span>
-                          </div>
-                        ))}
+                      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-stone-200/80 mt-2">
+                        {specs.map((spec, sIdx) => {
+                          const IconComp = spec.icon;
+                          return (
+                            <div
+                              key={sIdx}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-stone-50 border border-stone-200/90 text-stone-800 shadow-2xs hover:bg-stone-100/90 transition-colors"
+                            >
+                              <IconComp className={`w-3.5 h-3.5 shrink-0 ${spec.iconColor}`} strokeWidth={2.2} />
+                              <span className="font-semibold text-stone-500">{spec.label}:</span>
+                              <span className="font-bold text-stone-900">{spec.value}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>

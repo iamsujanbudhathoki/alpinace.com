@@ -45,7 +45,11 @@ export function FloatingWhatsApp() {
     : null;
 
   return (
-    <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-center gap-2.5 print:hidden">
+    <div
+      className={`fixed ${
+        isDetailPage ? "bottom-[76px] sm:bottom-6" : "bottom-6"
+      } right-4 sm:right-6 z-50 flex flex-col items-center gap-2.5 print:hidden`}
+    >
       {/* Scroll To Top Button - shown when scrolled */}
       {showScrollTop && (
         <button

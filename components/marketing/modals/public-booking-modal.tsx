@@ -253,7 +253,7 @@ export function PublicBookingModal({
       <DialogContent
         showCloseButton
         onCloseClick={requestClose}
-        className="sm:max-w-xl md:max-w-2xl w-[94vw] sm:w-full max-h-[80dvh] sm:max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white rounded-xl shadow-xl border border-stone-200"
+        className="sm:max-w-xl md:max-w-2xl w-[94vw] sm:w-full max-h-[72dvh] sm:max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white rounded-xl shadow-xl border border-stone-200"
       >
         {/* Header */}
         <div className="bg-stone-50 border-b border-stone-200 px-4.5 sm:px-7 py-3 sm:py-4.5 pr-12 shrink-0">

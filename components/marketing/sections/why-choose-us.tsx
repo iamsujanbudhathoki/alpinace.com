@@ -47,7 +47,7 @@ export function WhyChooseUs() {
 
             {/* Right Column: Content Text */}
             <div className="lg:col-span-6 xl:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6">
-              <div className="space-y-4 text-stone-700 text-xs sm:text-sm leading-relaxed font-normal">
+              <div className="space-y-4 text-stone-700 text-xs sm:text-sm leading-relaxed font-normal text-justify">
                 <p>
                   <strong className="text-stone-900 font-semibold">Alpine Ace</strong> is a premier trekking and adventure travel company in Nepal, founded by former mountain guides with a passion for creating safe, authentic, and unforgettable Himalayan journeys. Renowned for top-notch service at affordable prices, highly experienced guides, and exceptional safety standards, we proudly maintain an impressive 97.4% trek success rate.
                 </p>

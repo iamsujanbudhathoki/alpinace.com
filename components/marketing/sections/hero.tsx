@@ -377,14 +377,6 @@ export function Hero({
                   <X className="h-4 w-4" />
                 </button>
               )}
-              <button
-                type="button"
-                onClick={handleSearchSubmit}
-                className="inline-flex items-center justify-center bg-stone-900 hover:bg-stone-800 text-white rounded-lg p-2 sm:p-2.5 transition-all cursor-pointer shrink-0 ml-1.5 sm:ml-2 shadow-xs active:scale-95"
-                aria-label="Search destination or trip"
-              >
-                <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </button>
             </div>
 
             {/* Refinement Filters Bar - Only visible on Laptop and Desktop (lg+) */}

@@ -266,7 +266,7 @@ export function PublicBookingModal({
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-7 space-y-3.5 sm:space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-3.5 sm:space-y-4">
           {showExitConfirm ? (
             <div className="text-center space-y-4 py-2">
             <div className="w-11 h-11 rounded-full bg-yellow-50 text-stone-900 border border-yellow-200 flex items-center justify-center mx-auto">

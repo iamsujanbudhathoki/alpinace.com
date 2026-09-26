@@ -128,7 +128,7 @@ export function PackageInquiryModal({
           </DialogDescription>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-7 space-y-3.5 sm:space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-3.5 sm:space-y-4">
           {errorMessage && (
             <div className="mb-4 p-3 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
               {errorMessage}

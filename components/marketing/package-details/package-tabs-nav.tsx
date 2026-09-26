@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface TabItem {
   key: string;
@@ -28,37 +27,7 @@ export function PackageTabsNav({
   const containerRef = useRef<HTMLDivElement>(null);
   const activeBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const startXRef = useRef(0);
-  const scrollLeftRef = useRef(0);
   const hasDraggedRef = useRef(false);
-
-  // Check scroll position to update scroll indicators / arrows
-  const checkScrollState = useCallback(() => {
-    if (!containerRef.current) return;
-    const el = containerRef.current;
-    const scrollLeft = Math.ceil(el.scrollLeft);
-    const maxScroll = el.scrollWidth - el.clientWidth;
-
-    setCanScrollLeft(scrollLeft > 2);
-    setCanScrollRight(scrollLeft < maxScroll - 2);
-  }, []);
-
-  useEffect(() => {
-    checkScrollState();
-    const el = containerRef.current;
-    if (!el) return;
-
-    el.addEventListener("scroll", checkScrollState, { passive: true });
-    window.addEventListener("resize", checkScrollState, { passive: true });
-
-    return () => {
-      el.removeEventListener("scroll", checkScrollState);
-      window.removeEventListener("resize", checkScrollState);
-    };
-  }, [checkScrollState, tabs]);
 
   // Native non-passive wheel handler to map vertical wheel to horizontal scroll without jumping page
   useEffect(() => {
@@ -136,12 +105,6 @@ export function PackageTabsNav({
     setIsDragging(false);
   };
 
-  const scrollByAmount = (direction: "left" | "right") => {
-    if (!containerRef.current) return;
-    const amount = direction === "left" ? -220 : 220;
-    containerRef.current.scrollBy({ left: amount, behavior: "smooth" });
-  };
-
   if (!tabs || tabs.length === 0) return null;
 
   const handleTabClick = (key: string) => {
@@ -172,34 +135,6 @@ export function PackageTabsNav({
           : "border-b border-stone-200 bg-white/95 backdrop-blur-md w-full"
       } ${className}`}
     >
-      {/* Scroll Left Arrow Button */}
-      {canScrollLeft && (
-        <button
-          type="button"
-          onClick={() => scrollByAmount("left")}
-          className="absolute left-0 top-0 bottom-0 z-20 px-1 flex items-center justify-center bg-gradient-to-r from-white via-white/90 to-transparent text-stone-700 hover:text-stone-950 cursor-pointer transition-opacity duration-200"
-          aria-label="Scroll left"
-        >
-          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white shadow-xs border border-stone-200 flex items-center justify-center">
-            <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-        </button>
-      )}
-
-      {/* Scroll Right Arrow Button */}
-      {canScrollRight && (
-        <button
-          type="button"
-          onClick={() => scrollByAmount("right")}
-          className="absolute right-0 top-0 bottom-0 z-20 px-1 flex items-center justify-center bg-gradient-to-l from-white via-white/90 to-transparent text-stone-700 hover:text-stone-950 cursor-pointer transition-opacity duration-200"
-          aria-label="Scroll right"
-        >
-          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white shadow-xs border border-stone-200 flex items-center justify-center">
-            <ChevronRight className="w-4 h-4" />
-          </div>
-        </button>
-      )}
-
       {/* Horizontal Scroll Container */}
       <div
         ref={containerRef}

@@ -305,14 +305,14 @@ export function Hero({
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
 
-        {/* Minimal Overlay for Maximum Video Detail */}
-        <div className="absolute inset-0 bg-stone-950/40" />
+        {/* Gradient overlay — lighter at top to let the video breathe, deeper at bottom for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-stone-950/15 via-stone-950/45 to-stone-950/70" />
       </div>
 
       {/* Centered Content Container */}
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">
         {/* Animated Editorial Mask Reveal & Collapse Headline */}
-        <h1 className="font-heading font-bold text-white mb-6 sm:mb-8 max-w-4xl leading-[1.15] text-center drop-shadow-md">
+        <h1 className="font-heading font-bold text-white mb-4 sm:mb-5 max-w-4xl leading-[1.15] text-center drop-shadow-md">
           <span className="block text-3xl sm:text-4xl lg:text-5xl text-white/95 font-medium tracking-tight">Discover your</span>
           <span className="relative block h-[1.3em] overflow-hidden align-middle text-4xl sm:text-6xl lg:text-7xl xl:text-8xl mt-1.5 sm:mt-2">
             <span
@@ -331,7 +331,11 @@ export function Hero({
           </span>
         </h1>
 
-        {/* Floating Search & Filter Bar */}
+        {/* Supporting tagline */}
+        <p className="text-white/70 text-sm sm:text-base font-normal max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed tracking-wide">
+          Guided treks, cultural tours &amp; high-altitude expeditions across Nepal.
+        </p>
+
         <div
           ref={searchContainerRef}
           className="relative z-30 w-full max-w-3xl lg:max-w-4xl"
@@ -339,11 +343,11 @@ export function Hero({
           <div className="lg:bg-white/95 lg:backdrop-blur-xl lg:border lg:border-stone-200/90 lg:rounded-2xl lg:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] lg:p-4 lg:space-y-3">
             
             {/* Primary Hero Search Bar */}
-            <div className="relative flex items-center bg-white/15 backdrop-blur-sm border border-white/25 focus-within:bg-white/20 focus-within:border-white/50 rounded-xl px-4 py-3 transition-colors lg:bg-stone-50 lg:backdrop-blur-none lg:hover:bg-stone-50/90 lg:focus-within:bg-white lg:border-stone-200/90 lg:focus-within:border-stone-400 lg:px-5 lg:py-3.5 lg:shadow-2xs">
+            <div className="relative flex items-center bg-white rounded-2xl border-0 shadow-md px-4 py-3.5 transition-colors lg:bg-stone-50 lg:rounded-xl lg:shadow-2xs lg:border lg:border-stone-200/90 lg:hover:bg-stone-50/90 lg:focus-within:bg-white lg:focus-within:border-stone-400 lg:px-5 lg:py-3.5">
               {isSearching ? (
-                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white/70 lg:text-stone-500 shrink-0 mr-3" />
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-stone-400 lg:text-stone-500 shrink-0 mr-3" />
               ) : (
-                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-white/60 lg:text-stone-400 shrink-0 mr-3" />
+                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-stone-400 shrink-0 mr-3" />
               )}
               <input
                 ref={inputRef}
@@ -360,7 +364,7 @@ export function Hero({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Where do you want to explore? (e.g. Everest, Annapurna)"
-                className="w-full min-w-0 bg-transparent text-white lg:text-stone-900 placeholder-white/50 lg:placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none truncate"
+                className="w-full min-w-0 bg-transparent text-stone-900 placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none truncate"
                 aria-label="Search destination or trip"
               />
               {query && (
@@ -370,7 +374,7 @@ export function Hero({
                     setQuery("");
                     inputRef.current?.focus();
                   }}
-                  className="p-1 sm:p-1.5 text-white/60 hover:text-white lg:text-stone-400 lg:hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-1.5"
+                  className="p-1 sm:p-1.5 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-1.5"
                   aria-label="Clear keyword search"
                 >
                   <X className="h-4 w-4" />

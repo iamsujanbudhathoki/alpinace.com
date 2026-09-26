@@ -265,10 +265,8 @@ export function PublicBookingModal({
           </DialogDescription>
         </div>
 
-        {/* Scrollable Body */}
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-3.5 sm:space-y-4">
-          {showExitConfirm ? (
-            <div className="text-center space-y-4 py-2">
+        {showExitConfirm ? (
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-7 text-center space-y-4 py-6">
             <div className="w-11 h-11 rounded-full bg-yellow-50 text-stone-900 border border-yellow-200 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-5 h-5" strokeWidth={2} />
             </div>
@@ -299,7 +297,7 @@ export function PublicBookingModal({
             </div>
           </div>
         ) : confirmedBooking ? (
-          <div className="space-y-5 animate-in fade-in duration-200">
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-7 space-y-5 animate-in fade-in duration-200">
             <div className="text-center space-y-2">
               <div className="w-12 h-12 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full flex items-center justify-center mx-auto shadow-xs">
                 <CheckCircle2 className="w-6 h-6 text-emerald-600" />
@@ -362,20 +360,20 @@ export function PublicBookingModal({
             </Button>
           </div>
         ) : (
-          <div>
-            {errorMessage && (
-              <div className="mb-4 p-3 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
-                {errorMessage}
-              </div>
-            )}
+          <form onSubmit={handleSubmit} noValidate className="flex-1 min-h-0 flex flex-col overflow-hidden">
+            {/* Scrollable Form Fields */}
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-4">
+              {errorMessage && (
+                <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
+                  {errorMessage}
+                </div>
+              )}
 
-            {pricingResult.error && (
-              <div className="mb-4 p-3 rounded-md bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900">
-                {pricingResult.error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} noValidate className="space-y-4">
+              {pricingResult.error && (
+                <div className="p-3 rounded-md bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900">
+                  {pricingResult.error}
+                </div>
+              )}
               {/* Row 1: Departure Date & Travelers */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -583,40 +581,39 @@ export function PublicBookingModal({
                 onExpire={() => setTurnstileToken('')}
                 onError={() => setTurnstileToken('')}
               />
+            </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={requestClose}
-                  disabled={isSubmitting}
-                  className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-md border-stone-300 hover:bg-stone-50 text-stone-700"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
-                  className="btn-accent text-xs px-6 py-2.5 disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-1.5">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Submitting...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5">
-                      <Send className="w-3.5 h-3.5" />
-                      Request Booking
-                    </span>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </div>
+            {/* Pinned Sticky Footer - Always Visible */}
+            <div className="bg-stone-50 border-t border-stone-200 px-4 sm:px-7 py-3 shrink-0 flex items-center justify-end gap-2.5 sm:gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={requestClose}
+                disabled={isSubmitting}
+                className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-md border-stone-300 hover:bg-stone-100 text-stone-700"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
+                className="btn-accent text-xs px-6 py-2.5 disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center gap-1.5">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Submitting...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5">
+                    <Send className="w-3.5 h-3.5" />
+                    Request Booking
+                  </span>
+                )}
+              </Button>
+            </div>
+          </form>
         )}
-        </div>
       </DialogContent>
     </Dialog>
   );

@@ -128,14 +128,15 @@ export function PackageInquiryModal({
           </DialogDescription>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-3.5 sm:space-y-4">
-          {errorMessage && (
-            <div className="mb-4 p-3 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
-              {errorMessage}
-            </div>
-          )}
+        <form onSubmit={handleSubmit} noValidate className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          {/* Scrollable Form Body */}
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-7 space-y-4">
+            {errorMessage && (
+              <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800">
+                {errorMessage}
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {/* Row 1: Full Name & Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -257,32 +258,38 @@ export function PackageInquiryModal({
               onExpire={() => setTurnstileToken('')}
               onError={() => setTurnstileToken('')}
             />
+          </div>
 
-            {/* Action Buttons */}
-            <div className="pt-2 flex items-center justify-end gap-3">
-              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting} className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-md">
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting || !turnstileToken}
-                className="btn-accent text-xs px-6 py-2.5 disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <span className="flex items-center gap-1.5">
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Sending...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1.5">
-                    <Send className="w-3.5 h-3.5" />
-                    Send Inquiry
-                  </span>
-                )}
-              </Button>
-            </div>
-          </form>
-        </div>
+          {/* Always Shown Sticky Footer */}
+          <div className="bg-stone-50 border-t border-stone-200 px-4.5 sm:px-7 py-3 shrink-0 flex items-center justify-end gap-2.5 sm:gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="text-xs font-semibold cursor-pointer py-2.5 px-5 rounded-md border-stone-300 hover:bg-stone-100 text-stone-700"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting || !turnstileToken}
+              className="btn-accent text-xs px-6 py-2.5 disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-1.5">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Sending...
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5">
+                  <Send className="w-3.5 h-3.5" />
+                  Send Inquiry
+                </span>
+              )}
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

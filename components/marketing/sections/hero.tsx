@@ -291,24 +291,23 @@ export function Hero({
   };
 
   return (
-    <section className="relative isolate flex min-h-[90vh] sm:min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-stone-100 text-stone-900">
-      {/* Background Natural Video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover opacity-90"
-      >
-        <source src="/hero-video.mp4" type="video/mp4" />
-      </video>
+    <section className="relative z-10 flex min-h-[90vh] sm:min-h-screen w-full flex-col items-center justify-center bg-stone-100 text-stone-900">
+      {/* Background media layer — clipped independently so the dropdown can overflow freely */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        {/* Background Natural Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover opacity-90"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
 
-      {/* Minimal Overlay for Maximum Video Detail */}
-      <div
-        className="absolute inset-0 bg-stone-950/40 pointer-events-none"
-        aria-hidden="true"
-      />
+        {/* Minimal Overlay for Maximum Video Detail */}
+        <div className="absolute inset-0 bg-stone-950/40" />
+      </div>
 
       {/* Centered Content Container */}
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">

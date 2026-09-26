@@ -90,19 +90,19 @@ export function PackageDetailHero({
             </div>
 
             {/* Price & CTA Action */}
-            <div className="shrink-0 flex items-center gap-4">
-              <div className="text-right hidden sm:block text-white">
-                <span className="type-caption text-stone-300 block">
+            <div className="shrink-0 flex items-center justify-between sm:justify-end w-full lg:w-auto gap-4 self-end pt-1 sm:pt-0">
+              <div className="text-left sm:text-right text-white">
+                <span className="type-caption text-stone-300 block text-xs">
                   {priceLabel}
                 </span>
-                <span className="text-xl sm:text-2xl font-bold font-heading text-white">
+                <span className="text-base sm:text-2xl font-bold font-heading text-white">
                   ${Number(priceUSD).toLocaleString()}{" "}
-                  <span className="text-xs font-normal text-stone-300">USD</span>
+                  <span className="text-[11px] sm:text-xs font-normal text-stone-300">USD</span>
                 </span>
               </div>
 
               {isBooked ? (
-                <div className="bg-emerald-800/90 backdrop-blur-sm text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-sm border border-emerald-600/50 flex items-center gap-2 shadow-sm">
+                <div className="bg-emerald-800/90 backdrop-blur-sm text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-sm border border-emerald-600/50 flex items-center gap-2 shadow-sm shrink-0">
                   <Check className="w-4 h-4" strokeWidth={2.5} />
                   <span>Booking Request Submitted</span>
                 </div>
@@ -110,7 +110,7 @@ export function PackageDetailHero({
                 <button
                   type="button"
                   onClick={onBookClick}
-                  className="btn-accent text-xs sm:text-sm flex items-center gap-2 group"
+                  className="btn-accent text-xs sm:text-sm flex items-center gap-2 group cursor-pointer shrink-0"
                 >
                   <span>{bookButtonLabel}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />

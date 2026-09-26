@@ -314,7 +314,7 @@ export function Hero({
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">
         {/* Animated Editorial Mask Reveal & Collapse Headline */}
         <h1 className="font-heading font-bold text-white mb-6 sm:mb-8 max-w-4xl leading-[1.15] text-center drop-shadow-md">
-          <span className="block text-2xl sm:text-4xl lg:text-5xl text-white/95 font-medium tracking-tight">Discover your</span>
+          <span className="block text-3xl sm:text-4xl lg:text-5xl text-white/95 font-medium tracking-tight">Discover your</span>
           <span className="relative block h-[1.3em] overflow-hidden align-middle text-4xl sm:text-6xl lg:text-7xl xl:text-8xl mt-1.5 sm:mt-2">
             <span
               className={`block text-accent font-bold ${
@@ -337,14 +337,14 @@ export function Hero({
           ref={searchContainerRef}
           className="relative z-30 w-full max-w-3xl lg:max-w-4xl"
         >
-          <div className="bg-white/95 backdrop-blur-xl border border-stone-200/90 rounded-2xl shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] p-2.5 sm:p-3 lg:p-4 space-y-0 lg:space-y-3 transition-all duration-300">
+          <div className="lg:bg-white/95 lg:backdrop-blur-xl lg:border lg:border-stone-200/90 lg:rounded-2xl lg:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] lg:p-4 lg:space-y-3">
             
             {/* Primary Hero Search Bar */}
-            <div className="relative flex items-center bg-stone-50 hover:bg-stone-50/90 focus-within:bg-white border border-stone-200/90 focus-within:border-stone-400 rounded-xl px-2.5 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3.5 transition-all shadow-2xs">
+            <div className="relative flex items-center border-0 border-b border-white/40 focus-within:border-white/80 lg:border lg:bg-stone-50 lg:hover:bg-stone-50/90 lg:focus-within:bg-white lg:border-stone-200/90 lg:focus-within:border-stone-400 lg:rounded-xl px-1 lg:px-5 py-3 lg:py-3.5 transition-colors lg:shadow-2xs">
               {isSearching ? (
-                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-stone-500 shrink-0 mr-2 sm:mr-3" />
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white/70 lg:text-stone-500 shrink-0 mr-3" />
               ) : (
-                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-stone-400 shrink-0 mr-2 sm:mr-3" />
+                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-white/60 lg:text-stone-400 shrink-0 mr-3" />
               )}
               <input
                 ref={inputRef}
@@ -361,7 +361,7 @@ export function Hero({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Where do you want to explore? (e.g. Everest, Annapurna)"
-                className="w-full min-w-0 bg-transparent text-stone-900 placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none truncate"
+                className="w-full min-w-0 bg-transparent text-white lg:text-stone-900 placeholder-white/50 lg:placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none truncate"
                 aria-label="Search destination or trip"
               />
               {query && (
@@ -371,7 +371,7 @@ export function Hero({
                     setQuery("");
                     inputRef.current?.focus();
                   }}
-                  className="p-1 sm:p-1.5 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-1 sm:ml-1.5"
+                  className="p-1 sm:p-1.5 text-white/60 hover:text-white lg:text-stone-400 lg:hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-1.5"
                   aria-label="Clear keyword search"
                 >
                   <X className="h-4 w-4" />
@@ -524,6 +524,28 @@ export function Hero({
             )}
           </div>
 
+          {/* Mobile-only: Popular destination quick-fills */}
+          <div className="flex lg:hidden items-center justify-center flex-wrap gap-x-3 gap-y-1 mt-4">
+            <span className="text-white/40 text-[10px] font-semibold tracking-widest uppercase">Popular</span>
+            {["Everest Base Camp", "Annapurna Circuit", "Manaslu"].map((dest, i, arr) => (
+              <span key={dest} className="inline-flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery(dest);
+                    setSelectedIndex(-1);
+                    inputRef.current?.focus();
+                  }}
+                  className="text-white/65 hover:text-white/90 text-xs font-normal transition-colors cursor-pointer"
+                >
+                  {dest}
+                </button>
+                {i < arr.length - 1 && (
+                  <span className="text-white/25 text-xs" aria-hidden>·</span>
+                )}
+              </span>
+            ))}
+          </div>
 
 
           {/* Dynamic Search Suggestions Popover Dropdown */}

@@ -316,35 +316,35 @@ const DEFAULT_INQUIRY_STAGES: StageDefinition[] = [
   {
     step: 1,
     label: "New lead",
-    title: "New lead received",
-    description: "Initial inquiry received from traveler. Review requested trip, travel dates, and group size.",
+    title: "New lead",
+    description: "Initial inquiry recorded. Review traveler requirements and dates.",
     icon: Sparkles,
   },
   {
     step: 2,
     label: "Contacted",
     title: "Contacted traveler",
-    description: "Direct communication initiated with traveler via email, phone, or WhatsApp to qualify requirements.",
+    description: "Direct outreach initiated via email, phone, or WhatsApp.",
     icon: Phone,
   },
   {
     step: 3,
     label: "Quote sent",
-    title: "Proposal & quote sent",
-    description: "Detailed proposal, pricing, and customized itinerary dispatched to the client.",
+    title: "Quote sent",
+    description: "Custom proposal, itinerary, and pricing delivered.",
     icon: Send,
   },
   {
     step: 4,
     label: "Booked",
-    title: "Converted to booking",
+    title: "Booked",
     description: "Traveler accepted quote and confirmed trip booking.",
     icon: CheckCircle2,
   },
   {
     step: 5,
     label: "Closed",
-    title: "Inquiry concluded",
+    title: "Closed",
     description: "Inquiry completed, archived, or marked lost/cancelled.",
     icon: CheckCheck,
   },
@@ -361,7 +361,6 @@ export function UpdateInquiryStatusModal({
   const [localSteps, setLocalSteps] = useState<InquiryStep[]>([]);
   const [inquiryNotes, setInquiryNotes] = useState<string>("");
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
-  const [showOriginalMessage, setShowOriginalMessage] = useState<boolean>(false);
 
   // Synchronize local steps with inquiry data on open
   useEffect(() => {
@@ -385,7 +384,6 @@ export function UpdateInquiryStatusModal({
       );
       setActiveStepIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
       setInquiryNotes(inquiry.notes || "");
-      setShowOriginalMessage(false);
     }
   }, [isOpen, inquiry]);
 
@@ -448,31 +446,13 @@ export function UpdateInquiryStatusModal({
     }
   };
 
-  // Status dot helper for header tabs
-  const getStatusDotColor = (status: BookingStepStatus | string) => {
-    switch (status) {
-      case BookingStepStatus.COMPLETED:
-        return "bg-emerald-500";
-      case BookingStepStatus.IN_PROGRESS:
-      case BookingStepStatus.ACTIVE:
-        return "bg-blue-500";
-      case BookingStepStatus.CANCELLED:
-        return "bg-rose-500";
-      default:
-        return "bg-slate-400";
-    }
-  };
-
   // Multi-step header navigation stepper tabs
   const tabsNav = (
-    <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto pb-1 modal-scroll w-full py-0.5">
+    <div className="flex items-center gap-1 overflow-x-auto pb-2 modal-scroll w-full border-b border-slate-100">
       {stages.map((stage, idx) => {
         const isActive = activeStepIndex === idx;
         const stepStatus = localSteps[idx]?.status || BookingStepStatus.PENDING;
         const isCompleted = stepStatus === BookingStepStatus.COMPLETED;
-        const isCurrent =
-          stepStatus === BookingStepStatus.IN_PROGRESS ||
-          stepStatus === BookingStepStatus.ACTIVE;
         const isCancelled = stepStatus === BookingStepStatus.CANCELLED;
 
         return (
@@ -480,36 +460,31 @@ export function UpdateInquiryStatusModal({
             <button
               type="button"
               onClick={() => setActiveStepIndex(idx)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shrink-0 border ${
+              className={`flex items-center gap-1.5 py-1 px-2.5 rounded-md text-xs transition-colors cursor-pointer shrink-0 ${
                 isActive
-                  ? "bg-slate-900 text-white border-slate-900 shadow-xs ring-1 ring-slate-900"
+                  ? "bg-slate-900 text-white font-medium"
                   : isCompleted
-                  ? "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100"
-                  : isCurrent
-                  ? "bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100"
+                  ? "text-slate-700 hover:bg-slate-100"
                   : isCancelled
-                  ? "bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100"
-                  : "bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200"
+                  ? "text-rose-700 hover:bg-rose-50"
+                  : "text-slate-500 hover:bg-slate-100"
               }`}
             >
-              {/* Step indicator circle */}
               <span
-                className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 ${
                   isActive
-                    ? "bg-white text-slate-900"
+                    ? "bg-white/20 text-white font-medium"
                     : isCompleted
-                    ? "bg-emerald-600 text-white"
-                    : isCurrent
-                    ? "bg-blue-600 text-white"
+                    ? "bg-emerald-100 text-emerald-700 font-medium"
                     : isCancelled
-                    ? "bg-rose-600 text-white"
-                    : "bg-slate-200 text-slate-700"
+                    ? "bg-rose-100 text-rose-700 font-medium"
+                    : "bg-slate-100 text-slate-500 font-normal"
                 }`}
               >
                 {isCompleted ? (
-                  <Check className="w-2.5 h-2.5 stroke-[3]" />
+                  <Check className="w-2.5 h-2.5 stroke-[2.5]" />
                 ) : isCancelled ? (
-                  <X className="w-2.5 h-2.5 stroke-[3]" />
+                  <X className="w-2.5 h-2.5 stroke-[2.5]" />
                 ) : (
                   stage.step
                 )}
@@ -519,7 +494,9 @@ export function UpdateInquiryStatusModal({
             </button>
 
             {idx < stages.length - 1 && (
-              <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0 hidden sm:inline-block" />
+              <span className="text-slate-300 text-xs px-0.5 select-none hidden sm:inline">
+                /
+              </span>
             )}
           </React.Fragment>
         );
@@ -527,54 +504,57 @@ export function UpdateInquiryStatusModal({
     </div>
   );
 
-  // Modal Footer with Back, Next, Cancel, and Save
+  // Modal Footer
   const footer = (
     <div className="flex items-center justify-between gap-3 w-full">
       <div className="flex items-center gap-2">
         <Button
           type="button"
           variant="outline"
+          size="sm"
           onClick={() => setActiveStepIndex((prev) => Math.max(0, prev - 1))}
           disabled={activeStepIndex === 0 || isUpdating}
-          className="text-xs h-9 px-3.5 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer inline-flex items-center gap-1.5"
+          className="text-xs h-8 px-3 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back</span>
+          <ArrowLeft className="w-3.5 h-3.5 mr-1" />
+          Back
         </Button>
         <Button
           type="button"
           variant="outline"
+          size="sm"
           onClick={() => setActiveStepIndex((prev) => Math.min(stages.length - 1, prev + 1))}
           disabled={activeStepIndex === stages.length - 1 || isUpdating}
-          className="text-xs h-9 px-3.5 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer inline-flex items-center gap-1.5"
+          className="text-xs h-8 px-3 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
         >
-          <span>Next</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          Next
+          <ArrowRight className="w-3.5 h-3.5 ml-1" />
         </Button>
+        <span className="text-slate-400 text-xs ml-1 hidden sm:inline">
+          Step {activeStepIndex + 1} of {stages.length}
+        </span>
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
+          size="sm"
           onClick={onClose}
           disabled={isUpdating}
-          className="text-xs h-9 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer"
+          className="text-xs h-8 px-3 text-slate-600 hover:text-slate-900 cursor-pointer"
         >
           Cancel
         </Button>
 
         <Button
           type="button"
+          size="sm"
           onClick={handleSaveAll}
           disabled={isUpdating}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-5 rounded-xl cursor-pointer shadow-xs inline-flex items-center gap-1.5"
+          className="bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs h-8 px-4 rounded-lg cursor-pointer inline-flex items-center gap-1.5"
         >
-          {isUpdating ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <Save className="w-3.5 h-3.5" />
-          )}
+          {isUpdating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           <span>Save changes</span>
         </Button>
       </div>
@@ -585,161 +565,139 @@ export function UpdateInquiryStatusModal({
     <AdminModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Inquiry workflow steps"
-      description={`Lead for ${inquiry.guestName} • ${inquiry.interestedTrip}`}
+      title="Inquiry workflow"
+      description={`${inquiry.guestName} · ${inquiry.interestedTrip}`}
       subHeader={tabsNav}
       footer={footer}
       maxWidth="2xl"
     >
       <div className="space-y-4 py-1 text-xs">
-        {/* Compact Traveler & Trip Context */}
-        <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2.5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <span className="text-[11px] font-semibold text-slate-500">
-                Traveler contact
-              </span>
-              <div className="font-bold text-slate-900 text-sm leading-tight">
-                {inquiry.guestName}
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-600 font-medium text-xs">
-                <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span className="truncate">{inquiry.email}</span>
-              </div>
-              {inquiry.phone && (
-                <div className="flex items-center gap-1.5 text-slate-600 font-medium text-xs">
-                  <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  <span>{inquiry.phone}</span>
-                </div>
-              )}
-              <div className="text-slate-500 font-medium text-[11px]">{inquiry.country}</div>
-            </div>
-
-            <div className="space-y-1 sm:border-l sm:border-slate-200 sm:pl-3">
-              <span className="text-[11px] font-semibold text-slate-500">
-                Trip &amp; schedule
-              </span>
-              <div className="font-bold text-slate-900 text-sm truncate">
-                {inquiry.interestedTrip}
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-600 font-medium text-xs">
-                <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>Dates: {inquiry.travelDates}</span>
-              </div>
-              <div className="text-slate-600 font-medium text-xs">
-                Group: {inquiry.groupSize} {inquiry.groupSize === 1 ? "traveler" : "travelers"} &bull; {inquiry.type || "General"}
-              </div>
-            </div>
+        {/* Context Bar: Traveler & Trip Details (Airy, typographic hierarchy, no heavy cards) */}
+        <div className="flex flex-wrap items-baseline justify-between gap-y-1 text-xs text-slate-500 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-semibold text-slate-900">{inquiry.guestName}</span>
+            <span>·</span>
+            <span>{inquiry.email}</span>
+            {inquiry.phone && (
+              <>
+                <span>·</span>
+                <span>{inquiry.phone}</span>
+              </>
+            )}
+            {inquiry.country && (
+              <>
+                <span>·</span>
+                <span>{inquiry.country}</span>
+              </>
+            )}
           </div>
-
-          {/* Collapsible Guest Inquiry Note */}
-          {inquiry.message && (
-            <div className="pt-2 border-t border-slate-200/80">
-              <button
-                type="button"
-                onClick={() => setShowOriginalMessage(!showOriginalMessage)}
-                className="flex items-center justify-between w-full text-[11px] font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
-              >
-                <span>Original guest message</span>
-                <span className="text-slate-400 text-xs">
-                  {showOriginalMessage ? "Hide message ▲" : "View message ▼"}
-                </span>
-              </button>
-              {showOriginalMessage && (
-                <div className="mt-1.5 p-2.5 bg-white rounded-lg border border-slate-200 text-slate-700 italic text-xs leading-relaxed max-h-32 overflow-y-auto">
-                  &ldquo;{inquiry.message}&rdquo;
-                </div>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-2 text-slate-600">
+            <span>{inquiry.travelDates}</span>
+            <span>·</span>
+            <span>
+              {inquiry.groupSize} {inquiry.groupSize === 1 ? "traveler" : "travelers"}
+            </span>
+          </div>
         </div>
 
-        {/* Active Step Details & Status/Message Editor */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3.5 shadow-2xs">
-          <div className="flex items-center justify-between gap-3">
+        {/* Traveler Inquiry Message (clean quote block) */}
+        {inquiry.message && (
+          <div className="text-xs text-slate-600 border-l-2 border-slate-300 pl-3 py-1 space-y-0.5">
+            <span className="text-[11px] text-slate-400 font-medium">Guest message:</span>
+            <p className="italic text-slate-700 leading-relaxed">&ldquo;{inquiry.message}&rdquo;</p>
+          </div>
+        )}
+
+        {/* Current Stage Section */}
+        <div className="space-y-4 pt-1">
+          <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="text-[11px] text-slate-500 font-semibold tracking-wide">
+              <span className="text-[11px] text-slate-400 font-normal">
                 Step {currentStage.step} of {stages.length}
+              </span>
+              <h3 className="text-base font-semibold text-slate-900 mt-0.5">
+                {currentStage.title}
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                {currentStage.description}
+              </p>
+            </div>
+            <AdminStatusBadge status={currentStepData.status} />
+          </div>
+
+          {/* Segmented Stage Status Control (Clean, native product feel) */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-700">
+              Stage status
+            </label>
+            <div>
+              <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50/70 p-0.5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => updateCurrentStatus(BookingStepStatus.IN_PROGRESS)}
+                  className={`px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
+                    currentStepData.status === BookingStepStatus.IN_PROGRESS ||
+                    currentStepData.status === BookingStepStatus.ACTIVE
+                      ? "bg-white text-slate-900 shadow-2xs border border-slate-200/80"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  In progress
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateCurrentStatus(BookingStepStatus.COMPLETED)}
+                  className={`px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
+                    currentStepData.status === BookingStepStatus.COMPLETED
+                      ? "bg-white text-slate-900 shadow-2xs border border-slate-200/80"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Completed
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateCurrentStatus(BookingStepStatus.CANCELLED)}
+                  className={`px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
+                    currentStepData.status === BookingStepStatus.CANCELLED
+                      ? "bg-white text-slate-900 shadow-2xs border border-slate-200/80"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Cancelled / closed
+                </button>
               </div>
-              <h3 className="font-bold text-slate-900 text-base">{currentStage.title}</h3>
-            </div>
-            <div className="flex items-center gap-2">
-              <AdminStatusBadge status={currentStepData.status} />
             </div>
           </div>
 
-          <p className="text-slate-600 leading-relaxed text-xs">
-            {currentStage.description}
-          </p>
-
-          {/* Simple Stage Status Buttons (Natural casing, clear icons) */}
-          <div className="space-y-1.5 pt-2 border-t border-slate-100">
-            <span className="text-[11px] font-semibold text-slate-600 block">
-              Step status:
-            </span>
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={() => updateCurrentStatus(BookingStepStatus.IN_PROGRESS)}
-                className={`px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition-colors ${
-                  currentStepData.status === BookingStepStatus.IN_PROGRESS ||
-                  currentStepData.status === BookingStepStatus.ACTIVE
-                    ? "bg-blue-600 text-white shadow-xs"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
-                }`}
-              >
-                <Clock className="w-3.5 h-3.5" />
-                <span>In progress</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => updateCurrentStatus(BookingStepStatus.COMPLETED)}
-                className={`px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition-colors ${
-                  currentStepData.status === BookingStepStatus.COMPLETED
-                    ? "bg-emerald-600 text-white shadow-xs"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
-                }`}
-              >
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Completed</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => updateCurrentStatus(BookingStepStatus.CANCELLED)}
-                className={`px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition-colors ${
-                  currentStepData.status === BookingStepStatus.CANCELLED
-                    ? "bg-rose-600 text-white shadow-xs"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
-                }`}
-              >
-                <XCircle className="w-3.5 h-3.5" />
-                <span>Cancelled / closed</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Step Message / Remarks Input */}
-          <div className="space-y-1">
-            <AdminTextareaField
-              label={`Step ${currentStage.step} message / remarks`}
-              rows={2.5}
-              placeholder={`Add notes or messages for "${currentStage.label}" (e.g. Discussed itinerary via WhatsApp, quote email sent)...`}
+          {/* Stage Note / Remarks */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-700">
+              Step notes
+            </label>
+            <textarea
+              rows={3}
               value={currentStepData.message}
               onChange={(e) => updateCurrentMessage(e.target.value)}
+              placeholder={`Notes for this stage (e.g. sent quote email, traveler reviewing itinerary)...`}
+              className="w-full text-xs rounded-lg border border-slate-200 p-2.5 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-colors leading-relaxed"
             />
           </div>
         </div>
 
         {/* General Internal Notes */}
-        <AdminTextareaField
-          label="Internal notes (general)"
-          rows={2}
-          placeholder="Add general notes or internal remarks about this customer inquiry..."
-          value={inquiryNotes}
-          onChange={(e) => setInquiryNotes(e.target.value)}
-        />
+        <div className="space-y-1.5 pt-3 border-t border-slate-100">
+          <label className="text-xs font-medium text-slate-700">
+            General notes
+          </label>
+          <textarea
+            rows={2}
+            value={inquiryNotes}
+            onChange={(e) => setInquiryNotes(e.target.value)}
+            placeholder="Add general notes or internal remarks about this customer inquiry..."
+            className="w-full text-xs rounded-lg border border-slate-200 p-2.5 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-colors leading-relaxed"
+          />
+        </div>
       </div>
     </AdminModal>
   );

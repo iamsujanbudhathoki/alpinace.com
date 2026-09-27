@@ -568,32 +568,38 @@ export function UpdateInquiryStatusModal({
       maxWidth="2xl"
     >
       <div className="space-y-4 py-1 text-xs">
-        {/* Context Bar: Traveler & Trip Details (Airy, typographic hierarchy, no heavy cards) */}
-        <div className="flex flex-wrap items-baseline justify-between gap-y-1 text-xs text-slate-500 pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-slate-900">{inquiry.guestName}</span>
-            <span>·</span>
-            <span>{inquiry.email}</span>
-            {inquiry.phone && (
-              <>
-                <span>·</span>
-                <span>{inquiry.phone}</span>
-              </>
-            )}
-            {inquiry.country && (
-              <>
-                <span>·</span>
-                <span>{inquiry.country}</span>
-              </>
-            )}
-          </div>
-          <div className="flex items-center gap-2 text-slate-600">
-            <span>{inquiry.travelDates}</span>
-            <span>·</span>
-            <span>
-              {inquiry.groupSize} {inquiry.groupSize === 1 ? "traveler" : "travelers"}
-            </span>
-          </div>
+        {/* Guest & Trip Details Table */}
+        <div className="border border-slate-200 rounded-lg overflow-hidden text-xs bg-white">
+          <table className="w-full text-left border-collapse">
+            <tbody className="divide-y divide-slate-100">
+              <tr>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium w-24 sm:w-28 shrink-0">Guest name</td>
+                <td className="px-3 py-2 font-semibold text-slate-900">{inquiry.guestName}</td>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium w-24 sm:w-28 shrink-0">Trip / package</td>
+                <td className="px-3 py-2 font-medium text-slate-900">{inquiry.interestedTrip}</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Email</td>
+                <td className="px-3 py-2 text-slate-700 break-all">{inquiry.email}</td>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Dates</td>
+                <td className="px-3 py-2 text-slate-700">{inquiry.travelDates}</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Phone</td>
+                <td className="px-3 py-2 text-slate-700">{inquiry.phone || "—"}</td>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Group size</td>
+                <td className="px-3 py-2 text-slate-700">
+                  {inquiry.groupSize} {inquiry.groupSize === 1 ? "traveler" : "travelers"}
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Country</td>
+                <td className="px-3 py-2 text-slate-700" colSpan={3}>
+                  {inquiry.country || "—"}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* Traveler Inquiry Message (clean quote block) */}

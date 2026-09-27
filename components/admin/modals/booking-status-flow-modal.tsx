@@ -327,42 +327,48 @@ export function BookingStatusFlowModal({
       maxWidth="2xl"
     >
       <div className="space-y-4 py-1 text-xs">
-        {/* Context Bar: Guest & Trip Details (Airy, typographic hierarchy, no heavy cards) */}
-        <div className="flex flex-wrap items-baseline justify-between gap-y-1.5 text-xs text-slate-500 pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-slate-900">{booking.guestName}</span>
-            <span>·</span>
-            <span>{booking.guestEmail}</span>
-            {booking.guestPhone && (
-              <>
-                <span>·</span>
-                <span>{booking.guestPhone}</span>
-              </>
-            )}
-            {booking.country && (
-              <>
-                <span>·</span>
-                <span>{booking.country}</span>
-              </>
-            )}
-          </div>
-          <div className="flex items-center gap-2 flex-wrap text-slate-600">
-            <span>
-              {booking.startDate} &rarr; {booking.endDate}
-            </span>
-            <span>·</span>
-            <span>
-              {booking.groupSize} {booking.groupSize === 1 ? "traveler" : "travelers"}
-            </span>
-            <span>·</span>
-            <span className="font-medium text-slate-900">
-              ${Number(booking.totalAmountUSD || 0).toLocaleString()} USD
-            </span>
-            <span className="flex items-center gap-1.5 ml-1">
-              <AdminStatusBadge status={booking.paymentStatus} />
-              <AdminStatusBadge status={booking.permitStatus} />
-            </span>
-          </div>
+        {/* Guest & Trip Details Table */}
+        <div className="border border-slate-200 rounded-lg overflow-hidden text-xs bg-white">
+          <table className="w-full text-left border-collapse">
+            <tbody className="divide-y divide-slate-100">
+              <tr>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium w-24 sm:w-28 shrink-0">Guest name</td>
+                <td className="px-3 py-2 font-semibold text-slate-900">{booking.guestName}</td>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium w-24 sm:w-28 shrink-0">Package</td>
+                <td className="px-3 py-2 font-medium text-slate-900">{booking.packageName}</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Email</td>
+                <td className="px-3 py-2 text-slate-700 break-all">{booking.guestEmail}</td>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Dates</td>
+                <td className="px-3 py-2 text-slate-700">
+                  {booking.startDate} &rarr; {booking.endDate}
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Phone</td>
+                <td className="px-3 py-2 text-slate-700">{booking.guestPhone || "—"}</td>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Group size</td>
+                <td className="px-3 py-2 text-slate-700">
+                  {booking.groupSize} {booking.groupSize === 1 ? "traveler" : "travelers"}
+                </td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Country</td>
+                <td className="px-3 py-2 text-slate-700">{booking.country || "—"}</td>
+                <td className="px-3 py-2 bg-slate-50 text-slate-500 font-medium">Total &amp; status</td>
+                <td className="px-3 py-2 text-slate-700">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="font-semibold text-slate-900">
+                      ${Number(booking.totalAmountUSD || 0).toLocaleString()} USD
+                    </span>
+                    <AdminStatusBadge status={booking.paymentStatus} />
+                    <AdminStatusBadge status={booking.permitStatus} />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* Special Requests (clean quote block if present) */}

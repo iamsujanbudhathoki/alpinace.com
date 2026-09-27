@@ -148,17 +148,6 @@ export function BookingStatusFlowModal({
     message: "",
   };
 
-  const updateCurrentStatus = (newStatus: BookingStepStatus) => {
-    setLocalSteps((prev) => {
-      const copy = [...prev];
-      copy[activeStepIndex] = {
-        ...copy[activeStepIndex],
-        status: newStatus,
-      };
-      return copy;
-    });
-  };
-
   const updateCurrentMessage = (newMessage: string) => {
     setLocalSteps((prev) => {
       const copy = [...prev];
@@ -174,50 +163,35 @@ export function BookingStatusFlowModal({
     if (!booking || isUpdating) return;
     setIsUpdating(true);
     try {
+      const stepsToSave: BookingStep[] = phases.map((_, idx) => {
+        let status = BookingStepStatus.PENDING;
+        if (idx < activeStepIndex) {
+          status = BookingStepStatus.COMPLETED;
+        } else if (idx === activeStepIndex) {
+          status =
+            activeStepIndex === phases.length - 1
+              ? BookingStepStatus.COMPLETED
+              : BookingStepStatus.IN_PROGRESS;
+        }
+        return {
+          status,
+          message: localSteps[idx]?.message || "",
+        };
+      });
+
       const res = await BookingService.updateWorkflow(booking.id, {
-        steps: localSteps,
+        steps: stepsToSave,
       });
 
       if (res.success && res.data) {
-        toast.success(`Booking step statuses & messages saved successfully`);
+        toast.success("Booking workflow updated successfully");
         onStatusUpdated?.(res.data);
+        onClose();
       } else {
         toast.error(res.message || "Failed to update booking steps");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to update booking steps");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const handleQuickStatusChange = async (targetStatus: BookingStepStatus) => {
-    if (!booking || isUpdating) return;
-    setIsUpdating(true);
-    try {
-      const updatedSteps = [...localSteps];
-      updatedSteps[activeStepIndex] = {
-        ...updatedSteps[activeStepIndex],
-        status: targetStatus,
-      };
-      setLocalSteps(updatedSteps);
-
-      const res = await BookingService.updateWorkflow(booking.id, {
-        stepIndex: activeStepIndex,
-        status: targetStatus,
-        message: updatedSteps[activeStepIndex].message,
-      });
-
-      if (res.success && res.data) {
-        toast.success(
-          `Step ${activeStepIndex + 1} (${currentViewedPhase.label}) status set to "${targetStatus}"`
-        );
-        onStatusUpdated?.(res.data);
-      } else {
-        toast.error(res.message || "Failed to update step status");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update step status");
     } finally {
       setIsUpdating(false);
     }
@@ -240,9 +214,7 @@ export function BookingStatusFlowModal({
     <div className="flex items-center gap-1 overflow-x-auto pb-2 modal-scroll w-full border-b border-slate-100">
       {phases.map((phase, idx) => {
         const isActive = activeStepIndex === idx;
-        const stepStatus = localSteps[idx]?.status || BookingStepStatus.PENDING;
-        const isCompleted = stepStatus === BookingStepStatus.COMPLETED;
-        const isCancelled = stepStatus === BookingStepStatus.CANCELLED;
+        const isCompleted = idx < activeStepIndex;
 
         return (
           <React.Fragment key={phase.step}>
@@ -254,8 +226,6 @@ export function BookingStatusFlowModal({
                   ? "bg-slate-900 text-white font-medium"
                   : isCompleted
                   ? "text-slate-700 hover:bg-slate-100"
-                  : isCancelled
-                  ? "text-rose-700 hover:bg-rose-50"
                   : "text-slate-500 hover:bg-slate-100"
               }`}
             >
@@ -265,15 +235,11 @@ export function BookingStatusFlowModal({
                     ? "bg-white/20 text-white font-medium"
                     : isCompleted
                     ? "bg-emerald-100 text-emerald-700 font-medium"
-                    : isCancelled
-                    ? "bg-rose-100 text-rose-700 font-medium"
                     : "bg-slate-100 text-slate-500 font-normal"
                 }`}
               >
                 {isCompleted ? (
                   <Check className="w-2.5 h-2.5 stroke-[2.5]" />
-                ) : isCancelled ? (
-                  <X className="w-2.5 h-2.5 stroke-[2.5]" />
                 ) : (
                   phase.step
                 )}
@@ -421,64 +387,29 @@ export function BookingStatusFlowModal({
                 {currentViewedPhase.description}
               </p>
             </div>
-            <AdminStatusBadge status={currentStepData.status} />
-          </div>
-
-          {/* Segmented Stage Status Control (Clean, native product feel) */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-700">
-              Stage status
-            </label>
             <div>
-              <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50/70 p-0.5 text-xs flex-wrap">
-                <button
-                  type="button"
-                  onClick={() => updateCurrentStatus(BookingStepStatus.IN_PROGRESS)}
-                  className={`px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
-                    currentStepData.status === BookingStepStatus.IN_PROGRESS ||
-                    currentStepData.status === BookingStepStatus.ACTIVE
-                      ? "bg-white text-slate-900 shadow-2xs border border-slate-200/80"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  In progress
-                </button>
-                <button
-                  type="button"
-                  onClick={() => updateCurrentStatus(BookingStepStatus.COMPLETED)}
-                  className={`px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
-                    currentStepData.status === BookingStepStatus.COMPLETED
-                      ? "bg-white text-slate-900 shadow-2xs border border-slate-200/80"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  Completed
-                </button>
-                <button
-                  type="button"
-                  onClick={() => updateCurrentStatus(BookingStepStatus.CANCELLED)}
-                  className={`px-3 py-1.5 rounded-md font-medium transition-all cursor-pointer ${
-                    currentStepData.status === BookingStepStatus.CANCELLED
-                      ? "bg-white text-slate-900 shadow-2xs border border-slate-200/80"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  Cancelled
-                </button>
-              </div>
+              {activeStepIndex === phases.length - 1 ? (
+                <span className="text-[11px] px-2 py-0.5 rounded-md font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                  Final stage
+                </span>
+              ) : (
+                <span className="text-[11px] px-2 py-0.5 rounded-md font-medium bg-blue-50 text-blue-700 border border-blue-200/80">
+                  Current stage
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Stage Note / Remarks */}
+          {/* Stage Note / Remarks Only */}
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-slate-700">
               Step notes
             </label>
             <textarea
-              rows={3}
+              rows={4}
               value={currentStepData.message}
               onChange={(e) => updateCurrentMessage(e.target.value)}
-              placeholder={`Notes for this stage (e.g. deposit verified, TIMS cards applied, client briefed)...`}
+              placeholder={`Notes for "${currentViewedPhase.label.toLowerCase()}" (e.g. deposit verified, TIMS cards applied, client briefed)...`}
               className="w-full text-xs rounded-lg border border-slate-200 p-2.5 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-colors leading-relaxed"
             />
           </div>

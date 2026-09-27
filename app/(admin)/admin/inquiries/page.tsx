@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, Trash2, Mail, MessageSquare, Tag, Send } from "lucide-react";
+import { Plus, Trash2, Mail, MessageSquare, SlidersHorizontal, Send } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import {
   Inquiry,
@@ -37,17 +37,30 @@ function getInquiryWorkflowSummary(steps?: InquiryStep[]) {
       activeStatus: BookingStepStatus.PENDING,
       activeMessage: "",
       completedCount: 0,
+      stageBadgeStatus: "new lead",
     };
   }
 
   const completedCount = steps.filter((s) => s.status === BookingStepStatus.COMPLETED).length;
-  if (completedCount === steps.length) {
+  if (completedCount === steps.length || steps[4]?.status === BookingStepStatus.COMPLETED) {
     return {
       activeStepNumber: 5,
       activeStepName: "Closed",
       activeStatus: BookingStepStatus.COMPLETED,
       activeMessage: steps[4]?.message || "",
       completedCount,
+      stageBadgeStatus: "closed",
+    };
+  }
+
+  if (steps[3]?.status === BookingStepStatus.COMPLETED) {
+    return {
+      activeStepNumber: 4,
+      activeStepName: "Booked",
+      activeStatus: BookingStepStatus.COMPLETED,
+      activeMessage: steps[3]?.message || "",
+      completedCount,
+      stageBadgeStatus: "booked",
     };
   }
 
@@ -57,12 +70,20 @@ function getInquiryWorkflowSummary(steps?: InquiryStep[]) {
       s.status !== BookingStepStatus.CANCELLED
   );
   const idx = activeIdx >= 0 ? activeIdx : 0;
+  const activeStatus = steps[idx]?.status || BookingStepStatus.PENDING;
+
+  let stageBadgeStatus = (INQUIRY_STEP_NAMES[idx] || "New Lead").toLowerCase();
+  if (activeStatus === BookingStepStatus.CANCELLED) {
+    stageBadgeStatus = "cancelled";
+  }
+
   return {
     activeStepNumber: idx + 1,
     activeStepName: INQUIRY_STEP_NAMES[idx] || `Step ${idx + 1}`,
-    activeStatus: steps[idx]?.status || BookingStepStatus.PENDING,
+    activeStatus,
     activeMessage: steps[idx]?.message || "",
     completedCount,
+    stageBadgeStatus,
   };
 }
 
@@ -329,9 +350,9 @@ export default function AdminInquiriesPage() {
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-1 shrink-0">
-                        <AdminStatusBadge status={summary.activeStatus} />
+                        <AdminStatusBadge status={summary.stageBadgeStatus} />
                         <span className="text-[10px] font-semibold text-slate-500">
-                          Step {summary.activeStepNumber}: {summary.activeStepName}
+                          Stage {summary.activeStepNumber} of 5
                         </span>
                       </div>
                     </div>
@@ -347,19 +368,44 @@ export default function AdminInquiriesPage() {
                       </div>
                     </div>
 
-                    {/* Step Progress & Message */}
-                    <div className="bg-slate-50/80 px-3 py-2 rounded-lg border border-slate-200/80 flex items-center justify-between text-[11px] text-slate-600 gap-2">
-                      <span className="font-semibold text-slate-700">
-                        Step {summary.activeStepNumber}/5: {summary.activeStepName}
-                      </span>
-                      <span className="text-[11px] font-medium text-slate-500">
-                        {summary.completedCount}/5 steps done
-                      </span>
+                    {/* Visual 5-segment Pipeline Progress */}
+                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200/80 space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="font-semibold text-slate-800">
+                          Stage {summary.activeStepNumber}: {summary.activeStepName}
+                        </span>
+                        <span className="text-[10px] font-medium text-slate-500">
+                          {summary.completedCount}/5 completed
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-5 gap-1.5">
+                        {[0, 1, 2, 3, 4].map((stepIdx) => {
+                          const step = inq.steps?.[stepIdx];
+                          const isCompleted = step?.status === BookingStepStatus.COMPLETED;
+                          const isCurrent = stepIdx === summary.activeStepNumber - 1;
+                          const isCancelled = step?.status === BookingStepStatus.CANCELLED;
+
+                          let segmentClass = "bg-slate-200";
+                          if (isCancelled) segmentClass = "bg-rose-400";
+                          else if (isCompleted) segmentClass = "bg-emerald-500";
+                          else if (isCurrent) segmentClass = "bg-blue-500";
+
+                          return (
+                            <div
+                              key={stepIdx}
+                              className={`h-1.5 rounded-full transition-colors ${segmentClass}`}
+                              title={`${stepIdx + 1}. ${INQUIRY_STEP_NAMES[stepIdx]}: ${step?.status || "pending"}`}
+                            />
+                          );
+                        })}
+                      </div>
                     </div>
 
                     {summary.activeMessage && (
-                      <div className="text-[11px] text-slate-600 italic px-1 truncate">
-                        Remark: &ldquo;{summary.activeMessage}&rdquo;
+                      <div className="text-[11px] text-slate-600 italic px-1 truncate flex items-center gap-1.5">
+                        <span className="text-slate-400 font-semibold not-italic shrink-0">Note:</span>
+                        <span className="truncate">&ldquo;{summary.activeMessage}&rdquo;</span>
                       </div>
                     )}
 
@@ -380,10 +426,10 @@ export default function AdminInquiriesPage() {
                         size="sm"
                         onClick={() => setStatusInquiry(inq)}
                         className="text-xs font-semibold text-slate-800 border-slate-200 hover:bg-slate-100 cursor-pointer h-8 px-2.5"
-                        title="Update Inquiry Steps"
+                        title="Update Lead Stage & Status"
                       >
-                        <Tag className="w-3.5 h-3.5 mr-1 text-slate-600" />
-                        Workflow Steps
+                        <SlidersHorizontal className="w-3.5 h-3.5 mr-1 text-slate-600" />
+                        Lead Stage
                       </Button>
                       <Button
                         size="sm"

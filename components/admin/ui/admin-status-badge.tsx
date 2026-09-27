@@ -36,19 +36,24 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     case BookingStepStatus.IN_PROGRESS.replace(/_/g, " "):
     case "in progress":
     case "on mountain":
+    case "contacted":
       styleClass = "bg-blue-50 text-blue-800 border-blue-200/80 font-semibold";
       dotClass = "bg-blue-500";
+      break;
+    case "quote sent":
+      styleClass = "bg-indigo-50 text-indigo-800 border-indigo-200/80 font-semibold";
+      dotClass = "bg-indigo-500";
       break;
     case BookingPaymentStatus.DEPOSIT_PAID.replace(/_/g, " "):
     case BookingPermitStatus.PROCESSING:
     case "new":
+    case "new lead":
     case "featured":
     case "moderate":
       styleClass = "bg-amber-50 text-amber-800 border-amber-200/80 font-semibold";
       dotClass = "bg-amber-500";
       break;
     case BookingStatus.IN_REVIEW.replace(/_/g, " "):
-    case "quote sent":
     case PackageStatus.DRAFT:
     case BookingStepStatus.PENDING:
     case BlogStatus.ARCHIVED:

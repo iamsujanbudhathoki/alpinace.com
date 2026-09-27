@@ -84,6 +84,11 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     [BookingPermitStatus.PENDING_DOCUMENT.replace(/_/g, " ")]: "Docs Pending",
     [BookingPaymentStatus.DEPOSIT_PAID]: "Deposit Paid",
     [BookingPaymentStatus.DEPOSIT_PAID.replace(/_/g, " ")]: "Deposit Paid",
+    "new lead": "New Lead",
+    "contacted": "Contacted",
+    "quote sent": "Quote Sent",
+    "booked": "Booked",
+    "closed": "Closed",
   };
 
   const displayLabel =

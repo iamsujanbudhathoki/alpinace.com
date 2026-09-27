@@ -27,7 +27,7 @@ import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-const INQUIRY_STEP_NAMES = ["New Lead", "Contacted", "Quote Sent", "Booked", "Closed"];
+const INQUIRY_STEP_NAMES = ["New lead", "Contacted", "Quote sent", "Booked", "Closed"];
 
 function getInquiryWorkflowSummary(steps?: InquiryStep[]) {
   if (!steps || !Array.isArray(steps) || steps.length === 0) {
@@ -364,7 +364,7 @@ export default function AdminInquiriesPage() {
                       </div>
                       <div className="flex items-center justify-between text-slate-600 font-medium text-xs">
                         <span>Dates: {inq.travelDates}</span>
-                        <span>Group: {inq.groupSize} Pax</span>
+                        <span>Group: {inq.groupSize} {inq.groupSize === 1 ? "traveler" : "travelers"}</span>
                       </div>
                     </div>
 
@@ -426,19 +426,19 @@ export default function AdminInquiriesPage() {
                         size="sm"
                         onClick={() => setStatusInquiry(inq)}
                         className="text-xs font-semibold text-slate-800 border-slate-200 hover:bg-slate-100 cursor-pointer h-8 px-2.5"
-                        title="Update Lead Stage & Status"
+                        title="Update lead stage & status"
                       >
                         <SlidersHorizontal className="w-3.5 h-3.5 mr-1 text-slate-600" />
-                        Lead Stage
+                        Lead stage
                       </Button>
                       <Button
                         size="sm"
                         onClick={() => setReplyInquiry(inq)}
                         className="text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 cursor-pointer h-8 px-2.5"
-                        title="Reply via Email"
+                        title="Reply via email"
                       >
                         <Send className="w-3.5 h-3.5 mr-1 text-white" />
-                        Reply Email
+                        Reply email
                       </Button>
                       <Button
                         variant="ghost"

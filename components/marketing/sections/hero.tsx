@@ -338,12 +338,12 @@ export function Hero(_props: HeroProps) {
         </p>
 
         {/* Search */}
-        <div ref={searchContainerRef} className="relative z-30 w-full max-w-2xl">
-          <div className="flex items-center gap-2 rounded-full bg-white px-5 py-1.5 shadow-lg shadow-black/20 focus-within:shadow-xl focus-within:shadow-black/30 transition-shadow">
+        <div ref={searchContainerRef} className="relative z-30 w-full max-w-3xl">
+          <div className="flex items-center gap-3 rounded-full bg-white px-5 sm:px-7 py-1 shadow-lg shadow-black/20 focus-within:shadow-xl focus-within:shadow-black/30 transition-shadow">
             {isSearching ? (
-              <Loader2 className="h-5 w-5 shrink-0 animate-spin text-stone-400" />
+              <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 shrink-0 animate-spin text-stone-400" />
             ) : (
-              <Search className="h-5 w-5 shrink-0 text-stone-400" />
+              <Search className="h-5 w-5 sm:h-6 sm:w-6 shrink-0 text-stone-400" />
             )}
 
             <input
@@ -359,7 +359,7 @@ export function Hero(_props: HeroProps) {
               }}
               onKeyDown={handleKeyDown}
               placeholder="Search Everest, Annapurna, Langtang…"
-              className="h-11 sm:h-12 w-full min-w-0 bg-transparent text-base text-stone-900 placeholder:text-stone-400 focus:outline-none truncate"
+              className="h-14 sm:h-16 w-full min-w-0 bg-transparent text-base sm:text-lg text-stone-900 placeholder:text-stone-400 focus:outline-none truncate"
               aria-label="Search destination or trip"
               autoComplete="off"
               enterKeyHint="search"
@@ -381,7 +381,7 @@ export function Hero(_props: HeroProps) {
           </div>
 
           {/* Price + Duration only: light pills, no container */}
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
             <FilterSelect
               value={priceRange}
               onChange={(v) => {

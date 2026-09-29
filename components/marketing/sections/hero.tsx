@@ -7,17 +7,10 @@ import {
   Search,
   X,
   Compass,
-  Layers,
-  LayoutGrid,
   Mountain,
   MapPin,
-  ChevronRight,
   ChevronDown,
   Loader2,
-  DollarSign,
-  Tag,
-  Clock,
-  RotateCcw,
 } from "lucide-react";
 import { TravelPackage } from "@/lib/home-data";
 import { PublicSearchService } from "@/lib/services/admin-service";
@@ -68,41 +61,78 @@ const HERO_PHRASES = [
   "Next Journey.",
 ];
 
-export function Hero({
-}: HeroProps) {
+/* Filter pill: soft glass on the video, solid white when active */
+function FilterSelect({
+  value,
+  onChange,
+  options,
+  label,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  label: string;
+}) {
+  const active = value !== "all";
+  return (
+    <div className="relative shrink-0">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label={label}
+        className={`h-10 appearance-none rounded-full pl-4 pr-9 text-sm font-medium cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 ${
+          active
+            ? "bg-white text-stone-900"
+            : "bg-white/15 text-white backdrop-blur-md hover:bg-white/25"
+        }`}
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value} className="text-stone-900">
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        className={`pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 ${
+          active ? "text-stone-700" : "text-white/80"
+        }`}
+        strokeWidth={2}
+      />
+    </div>
+  );
+}
+
+export function Hero(_props: HeroProps) {
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [query, setQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<"All" | "Trek" | "Tour" | "Expedition">("All");
-  const [priceRange, setPriceRange] = useState<string>("all");
-  const [durationRange, setDurationRange] = useState<string>("all");
+  const [priceRange, setPriceRange] = useState("all");
+  const [durationRange, setDurationRange] = useState("all");
 
   const [isOpen, setIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<HeroSearchItem[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
-  // Dynamic Mask Reveal & Collapse Headline Animation State
+  // Headline animation
   type MaskAnimStep = "prep" | "entering" | "visible" | "exiting";
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [animStep, setAnimStep] = useState<MaskAnimStep>("visible");
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = () => setPrefersReducedMotion(mediaQuery.matches);
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mq.matches);
+    const handleChange = () => setPrefersReducedMotion(mq.matches);
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
   }, []);
 
   useEffect(() => {
     if (prefersReducedMotion) return;
-
     let timer: NodeJS.Timeout;
 
     if (animStep === "visible") {
@@ -117,45 +147,37 @@ export function Hero({
     } else if (animStep === "entering") {
       timer = setTimeout(() => setAnimStep("visible"), 600);
     }
-
     return () => clearTimeout(timer);
   }, [animStep, prefersReducedMotion]);
 
   const parsedFilters = useMemo(() => {
-    const priceOpt = PRICE_OPTIONS.find((p) => p.value === priceRange);
-    const durationOpt = DURATION_OPTIONS.find((d) => d.value === durationRange);
-
+    const p = PRICE_OPTIONS.find((o) => o.value === priceRange);
+    const d = DURATION_OPTIONS.find((o) => o.value === durationRange);
     return {
-      minPrice: priceOpt?.minPrice,
-      maxPrice: priceOpt?.maxPrice,
-      minDuration: durationOpt?.minDuration,
-      maxDuration: durationOpt?.maxDuration,
+      minPrice: p?.minPrice,
+      maxPrice: p?.maxPrice,
+      minDuration: d?.minDuration,
+      maxDuration: d?.maxDuration,
     };
   }, [priceRange, durationRange]);
 
-  const isAnyFilterActive = useMemo(() => {
-    return (
-      query.trim().length > 0 ||
-      selectedCategory !== "All" ||
-      priceRange !== "all" ||
-      durationRange !== "all"
-    );
-  }, [query, selectedCategory, priceRange, durationRange]);
+  const hasFilters = priceRange !== "all" || durationRange !== "all";
+  const isAnyFilterActive = query.trim().length > 0 || hasFilters;
 
   const handleResetFilters = () => {
     setQuery("");
-    setSelectedCategory("All");
     setPriceRange("all");
     setDurationRange("all");
     setIsOpen(false);
     setSearchResults([]);
+    setSelectedIndex(-1);
   };
 
-  // Debounced search effect - Hits backend search API with query & combined filters
+  // Debounced backend search (all trip types)
   useEffect(() => {
-    const trimmedQuery = query.trim();
+    const trimmed = query.trim();
 
-    if (trimmedQuery.length < 2 && !isAnyFilterActive) {
+    if (trimmed.length < 2 && !hasFilters) {
       setSearchResults([]);
       setIsOpen(false);
       setIsSearching(false);
@@ -166,19 +188,15 @@ export function Hero({
 
     const timer = setTimeout(async () => {
       try {
-        const res = await PublicSearchService.search(
-          trimmedQuery,
-          selectedCategory,
-          15,
-          parsedFilters
-        );
+        const res = await PublicSearchService.search(trimmed, "All", 15, parsedFilters);
         if (res && Array.isArray(res.results)) {
           setSearchResults(res.results);
           setIsOpen(true);
         } else {
           setSearchResults([]);
         }
-      } catch (e) {
+        setSelectedIndex(-1);
+      } catch {
         setSearchResults([]);
       } finally {
         setIsSearching(false);
@@ -186,29 +204,24 @@ export function Hero({
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [query, selectedCategory, parsedFilters, isAnyFilterActive]);
+  }, [query, parsedFilters, hasFilters]);
 
-  // Combined client filtering to guarantee accuracy on price & duration ranges
+  // Client-side check so price/duration ranges are always accurate
   const filteredResults = useMemo(() => {
     return searchResults.filter((item) => {
-      // 1. Category check
-      if (selectedCategory !== "All" && item.type !== selectedCategory) return false;
-
-      // 2. Price check
       const price = item.priceUSD || 0;
       if (parsedFilters.minPrice !== undefined && price < parsedFilters.minPrice) return false;
       if (parsedFilters.maxPrice !== undefined && price > parsedFilters.maxPrice) return false;
 
-      // 3. Duration check
       const days = item.durationDays || 0;
       if (parsedFilters.minDuration !== undefined && days < parsedFilters.minDuration) return false;
       if (parsedFilters.maxDuration !== undefined && days > parsedFilters.maxDuration) return false;
 
       return true;
     });
-  }, [searchResults, selectedCategory, parsedFilters]);
+  }, [searchResults, parsedFilters]);
 
-  // Click outside handler to dismiss search suggestions
+  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -224,8 +237,6 @@ export function Hero({
 
   const getPackageUrl = (item: HeroSearchItem) => {
     switch (item.type) {
-      case "Trek":
-        return `/trekking/${item.slug}`;
       case "Tour":
         return `/tours/${item.slug}`;
       case "Expedition":
@@ -237,8 +248,7 @@ export function Hero({
 
   const handleSelectResult = (item: HeroSearchItem) => {
     setIsOpen(false);
-    const targetUrl = getPackageUrl(item);
-    router.push(targetUrl);
+    router.push(getPackageUrl(item));
   };
 
   const handleSearchSubmit = () => {
@@ -246,55 +256,50 @@ export function Hero({
     const params = new URLSearchParams();
 
     if (query.trim()) params.set("search", query.trim());
-    if (selectedCategory !== "All") params.set("category", selectedCategory);
     if (parsedFilters.minPrice !== undefined) params.set("minPrice", String(parsedFilters.minPrice));
     if (parsedFilters.maxPrice !== undefined) params.set("maxPrice", String(parsedFilters.maxPrice));
     if (parsedFilters.minDuration !== undefined) params.set("minDuration", String(parsedFilters.minDuration));
     if (parsedFilters.maxDuration !== undefined) params.set("maxDuration", String(parsedFilters.maxDuration));
 
-    let targetPath = "/trekking";
-    if (selectedCategory === "Tour") targetPath = "/tours";
-    if (selectedCategory === "Expedition") targetPath = "/expeditions";
-
-    const queryString = params.toString();
-    router.push(queryString ? `${targetPath}?${queryString}` : targetPath);
+    const qs = params.toString();
+    router.push(qs ? `/trekking?${qs}` : "/trekking");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!isOpen) {
-      if (e.key === "ArrowDown" && (query.trim().length >= 2 || isAnyFilterActive)) {
-        setIsOpen(true);
-      }
-      return;
-    }
-
-    if (e.key === "ArrowDown") {
+    if (e.key === "Enter") {
       e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev < filteredResults.length - 1 ? prev + 1 : 0
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev > 0 ? prev - 1 : filteredResults.length - 1
-      );
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (selectedIndex >= 0 && selectedIndex < filteredResults.length) {
+      if (isOpen && selectedIndex >= 0 && selectedIndex < filteredResults.length) {
         handleSelectResult(filteredResults[selectedIndex]);
       } else {
         handleSearchSubmit();
       }
-    } else if (e.key === "Escape") {
+      return;
+    }
+
+    if (e.key === "Escape") {
       setIsOpen(false);
+      return;
+    }
+
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!isOpen) {
+        if (isAnyFilterActive) setIsOpen(true);
+        return;
+      }
+      e.preventDefault();
+      const last = filteredResults.length - 1;
+      setSelectedIndex((prev) =>
+        e.key === "ArrowDown"
+          ? prev < last ? prev + 1 : 0
+          : prev > 0 ? prev - 1 : last
+      );
     }
   };
 
   return (
-    <section className="relative z-10 flex min-h-[90vh] sm:min-h-screen w-full flex-col items-center justify-center bg-stone-100 text-stone-900">
-      {/* Background media layer — clipped independently so the dropdown can overflow freely */}
+    <section className="relative z-10 flex min-h-[90svh] sm:min-h-screen w-full flex-col items-center justify-center bg-stone-100 text-stone-900">
+      {/* Background media */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        {/* Background Natural Video */}
         <video
           autoPlay
           loop
@@ -304,24 +309,21 @@ export function Hero({
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
-
-        {/* Gradient overlay — lighter at top to let the video breathe, deeper at bottom for readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-stone-950/15 via-stone-950/45 to-stone-950/70" />
       </div>
 
-      {/* Centered Content Container */}
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">
-        {/* Animated Editorial Mask Reveal & Collapse Headline */}
+        {/* Headline */}
         <h1 className="font-heading font-bold text-white mb-4 sm:mb-5 max-w-4xl leading-[1.15] text-center drop-shadow-md">
-          <span className="block text-3xl sm:text-4xl lg:text-5xl text-white/95 font-medium tracking-tight">Discover your</span>
+          <span className="block text-3xl sm:text-4xl lg:text-5xl text-white/95 font-medium tracking-tight">
+            Discover your
+          </span>
           <span className="relative block h-[1.3em] overflow-hidden align-middle text-4xl sm:text-6xl lg:text-7xl xl:text-8xl mt-1.5 sm:mt-2">
             <span
               className={`block text-accent font-bold ${
                 animStep === "prep"
                   ? "translate-y-[110%] opacity-0 transition-none"
-                  : animStep === "entering"
-                  ? "translate-y-0 opacity-100 transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                  : animStep === "visible"
+                  : animStep === "entering" || animStep === "visible"
                   ? "translate-y-0 opacity-100 transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)]"
                   : "-translate-y-[110%] opacity-0 transition-all duration-500 ease-[cubic-bezier(0.7,0,0.84,0)]"
               }`}
@@ -331,344 +333,178 @@ export function Hero({
           </span>
         </h1>
 
-        {/* Supporting tagline */}
-        <p className="text-white/70 text-sm sm:text-base font-normal max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed tracking-wide">
+        <p className="text-white/75 text-sm sm:text-base max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed">
           Guided treks, cultural tours &amp; high-altitude expeditions across Nepal.
         </p>
 
-        <div
-          ref={searchContainerRef}
-          className="relative z-30 w-full max-w-3xl lg:max-w-4xl"
-        >
-          <div className="lg:bg-white/95 lg:backdrop-blur-xl lg:border lg:border-stone-200/90 lg:rounded-2xl lg:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.12)] lg:p-4 lg:space-y-3">
-            
-            {/* Primary Hero Search Bar */}
-            <div className="relative flex items-center bg-white rounded-2xl border-0 shadow-md px-4 py-3.5 transition-colors lg:bg-stone-50 lg:rounded-xl lg:shadow-2xs lg:border lg:border-stone-200/90 lg:hover:bg-stone-50/90 lg:focus-within:bg-white lg:focus-within:border-stone-400 lg:px-5 lg:py-3.5">
-              {isSearching ? (
-                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-stone-400 lg:text-stone-500 shrink-0 mr-3" />
-              ) : (
-                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-stone-400 shrink-0 mr-3" />
-              )}
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setSelectedIndex(-1);
+        {/* Search */}
+        <div ref={searchContainerRef} className="relative z-30 w-full max-w-2xl">
+          <div className="flex items-center gap-2 rounded-full bg-white px-5 py-1.5 shadow-lg shadow-black/20 focus-within:shadow-xl focus-within:shadow-black/30 transition-shadow">
+            {isSearching ? (
+              <Loader2 className="h-5 w-5 shrink-0 animate-spin text-stone-400" />
+            ) : (
+              <Search className="h-5 w-5 shrink-0 text-stone-400" />
+            )}
+
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setSelectedIndex(-1);
+              }}
+              onFocus={() => {
+                if (isAnyFilterActive && searchResults.length > 0) setIsOpen(true);
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder="Search Everest, Annapurna, Langtang…"
+              className="h-11 sm:h-12 w-full min-w-0 bg-transparent text-base text-stone-900 placeholder:text-stone-400 focus:outline-none truncate"
+              aria-label="Search destination or trip"
+              autoComplete="off"
+              enterKeyHint="search"
+            />
+
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  inputRef.current?.focus();
                 }}
-                onFocus={() => {
-                  if (query.trim().length >= 2 || isAnyFilterActive) {
-                    setIsOpen(true);
-                  }
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder="Where do you want to explore? (e.g. Everest, Annapurna)"
-                className="w-full min-w-0 bg-transparent text-stone-900 placeholder-stone-400 text-sm sm:text-base font-normal focus:outline-none truncate"
-                aria-label="Search destination or trip"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQuery("");
-                    inputRef.current?.focus();
-                  }}
-                  className="p-1 sm:p-1.5 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer shrink-0 ml-1.5"
-                  aria-label="Clear keyword search"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-
-            {/* Refinement Filters Bar - Only visible on Laptop and Desktop (lg+) */}
-            <div className="hidden lg:grid grid-cols-3 gap-2.5 pt-0.5">
-              {/* Category Select Dropdown */}
-              <div
-                className={`group relative flex items-center rounded-xl px-3.5 py-2.5 transition-all border ${
-                  selectedCategory !== "All"
-                    ? "bg-stone-900/5 border-stone-400 text-stone-950 font-semibold shadow-2xs"
-                    : "bg-stone-100/70 hover:bg-stone-100 border-stone-200/80 hover:border-stone-300 text-stone-700"
-                }`}
+                className="shrink-0 rounded-full p-2 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+                aria-label="Clear search"
               >
-                <LayoutGrid
-                  className={`h-4 w-4 shrink-0 mr-2.5 transition-colors ${
-                    selectedCategory !== "All"
-                      ? "text-stone-950"
-                      : "text-stone-500 group-hover:text-stone-800"
-                  }`}
-                  strokeWidth={1.75}
-                />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => {
-                    setSelectedCategory(
-                      e.target.value as "All" | "Trek" | "Tour" | "Expedition"
-                    );
-                    setSelectedIndex(-1);
-                  }}
-                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-6"
-                  aria-label="Filter by Category"
-                >
-                  <option value="All">All Categories</option>
-                  <option value="Trek">Trekking</option>
-                  <option value="Tour">Tours</option>
-                  <option value="Expedition">Expeditions</option>
-                </select>
-                <ChevronDown
-                  className={`h-4 w-4 pointer-events-none absolute right-3 transition-colors ${
-                    selectedCategory !== "All"
-                      ? "text-stone-950"
-                      : "text-stone-400 group-hover:text-stone-600"
-                  }`}
-                  strokeWidth={1.75}
-                />
-              </div>
-
-              {/* Price Range Select Dropdown */}
-              <div
-                className={`group relative flex items-center rounded-xl px-3.5 py-2.5 transition-all border ${
-                  priceRange !== "all"
-                    ? "bg-stone-900/5 border-stone-400 text-stone-950 font-semibold shadow-2xs"
-                    : "bg-stone-100/70 hover:bg-stone-100 border-stone-200/80 hover:border-stone-300 text-stone-700"
-                }`}
-              >
-                <Tag
-                  className={`h-4 w-4 shrink-0 mr-2.5 transition-colors ${
-                    priceRange !== "all"
-                      ? "text-stone-950"
-                      : "text-stone-500 group-hover:text-stone-800"
-                  }`}
-                  strokeWidth={1.75}
-                />
-                <select
-                  value={priceRange}
-                  onChange={(e) => {
-                    setPriceRange(e.target.value);
-                    setSelectedIndex(-1);
-                  }}
-                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-6"
-                  aria-label="Filter by Price"
-                >
-                  {PRICE_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  className={`h-4 w-4 pointer-events-none absolute right-3 transition-colors ${
-                    priceRange !== "all"
-                      ? "text-stone-950"
-                      : "text-stone-400 group-hover:text-stone-600"
-                  }`}
-                  strokeWidth={1.75}
-                />
-              </div>
-
-              {/* Duration Range Select Dropdown */}
-              <div
-                className={`group relative flex items-center rounded-xl px-3.5 py-2.5 transition-all border ${
-                  durationRange !== "all"
-                    ? "bg-stone-900/5 border-stone-400 text-stone-950 font-semibold shadow-2xs"
-                    : "bg-stone-100/70 hover:bg-stone-100 border-stone-200/80 hover:border-stone-300 text-stone-700"
-                }`}
-              >
-                <Clock
-                  className={`h-4 w-4 shrink-0 mr-2.5 transition-colors ${
-                    durationRange !== "all"
-                      ? "text-stone-950"
-                      : "text-stone-500 group-hover:text-stone-800"
-                  }`}
-                  strokeWidth={1.75}
-                />
-                <select
-                  value={durationRange}
-                  onChange={(e) => {
-                    setDurationRange(e.target.value);
-                    setSelectedIndex(-1);
-                  }}
-                  className="w-full bg-transparent text-stone-900 text-xs sm:text-sm font-medium focus:outline-none cursor-pointer appearance-none pr-6"
-                  aria-label="Filter by Duration"
-                >
-                  {DURATION_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  className={`h-4 w-4 pointer-events-none absolute right-3 transition-colors ${
-                    durationRange !== "all"
-                      ? "text-stone-950"
-                      : "text-stone-400 group-hover:text-stone-600"
-                  }`}
-                  strokeWidth={1.75}
-                />
-              </div>
-            </div>
-
-            {/* Reset Active Filters Action (Desktop/Laptop only) */}
-            {isAnyFilterActive && (
-              <div className="hidden lg:flex items-center justify-between pt-1 text-xs text-stone-500 border-t border-stone-100">
-                <span className="text-[11px] font-normal text-stone-400">
-                  Showing refined results
-                </span>
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="inline-flex items-center gap-1.5 text-stone-600 hover:text-stone-900 font-medium hover:underline cursor-pointer"
-                >
-                  <RotateCcw className="h-3 w-3" />
-                  <span>Reset all filters</span>
-                </button>
-              </div>
+                <X className="h-4 w-4" />
+              </button>
             )}
           </div>
 
+          {/* Price + Duration only: light pills, no container */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <FilterSelect
+              value={priceRange}
+              onChange={(v) => {
+                setPriceRange(v);
+                setSelectedIndex(-1);
+              }}
+              options={PRICE_OPTIONS}
+              label="Filter by price"
+            />
+            <FilterSelect
+              value={durationRange}
+              onChange={(v) => {
+                setDurationRange(v);
+                setSelectedIndex(-1);
+              }}
+              options={DURATION_OPTIONS}
+              label="Filter by duration"
+            />
+            {isAnyFilterActive && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="h-10 px-3 text-sm font-medium text-white/80 hover:text-white underline underline-offset-4 cursor-pointer"
+              >
+                Reset
+              </button>
+            )}
+          </div>
 
-          {/* Dynamic Search Suggestions Popover Dropdown */}
-          {isOpen && (query.trim().length >= 2 || isAnyFilterActive) && (
-            <div className="absolute left-0 right-0 top-full mt-3 bg-white border border-stone-200 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in-50 slide-in-from-top-2 duration-150 text-left">
-
-              {/* Active Filter Summary Bar (Desktop/Laptop only) */}
-              {isAnyFilterActive && (
-                <div className="hidden lg:flex px-4 py-2.5 bg-stone-50 border-b border-stone-200 flex-wrap items-center justify-between text-xs text-stone-500 gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-stone-700">Active filters:</span>
-                    <span className="bg-stone-200/70 text-stone-800 px-2 py-0.5 rounded-md font-medium">
-                      {selectedCategory === "All" ? "All Categories" : selectedCategory}
-                    </span>
-                    {priceRange !== "all" && (
-                      <span className="bg-stone-200/70 text-stone-800 px-2 py-0.5 rounded-md font-medium">
-                        {PRICE_OPTIONS.find((p) => p.value === priceRange)?.label}
-                      </span>
-                    )}
-                    {durationRange !== "all" && (
-                      <span className="bg-stone-200/70 text-stone-800 px-2 py-0.5 rounded-md font-medium">
-                        {DURATION_OPTIONS.find((d) => d.value === durationRange)?.label}
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleResetFilters}
-                    className="text-stone-600 hover:text-stone-900 underline text-xs font-medium cursor-pointer"
-                  >
-                    Clear all
-                  </button>
-                </div>
-              )}
-
-              {/* Results List */}
-              <div className="max-h-[360px] overflow-y-auto divide-y divide-stone-100 custom-scrollbar">
+          {/* Results */}
+          {isOpen && isAnyFilterActive && (
+            <div
+              className="absolute left-0 right-0 top-full mt-3 z-50 overflow-hidden rounded-3xl bg-white shadow-2xl shadow-black/30 text-left animate-in fade-in-50 slide-in-from-top-2 duration-150"
+              role="listbox"
+            >
+              <div className="max-h-[50vh] sm:max-h-[380px] overflow-y-auto p-2 custom-scrollbar">
                 {isSearching ? (
-                  <div className="p-8 text-center text-stone-500 flex items-center justify-center gap-2">
-                    <Loader2 className="h-5 w-5 animate-spin text-stone-600" />
-                    <span className="text-xs font-medium">Searching matching trips…</span>
+                  <div className="flex items-center justify-center gap-2 py-10 text-sm text-stone-500">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Searching…
                   </div>
                 ) : filteredResults.length > 0 ? (
                   filteredResults.map((item, idx) => {
                     const isSelected = idx === selectedIndex;
                     return (
-                      <div
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={isSelected}
                         key={`${item.type}-${item.id}-${idx}`}
                         onClick={() => handleSelectResult(item)}
                         onMouseEnter={() => setSelectedIndex(idx)}
-                        className={`group p-3 sm:p-4 flex items-center justify-between cursor-pointer transition-colors text-left ${
-                          isSelected
-                            ? "bg-stone-100 text-stone-900"
-                            : "hover:bg-stone-50 text-stone-800"
+                        className={`flex w-full items-center gap-3 rounded-2xl p-2.5 sm:p-3 text-left transition-colors cursor-pointer ${
+                          isSelected ? "bg-stone-100" : "hover:bg-stone-50"
                         }`}
                       >
-                        <div className="flex items-center gap-3 sm:gap-4 min-w-0 pr-3">
-                          {/* Item Thumbnail / Featured Image */}
-                          <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-stone-100 border border-stone-200 overflow-hidden flex items-center justify-center shrink-0 relative">
-                            {item.image && !failedImages[item.id] ? (
-                              <Image
-                                src={item.image}
-                                alt={item.title}
-                                fill
-                                sizes="48px"
-                                className="object-cover"
-                                onError={() => {
-                                  setFailedImages((prev) => ({ ...prev, [item.id]: true }));
-                                }}
-                              />
-                            ) : (
-                              <div className="flex items-center justify-center text-stone-600 bg-stone-100 h-full w-full">
-                                {item.type === "Expedition" ? (
-                                  <Mountain className="h-5 w-5" />
-                                ) : item.type === "Tour" ? (
-                                  <Compass className="h-5 w-5" />
-                                ) : (
-                                  <MapPin className="h-5 w-5" />
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Title & Metadata */}
-                          <div className="min-w-0">
-                            <h4 className="text-sm sm:text-base font-medium text-stone-900 group-hover:text-stone-950 transition-colors truncate">
-                              {item.title}
-                            </h4>
-                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-stone-500 mt-0.5">
-                              {item.region && <span>{item.region}</span>}
-                              {item.durationDays ? (
-                                <>
-                                  <span>&bull;</span>
-                                  <span>{item.durationDays} Days</span>
-                                </>
-                              ) : null}
-                              {item.difficulty ? (
-                                <>
-                                  <span>&bull;</span>
-                                  <span className="text-stone-600">{item.difficulty}</span>
-                                </>
-                              ) : null}
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-stone-100">
+                          {item.image && !failedImages[item.id] ? (
+                            <Image
+                              src={item.image}
+                              alt=""
+                              fill
+                              sizes="48px"
+                              className="object-cover"
+                              onError={() =>
+                                setFailedImages((prev) => ({ ...prev, [item.id]: true }))
+                              }
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-stone-500">
+                              {item.type === "Expedition" ? (
+                                <Mountain className="h-5 w-5" />
+                              ) : item.type === "Tour" ? (
+                                <Compass className="h-5 w-5" />
+                              ) : (
+                                <MapPin className="h-5 w-5" />
+                              )}
                             </div>
-                          </div>
+                          )}
                         </div>
 
-                        {/* Category Badge & Price */}
-                        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-3 shrink-0">
-                          {item.priceUSD ? (
-                            <span className="text-xs sm:text-sm font-semibold text-stone-900">
-                              ${item.priceUSD.toLocaleString()} <span className="text-[10px] sm:text-xs text-stone-500 font-normal">USD</span>
-                            </span>
-                          ) : null}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm sm:text-base font-medium text-stone-900">
+                            {item.title}
+                          </p>
+                          <p className="truncate text-xs sm:text-sm text-stone-500">
+                            {[
+                              item.type,
+                              item.region,
+                              item.durationDays ? `${item.durationDays} days` : null,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </p>
+                        </div>
 
-                          {/* Minimal Neutral Type Badge */}
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200">
-                            {item.type}
+                        {item.priceUSD ? (
+                          <span className="shrink-0 text-sm font-semibold text-stone-900">
+                            ${item.priceUSD.toLocaleString()}
                           </span>
-
-                          <ChevronRight className="h-4 w-4 text-stone-400 group-hover:text-stone-800 transition-colors hidden sm:block" />
-                        </div>
-                      </div>
+                        ) : null}
+                      </button>
                     );
                   })
                 ) : (
-                  <div className="p-8 text-center text-stone-500">
-                    <Compass className="h-8 w-8 text-stone-400 mx-auto mb-2" />
-                    <p className="text-sm font-medium text-stone-700">
-                      No matching trips found for selected filters
+                  <div className="py-10 px-4 text-center">
+                    <p className="text-sm font-medium text-stone-700">No trips match yet</p>
+                    <p className="mt-1 text-xs text-stone-500">
+                      Try a different keyword or loosen the filters.
                     </p>
                   </div>
                 )}
               </div>
 
-              {/* Popover Footer Info */}
-              <div className="px-4 py-2.5 bg-stone-50 border-t border-stone-200 flex items-center justify-between text-xs text-stone-500">
-                <span>
-                  Showing {filteredResults.length} {filteredResults.length === 1 ? "result" : "results"}
-                </span>
-                <span className="hidden sm:inline text-stone-400">
-                  ↑ ↓ to navigate &bull; Enter to select &bull; Esc to dismiss
-                </span>
-              </div>
+              {filteredResults.length > 0 && !isSearching && (
+                <button
+                  type="button"
+                  onClick={handleSearchSubmit}
+                  className="w-full border-t border-stone-100 px-4 py-3.5 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors cursor-pointer"
+                >
+                  See all results
+                </button>
+              )}
             </div>
           )}
         </div>

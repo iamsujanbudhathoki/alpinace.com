@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Download, Plus, Tag, ExternalLink, Workflow, GitBranch } from "lucide-react";
+import { Download, Plus, Tag, ExternalLink, Workflow, GitBranch, Loader2, ShieldAlert, Ban } from "lucide-react";
 import {
   Booking,
   BookingStep,
@@ -58,41 +58,103 @@ const STEP_STATUS_FILTER_OPTIONS: InlineSelectOption[] = [
   { value: BookingStepStatus.ACTIVE, label: "Active" },
   { value: BookingStepStatus.PENDING, label: "Pending" },
   { value: BookingStepStatus.CANCELLED, label: "Cancelled" },
+  { value: BookingStepStatus.FRAUD, label: "Fraud / Spam" },
 ];
 
-const STEP_NAMES = ["Request", "Review", "Confirmed", "Active", "Completed"];
+const STAGE_NAMES = ["Request Received", "In Review", "Confirmed", "Active", "Completed"];
+
+interface StatusTabItem {
+  key: string;
+  label: string;
+}
+
+const STATUS_TABS: StatusTabItem[] = [
+  { key: "All", label: "All Bookings" },
+  { key: "request_received", label: "Request Received" },
+  { key: "in_review", label: "In Review" },
+  { key: "confirmed", label: "Confirmed" },
+  { key: "active", label: "Active" },
+  { key: "completed", label: "Completed" },
+  { key: "cancelled", label: "Cancelled" },
+  { key: "fraud", label: "Fraud / Spam" },
+];
 
 function getBookingWorkflowSummary(steps?: BookingStep[]) {
   if (!steps || !Array.isArray(steps) || steps.length === 0) {
     return {
       activeStepNumber: 1,
-      activeStepName: "Request",
+      activeStepName: "Request Received",
+      stageKey: "request_received",
       activeStatus: BookingStepStatus.PENDING,
+      isCancelled: false,
+      isFraud: false,
+      completedCount: 0,
+      note: "",
+    };
+  }
+
+  const isFraud = steps.some((s) => s.status === BookingStepStatus.FRAUD);
+  if (isFraud) {
+    const fraudStep = steps.find((s) => s.status === BookingStepStatus.FRAUD);
+    return {
+      activeStepNumber: 0,
+      activeStepName: "Fraud / Spam",
+      stageKey: "fraud",
+      activeStatus: BookingStepStatus.FRAUD,
+      isCancelled: false,
+      isFraud: true,
+      note: fraudStep?.message || "",
+      completedCount: 0,
+    };
+  }
+
+  const isCancelled = steps.some((s) => s.status === BookingStepStatus.CANCELLED);
+  if (isCancelled) {
+    const cancelStep = steps.find((s) => s.status === BookingStepStatus.CANCELLED);
+    return {
+      activeStepNumber: 0,
+      activeStepName: "Cancelled",
+      stageKey: "cancelled",
+      activeStatus: BookingStepStatus.CANCELLED,
+      isCancelled: true,
+      isFraud: false,
+      note: cancelStep?.message || "",
       completedCount: 0,
     };
   }
 
   const completedCount = steps.filter((s) => s.status === BookingStepStatus.COMPLETED).length;
-  if (completedCount === steps.length) {
+  if (completedCount >= 5) {
     return {
       activeStepNumber: 5,
       activeStepName: "Completed",
+      stageKey: "completed",
       activeStatus: BookingStepStatus.COMPLETED,
-      completedCount,
+      isCancelled: false,
+      isFraud: false,
+      completedCount: 5,
+      note: steps[4]?.message || "",
     };
   }
 
   const activeIdx = steps.findIndex(
     (s) =>
       s.status !== BookingStepStatus.COMPLETED &&
-      s.status !== BookingStepStatus.CANCELLED
+      s.status !== BookingStepStatus.CANCELLED &&
+      s.status !== BookingStepStatus.FRAUD
   );
   const idx = activeIdx >= 0 ? activeIdx : 0;
+  const STAGE_KEYS = ["request_received", "in_review", "confirmed", "active", "completed"];
+
   return {
     activeStepNumber: idx + 1,
-    activeStepName: STEP_NAMES[idx] || `Step ${idx + 1}`,
+    activeStepName: STAGE_NAMES[idx] || `Step ${idx + 1}`,
+    stageKey: STAGE_KEYS[idx] || "request_received",
     activeStatus: steps[idx]?.status || BookingStepStatus.PENDING,
+    isCancelled: false,
+    isFraud: false,
     completedCount,
+    note: steps[idx]?.message || "",
   };
 }
 
@@ -105,6 +167,17 @@ export default function AdminBookingsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
   const [selectedType, setSelectedType] = useState<string>("All");
+  const [selectedPayment, setSelectedPayment] = useState<string>("All");
+  const [statusCounts, setStatusCounts] = useState<Record<string, number>>({
+    All: 0,
+    request_received: 0,
+    in_review: 0,
+    confirmed: 0,
+    active: 0,
+    completed: 0,
+    cancelled: 0,
+    fraud: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   // Pagination states
@@ -150,7 +223,25 @@ export default function AdminBookingsPage() {
   // Reset page to 1 on filter or search changes
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, selectedStatus, selectedType]);
+  }, [debouncedSearch, selectedStatus, selectedType, selectedPayment]);
+
+  // Load status counts from backend
+  const loadStatusCounts = async () => {
+    try {
+      const res = await BookingService.getStatusCounts(
+        selectedType === "All" ? undefined : selectedType
+      );
+      if (res?.success && res.data) {
+        setStatusCounts(res.data);
+      }
+    } catch (err) {
+      console.error("Failed to load status counts:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadStatusCounts();
+  }, [selectedType]);
 
   // Load bookings from backend
   const loadBookings = async () => {
@@ -160,6 +251,7 @@ export default function AdminBookingsPage() {
         search: debouncedSearch,
         status: selectedStatus === "All" ? undefined : selectedStatus,
         packageType: selectedType === "All" ? undefined : selectedType,
+        paymentStatus: selectedPayment === "All" ? undefined : selectedPayment,
         page,
         limit,
       });
@@ -180,7 +272,7 @@ export default function AdminBookingsPage() {
 
   useEffect(() => {
     loadBookings();
-  }, [debouncedSearch, selectedStatus, selectedType, page, limit]);
+  }, [debouncedSearch, selectedStatus, selectedType, selectedPayment, page, limit]);
 
   const searchParams = useSearchParams();
   const targetId = searchParams?.get("id") || searchParams?.get("viewId");
@@ -228,6 +320,7 @@ export default function AdminBookingsPage() {
         toast.success(res.message || "Booking saved successfully");
         setIsFormOpen(false);
         await loadBookings();
+        loadStatusCounts();
         return true;
       } else {
         toast.error(res.message || "Failed to save booking");
@@ -262,6 +355,7 @@ export default function AdminBookingsPage() {
         toast.success(res.message || "Booking deleted successfully");
         handleCloseDeleteModal();
         await loadBookings();
+        loadStatusCounts();
       } else {
         const msg = res.message || "Failed to delete booking";
         setDeleteError(msg);
@@ -288,6 +382,7 @@ export default function AdminBookingsPage() {
           )
         );
         toast.success(`Payment status for ${bkg.reference} updated to ${newPayment}`);
+        loadStatusCounts();
       } else {
         toast.error(res.message || "Failed to update payment");
       }
@@ -308,6 +403,7 @@ export default function AdminBookingsPage() {
           )
         );
         toast.success(`Category for ${bkg.reference} updated to ${newCategory}`);
+        loadStatusCounts();
       } else {
         toast.error(res.message || "Failed to update category");
       }
@@ -316,51 +412,26 @@ export default function AdminBookingsPage() {
     }
   };
 
-  const handleExportCSV = () => {
-    const headers = [
-      "Reference",
-      "Guest Name",
-      "Email",
-      "Phone",
-      "Country",
-      "Package Name",
-      "Category",
-      "Start Date",
-      "End Date",
-      "Total Amount USD",
-      "Payment Status",
-      "Booking Status",
-    ];
+  const [isExporting, setIsExporting] = useState(false);
 
-    const rows = bookings.map((b) => [
-      b.reference,
-      b.guestName,
-      b.guestEmail,
-      b.guestPhone,
-      b.country,
-      b.packageName,
-      b.packageType,
-      b.startDate,
-      b.endDate,
-      b.totalAmountUSD,
-      b.paymentStatus,
-      (() => {
-        const s = getBookingWorkflowSummary(b.steps);
-        return `Step ${s.activeStepNumber}: ${s.activeStepName} (${s.activeStatus})`;
-      })(),
-    ]);
-
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((e) => e.map((val) => `"${val}"`).join(","))].join("\n");
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `alpineace_bookings_${new Date().toISOString().split("T")[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleExportCSV = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      toast.info("Preparing complete bookings export...");
+      await BookingService.exportCsv({
+        search: debouncedSearch,
+        status: selectedStatus === "All" ? undefined : selectedStatus,
+        packageType: selectedType === "All" ? undefined : selectedType,
+        paymentStatus: selectedPayment === "All" ? undefined : selectedPayment,
+      });
+      toast.success("All matching bookings exported successfully");
+    } catch (err: any) {
+      console.error("Export error:", err);
+      toast.error(err.message || "Failed to export bookings CSV");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -374,10 +445,15 @@ export default function AdminBookingsPage() {
           variant="outline"
           size="sm"
           onClick={handleExportCSV}
+          disabled={isExporting}
           className="text-xs font-semibold cursor-pointer border-slate-200"
         >
-          <Download className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
-          Export CSV
+          {isExporting ? (
+            <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin text-slate-600" />
+          ) : (
+            <Download className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
+          )}
+          {isExporting ? "Exporting..." : "Export CSV"}
         </Button>
         <Button
           size="sm"
@@ -392,6 +468,41 @@ export default function AdminBookingsPage() {
           New Booking
         </Button>
       </AdminPageHeader>
+
+      {/* Status Tabs Navigation Bar (Tab-based filter) */}
+      <div className="border-b border-slate-200 dark:border-slate-800 -mb-2">
+        <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none pb-0">
+          {STATUS_TABS.map((tab) => {
+            const isActive = selectedStatus === tab.key;
+            const count = statusCounts[tab.key] ?? 0;
+            const formattedCount = count < 10 && count > 0 ? `0${count}` : `${count}`;
+
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setSelectedStatus(tab.key)}
+                className={`group relative flex items-center gap-2 px-3 sm:px-4 py-3 text-sm whitespace-nowrap border-b-2 transition-all cursor-pointer font-medium ${
+                  isActive
+                    ? "border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400 font-semibold"
+                    : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:border-slate-700"
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-[11px] rounded-full transition-colors ${
+                    isActive
+                      ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-900"
+                      : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-700 font-medium"
+                  }`}
+                >
+                  {formattedCount}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Filter Bar Component */}
       <AdminFilterBar
@@ -411,17 +522,32 @@ export default function AdminBookingsPage() {
         </AdminFilterSelect>
 
         <AdminFilterSelect
-          label="Step Status:"
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
+          label="Payment:"
+          value={selectedPayment}
+          onChange={(e) => setSelectedPayment(e.target.value)}
         >
-          <option value="All">All Statuses</option>
-          <option value={BookingStepStatus.COMPLETED}>Completed</option>
-          <option value={BookingStepStatus.IN_PROGRESS}>In Progress</option>
-          <option value={BookingStepStatus.ACTIVE}>Active</option>
-          <option value={BookingStepStatus.PENDING}>Pending</option>
-          <option value={BookingStepStatus.CANCELLED}>Cancelled</option>
+          <option value="All">All Payments</option>
+          <option value={BookingPaymentStatus.PAID}>Paid</option>
+          <option value={BookingPaymentStatus.DEPOSIT_PAID}>Deposit Paid</option>
+          <option value={BookingPaymentStatus.PENDING}>Pending</option>
+          <option value={BookingPaymentStatus.REFUNDED}>Refunded</option>
         </AdminFilterSelect>
+
+        {(searchQuery || selectedType !== "All" || selectedPayment !== "All" || selectedStatus !== "All") && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSearchQuery("");
+              setSelectedType("All");
+              setSelectedPayment("All");
+              setSelectedStatus("All");
+            }}
+            className="text-xs text-slate-500 hover:text-slate-900 cursor-pointer h-9 px-2.5"
+          >
+            Clear Filters
+          </Button>
+        )}
       </AdminFilterBar>
 
       {/* Bookings Table */}
@@ -496,25 +622,42 @@ export default function AdminBookingsPage() {
                     <AdminTableCell>
                       {(() => {
                         const summary = getBookingWorkflowSummary(bkg.steps);
+                        const isFraud = summary.isFraud;
+                        const isCancelled = summary.isCancelled;
+
                         return (
                           <button
                             type="button"
                             onClick={() => setStatusFlowBooking(bkg)}
-                            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer group text-left w-full max-w-[210px]"
-                            title="Click to view & manage individual step statuses"
+                            className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-xs transition-colors cursor-pointer group text-left"
+                            title="Click to view & manage booking workflow"
                           >
-                            <div className="min-w-0 flex-1">
-                              <div className="font-semibold text-slate-800 text-xs truncate">
-                                {summary.activeStepNumber}. {summary.activeStepName}
-                              </div>
-                              <div className="text-[10px] text-slate-500 font-medium">
-                                {summary.completedCount}/5 steps done
-                              </div>
-                            </div>
+                            <span
+                              className={`font-semibold ${
+                                isFraud
+                                  ? "text-red-700"
+                                  : isCancelled
+                                  ? "text-rose-700"
+                                  : "text-slate-900"
+                              }`}
+                            >
+                              {isFraud
+                                ? "Fraud / Spam"
+                                : isCancelled
+                                ? "Cancelled"
+                                : `${summary.activeStepNumber}. ${summary.activeStepName}`}
+                            </span>
+
                             <AdminStatusBadge
-                              status={summary.activeStatus}
-                              className="shrink-0 text-[10px] py-0 px-1.5"
+                              status={
+                                isFraud
+                                  ? "fraud"
+                                  : isCancelled
+                                  ? "cancelled"
+                                  : summary.activeStatus
+                              }
                             />
+
                             <Workflow className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 shrink-0 ml-0.5" />
                           </button>
                         );
@@ -605,6 +748,7 @@ export default function AdminBookingsPage() {
             prev.map((b) => (b.id === updated.id ? updated : b))
           );
           setStatusFlowBooking(updated);
+          loadStatusCounts();
         }}
       />
     </div>

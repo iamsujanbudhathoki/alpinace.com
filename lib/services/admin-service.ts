@@ -1029,6 +1029,42 @@ export const BookingService = {
   ): Promise<ApiResponse<Booking>> {
     return apiClient.put<Booking>(`/admin/bookings/${id}/workflow`, data);
   },
+
+  async getStatusCounts(packageType?: string): Promise<ApiResponse<Record<string, number>>> {
+    const q = packageType && packageType !== "All" ? `?packageType=${encodeURIComponent(packageType)}` : "";
+    return apiClient.get<Record<string, number>>(`/admin/bookings/stats/counts${q}`);
+  },
+
+  async exportCsv(params?: {
+    search?: string;
+    status?: string;
+    packageType?: string;
+    paymentStatus?: string;
+  }): Promise<void> {
+    const query = new URLSearchParams();
+    if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+    if (params?.status && params.status !== "All") query.set("status", params.status);
+    if (params?.packageType && params.packageType !== "All") query.set("packageType", params.packageType);
+    if (params?.paymentStatus && params.paymentStatus !== "All") query.set("paymentStatus", params.paymentStatus);
+    const q = query.toString() ? `?${query.toString()}` : "";
+
+    const res = await axiosInstance.get(`/admin/bookings/export/csv${q}`, {
+      responseType: "blob",
+    });
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const filename = `alpineace_bookings_${dateStr}.csv`;
+
+    const blob = new Blob([res.data], { type: "text/csv;charset=utf-8;" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  },
 };
 
 export const InquiryService = {
@@ -1818,6 +1854,123 @@ export const PublicSearchService = {
   },
 };
 
+// ─── Audit Log Service ────────────────────────────────────────────────────────
 
+export interface AuditLogItem {
+  id: string;
+  action: string;
+  entityType: string;
+  entityId: string | null;
+  userId: string | null;
+  success: boolean;
+  oldData: any | null;
+  newData: any | null;
+  metadata: Record<string, any> | null;
+  ipAddress: string | null;
+  userAgent: string | null;
+  requestId: string | null;
+  createdAt: string;
+}
 
+export interface AuditLogQueryParams {
+  action?: string;
+  entityType?: string;
+  entityId?: string;
+  userId?: string;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const AuditLogService = {
+  async getAll(params?: AuditLogQueryParams): Promise<PaginatedList<AuditLogItem>> {
+    try {
+      const query = new URLSearchParams();
+      if (params?.action && params.action !== "All") query.set("action", params.action);
+      if (params?.entityType && params.entityType !== "All") query.set("entityType", params.entityType);
+      if (params?.entityId) query.set("entityId", params.entityId);
+      if (params?.userId) query.set("userId", params.userId);
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.startDate) query.set("startDate", params.startDate);
+      if (params?.endDate) query.set("endDate", params.endDate);
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<AuditLogItem[]>(`/admin/audit-logs${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Audit logs fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+};
+
+// ─── Database Backup Service ──────────────────────────────────────────────────
+
+export interface BackupResult {
+  success: boolean;
+  timestamp: string;
+  schemaKey?: string;
+  dataKey?: string;
+  message: string;
+}
+
+export const BackupService = {
+  async triggerBackup(): Promise<ApiResponse<BackupResult>> {
+    return apiClient.post<BackupResult>("/admin/backup/trigger", {});
+  },
+
+  async getBackupLogs(params?: {
+    search?: string;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<PaginatedList<AuditLogItem>> {
+    try {
+      const query = new URLSearchParams();
+      if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+      if (params?.startDate) query.set("startDate", params.startDate);
+      if (params?.endDate) query.set("endDate", params.endDate);
+      if (params?.limit) query.set("limit", String(params.limit));
+      if (params?.page) query.set("page", String(params.page));
+      const q = query.toString() ? `?${query.toString()}` : "";
+
+      const res = await apiClient.get<AuditLogItem[]>(`/admin/backup/logs${q}`);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      return makePaginatedList(items, res?.pagination);
+    } catch (e) {
+      console.warn("Backup logs fetch error:", e);
+      return makePaginatedList([]);
+    }
+  },
+
+  async downloadDump(key?: string, type: "values" | "schema" = "values", date?: string): Promise<void> {
+    const res = await axiosInstance.get("/admin/backup/download", {
+      params: { key, type, date },
+      responseType: "blob",
+    });
+
+    const isValues = type === "values" || (key ? key.includes("values") : true);
+    const dateStr =
+      date ||
+      (key ? key.match(/\d{4}-\d{2}-\d{2}/)?.[0] : undefined) ||
+      new Date().toISOString().slice(0, 10);
+    const filename = isValues ? `values-${dateStr}.sql` : `schema-${dateStr}.sql`;
+
+    const blob = new Blob([res.data], { type: "application/sql" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  },
+};
 

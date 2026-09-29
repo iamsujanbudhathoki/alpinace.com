@@ -70,6 +70,12 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
       styleClass = "bg-rose-50 text-rose-800 border-rose-200/80 font-semibold";
       dotClass = "bg-rose-500";
       break;
+    case BookingStepStatus.FRAUD:
+    case "fraud":
+    case "spam":
+      styleClass = "bg-red-50 text-red-800 border-red-200/90 font-semibold";
+      dotClass = "bg-red-600";
+      break;
   }
 
   // Friendly human label overrides for clean presentation
@@ -80,6 +86,9 @@ export function AdminStatusBadge({ status, className = "" }: AdminStatusBadgePro
     [BookingStatus.IN_REVIEW.replace(/_/g, " ")]: "In Review",
     [BookingStepStatus.PENDING]: "Pending",
     [BookingStepStatus.ACTIVE]: "Active",
+    [BookingStepStatus.COMPLETED]: "Completed",
+    [BookingStepStatus.CANCELLED]: "Cancelled",
+    [BookingStepStatus.FRAUD]: "Fraud / Spam",
     [BookingPermitStatus.PENDING_DOCUMENT]: "Docs Pending",
     [BookingPermitStatus.PENDING_DOCUMENT.replace(/_/g, " ")]: "Docs Pending",
     [BookingPaymentStatus.DEPOSIT_PAID]: "Deposit Paid",

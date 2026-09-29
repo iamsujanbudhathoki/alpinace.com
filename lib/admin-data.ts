@@ -102,6 +102,7 @@ export enum BookingStatus {
   ACTIVE = "active",
   COMPLETED = "completed",
   CANCELLED = "cancelled",
+  FRAUD = "fraud",
 }
 
 export enum BookingPermitStatus {
@@ -188,6 +189,7 @@ export enum BookingStepStatus {
   ACTIVE = "active",
   COMPLETED = "completed",
   CANCELLED = "cancelled",
+  FRAUD = "fraud",
 }
 
 export { BookingStepStatus as InquiryStepStatus };

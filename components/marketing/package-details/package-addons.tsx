@@ -1,11 +1,13 @@
 "use client";
 
+import { hasRichText } from "@/lib/utils";
+
 interface PackageAddonsProps {
   addonsText?: string;
 }
 
 export function PackageAddons({ addonsText }: PackageAddonsProps) {
-  if (!addonsText || !addonsText.trim()) return null;
+  if (!hasRichText(addonsText)) return null;
 
   return (
     <div className="space-y-4">
@@ -17,7 +19,7 @@ export function PackageAddons({ addonsText }: PackageAddonsProps) {
 
       <div
         className="prose-editorial max-w-none"
-        dangerouslySetInnerHTML={{ __html: addonsText }}
+        dangerouslySetInnerHTML={{ __html: addonsText! }}
       />
     </div>
   );

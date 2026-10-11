@@ -9,7 +9,7 @@ interface PackageTrekMapProps {
 }
 
 export function PackageTrekMap({ mapImage, title }: PackageTrekMapProps) {
-  if (!mapImage) return null;
+  if (!mapImage || !mapImage.trim()) return null;
 
   return (
     <div className="space-y-6">

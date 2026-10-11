@@ -89,6 +89,8 @@ export function PackageReviews({
       .toUpperCase();
   };
 
+  if (!activeReviews || activeReviews.length === 0) return null;
+
   return (
     <section className="space-y-6">
       {/* Header: Title, Rating & Controls */}

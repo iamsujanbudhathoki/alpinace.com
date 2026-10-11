@@ -6,7 +6,6 @@ import {
   MessageSquare,
   Minus,
   Plus,
-  ArrowRight,
   Check,
   Heart,
   Calendar,
@@ -106,76 +105,58 @@ export function PackageBookingSidebar({
     <aside className="w-full">
       <div className="bg-white border border-stone-200 rounded-sm shadow-md overflow-hidden">
         {/* Pricing Header */}
-        {hasGroupPricing ? (
-          <div className="bg-white border-b border-stone-200 p-4 sm:p-5">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
-                <span className="text-xs font-semibold text-stone-600">
-                  Rate ({travelers} {travelers === 1 ? "Traveler" : "Travelers"}):
-                </span>
-
-              </div>
-            </div>
-
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl sm:text-3xl font-bold font-heading tracking-tight text-emerald-700">
-                US${perPersonCalculated.toLocaleString()}
+        <div className="bg-white border-b border-stone-200 p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="text-xs font-semibold text-stone-600">
+                Rate ({travelers} {travelers === 1 ? "Traveler" : "Travelers"}):
               </span>
-              {standardBasePrice > perPersonCalculated && (
-                <span className="text-base sm:text-lg line-through text-stone-400 font-medium">
-                  US${standardBasePrice.toLocaleString()}
-                </span>
-              )}
-              <span className="text-xs font-bold text-stone-500">P/P</span>
             </div>
-          </div>
-        ) : (
-          <div className="bg-yellow-400/10 border-b border-yellow-400/20 p-4.5 sm:p-5 relative overflow-hidden">
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="type-caption text-stone-900 font-bold">
-                Trip Rate
-              </span>
-              <span className="type-caption text-stone-600 font-medium">
+            {durationDays ? (
+              <span className="text-xs text-stone-500 font-medium">
                 {durationDays} Days Total
               </span>
-            </div>
-
-            <div className="flex items-baseline gap-1.5 mt-1.5">
-              <span className="text-xl sm:text-2xl font-bold font-heading text-stone-900">
-                ${perPersonCalculated.toLocaleString()}
-              </span>
-              <span className="type-caption text-stone-600">
-                USD / person
-              </span>
-            </div>
+            ) : null}
           </div>
-        )}
+
+          <div className="flex items-baseline gap-2 mt-1">
+            <span className="text-2xl sm:text-3xl font-bold font-heading tracking-tight text-emerald-700">
+              US${perPersonCalculated.toLocaleString()}
+            </span>
+            {standardBasePrice > perPersonCalculated && (
+              <span className="text-base sm:text-lg line-through text-stone-400 font-medium">
+                US${standardBasePrice.toLocaleString()}
+              </span>
+            )}
+            <span className="text-xs font-bold text-stone-500">P/P</span>
+          </div>
+        </div>
 
         {/* Booking Console Body */}
         <div className="p-4.5 sm:p-5 space-y-4">
           {/* Collapsible Group Pricing Section */}
-          {hasGroupPricing && sortedTiers && (
-            <div className="border border-stone-200 rounded-sm overflow-hidden bg-white shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setIsGroupPricingOpen(!isGroupPricingOpen)}
-                className="w-full flex items-center justify-between px-3.5 py-2.5 text-left font-semibold text-stone-900 text-xs sm:text-sm hover:bg-stone-50 transition-colors cursor-pointer"
-              >
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
-                  <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
-                    We offer group price
-                  </span>
-                </div>
-                <span className="text-stone-500 flex items-center justify-center">
-                  {isGroupPricingOpen ? (
-                    <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
-                  ) : (
-                    <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
-                  )}
+          <div className="border border-stone-200 rounded-sm overflow-hidden bg-white shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setIsGroupPricingOpen(!isGroupPricingOpen)}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 text-left font-semibold text-stone-900 text-xs sm:text-sm hover:bg-stone-50 transition-colors cursor-pointer"
+            >
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
+                <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
+                  We offer group price
                 </span>
-              </button>
+              </div>
+              <span className="text-stone-500 flex items-center justify-center">
+                {isGroupPricingOpen ? (
+                  <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
+                ) : (
+                  <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
+                )}
+              </span>
+            </button>
 
-              {isGroupPricingOpen && (
+            {isGroupPricingOpen && (
+              hasGroupPricing && sortedTiers && sortedTiers.length > 0 ? (
                 <div className="border-t border-stone-200 divide-y divide-stone-100">
                   {sortedTiers.map((tier, idx) => {
                     const isApplicable =
@@ -207,7 +188,12 @@ export function PackageBookingSidebar({
                           >
                             {paxText}
                           </span>
-                        
+                          {isApplicable && (
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 bg-emerald-100/90 border border-emerald-300/60 px-2 py-0.5 rounded-xs shrink-0">
+                              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                              Active
+                            </span>
+                          )}
                         </div>
 
                         <div className="flex items-baseline gap-1 text-right shrink-0">
@@ -234,9 +220,29 @@ export function PackageBookingSidebar({
                     );
                   })}
                 </div>
-              )}
-            </div>
-          )}
+              ) : (
+                <div className="border-t border-stone-200 px-3.5 py-3 bg-stone-50/60 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-stone-700 font-medium">Standard Rate</span>
+                    <span className="text-stone-950 font-bold">
+                      US${perPersonCalculated.toLocaleString()}{" "}
+                      <span className="text-stone-500 font-normal text-xs">/ person</span>
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-600">
+                    Group discounts available for groups of 2 or more travelers.{" "}
+                    <button
+                      type="button"
+                      onClick={() => setIsInquiryModalOpen(true)}
+                      className="text-xs font-semibold text-[#1976d2] hover:underline cursor-pointer"
+                    >
+                      Inquire for custom group rates
+                    </button>
+                  </p>
+                </div>
+              )
+            )}
+          </div>
 
           {/* Travelers Stepper */}
           <div className="space-y-1.5">
@@ -373,7 +379,7 @@ export function PackageBookingSidebar({
                   </button>
                 )}
               </div>
-            ) : hasGroupPricing ? (
+            ) : (
               <div className="space-y-2">
                 <button
                   type="button"
@@ -393,54 +399,6 @@ export function PackageBookingSidebar({
                     className="w-full bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
                   >
                     <span>SEND INQUIRY</span>
-                  </button>
-                )}
-              </div>
-            ) : (
-              /* Non-group pricing default CTAs */
-              <div className="space-y-3">
-                <button
-                  type="button"
-                  onClick={onBookClick}
-                  className="btn-accent w-full text-xs sm:text-sm flex items-center justify-center gap-2 group"
-                >
-                  <span>{bookButtonLabel}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
-                </button>
-
-                {isInquired ? (
-                  <div className="p-4 rounded-md bg-yellow-50 border border-yellow-200 space-y-2.5 animate-in fade-in duration-200">
-                    <div className="flex items-start gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                        <Check className="w-4 h-4 text-yellow-400" strokeWidth={2.5} />
-                      </div>
-                      <div className="space-y-0.5 min-w-0">
-                        <h4 className="text-xs sm:text-sm font-bold text-stone-900 leading-snug">
-                          Thank you for your inquiry!
-                        </h4>
-                        <p className="text-xs text-stone-700 leading-relaxed font-medium">
-                          We’ll get back to you shortly.
-                        </p>
-                      </div>
-                    </div>
-                    {onResetInquired && (
-                      <button
-                        type="button"
-                        onClick={onResetInquired}
-                        className="text-xs font-semibold text-stone-900 hover:underline cursor-pointer pt-1 block"
-                      >
-                        Send another question or inquiry
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setIsInquiryModalOpen(true)}
-                    className="w-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 font-semibold text-xs py-2.5 px-4 rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5 text-stone-700" strokeWidth={1.75} />
-                    <span>Ask a Question / Custom Dates</span>
                   </button>
                 )}
               </div>
@@ -482,18 +440,17 @@ export function PackageBookingSidebar({
             type="button"
             onClick={() => setIsInquiryModalOpen(true)}
             aria-label="Ask a question"
-            className="bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-xs py-2 px-3 rounded-md transition-colors border border-stone-200 cursor-pointer min-h-10 flex items-center gap-1"
+            className="bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-xs py-2 px-3.5 rounded-xs transition-colors cursor-pointer min-h-10 flex items-center gap-1 shadow-2xs uppercase tracking-wide"
           >
-            <MessageSquare className="w-3.5 h-3.5 text-stone-700 shrink-0" />
+            <MessageSquare className="w-3.5 h-3.5 shrink-0" />
             <span className="hidden sm:inline">Inquire</span>
           </button>
           <button
             type="button"
             onClick={onBookClick}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-4 min-h-10 flex items-center gap-1.5 rounded-lg transition-colors cursor-pointer shadow-xs"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-4 min-h-10 flex items-center gap-1.5 rounded-xs transition-colors cursor-pointer shadow-xs uppercase tracking-wide"
           >
-            <span>{bookButtonLabel}</span>
-            <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+            <span>BOOK NOW</span>
           </button>
         </div>
       </div>

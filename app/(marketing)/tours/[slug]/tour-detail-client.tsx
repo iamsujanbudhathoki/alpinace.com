@@ -34,6 +34,7 @@ import {
   PackageAddons,
   PackageUsefulInfo,
 } from "@/components/marketing/package-details";
+import { hasRichText, isHtmlContent } from "@/lib/utils";
 
 interface TourDetailClientProps {
   initialTour: TourItem | any | null;
@@ -123,22 +124,8 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
   const perPersonCalculated = applicablePricing.pricePerPerson;
   const totalPrice = applicablePricing.totalPrice;
 
-  // Inclusions vs Exclusions parsed from backend
-  const costIncludes = useMemo(() => {
-    if (!tour?.inclusionsText || !tour.inclusionsText.trim()) return [];
-    return tour.inclusionsText
-      .split(/[\n,]+/)
-      .map((s: string) => s.trim())
-      .filter(Boolean);
-  }, [tour]);
-
-  const costExclusions = useMemo(() => {
-    if (!tour?.exclusionsText || !tour.exclusionsText.trim()) return [];
-    return tour.exclusionsText
-      .split(/[\n,]+/)
-      .map((s: string) => s.trim())
-      .filter(Boolean);
-  }, [tour]);
+  // Inclusions vs Exclusions existence based on schema
+  const hasCostSection = hasRichText(tour?.inclusionsText) || hasRichText(tour?.exclusionsText);
 
   // FAQs
   const displayFaqs = useMemo(() => {
@@ -186,25 +173,26 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
 
   // Dynamic tabs mapping to page sections
   const availableTabs = useMemo(() => {
-    const list: { key: string; label: string }[] = [
-      { key: "overview", label: "Overview" },
-    ];
-    if (tour?.itinerary && tour.itinerary.length > 0) {
+    const list: { key: string; label: string }[] = [];
+    if (hasRichText(tour?.shortDesc)) {
+      list.push({ key: "overview", label: "Overview" });
+    }
+    if (tour?.itinerary && tour.itinerary.length > 0 && tour.itinerary.some((d: any) => d && (d.title || d.description))) {
       list.push({ key: "itinerary", label: "Itinerary" });
     }
-    if (costIncludes.length > 0 || costExclusions.length > 0 || tour?.inclusionsText || tour?.exclusionsText) {
+    if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if (tour?.addonsText && tour.addonsText.trim()) {
+    if (hasRichText(tour?.addonsText)) {
       list.push({ key: "addons", label: "Add-Ons" });
     }
     if (tour?.departureDates && tour.departureDates.length > 0) {
       list.push({ key: "departures", label: "Departure Dates" });
     }
-    if (tour?.usefulInfoText && tour.usefulInfoText.trim()) {
+    if (hasRichText(tour?.usefulInfoText)) {
       list.push({ key: "useful-info", label: "Useful Info" });
     }
-    if (tour?.mapImage) {
+    if (tour?.mapImage && tour.mapImage.trim()) {
       list.push({ key: "map", label: "Route Map" });
     }
     if (tour?.packageFiles && tour.packageFiles.length > 0) {
@@ -217,7 +205,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
-  }, [tour, costIncludes, costExclusions, displayFaqs, displayReviews]);
+  }, [tour, hasCostSection, displayFaqs, displayReviews]);
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
@@ -362,7 +350,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             )}
 
             {/* SECTION: OVERVIEW */}
-            {tour.shortDesc && (
+            {hasRichText(tour.shortDesc) && (
               <section id="overview" className="scroll-mt-24 space-y-4">
                 <div className="pb-3 border-b border-stone-200">
                   <h2 className="type-heading-xl">
@@ -378,7 +366,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             )}
 
             {/* SECTION: ITINERARY */}
-            {tour.itinerary && tour.itinerary.length > 0 && (
+            {tour.itinerary && tour.itinerary.length > 0 && tour.itinerary.some((d: any) => d && (d.title || d.description)) && (
               <section id="itinerary" className="scroll-mt-24">
                 <PackageItinerary
                   days={tour.itinerary}
@@ -388,19 +376,17 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             )}
 
             {/* SECTION: INCLUSIONS & EXCLUSIONS */}
-            {(tour.inclusionsText || tour.exclusionsText || costIncludes.length > 0 || costExclusions.length > 0) && (
+            {hasCostSection && (
               <section id="cost" className="scroll-mt-24">
                 <PackageInclusions
                   inclusionsText={tour.inclusionsText}
                   exclusionsText={tour.exclusionsText}
-                  inclusions={costIncludes}
-                  exclusions={costExclusions}
                 />
               </section>
             )}
 
             {/* SECTION: ADD-ONS */}
-            {tour.addonsText && tour.addonsText.trim() && (
+            {hasRichText(tour.addonsText) && (
               <section id="addons" className="scroll-mt-24">
                 <PackageAddons addonsText={tour.addonsText} />
               </section>
@@ -418,14 +404,14 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             )}
 
             {/* SECTION: USEFUL INFO */}
-            {tour.usefulInfoText && tour.usefulInfoText.trim() && (
+            {hasRichText(tour.usefulInfoText) && (
               <section id="useful-info" className="scroll-mt-24">
                 <PackageUsefulInfo usefulInfoText={tour.usefulInfoText} />
               </section>
             )}
 
             {/* SECTION: MAP */}
-            {tour.mapImage && (
+            {Boolean(tour.mapImage && tour.mapImage.trim()) && (
               <section id="map" className="scroll-mt-24">
                 <PackageTrekMap mapImage={tour.mapImage} title={tour.title} />
               </section>

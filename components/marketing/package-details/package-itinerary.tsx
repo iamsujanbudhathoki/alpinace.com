@@ -167,28 +167,6 @@ export function PackageItinerary({
                     <span className="type-caption text-stone-900 font-bold block">
                       {formattedDayLabel}
                     </span>
-
-                    {/* Quick Highlights with Icons in Header */}
-                    {altitudeVal && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-600 bg-stone-100/90 px-2 py-0.5 rounded border border-stone-200/70">
-                        <Mountain className="w-3 h-3 text-amber-600 shrink-0" strokeWidth={2.2} />
-                        <span>{altitudeVal}</span>
-                      </span>
-                    )}
-
-                    {durationVal && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-600 bg-stone-100/90 px-2 py-0.5 rounded border border-stone-200/70">
-                        <Clock className="w-3 h-3 text-blue-600 shrink-0" strokeWidth={2.2} />
-                        <span>{durationVal}</span>
-                      </span>
-                    )}
-
-                    {mealsVal && (
-                      <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-stone-600 bg-stone-100/90 px-2 py-0.5 rounded border border-stone-200/70">
-                        <Utensils className="w-3 h-3 text-emerald-600 shrink-0" strokeWidth={2.2} />
-                        <span>{mealsVal}</span>
-                      </span>
-                    )}
                   </div>
 
                   <h3 className="type-heading-md text-stone-900 group-hover:underline transition-colors">

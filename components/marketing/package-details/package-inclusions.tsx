@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Minus } from "lucide-react";
+import { hasRichText, isHtmlContent } from "@/lib/utils";
 
 export interface PackageInclusionsProps {
   inclusions?: string[];
@@ -13,18 +14,17 @@ export interface PackageInclusionsProps {
   exclusionsTitle?: string;
 }
 
-function isHtmlContent(str?: string): boolean {
-  if (!str) return false;
-  return /<[a-z][\s\S]*>/i.test(str);
-}
-
 function parsePlainTextList(text?: string, fallbackList: string[] = []): string[] {
-  if (fallbackList && fallbackList.length > 0) return fallbackList;
-  if (!text || !text.trim()) return [];
+  const validFallback = fallbackList
+    .map((s) => (typeof s === "string" ? s.trim() : ""))
+    .filter((s) => hasRichText(s));
+  if (validFallback.length > 0) return validFallback;
+
+  if (!text || !hasRichText(text)) return [];
   return text
     .split(/[\n,]+/)
     .map((s) => s.trim())
-    .filter(Boolean);
+    .filter((s) => hasRichText(s));
 }
 
 export function PackageInclusions({
@@ -36,8 +36,12 @@ export function PackageInclusions({
   inclusionsTitle = "Included in Package",
   exclusionsTitle = "Not Included",
 }: PackageInclusionsProps) {
-  const hasInclusionsHtml = isHtmlContent(inclusionsText);
-  const hasExclusionsHtml = isHtmlContent(exclusionsText);
+  const hasInclusionsHtml = Boolean(
+    inclusionsText && isHtmlContent(inclusionsText) && hasRichText(inclusionsText)
+  );
+  const hasExclusionsHtml = Boolean(
+    exclusionsText && isHtmlContent(exclusionsText) && hasRichText(exclusionsText)
+  );
 
   const parsedInclusions = hasInclusionsHtml
     ? []

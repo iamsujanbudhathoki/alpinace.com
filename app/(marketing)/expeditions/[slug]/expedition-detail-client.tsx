@@ -45,6 +45,7 @@ import {
   PackageAddons,
   PackageUsefulInfo,
 } from "@/components/marketing/package-details";
+import { hasRichText, isHtmlContent } from "@/lib/utils";
 
 interface ExpeditionDetailClientProps {
   initialExpedition: ExpeditionItem | any | null;
@@ -144,22 +145,8 @@ export function ExpeditionDetailClient({
   const perPersonCalculated = applicablePricing.pricePerPerson;
   const totalPrice = applicablePricing.totalPrice;
 
-  // Inclusions vs Exclusions parsed from backend
-  const costIncludes = useMemo(() => {
-    if (!expedition?.inclusionsText || !expedition.inclusionsText.trim()) return [];
-    return expedition.inclusionsText
-      .split(/[\n,]+/)
-      .map((s: string) => s.trim())
-      .filter(Boolean);
-  }, [expedition]);
-
-  const costExclusions = useMemo(() => {
-    if (!expedition?.exclusionsText || !expedition.exclusionsText.trim()) return [];
-    return expedition.exclusionsText
-      .split(/[\n,]+/)
-      .map((s: string) => s.trim())
-      .filter(Boolean);
-  }, [expedition]);
+  // Inclusions vs Exclusions existence based on schema
+  const hasCostSection = hasRichText(expedition?.inclusionsText) || hasRichText(expedition?.exclusionsText);
 
   // FAQs
   const displayFaqs = useMemo(() => {
@@ -215,25 +202,26 @@ export function ExpeditionDetailClient({
 
   // Dynamic tabs mapping to page sections
   const availableTabs = useMemo(() => {
-    const list: { key: string; label: string }[] = [
-      { key: "overview", label: "Overview" },
-    ];
-    if (expedition?.itinerary && expedition.itinerary.length > 0) {
+    const list: { key: string; label: string }[] = [];
+    if (hasRichText(expedition?.shortDesc)) {
+      list.push({ key: "overview", label: "Overview" });
+    }
+    if (expedition?.itinerary && expedition.itinerary.length > 0 && expedition.itinerary.some((d: any) => d && (d.title || d.description))) {
       list.push({ key: "itinerary", label: "Itinerary" });
     }
-    if (costIncludes.length > 0 || costExclusions.length > 0 || expedition?.inclusionsText || expedition?.exclusionsText) {
+    if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if (expedition?.addonsText && expedition.addonsText.trim()) {
+    if (hasRichText(expedition?.addonsText)) {
       list.push({ key: "addons", label: "Add-Ons" });
     }
     if (expedition?.departureDates && expedition.departureDates.length > 0) {
       list.push({ key: "departures", label: "Departure Dates" });
     }
-    if (expedition?.usefulInfoText && expedition.usefulInfoText.trim()) {
+    if (hasRichText(expedition?.usefulInfoText)) {
       list.push({ key: "useful-info", label: "Useful Info" });
     }
-    if (expedition?.mapImage) {
+    if (expedition?.mapImage && expedition.mapImage.trim()) {
       list.push({ key: "map", label: "Route Map" });
     }
     if (expedition?.packageFiles && expedition.packageFiles.length > 0) {
@@ -246,7 +234,7 @@ export function ExpeditionDetailClient({
       list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
-  }, [expedition, costIncludes, costExclusions, displayFaqs, displayReviews]);
+  }, [expedition, hasCostSection, displayFaqs, displayReviews]);
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
@@ -393,23 +381,23 @@ export function ExpeditionDetailClient({
             )}
 
             {/* SECTION: OVERVIEW */}
-            <section id="overview" className="scroll-mt-24 space-y-5">
-              <div className="pb-3 border-b border-stone-200">
-                <h2 className="type-heading-xl">
-                  Overview
-                </h2>
-              </div>
+            {hasRichText(expedition.shortDesc) && (
+              <section id="overview" className="scroll-mt-24 space-y-5">
+                <div className="pb-3 border-b border-stone-200">
+                  <h2 className="type-heading-xl">
+                    Overview
+                  </h2>
+                </div>
 
-              {expedition.shortDesc && (
                 <div
                   className="prose-editorial max-w-none"
                   dangerouslySetInnerHTML={{ __html: expedition.shortDesc }}
                 />
-              )}
-            </section>
+              </section>
+            )}
 
             {/* SECTION: CLIMBING ITINERARY */}
-            {expedition.itinerary && expedition.itinerary.length > 0 && (
+            {expedition.itinerary && expedition.itinerary.length > 0 && expedition.itinerary.some((d: any) => d && (d.title || d.description)) && (
               <section id="itinerary" className="scroll-mt-24">
                 <PackageItinerary
                   days={expedition.itinerary}
@@ -419,19 +407,17 @@ export function ExpeditionDetailClient({
             )}
 
             {/* SECTION: INCLUSIONS & EXCLUSIONS */}
-            {(expedition.inclusionsText || expedition.exclusionsText || costIncludes.length > 0 || costExclusions.length > 0) && (
+            {hasCostSection && (
               <section id="cost" className="scroll-mt-24">
                 <PackageInclusions
                   inclusionsText={expedition.inclusionsText}
                   exclusionsText={expedition.exclusionsText}
-                  inclusions={costIncludes}
-                  exclusions={costExclusions}
                 />
               </section>
             )}
 
             {/* SECTION: ADD-ONS */}
-            {expedition.addonsText && expedition.addonsText.trim() && (
+            {hasRichText(expedition.addonsText) && (
               <section id="addons" className="scroll-mt-24">
                 <PackageAddons addonsText={expedition.addonsText} />
               </section>
@@ -449,14 +435,14 @@ export function ExpeditionDetailClient({
             )}
 
             {/* SECTION: USEFUL INFO */}
-            {expedition.usefulInfoText && expedition.usefulInfoText.trim() && (
+            {hasRichText(expedition.usefulInfoText) && (
               <section id="useful-info" className="scroll-mt-24">
                 <PackageUsefulInfo usefulInfoText={expedition.usefulInfoText} />
               </section>
             )}
 
             {/* SECTION: MAP */}
-            {expedition.mapImage && (
+            {Boolean(expedition.mapImage && expedition.mapImage.trim()) && (
               <section id="map" className="scroll-mt-24">
                 <PackageTrekMap mapImage={expedition.mapImage} title={expedition.title} />
               </section>

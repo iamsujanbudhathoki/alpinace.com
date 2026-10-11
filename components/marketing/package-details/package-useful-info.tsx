@@ -1,11 +1,13 @@
 "use client";
 
+import { hasRichText } from "@/lib/utils";
+
 interface PackageUsefulInfoProps {
   usefulInfoText?: string;
 }
 
 export function PackageUsefulInfo({ usefulInfoText }: PackageUsefulInfoProps) {
-  if (!usefulInfoText || !usefulInfoText.trim()) return null;
+  if (!hasRichText(usefulInfoText)) return null;
 
   return (
     <div className="space-y-4">
@@ -17,7 +19,7 @@ export function PackageUsefulInfo({ usefulInfoText }: PackageUsefulInfoProps) {
 
       <div
         className="prose-editorial max-w-none"
-        dangerouslySetInnerHTML={{ __html: usefulInfoText }}
+        dangerouslySetInnerHTML={{ __html: usefulInfoText! }}
       />
     </div>
   );

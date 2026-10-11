@@ -22,20 +22,7 @@ export function PackageDepartures({
   defaultPrice,
   onBookDate,
 }: PackageDeparturesProps) {
-  if (!dates || dates.length === 0) {
-    return (
-      <div className="space-y-3">
-        <div className="pb-4 border-b border-stone-200">
-          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-stone-900 tracking-tight">
-            Upcoming Departures
-          </h2>
-        </div>
-        <p className="text-base text-stone-600 leading-relaxed">
-          Custom departure dates are available upon request. Contact our team to arrange private departures tailored to your schedule.
-        </p>
-      </div>
-    );
-  }
+  if (!dates || dates.length === 0) return null;
 
   return (
     <div className="space-y-6">

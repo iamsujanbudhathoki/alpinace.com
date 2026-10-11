@@ -22,7 +22,11 @@ export function PackageFaqs({
   // First item open by default for immediate preview, null if collapsed
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
 
-  if (!faqs || faqs.length === 0) return null;
+  const validFaqs = (faqs || []).filter(
+    (f) => Boolean(f && (f.question?.trim() || (typeof f.answer === "string" ? f.answer.trim() : f.answer)))
+  );
+
+  if (validFaqs.length === 0) return null;
 
   return (
     <div className="space-y-6">
@@ -35,7 +39,7 @@ export function PackageFaqs({
 
       {/* Editorial Accordion List */}
       <div className="divide-y divide-stone-200 border-t border-b border-stone-200">
-        {faqs.map((f, idx) => {
+        {validFaqs.map((f, idx) => {
           const isOpen = activeFaq === idx;
           const questionId = `faq-q-${idx}`;
           const answerId = `faq-a-${idx}`;

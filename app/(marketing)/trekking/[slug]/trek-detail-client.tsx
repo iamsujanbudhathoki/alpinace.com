@@ -39,6 +39,7 @@ import {
   PackageAddons,
   PackageUsefulInfo,
 } from "@/components/marketing/package-details";
+import { hasRichText, isHtmlContent } from "@/lib/utils";
 
 interface TrekDetailClientProps {
   initialTrek: TrekItem | null;
@@ -133,23 +134,8 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     return [trek.image];
   }, [trek]);
 
-  // Inclusions parsed from backend inclusionsText
-  const costIncludes = useMemo(() => {
-    if (!trek?.inclusionsText || !trek.inclusionsText.trim()) return [];
-    return trek.inclusionsText
-      .split(/[\n,]+/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }, [trek]);
-
-  // Exclusions parsed from backend exclusionsText
-  const costExclusions = useMemo(() => {
-    if (!trek?.exclusionsText || !trek.exclusionsText.trim()) return [];
-    return trek.exclusionsText
-      .split(/[\n,]+/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }, [trek]);
+  // Inclusions vs Exclusions existence based on schema
+  const hasCostSection = hasRichText(trek?.inclusionsText) || hasRichText(trek?.exclusionsText);
 
   // Reviews from package JSONB or global backend settings
   const displayReviews = useMemo(() => {
@@ -197,25 +183,26 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
 
   // Calculate dynamic tabs based on actual available data
   const availableTabs = useMemo(() => {
-    const list: { key: string; label: string }[] = [
-      { key: "overview", label: "Overview" },
-    ];
-    if (trek?.itinerary && trek.itinerary.length > 0) {
+    const list: { key: string; label: string }[] = [];
+    if (hasRichText(trek?.shortDesc)) {
+      list.push({ key: "overview", label: "Overview" });
+    }
+    if (trek?.itinerary && trek.itinerary.length > 0 && trek.itinerary.some((d) => d && (d.title || d.description))) {
       list.push({ key: "itinerary", label: "Itinerary" });
     }
-    if (costIncludes.length > 0 || costExclusions.length > 0 || trek?.inclusionsText || trek?.exclusionsText) {
+    if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if (trek?.addonsText && trek.addonsText.trim()) {
+    if (hasRichText(trek?.addonsText)) {
       list.push({ key: "addons", label: "Add-Ons" });
     }
     if (trek?.departureDates && trek.departureDates.length > 0) {
       list.push({ key: "departures", label: "Departure Dates" });
     }
-    if (trek?.usefulInfoText && trek.usefulInfoText.trim()) {
+    if (hasRichText(trek?.usefulInfoText)) {
       list.push({ key: "useful-info", label: "Useful Info" });
     }
-    if (trek?.mapImage) {
+    if (trek?.mapImage && trek.mapImage.trim()) {
       list.push({ key: "map", label: "Trek Map" });
     }
     if (trek?.packageFiles && trek.packageFiles.length > 0) {
@@ -228,7 +215,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
       list.push({ key: "faqs", label: "FAQs" });
     }
     return list;
-  }, [trek, costIncludes, costExclusions, displayFaqs, displayReviews]);
+  }, [trek, hasCostSection, displayFaqs, displayReviews]);
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
@@ -382,7 +369,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             )}
 
             {/* SECTION: OVERVIEW */}
-            {trek.shortDesc && (
+            {hasRichText(trek.shortDesc) && (
               <section id="overview" className="scroll-mt-24 space-y-4">
                 <div className="pb-3 border-b border-stone-200">
                   <h2 className="type-heading-xl">
@@ -398,7 +385,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             )}
 
             {/* SECTION: ITINERARY */}
-            {trek.itinerary && trek.itinerary.length > 0 && (
+            {trek.itinerary && trek.itinerary.length > 0 && trek.itinerary.some((d) => d && (d.title || d.description)) && (
               <section id="itinerary" className="scroll-mt-24">
                 <PackageItinerary
                   days={trek.itinerary}
@@ -408,19 +395,17 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             )}
 
             {/* SECTION: INCLUSIONS & EXCLUSIONS */}
-            {(trek.inclusionsText || trek.exclusionsText || costIncludes.length > 0 || costExclusions.length > 0) && (
+            {hasCostSection && (
               <section id="cost" className="scroll-mt-24">
                 <PackageInclusions
                   inclusionsText={trek.inclusionsText}
                   exclusionsText={trek.exclusionsText}
-                  inclusions={costIncludes}
-                  exclusions={costExclusions}
                 />
               </section>
             )}
 
             {/* SECTION: ADD-ONS */}
-            {trek.addonsText && trek.addonsText.trim() && (
+            {hasRichText(trek.addonsText) && (
               <section id="addons" className="scroll-mt-24">
                 <PackageAddons addonsText={trek.addonsText} />
               </section>
@@ -438,14 +423,14 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             )}
 
             {/* SECTION: USEFUL INFO */}
-            {trek.usefulInfoText && trek.usefulInfoText.trim() && (
+            {hasRichText(trek.usefulInfoText) && (
               <section id="useful-info" className="scroll-mt-24">
                 <PackageUsefulInfo usefulInfoText={trek.usefulInfoText} />
               </section>
             )}
 
             {/* SECTION: TREK MAP */}
-            {trek.mapImage && (
+            {Boolean(trek.mapImage && trek.mapImage.trim()) && (
               <section id="map" className="scroll-mt-24">
                 <PackageTrekMap mapImage={trek.mapImage} title={trek.title} />
               </section>

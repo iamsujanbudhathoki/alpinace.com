@@ -92,3 +92,33 @@ export function getSliderFillStyle(fillPct: number): { background: string } {
     background: `linear-gradient(to right, var(--slider-fill, #1c1917) 0%, var(--slider-fill, #1c1917) ${fillPct}%, var(--slider-bg, #e7e5e4) ${fillPct}%, var(--slider-bg, #e7e5e4) 100%)`,
   };
 }
+
+/**
+ * Checks whether a string contains HTML tags.
+ */
+export function isHtmlContent(str?: string | null): boolean {
+  if (!str) return false;
+  return /<[a-z][\s\S]*>/i.test(str);
+}
+
+/**
+ * Checks whether a string or rich text HTML has non-empty visible text or media content.
+ * Returns false if string is undefined, null, empty, or consists only of whitespace / empty HTML tags like `<p></p>`, `<p><br></p>`, `<p>&nbsp;</p>`.
+ */
+export function hasRichText(str?: string | null): boolean {
+  if (!str) return false;
+  // If there's an embedded media element, consider it non-empty content
+  if (/<(img|iframe|video|audio|svg|embed|object)[\s>/]/i.test(str)) {
+    return true;
+  }
+  // Strip tags and HTML entities
+  const text = str
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&#160;/g, " ")
+    .replace(/&zwnj;/gi, "")
+    .replace(/&zwj;/gi, "")
+    .trim();
+  return text.length > 0;
+}
+

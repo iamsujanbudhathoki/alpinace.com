@@ -7,6 +7,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
+import { PackageSection } from "./package-section";
 
 export interface ReviewItemProp {
   id?: string;
@@ -92,15 +93,12 @@ export function PackageReviews({
   if (!activeReviews || activeReviews.length === 0) return null;
 
   return (
-    <section className="space-y-6">
-      {/* Header: Title, Rating & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
-        <h2 className="type-heading-xl">
-          {title}
-        </h2>
-
-        {/* Rating Summary & Controls */}
-        <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
+    <PackageSection
+      icon={Star}
+      eyebrow="Traveler stories"
+      title={title}
+      action={
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 bg-stone-100/80 px-2.5 py-1 rounded-full border border-stone-200 text-xs">
             <div className="flex items-center gap-0.5 text-accent">
               <Star className="w-3.5 h-3.5 fill-accent text-accent" />
@@ -146,7 +144,8 @@ export function PackageReviews({
             </div>
           )}
         </div>
-      </div>
+      }
+    >
 
       {/* Reviews Slider */}
       {activeReviews.length === 0 ? (
@@ -218,6 +217,6 @@ export function PackageReviews({
         ))}
       </div>
       )}
-    </section>
+    </PackageSection>
   );
 }

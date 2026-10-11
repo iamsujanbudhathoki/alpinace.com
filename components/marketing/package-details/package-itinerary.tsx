@@ -10,8 +10,10 @@ import {
   Compass,
   MapPin,
   Footprints,
+  Route,
 } from "lucide-react";
 import { TripItineraryDay, TripItineraryDetail } from "@/lib/trek-data";
+import { PackageSection } from "./package-section";
 
 export type { TripItineraryDay, TripItineraryDetail };
 export type ItineraryDay = TripItineraryDay;
@@ -39,22 +41,20 @@ export function PackageItinerary({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
-        <h2 className="type-heading-xl">
-          {title}
-        </h2>
-
+    <PackageSection
+      icon={Route}
+      eyebrow="The experience"
+      title={title}
+      action={
         <button
           type="button"
           onClick={toggleExpandAll}
-          className="btn-secondary py-2 px-3.5 self-start sm:self-auto shrink-0 min-h-[40px] text-xs font-semibold"
+          className="btn-secondary py-2 px-3.5 min-h-[40px] text-xs font-semibold"
         >
-          <span>{isAllExpanded ? "Collapse All" : "Expand All"}</span>
+          <span>{isAllExpanded ? "Collapse all" : "Expand all"}</span>
         </button>
-      </div>
-
+      }
+    >
       {/* Clean Editorial Timeline Flow */}
       <div className="relative pl-5 sm:pl-7 border-l border-stone-200 ml-2 sm:ml-2.5 space-y-5 sm:space-y-6 pt-1 pb-2">
         {days.map((day, idx) => {
@@ -227,6 +227,6 @@ export function PackageItinerary({
           );
         })}
       </div>
-    </div>
+    </PackageSection>
   );
 }

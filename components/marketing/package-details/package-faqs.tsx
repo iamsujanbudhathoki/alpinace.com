@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
+import { PackageSection } from "./package-section";
 
 export interface FaqItemProp {
   id?: string;
@@ -29,14 +30,11 @@ export function PackageFaqs({
   if (validFaqs.length === 0) return null;
 
   return (
-    <div className="space-y-6">
-      {/* Section Header */}
-      <div className="pb-3 border-b border-stone-200">
-        <h2 className="type-heading-xl">
-          {title}
-        </h2>
-      </div>
-
+    <PackageSection
+      icon={HelpCircle}
+      eyebrow="Good to know"
+      title={title}
+    >
       {/* Editorial Accordion List */}
       <div className="divide-y divide-stone-200 border-t border-b border-stone-200">
         {validFaqs.map((f, idx) => {
@@ -100,6 +98,6 @@ export function PackageFaqs({
           );
         })}
       </div>
-    </div>
+    </PackageSection>
   );
 }

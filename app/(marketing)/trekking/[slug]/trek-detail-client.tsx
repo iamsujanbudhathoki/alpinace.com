@@ -40,6 +40,7 @@ import {
   PackageUsefulInfo,
 } from "@/components/marketing/package-details";
 import { hasRichText, isHtmlContent } from "@/lib/utils";
+import { PackageSection } from "@/components/marketing/package-details/package-section";
 
 interface TrekDetailClientProps {
   initialTrek: TrekItem | null;
@@ -370,17 +371,17 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
 
             {/* SECTION: OVERVIEW */}
             {hasRichText(trek.shortDesc) && (
-              <section id="overview" className="scroll-mt-24 space-y-4">
-                <div className="pb-3 border-b border-stone-200">
-                  <h2 className="type-heading-xl">
-                    Overview
-                  </h2>
-                </div>
-
-                <div
-                  className="prose-editorial max-w-none"
-                  dangerouslySetInnerHTML={{ __html: trek.shortDesc }}
-                />
+              <section id="overview" className="scroll-mt-24">
+                <PackageSection
+                  icon={Compass}
+                  eyebrow="The experience"
+                  title="Overview"
+                >
+                  <div
+                    className="prose-editorial max-w-none"
+                    dangerouslySetInnerHTML={{ __html: trek.shortDesc }}
+                  />
+                </PackageSection>
               </section>
             )}
 

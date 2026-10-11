@@ -243,6 +243,19 @@ body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:op
   }
 }
 
+@utility type-heading-section {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: normal;
+  color: var(--color-charcoal-900);
+
+  @media (min-width: 640px) {
+    font-size: 1.5rem;
+  }
+}
+
 @utility type-heading-lg {
   font-family: var(--font-heading);
   font-size: 1rem;

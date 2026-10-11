@@ -1,4 +1,5 @@
 export * from "./package-detail-hero";
+export * from "./package-section";
 export * from "./package-quick-facts";
 export * from "./package-gallery";
 export * from "./package-tabs-nav";

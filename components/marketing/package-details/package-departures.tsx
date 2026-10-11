@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TripDepartureDate, DepartureDateStatus } from "@/lib/admin-data";
+import { PackageSection } from "./package-section";
 
 interface PackageDeparturesProps {
   dates: TripDepartureDate[];
@@ -25,13 +26,11 @@ export function PackageDepartures({
   if (!dates || dates.length === 0) return null;
 
   return (
-    <div className="space-y-6">
-      <div className="pb-3 border-b border-stone-200">
-        <h2 className="type-heading-xl">
-          Scheduled Departure Dates
-        </h2>
-      </div>
-
+    <PackageSection
+      icon={CalendarDays}
+      eyebrow="Plan your dates"
+      title="Scheduled departure dates"
+    >
       <div className="divide-y divide-stone-200">
         {dates.map((item, idx) => {
           const statusConfig = STATUS_BADGES[item.status || DepartureDateStatus.GUARANTEED] || STATUS_BADGES[DepartureDateStatus.GUARANTEED];
@@ -91,6 +90,6 @@ export function PackageDepartures({
           );
         })}
       </div>
-    </div>
+    </PackageSection>
   );
 }

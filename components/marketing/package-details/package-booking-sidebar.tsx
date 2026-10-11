@@ -134,29 +134,30 @@ export function PackageBookingSidebar({
 
         {/* Booking Console Body */}
         <div className="p-4.5 sm:p-5 space-y-4">
-          {/* Collapsible Group Pricing Section */}
-          <div className="border border-stone-200 rounded-sm overflow-hidden bg-white shadow-2xs">
-            <button
-              type="button"
-              onClick={() => setIsGroupPricingOpen(!isGroupPricingOpen)}
-              className="w-full flex items-center justify-between px-3.5 py-2.5 text-left font-semibold text-stone-900 text-xs sm:text-sm hover:bg-stone-50 transition-colors cursor-pointer"
-            >
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
-                <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
-                  We offer group price
+          {/* Collapsible Group Pricing Section (only when tiers are configured) */}
+          {hasGroupPricing && sortedTiers && sortedTiers.length > 0 && (
+            <div className="border border-stone-200 rounded-sm overflow-hidden bg-white shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setIsGroupPricingOpen(!isGroupPricingOpen)}
+                aria-expanded={isGroupPricingOpen}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 text-left font-semibold text-stone-900 text-xs sm:text-sm hover:bg-stone-50 transition-colors cursor-pointer"
+              >
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
+                  <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
+                    We offer group price
+                  </span>
+                </div>
+                <span className="text-stone-500 flex items-center justify-center">
+                  {isGroupPricingOpen ? (
+                    <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  ) : (
+                    <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  )}
                 </span>
-              </div>
-              <span className="text-stone-500 flex items-center justify-center">
-                {isGroupPricingOpen ? (
-                  <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
-                ) : (
-                  <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
-                )}
-              </span>
-            </button>
+              </button>
 
-            {isGroupPricingOpen && (
-              hasGroupPricing && sortedTiers && sortedTiers.length > 0 ? (
+              {isGroupPricingOpen && (
                 <div className="border-t border-stone-200 divide-y divide-stone-100">
                   {sortedTiers.map((tier, idx) => {
                     const isApplicable =
@@ -220,29 +221,9 @@ export function PackageBookingSidebar({
                     );
                   })}
                 </div>
-              ) : (
-                <div className="border-t border-stone-200 px-3.5 py-3 bg-stone-50/60 space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-stone-700 font-medium">Standard Rate</span>
-                    <span className="text-stone-950 font-bold">
-                      US${perPersonCalculated.toLocaleString()}{" "}
-                      <span className="text-stone-500 font-normal text-xs">/ person</span>
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-600">
-                    Group discounts available for groups of 2 or more travelers.{" "}
-                    <button
-                      type="button"
-                      onClick={() => setIsInquiryModalOpen(true)}
-                      className="text-xs font-semibold text-[#1976d2] hover:underline cursor-pointer"
-                    >
-                      Inquire for custom group rates
-                    </button>
-                  </p>
-                </div>
-              )
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Travelers Stepper */}
           <div className="space-y-1.5">
@@ -386,7 +367,7 @@ export function PackageBookingSidebar({
                   onClick={onBookClick}
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
                 >
-                  <span>BOOK NOW</span>
+                  <span>{bookButtonLabel}</span>
                 </button>
                 {isInquired ? (
                   <div className="p-3 rounded-xs bg-yellow-50 border border-yellow-200 text-xs text-stone-800 font-medium text-center">
@@ -450,7 +431,7 @@ export function PackageBookingSidebar({
             onClick={onBookClick}
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-4 min-h-10 flex items-center gap-1.5 rounded-xs transition-colors cursor-pointer shadow-xs uppercase tracking-wide"
           >
-            <span>BOOK NOW</span>
+            <span>{bookButtonLabel}</span>
           </button>
         </div>
       </div>

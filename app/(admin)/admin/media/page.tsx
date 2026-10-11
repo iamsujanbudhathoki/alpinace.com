@@ -12,6 +12,7 @@ import { AdminFilterSelect } from "@/components/admin/forms/admin-form-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
+import { CategoryType } from "@/lib/admin-data";
 import { CategoryService, MediaService } from "@/lib/services/admin-service";
 import { openLightbox, openSingleImage } from "@/lib/utils/lightbox";
 
@@ -128,7 +129,7 @@ export default function AdminMediaPage() {
   // Load categories for filter dropdown
   const loadCategories = useCallback(async () => {
     try {
-      const res = await CategoryService.getAll({ limit: 100 });
+      const res = await CategoryService.getAll({ limit: 100, type: CategoryType.MEDIA });
       const list = Array.isArray(res) ? res : [];
       setCategories(list.map((c: any) => ({ id: c.id, name: c.name ?? c.title ?? "" })));
     } catch (e) {

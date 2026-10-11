@@ -84,16 +84,15 @@ export function PackageTrekMap({ mapImage, title }: PackageTrekMapProps) {
             openSingleImage(mapImage, `${title} Route Map`, e.currentTarget);
           }
         }}
-        className="relative group rounded-xl overflow-hidden bg-stone-100/40 border border-stone-200 cursor-zoom-in shadow-xs w-full block"
+        className="relative aspect-16/10 w-full rounded-xl overflow-hidden bg-stone-950 border border-stone-200 cursor-zoom-in shadow-xs group"
         title="Click to view full-size route map"
       >
         <Image
           src={mapImage}
           alt={`${title} Route Map`}
-          width={1400}
-          height={900}
+          fill
           sizes="(max-width: 1024px) 100vw, 800px"
-          className="w-full h-auto block object-cover transition-transform duration-500 group-hover:scale-[1.01]"
+          className="object-cover object-center transition-transform duration-500 group-hover:scale-102"
         />
 
         {/* Floating Download Action Button on Image */}

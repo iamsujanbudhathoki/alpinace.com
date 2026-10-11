@@ -373,47 +373,47 @@ body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:op
 
   & h1 {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.125rem;
+    font-weight: 600;
     color: var(--color-charcoal-900);
     margin-top: 1.25rem;
     margin-bottom: 0.5rem;
-
-    @media (min-width: 640px) {
-      font-size: 1.5rem;
-    }
-  }
-
-  & h2 {
-    font-family: var(--font-heading);
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color-charcoal-900);
-    margin-top: 1.1rem;
-    margin-bottom: 0.4rem;
 
     @media (min-width: 640px) {
       font-size: 1.25rem;
     }
   }
 
+  & h2 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-charcoal-900);
+    margin-top: 1.1rem;
+    margin-bottom: 0.4rem;
+
+    @media (min-width: 640px) {
+      font-size: 1.125rem;
+    }
+  }
+
   & h3 {
     font-family: var(--font-heading);
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 0.9375rem;
+    font-weight: 600;
     color: var(--color-charcoal-900);
     margin-top: 1rem;
     margin-bottom: 0.35rem;
 
     @media (min-width: 640px) {
-      font-size: 1.05rem;
+      font-size: 1rem;
     }
   }
 
   & h4, & h5, & h6 {
     font-family: var(--font-heading);
     font-size: 0.875rem;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--color-charcoal-900);
     margin-top: 0.75rem;
     margin-bottom: 0.25rem;

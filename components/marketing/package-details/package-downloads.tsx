@@ -26,7 +26,6 @@ export function PackageDownloads({ files = [] }: PackageDownloadsProps) {
 
   return (
     <PackageSection
-      variant="panel"
       icon={FileDown}
       eyebrow="Before you go"
       title="Downloads"

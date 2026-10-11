@@ -58,7 +58,6 @@ export function PackageInclusions({
 
   return (
     <PackageSection
-      variant="panel"
       icon={ListChecks}
       eyebrow="Your package"
       title={title}

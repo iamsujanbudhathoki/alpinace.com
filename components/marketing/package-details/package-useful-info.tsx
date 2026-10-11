@@ -13,7 +13,6 @@ export function PackageUsefulInfo({ usefulInfoText }: PackageUsefulInfoProps) {
 
   return (
     <PackageSection
-      variant="panel"
       icon={Info}
       eyebrow="Before you go"
       title="Useful information & guidelines"

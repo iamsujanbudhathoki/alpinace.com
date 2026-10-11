@@ -13,7 +13,6 @@ export function PackageAddons({ addonsText }: PackageAddonsProps) {
 
   return (
     <PackageSection
-      variant="panel"
       icon={Sparkles}
       eyebrow="Make it yours"
       title="Add-ons & optional upgrades"

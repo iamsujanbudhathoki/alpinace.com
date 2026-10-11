@@ -76,16 +76,15 @@ export function PackageTrekMap({ mapImage, title }: PackageTrekMapProps) {
       <button
         type="button"
         onClick={(e) => openSingleImage(mapImage, `${title} Route Map`, e.currentTarget)}
-        className="block w-full overflow-hidden rounded-xl border border-stone-200 bg-stone-950 cursor-zoom-in shadow-xs"
+        className="relative block w-full aspect-16/10 overflow-hidden rounded-xl border border-stone-200 bg-stone-100 cursor-zoom-in shadow-xs"
         title="View full-size route map"
       >
         <Image
           src={mapImage}
           alt={`${title} Route Map`}
-          width={1200}
-          height={1600}
+          fill
           sizes="(max-width: 1024px) 100vw, 800px"
-          className="w-full h-auto"
+          className="object-cover"
         />
       </button>
     </PackageSection>

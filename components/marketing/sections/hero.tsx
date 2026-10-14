@@ -314,11 +314,11 @@ export function Hero(_props: HeroProps) {
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 flex flex-col items-center text-center">
         {/* Headline */}
-        <h1 className="font-heading font-bold text-white mb-4 sm:mb-5 max-w-4xl leading-[1.15] text-center drop-shadow-md">
-          <span className="block text-3xl sm:text-4xl lg:text-5xl text-white/95 font-medium tracking-tight">
+        <h1 className="font-heading font-bold text-white mb-3 sm:mb-4 max-w-3xl leading-[1.2] text-center drop-shadow-md">
+          <span className="block text-2xl sm:text-3xl lg:text-4xl text-white/95 font-medium tracking-tight">
             Discover your
           </span>
-          <span className="relative block h-[1.3em] overflow-hidden align-middle text-4xl sm:text-6xl lg:text-7xl xl:text-8xl mt-1.5 sm:mt-2">
+          <span className="relative block h-[1.3em] overflow-hidden align-middle text-3xl sm:text-5xl lg:text-6xl mt-1 sm:mt-1.5">
             <span
               className={`block text-accent font-bold ${
                 animStep === "prep"

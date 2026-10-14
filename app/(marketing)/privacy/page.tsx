@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           <span className="text-stone-500 text-xs font-semibold uppercase tracking-wider block">
             Legal &amp; Compliance
           </span>
-          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-stone-900">
+          <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900 leading-snug">
             Privacy Policy
           </h1>
           <p className="text-stone-600 text-base sm:text-lg max-w-3xl font-normal leading-relaxed">

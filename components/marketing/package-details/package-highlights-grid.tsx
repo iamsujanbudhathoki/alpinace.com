@@ -108,7 +108,7 @@ export function PackageHighlightsGrid({
     },
     {
       icon: <BedDouble className="w-6 h-6 text-slate-700" />,
-      label: "Accomodation",
+      label: "Accommodation",
       value: packageData.accommodation,
       hasTooltip: true,
       tooltipText: "Types of lodging included during the journey.",
@@ -156,7 +156,7 @@ export function PackageHighlightsGrid({
                   </div>
                 )}
               </div>
-              <p className="text-sm font-semibold text-stone-900 capitalize truncate">
+              <p className="text-sm font-semibold text-stone-900 leading-snug break-words">
                 {item.value}
               </p>
             </div>

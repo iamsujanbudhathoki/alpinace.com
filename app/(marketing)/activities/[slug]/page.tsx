@@ -154,8 +154,7 @@ export default async function ActivityDetailPage({ params }: ActivityDetailPageP
           </nav>
 
           <div className="space-y-2">
-            
-            <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-stone-900 leading-tight">
+            <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900 leading-snug">
               {activity.name}
             </h1>
           </div>

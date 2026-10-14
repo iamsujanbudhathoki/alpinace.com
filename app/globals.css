@@ -217,24 +217,24 @@ body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:op
 /* ── Standardized Typography Scale Utilities for Detail & Content Pages ── */
 @utility type-display {
   font-family: var(--font-heading);
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   line-height: 1.25;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  letter-spacing: -0.015em;
 
   @media (min-width: 640px) {
-    font-size: 1.875rem;
+    font-size: 1.75rem;
   }
   @media (min-width: 1024px) {
-    font-size: 2.125rem;
+    font-size: 2rem;
   }
 }
 
 @utility type-heading-xl {
   font-family: var(--font-heading);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   line-height: 1.35;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: normal;
   color: var(--color-charcoal-900);
 
@@ -245,14 +245,14 @@ body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:op
 
 @utility type-heading-section {
   font-family: var(--font-heading);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   line-height: 1.3;
   font-weight: 600;
   letter-spacing: normal;
   color: var(--color-charcoal-900);
 
   @media (min-width: 640px) {
-    font-size: 1.5rem;
+    font-size: 1.375rem;
   }
 }
 
@@ -373,11 +373,12 @@ body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:op
 
   & h1 {
     font-family: var(--font-heading);
-    font-size: 1.125rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--color-charcoal-900);
     margin-top: 1.25rem;
     margin-bottom: 0.5rem;
+    line-height: 1.35;
 
     @media (min-width: 640px) {
       font-size: 1.25rem;
@@ -391,6 +392,7 @@ body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:op
     color: var(--color-charcoal-900);
     margin-top: 1.1rem;
     margin-bottom: 0.4rem;
+    line-height: 1.35;
 
     @media (min-width: 640px) {
       font-size: 1.125rem;

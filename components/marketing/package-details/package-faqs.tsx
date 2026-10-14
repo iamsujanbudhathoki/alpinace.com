@@ -20,25 +20,58 @@ export function PackageFaqs({
   faqs,
   title = "Frequently Asked Questions",
 }: PackageFaqsProps) {
-  // First item open by default for immediate preview, null if collapsed
-  const [activeFaq, setActiveFaq] = useState<number | null>(0);
-
   const validFaqs = (faqs || []).filter(
     (f) => Boolean(f && (f.question?.trim() || (typeof f.answer === "string" ? f.answer.trim() : f.answer)))
   );
 
+  // Set of open FAQ indices, defaulting to first item open
+  const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set([0]));
+
   if (validFaqs.length === 0) return null;
+
+  const isAllExpanded = openFaqs.size === validFaqs.length;
+
+  const toggleAll = () => {
+    if (isAllExpanded) {
+      setOpenFaqs(new Set());
+    } else {
+      setOpenFaqs(new Set(validFaqs.map((_, idx) => idx)));
+    }
+  };
+
+  const toggleFaq = (idx: number) => {
+    setOpenFaqs((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) {
+        next.delete(idx);
+      } else {
+        next.add(idx);
+      }
+      return next;
+    });
+  };
 
   return (
     <PackageSection
       icon={HelpCircle}
       eyebrow="Good to know"
       title={title}
+      action={
+        validFaqs.length > 1 ? (
+          <button
+            type="button"
+            onClick={toggleAll}
+            className="btn-secondary py-1.5 px-3 min-h-[36px] text-xs font-semibold"
+          >
+            <span>{isAllExpanded ? "Collapse all" : "Expand all"}</span>
+          </button>
+        ) : undefined
+      }
     >
       {/* Editorial Accordion List */}
       <div className="divide-y divide-stone-200 border-t border-b border-stone-200">
         {validFaqs.map((f, idx) => {
-          const isOpen = activeFaq === idx;
+          const isOpen = openFaqs.has(idx);
           const questionId = `faq-q-${idx}`;
           const answerId = `faq-a-${idx}`;
 
@@ -49,7 +82,7 @@ export function PackageFaqs({
                 id={questionId}
                 aria-expanded={isOpen}
                 aria-controls={answerId}
-                onClick={() => setActiveFaq(isOpen ? null : idx)}
+                onClick={() => toggleFaq(idx)}
                 className="w-full text-left flex items-start justify-between gap-4 py-3.5 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/40 rounded-xs transition-colors"
               >
                 <span

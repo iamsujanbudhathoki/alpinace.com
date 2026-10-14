@@ -116,7 +116,7 @@ export default async function AboutView() {
           <div className="absolute inset-0 bg-slate-950/70" />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left space-y-3">
-          <h1 className="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+          <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug">
             {heroTitle}
           </h1>
           {heroSubtitle && (

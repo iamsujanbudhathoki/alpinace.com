@@ -230,6 +230,8 @@ export function BookingPageClient({
   // Return date calculated
   const endDate = useMemo(() => {
     if (!startDate || !trip) return "";
+    const matchedSlot = trip.departureDates?.find((d) => d.startDate === startDate);
+    if (matchedSlot?.endDate) return matchedSlot.endDate;
     const nights = Math.max(1, trip.durationDays) - 1;
     const d = new Date(startDate);
     if (isNaN(d.getTime())) return "";

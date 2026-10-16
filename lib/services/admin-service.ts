@@ -1000,6 +1000,13 @@ function cleanBookingPayload(data: any) {
   if (rest.cfTurnstileToken !== undefined && rest.cfTurnstileToken) {
     payload.cfTurnstileToken = String(rest.cfTurnstileToken).trim();
   }
+  if (rest.addons !== undefined && Array.isArray(rest.addons)) {
+    payload.addons = rest.addons.map((a: any) => ({
+      id: String(a.id || "").trim(),
+      title: String(a.title || "").trim(),
+      priceUSD: Number(a.priceUSD) || 0,
+    }));
+  }
 
   return payload;
 }

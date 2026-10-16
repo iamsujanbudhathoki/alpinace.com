@@ -1,15 +1,16 @@
-"use client";
-
 import { useMemo } from "react";
-import { Sparkles, Plus, Check } from "lucide-react";
-import { hasRichText, isHtmlContent } from "@/lib/utils";
+import { Sparkles, Plus } from "lucide-react";
+import { hasRichText } from "@/lib/utils";
 import { PackageSection } from "./package-section";
+import type { PackageAddonItem } from "@/lib/admin-data";
 
 interface PackageAddonsProps {
+  addons?: PackageAddonItem[];
   addonsText?: string;
 }
 
 interface AddonCardItem {
+  id?: string;
   title: string;
   price?: string;
   description?: string;
@@ -44,7 +45,6 @@ function parseAddons(rawText?: string): AddonCardItem[] {
     if (!plain) continue;
 
     // Pattern 1: Title (with price in parentheses): Description
-    // e.g. "Helicopter Return ($950 USD): Skip the 3-day descent..."
     let match = plain.match(/^(.+?)\s*\(([\$\d,]+(?:\s*[A-Z]{3})?(?:\s*per\s*[a-z]+)?)\)\s*[:–-]\s*(.+)$/i);
     if (match) {
       parsed.push({
@@ -55,8 +55,7 @@ function parseAddons(rawText?: string): AddonCardItem[] {
       continue;
     }
 
-    // Pattern 2: Title: $Price - Description or Title - $Price (Description)
-    // e.g. "Single Room Supplement: $120 USD. Private boutique room in Kathmandu."
+    // Pattern 2: Title: $Price - Description
     match = plain.match(/^(.+?)\s*[:–-]\s*([\$\d,]+(?:\s*[A-Z]{3})?(?:\s*(?:each|per person|total))?)\s*[.–-]?\s*(.*)$/i);
     if (match) {
       parsed.push({
@@ -68,7 +67,6 @@ function parseAddons(rawText?: string): AddonCardItem[] {
     }
 
     // Pattern 3: Title containing price at the end
-    // e.g. "Sarangkot Sunrise Paragliding Flight in Pokhara: $95 USD"
     match = plain.match(/^(.+?)\s*[:–-]\s*([\$\d,]+(?:\s*[A-Z]{3})?.*)$/i);
     if (match) {
       parsed.push({
@@ -87,10 +85,26 @@ function parseAddons(rawText?: string): AddonCardItem[] {
   return parsed;
 }
 
-export function PackageAddons({ addonsText }: PackageAddonsProps) {
-  if (!hasRichText(addonsText)) return null;
+export function PackageAddons({ addons, addonsText }: PackageAddonsProps) {
+  const activeStructuredAddons = useMemo(() => {
+    if (!Array.isArray(addons) || addons.length === 0) return [];
+    return addons
+      .filter((a) => a.isActive !== false && a.title?.trim())
+      .map((a) => ({
+        id: a.id,
+        title: a.title,
+        price: `+$${Number(a.priceUSD || 0).toLocaleString()} USD`,
+        description: a.description || undefined,
+      }));
+  }, [addons]);
 
-  const parsedItems = useMemo(() => parseAddons(addonsText), [addonsText]);
+  const parsedItems = useMemo(() => {
+    if (activeStructuredAddons.length > 0) return activeStructuredAddons;
+    return parseAddons(addonsText);
+  }, [activeStructuredAddons, addonsText]);
+
+  const hasContent = activeStructuredAddons.length > 0 || hasRichText(addonsText);
+  if (!hasContent) return null;
 
   return (
     <PackageSection
@@ -102,7 +116,7 @@ export function PackageAddons({ addonsText }: PackageAddonsProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 pt-1">
           {parsedItems.map((item, idx) => (
             <div
-              key={idx}
+              key={item.id || idx}
               className="group relative flex flex-col justify-between p-4 rounded-md border border-stone-200/90 bg-white hover:border-stone-400 hover:shadow-xs transition-all duration-200"
             >
               <div className="space-y-1.5">

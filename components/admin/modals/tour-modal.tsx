@@ -22,6 +22,7 @@ import {
   Search,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import { PackageDetailView } from "./package/view/package-detail-view";
@@ -64,6 +65,7 @@ export function TourModal({
   isEditing,
 }: TourModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>("general");
+  const router = useRouter();
   const [editingMode, setEditingMode] = useState<boolean>(
     isEditing !== undefined ? isEditing : mode !== "view"
   );
@@ -427,10 +429,22 @@ export function TourModal({
       <Button variant="outline" onClick={handleClose}>
         Close
       </Button>
-      <Button onClick={() => setEditingMode(true)}>
-        <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
-        Edit Tour Package
-      </Button>
+      {initialData?.id ? (
+        <Button
+          onClick={() => {
+            onClose();
+            router.push(`/admin/tours/${initialData.id}/edit`);
+          }}
+        >
+          <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
+          Edit Tour Package
+        </Button>
+      ) : (
+        <Button onClick={() => setEditingMode(true)}>
+          <Edit className="w-3.5 h-3.5 mr-1 text-amber-400" />
+          Edit Tour Package
+        </Button>
+      )}
     </div>
   );
 

@@ -77,6 +77,7 @@ export function ExpeditionDetailClient({
   const [globalReviews, setGlobalReviews] = useState<Testimonial[]>([]);
 
   const [calculatorClimbers, setCalculatorClimbers] = useState<number>(1);
+  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("overview");
   const isClickScrollingRef = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -137,14 +138,40 @@ export function ExpeditionDetailClient({
     return [expedition.image];
   }, [expedition]);
 
+  // Active addons and pricing
+  const activeAddons = useMemo(() => {
+    return (expedition?.addons || []).filter((a: any) => a.isActive !== false && a.title?.trim());
+  }, [expedition?.addons]);
+
+  const bookingAddons = useMemo(() => {
+    return activeAddons.map((addon: any) => ({
+      id: addon.id,
+      label: addon.title,
+      description: addon.description || "",
+      pricePerPerson: Number(addon.priceUSD) || 0,
+      checked: selectedAddonIds.includes(addon.id),
+      onChange: (checked: boolean) => {
+        setSelectedAddonIds((prev) =>
+          checked ? [...prev, addon.id] : prev.filter((id) => id !== addon.id)
+        );
+      },
+    }));
+  }, [activeAddons, selectedAddonIds]);
+
+  const addonsPerPerson = useMemo(() => {
+    return activeAddons
+      .filter((a: any) => selectedAddonIds.includes(a.id))
+      .reduce((sum: number, a: any) => sum + (Number(a.priceUSD) || 0), 0);
+  }, [activeAddons, selectedAddonIds]);
+
   // Price calculations
   const applicablePricing = useMemo(() => {
     if (!expedition) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
     return calculateApplicablePrice(expedition, calculatorClimbers);
   }, [expedition, calculatorClimbers]);
 
-  const perPersonCalculated = applicablePricing.pricePerPerson;
-  const totalPrice = applicablePricing.totalPrice;
+  const perPersonCalculated = applicablePricing.pricePerPerson + addonsPerPerson;
+  const totalPrice = perPersonCalculated * calculatorClimbers;
 
   // Inclusions vs Exclusions existence based on schema
   const hasCostSection = hasRichText(expedition?.inclusionsText) || hasRichText(expedition?.exclusionsText);
@@ -213,7 +240,7 @@ export function ExpeditionDetailClient({
     if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if (hasRichText(expedition?.addonsText)) {
+    if ((expedition?.addons && expedition.addons.some((a: any) => a.isActive !== false && a.title)) || hasRichText(expedition?.addonsText)) {
       list.push({ key: "addons", label: "Add-Ons" });
     }
     if (expedition?.departureDates && expedition.departureDates.length > 0) {
@@ -418,9 +445,9 @@ export function ExpeditionDetailClient({
             )}
 
             {/* SECTION: ADD-ONS */}
-            {hasRichText(expedition.addonsText) && (
+            {((expedition.addons && expedition.addons.length > 0) || hasRichText(expedition.addonsText)) && (
               <section id="addons" className="scroll-mt-24">
-                <PackageAddons addonsText={expedition.addonsText} />
+                <PackageAddons addons={expedition.addons} addonsText={expedition.addonsText} />
               </section>
             )}
 
@@ -478,6 +505,7 @@ export function ExpeditionDetailClient({
               durationDays={expedition.durationDays}
               travelers={calculatorClimbers}
               onTravelersChange={setCalculatorClimbers}
+              addons={bookingAddons}
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Apply for Expedition"
@@ -536,8 +564,10 @@ export function ExpeditionDetailClient({
           categoryType: BookingPackageType.EXPEDITION,
           groupPricingEnabled: expedition.groupPricingEnabled,
           groupPricing: expedition.groupPricing,
+          addons: expedition.addons,
         }}
         initialTravelers={calculatorClimbers}
+        initialSelectedAddonIds={selectedAddonIds}
         initialDate={selectedDeparture?.startDate}
       />
     </div>

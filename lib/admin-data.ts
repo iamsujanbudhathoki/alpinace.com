@@ -229,6 +229,7 @@ export interface Booking {
   assignedGuide?: string;
   permitStatus: BookingPermitStatus;
   specialRequests?: string;
+  addons?: BookingSelectedAddon[];
 }
 
 export interface BookingWorkflowPhase {
@@ -266,6 +267,20 @@ export interface TripPackageFile {
   uploadedAt?: string;
 }
 
+export interface PackageAddonItem {
+  id: string;
+  title: string;
+  description?: string;
+  priceUSD: number;
+  isActive?: boolean;
+}
+
+export interface BookingSelectedAddon {
+  id: string;
+  title: string;
+  priceUSD: number;
+}
+
 export interface PackageItem {
   id: string;
   title: string;
@@ -299,6 +314,7 @@ export interface PackageItem {
   inclusionsText?: string;
   exclusionsText?: string;
   addonsText?: string;
+  addons?: PackageAddonItem[];
   usefulInfoText?: string;
   departureDates?: TripDepartureDate[];
   groupPricingEnabled?: boolean;

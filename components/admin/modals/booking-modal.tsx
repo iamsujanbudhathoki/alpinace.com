@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit, Mail, Phone, Globe, Calendar, Loader2, Footprints, Mountain, Compass, Info, ExternalLink } from "lucide-react";
+import { Edit, Mail, Phone, Globe, Calendar, Loader2, Footprints, Mountain, Compass, Info, ExternalLink, Sparkles } from "lucide-react";
 import {
   Booking,
   BookingStep,
@@ -284,6 +284,7 @@ export function BookingFormModal({
         assignedGuide: values.assignedGuide ? values.assignedGuide.trim() : undefined,
         permitStatus: values.permitStatus,
         specialRequests: values.specialRequests ? values.specialRequests.trim() : undefined,
+        addons: initialData?.addons || [],
       };
 
       const success = await onSave(bookingToSave);
@@ -664,6 +665,30 @@ export function BookingFormModal({
               </div>
             </div>
           </div>
+
+          {initialData?.addons && initialData.addons.length > 0 && (
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span className="font-semibold text-slate-800 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  Selected Add-ons &amp; Upgrades ({initialData.addons.length})
+                </span>
+                <span className="text-[11px] font-bold text-slate-600">
+                  Total: +${initialData.addons.reduce((sum, a) => sum + (Number(a.priceUSD || 0) * (initialData.groupSize || 1)), 0).toLocaleString()} USD
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                {initialData.addons.map((addon) => (
+                  <div key={addon.id} className="p-2.5 rounded-lg bg-white border border-slate-200/90 flex items-center justify-between text-xs">
+                    <span className="font-medium text-slate-800">{addon.title}</span>
+                    <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 text-[11px]">
+                      +${Number(addon.priceUSD || 0).toLocaleString()} / person
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {initialData?.specialRequests && (
             <div className="space-y-1">

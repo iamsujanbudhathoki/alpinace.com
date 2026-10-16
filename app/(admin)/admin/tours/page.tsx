@@ -241,16 +241,12 @@ export default function AdminToursPage() {
         title="Tours"
         description="Manage tour packages and itineraries."
       >
-        <Button
-          onClick={() => {
-            setActiveTour(null);
-            setIsEditing(true);
-            setIsFormOpen(true);
-          }}
-        >
-          <Plus className="w-4 h-4 mr-1.5" />
-          Add New Tour Itinerary
-        </Button>
+        <Link href="/admin/tours/create">
+          <Button>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Add New Tour Itinerary
+          </Button>
+        </Link>
       </AdminPageHeader>
 
       {/* Filter Bar */}
@@ -389,11 +385,7 @@ export default function AdminToursPage() {
                         />
                         <AdminActionButton
                           variant="edit"
-                          onClick={() => {
-                            setActiveTour(tur);
-                            setIsEditing(true);
-                            setIsFormOpen(true);
-                          }}
+                          href={`/admin/tours/${tur.id}/edit`}
                           title="Edit Tour"
                         />
                         <AdminActionButton

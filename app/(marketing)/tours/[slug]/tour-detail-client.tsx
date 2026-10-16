@@ -56,6 +56,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
   const [globalFaqs, setGlobalFaqs] = useState<FaqItem[]>([]);
   const [globalReviews, setGlobalReviews] = useState<Testimonial[]>([]);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
+  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("overview");
   const isClickScrollingRef = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -116,14 +117,40 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     return [tour.image];
   }, [tour]);
 
+  // Active addons and pricing
+  const activeAddons = useMemo(() => {
+    return (tour?.addons || []).filter((a: any) => a.isActive !== false && a.title?.trim());
+  }, [tour?.addons]);
+
+  const bookingAddons = useMemo(() => {
+    return activeAddons.map((addon: any) => ({
+      id: addon.id,
+      label: addon.title,
+      description: addon.description || "",
+      pricePerPerson: Number(addon.priceUSD) || 0,
+      checked: selectedAddonIds.includes(addon.id),
+      onChange: (checked: boolean) => {
+        setSelectedAddonIds((prev) =>
+          checked ? [...prev, addon.id] : prev.filter((id) => id !== addon.id)
+        );
+      },
+    }));
+  }, [activeAddons, selectedAddonIds]);
+
+  const addonsPerPerson = useMemo(() => {
+    return activeAddons
+      .filter((a: any) => selectedAddonIds.includes(a.id))
+      .reduce((sum: number, a: any) => sum + (Number(a.priceUSD) || 0), 0);
+  }, [activeAddons, selectedAddonIds]);
+
   // Price calculations
   const applicablePricing = useMemo(() => {
     if (!tour) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
     return calculateApplicablePrice(tour, calculatorTravelers);
   }, [tour, calculatorTravelers]);
 
-  const perPersonCalculated = applicablePricing.pricePerPerson;
-  const totalPrice = applicablePricing.totalPrice;
+  const perPersonCalculated = applicablePricing.pricePerPerson + addonsPerPerson;
+  const totalPrice = perPersonCalculated * calculatorTravelers;
 
   // Inclusions vs Exclusions existence based on schema
   const hasCostSection = hasRichText(tour?.inclusionsText) || hasRichText(tour?.exclusionsText);
@@ -184,7 +211,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if (hasRichText(tour?.addonsText)) {
+    if ((tour?.addons && tour.addons.some((a: any) => a.isActive !== false && a.title)) || hasRichText(tour?.addonsText)) {
       list.push({ key: "addons", label: "Add-Ons" });
     }
     if (tour?.departureDates && tour.departureDates.length > 0) {
@@ -387,9 +414,9 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             )}
 
             {/* SECTION: ADD-ONS */}
-            {hasRichText(tour.addonsText) && (
+            {((tour.addons && tour.addons.length > 0) || hasRichText(tour.addonsText)) && (
               <section id="addons" className="scroll-mt-24">
-                <PackageAddons addonsText={tour.addonsText} />
+                <PackageAddons addons={tour.addons} addonsText={tour.addonsText} />
               </section>
             )}
 
@@ -447,6 +474,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               durationDays={tour.durationDays}
               travelers={calculatorTravelers}
               onTravelersChange={setCalculatorTravelers}
+              addons={bookingAddons}
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Reserve Private Tour"
@@ -505,8 +533,10 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
           categoryType: BookingPackageType.TOUR,
           groupPricingEnabled: tour.groupPricingEnabled,
           groupPricing: tour.groupPricing,
+          addons: tour.addons,
         }}
         initialTravelers={calculatorTravelers}
+        initialSelectedAddonIds={selectedAddonIds}
         initialDate={selectedDeparture?.startDate}
       />
     </div>

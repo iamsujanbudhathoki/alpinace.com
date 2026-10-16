@@ -61,6 +61,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
   const [isBooked, setIsBooked] = useState(false);
   const [isInquired, setIsInquired] = useState(false);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
+  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
 
   const [activeTab, setActiveTab] = useState<string>("overview");
@@ -194,7 +195,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if (hasRichText(trek?.addonsText)) {
+    if ((trek?.addons && trek.addons.some((a) => a.isActive !== false && a.title)) || hasRichText(trek?.addonsText)) {
       list.push({ key: "addons", label: "Add-Ons" });
     }
     if (trek?.departureDates && trek.departureDates.length > 0) {
@@ -292,14 +293,40 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     };
   }, [availableTabs]);
 
+  // Active addons and pricing
+  const activeAddons = useMemo(() => {
+    return (trek?.addons || []).filter((a) => a.isActive !== false && a.title?.trim());
+  }, [trek?.addons]);
+
+  const bookingAddons = useMemo(() => {
+    return activeAddons.map((addon) => ({
+      id: addon.id,
+      label: addon.title,
+      description: addon.description || "",
+      pricePerPerson: Number(addon.priceUSD) || 0,
+      checked: selectedAddonIds.includes(addon.id),
+      onChange: (checked: boolean) => {
+        setSelectedAddonIds((prev) =>
+          checked ? [...prev, addon.id] : prev.filter((id) => id !== addon.id)
+        );
+      },
+    }));
+  }, [activeAddons, selectedAddonIds]);
+
+  const addonsPerPerson = useMemo(() => {
+    return activeAddons
+      .filter((a) => selectedAddonIds.includes(a.id))
+      .reduce((sum, a) => sum + (Number(a.priceUSD) || 0), 0);
+  }, [activeAddons, selectedAddonIds]);
+
   // Price calculations
   const applicablePricing = useMemo(() => {
     if (!trek) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
     return calculateApplicablePrice(trek, calculatorTravelers);
   }, [trek, calculatorTravelers]);
 
-  const perPersonCalculated = applicablePricing.pricePerPerson;
-  const totalPrice = applicablePricing.totalPrice;
+  const perPersonCalculated = applicablePricing.pricePerPerson + addonsPerPerson;
+  const totalPrice = perPersonCalculated * calculatorTravelers;
 
   if (loading) {
     return <PackageDetailSkeleton />;
@@ -406,9 +433,9 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             )}
 
             {/* SECTION: ADD-ONS */}
-            {hasRichText(trek.addonsText) && (
+            {((trek.addons && trek.addons.length > 0) || hasRichText(trek.addonsText)) && (
               <section id="addons" className="scroll-mt-24">
-                <PackageAddons addonsText={trek.addonsText} />
+                <PackageAddons addons={trek.addons} addonsText={trek.addonsText} />
               </section>
             )}
 
@@ -466,6 +493,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               durationDays={trek.durationDays}
               travelers={calculatorTravelers}
               onTravelersChange={setCalculatorTravelers}
+              addons={bookingAddons}
               totalPrice={totalPrice}
               onBookClick={() => setIsBookingModalOpen(true)}
               bookButtonLabel="Book Trek"
@@ -511,8 +539,10 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
           categoryType: BookingPackageType.TREKKING,
           groupPricingEnabled: trek.groupPricingEnabled,
           groupPricing: trek.groupPricing,
+          addons: trek.addons,
         }}
         initialTravelers={calculatorTravelers}
+        initialSelectedAddonIds={selectedAddonIds}
         initialDate={selectedDeparture?.startDate}
       />
     </div>

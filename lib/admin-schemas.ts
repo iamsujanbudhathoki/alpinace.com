@@ -64,6 +64,14 @@ export const packageFileSchema = z.object({
   uploadedAt: z.string().optional(),
 });
 
+export const packageAddonSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1, "Add-on title is required"),
+  description: z.string().optional(),
+  priceUSD: z.preprocess((val) => Number(val) || 0, z.number().min(0, "Price cannot be negative")),
+  isActive: z.boolean().default(true).optional(),
+});
+
 export const trekSchema = z.object({
   title: z.string().min(1, "Trek title is required"),
   categoryId: z.string().trim().min(1, "Category is required"),
@@ -116,6 +124,7 @@ export const trekSchema = z.object({
     )
     .optional(),
   addonsText: z.string().optional(),
+  addons: z.array(packageAddonSchema).optional(),
   usefulInfoText: z.string().optional(),
   departureDates: z.array(departureDateSchema).optional(),
   galleryImages: z.array(z.string()).optional(),
@@ -194,6 +203,7 @@ export const tourSchema = z.object({
     )
     .optional(),
   addonsText: z.string().optional(),
+  addons: z.array(packageAddonSchema).optional(),
   usefulInfoText: z.string().optional(),
   departureDates: z.array(departureDateSchema).optional(),
   galleryImages: z.array(z.string()).optional(),
@@ -274,6 +284,7 @@ export const expeditionSchema = z.object({
     )
     .optional(),
   addonsText: z.string().optional(),
+  addons: z.array(packageAddonSchema).optional(),
   usefulInfoText: z.string().optional(),
   departureDates: z.array(departureDateSchema).optional(),
   galleryImages: z.array(z.string()).optional(),
@@ -297,6 +308,12 @@ export const expeditionSchema = z.object({
 });
 
 export type ExpeditionFormValues = z.infer<typeof expeditionSchema>;
+
+export const bookingSelectedAddonSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  priceUSD: z.preprocess((val) => Number(val) || 0, z.number().min(0)),
+});
 
 export const bookingSchema = z.object({
   guestName: z.string().min(2, "Guest name must be at least 2 characters"),
@@ -323,6 +340,7 @@ export const bookingSchema = z.object({
   assignedGuide: z.string().optional(),
   permitStatus: z.nativeEnum(BookingPermitStatus),
   specialRequests: z.string().optional(),
+  addons: z.array(bookingSelectedAddonSchema).optional(),
   cfTurnstileToken: z.string().optional(),
 });
 

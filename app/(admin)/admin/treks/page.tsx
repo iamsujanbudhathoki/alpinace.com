@@ -242,16 +242,12 @@ export default function AdminTreksPage() {
         title="Trekking Itineraries"
         description="Manage high-altitude routes, tea-house circuits, permits, and pricing."
       >
-        <Button
-          onClick={() => {
-            setActiveTrek(null);
-            setIsEditing(true);
-            setIsFormOpen(true);
-          }}
-        >
-          <Plus className="w-4 h-4 mr-1.5" />
-          Add New Trek Itinerary
-        </Button>
+        <Link href="/admin/treks/create">
+          <Button>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Add New Trek Itinerary
+          </Button>
+        </Link>
       </AdminPageHeader>
 
       {/* Filter Bar */}
@@ -405,11 +401,7 @@ export default function AdminTreksPage() {
                         />
                         <AdminActionButton
                           variant="edit"
-                          onClick={() => {
-                            setActiveTrek(trk);
-                            setIsEditing(true);
-                            setIsFormOpen(true);
-                          }}
+                          href={`/admin/treks/${trk.id}/edit`}
                           title="Edit Trek"
                         />
                         <AdminActionButton

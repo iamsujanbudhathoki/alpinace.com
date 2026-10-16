@@ -240,16 +240,12 @@ export default function AdminExpeditionsPage() {
         title="Mountaineering Expeditions"
         description="Manage 8000m peaks, 7000m training climbs, climbing permits, and logistical services."
       >
-        <Button
-          onClick={() => {
-            setActiveExp(null);
-            setIsEditing(true);
-            setIsFormOpen(true);
-          }}
-        >
-          <Plus className="w-4 h-4 mr-1.5" />
-          Add New Expedition
-        </Button>
+        <Link href="/admin/expeditions/create">
+          <Button>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Add New Expedition
+          </Button>
+        </Link>
       </AdminPageHeader>
 
       <AdminFilterBar
@@ -388,11 +384,7 @@ export default function AdminExpeditionsPage() {
                         />
                         <AdminActionButton
                           variant="edit"
-                          onClick={() => {
-                            setActiveExp(exp);
-                            setIsEditing(true);
-                            setIsFormOpen(true);
-                          }}
+                          href={`/admin/expeditions/${exp.id}/edit`}
                           title="Edit Expedition"
                         />
                         <AdminActionButton

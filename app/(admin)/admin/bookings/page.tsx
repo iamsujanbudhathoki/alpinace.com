@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Download, Plus, Tag, ExternalLink, Workflow, GitBranch, Loader2, ShieldAlert, Ban } from "lucide-react";
+import { Download, Plus, Tag, ExternalLink, Workflow, GitBranch, Loader2, ShieldAlert, Ban, Sparkles } from "lucide-react";
 import {
   Booking,
   BookingStep,
@@ -608,7 +608,13 @@ export default function AdminBookingsPage() {
                       <div className="text-xs text-slate-600 font-normal">{bkg.groupSize} {bkg.groupSize === 1 ? "Guest" : "Guests"}</div>
                     </AdminTableCell>
                     <AdminTableCell className="font-bold text-slate-900 text-sm">
-                      ${bkg.totalAmountUSD.toLocaleString()} USD
+                      <div>${bkg.totalAmountUSD.toLocaleString()} USD</div>
+                      {bkg.addons && bkg.addons.length > 0 && (
+                        <div className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 mt-0.5 font-sans">
+                          <Sparkles className="w-2.5 h-2.5" />
+                          {bkg.addons.length} {bkg.addons.length === 1 ? "addon" : "addons"}
+                        </div>
+                      )}
                     </AdminTableCell>
                     <AdminTableCell>
                       <AdminInlineSelect

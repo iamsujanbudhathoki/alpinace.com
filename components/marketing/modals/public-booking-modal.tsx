@@ -16,6 +16,8 @@ import {
   BookingPaymentStatus,
   BookingPermitStatus,
   BookingStatus,
+  PackageAddonItem,
+  BookingSelectedAddon,
 } from "@/lib/admin-data";
 import { BookingFormValues } from "@/lib/admin-schemas";
 import { BookingService } from "@/lib/services/admin-service";
@@ -40,9 +42,11 @@ export interface PublicBookingModalProps {
     categoryType?: BookingPackageType;
     groupPricingEnabled?: boolean;
     groupPricing?: GroupPricingTier[];
+    addons?: PackageAddonItem[];
   };
   initialTravelers?: number;
   initialDate?: string;
+  initialSelectedAddonIds?: string[];
 }
 
 export function PublicBookingModal({
@@ -52,8 +56,10 @@ export function PublicBookingModal({
   trip,
   initialTravelers = 2,
   initialDate,
+  initialSelectedAddonIds = [],
 }: PublicBookingModalProps) {
   const [travelers, setTravelers] = useState<number>(initialTravelers);
+  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>(initialSelectedAddonIds);
 
   const defaultStartDate = useMemo(() => {
     const d = new Date();
@@ -83,6 +89,7 @@ export function PublicBookingModal({
     if (isOpen) {
       setTravelers(initialTravelers && initialTravelers >= 1 ? initialTravelers : 2);
       setStartDate(initialDate && initialDate.trim() ? initialDate : defaultStartDate);
+      setSelectedAddonIds(initialSelectedAddonIds || []);
       setGuestName("");
       setGuestEmail("");
       setGuestPhone("");
@@ -95,7 +102,7 @@ export function PublicBookingModal({
       setIsSubmitting(false);
       setShowExitConfirm(false);
     }
-  }, [isOpen, initialTravelers, initialDate, defaultStartDate]);
+  }, [isOpen, initialTravelers, initialDate, initialSelectedAddonIds, defaultStartDate]);
 
   const isDirty = useMemo(() => {
     if (confirmedBooking) return false;
@@ -109,6 +116,13 @@ export function PublicBookingModal({
     if (guestPhone.trim() !== "") return true;
     if (country.trim() !== "") return true;
     if (specialRequests.trim() !== "") return true;
+
+    const initialSet = new Set(initialSelectedAddonIds || []);
+    const currentSet = new Set(selectedAddonIds);
+    if (initialSet.size !== currentSet.size || [...initialSet].some((id) => !currentSet.has(id))) {
+      return true;
+    }
+
     return false;
   }, [
     confirmedBooking,
@@ -122,6 +136,8 @@ export function PublicBookingModal({
     guestPhone,
     country,
     specialRequests,
+    initialSelectedAddonIds,
+    selectedAddonIds,
   ]);
 
   const endDate = useMemo(() => {
@@ -143,8 +159,29 @@ export function PublicBookingModal({
       : 20;
   }, [trip]);
 
+  // Active addons configured on this package
+  const activeAddons = useMemo(() => {
+    return (trip.addons || []).filter((a) => a.isActive !== false && a.title?.trim());
+  }, [trip.addons]);
+
+  const selectedAddonsList = useMemo(() => {
+    return activeAddons.filter((a) => selectedAddonIds.includes(a.id));
+  }, [activeAddons, selectedAddonIds]);
+
+  const addonsPerPersonUSD = useMemo(() => {
+    return selectedAddonsList.reduce(
+      (sum, a) => sum + (Number(a.priceUSD) || 0),
+      0
+    );
+  }, [selectedAddonsList]);
+
+  const addonsTotalUSD = useMemo(() => {
+    return addonsPerPersonUSD * travelers;
+  }, [addonsPerPersonUSD, travelers]);
+
   const unitCostPerPerson = pricingResult.pricePerPerson;
-  const totalPriceUSD = pricingResult.totalPrice;
+  const baseTripTotalUSD = pricingResult.totalPrice;
+  const totalPriceUSD = baseTripTotalUSD + addonsTotalUSD;
 
   const depositUSD = useMemo(() => {
     return Math.round(totalPriceUSD * 0.25);
@@ -152,6 +189,7 @@ export function PublicBookingModal({
 
   const forceClose = useCallback(() => {
     setShowExitConfirm(false);
+    setSelectedAddonIds(initialSelectedAddonIds || []);
     setGuestName("");
     setGuestEmail("");
     setGuestPhone("");
@@ -163,7 +201,7 @@ export function PublicBookingModal({
     setFormErrors({});
     setIsSubmitting(false);
     onClose();
-  }, [onClose]);
+  }, [initialSelectedAddonIds, onClose]);
 
   const requestClose = useCallback(() => {
     if (confirmedBooking || !isDirty) {
@@ -205,7 +243,7 @@ export function PublicBookingModal({
 
     setIsSubmitting(true);
     try {
-      const payload: BookingFormValues & { cfTurnstileToken?: string } = {
+      const payload: BookingFormValues & { cfTurnstileToken?: string; addons?: BookingSelectedAddon[] } = {
         guestName: guestName.trim(),
         guestEmail: guestEmail.trim(),
         guestPhone: guestPhone.trim(),
@@ -221,6 +259,11 @@ export function PublicBookingModal({
         paymentStatus: BookingPaymentStatus.PENDING,
         permitStatus: BookingPermitStatus.PROCESSING,
         specialRequests: specialRequests.trim(),
+        addons: selectedAddonsList.map((a) => ({
+          id: a.id,
+          title: a.title,
+          priceUSD: Number(a.priceUSD) || 0,
+        })),
         cfTurnstileToken: turnstileToken,
       };
 
@@ -337,6 +380,21 @@ export function PublicBookingModal({
                     {confirmedBooking.groupSize} {confirmedBooking.groupSize === 1 ? "Traveler" : "Travelers"}
                   </span>
                 </div>
+                {confirmedBooking.addons && confirmedBooking.addons.length > 0 && (
+                  <div className="border-t border-stone-200 pt-2 space-y-1">
+                    <span className="text-stone-500 block font-medium">Selected Add-ons:</span>
+                    <div className="space-y-1 pl-1">
+                      {confirmedBooking.addons.map((a) => (
+                        <div key={a.id} className="flex items-center justify-between text-stone-800">
+                          <span>• {a.title}</span>
+                          <span className="font-semibold text-stone-900">
+                            +${(Number(a.priceUSD || 0) * (confirmedBooking.groupSize || travelers)).toLocaleString()} USD
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center justify-between border-t border-stone-200 pt-2 font-bold text-stone-900">
                   <span>Estimated Total</span>
                   <span className="text-sm font-bold text-stone-900">
@@ -553,6 +611,61 @@ export function PublicBookingModal({
                 />
               </div>
 
+              {/* Optional Add-ons & Upgrades */}
+              {activeAddons.length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-stone-100">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-semibold text-stone-800">
+                      Optional Add-ons &amp; Upgrades
+                    </label>
+                    <span className="text-[11px] text-stone-500 font-medium">Per person</span>
+                  </div>
+                  <div className="space-y-2">
+                    {activeAddons.map((addon) => {
+                      const isChecked = selectedAddonIds.includes(addon.id);
+                      return (
+                        <label
+                          key={addon.id}
+                          className={`flex items-start justify-between gap-3 p-3 rounded-md border text-xs cursor-pointer transition-all ${
+                            isChecked
+                              ? "bg-stone-50 border-stone-800 shadow-2xs"
+                              : "bg-white border-stone-200 hover:border-stone-300"
+                          }`}
+                        >
+                          <div className="flex items-start gap-2.5 min-w-0 pr-2">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                setSelectedAddonIds((prev) =>
+                                  e.target.checked
+                                    ? [...prev, addon.id]
+                                    : prev.filter((id) => id !== addon.id)
+                                );
+                              }}
+                              className="w-4 h-4 mt-0.5 accent-stone-900 rounded cursor-pointer shrink-0"
+                            />
+                            <div className="space-y-0.5">
+                              <span className="font-semibold text-stone-900 block leading-tight">
+                                {addon.title}
+                              </span>
+                              {addon.description && (
+                                <span className="text-stone-500 text-[11px] block leading-snug">
+                                  {addon.description}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <span className="font-bold text-stone-900 shrink-0 text-xs whitespace-nowrap">
+                            +${Number(addon.priceUSD || 0).toLocaleString()} USD
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Price Summary */}
               <div className="bg-stone-50 border border-stone-200 rounded-md p-4 space-y-2 text-xs">
                 <div className="flex items-center justify-between text-stone-600 font-medium">
@@ -564,8 +677,18 @@ export function PublicBookingModal({
                       </span>
                     )}
                   </div>
-                  <span className="text-stone-900 font-semibold">US${totalPriceUSD.toLocaleString()}</span>
+                  <span className="text-stone-900 font-semibold">US${baseTripTotalUSD.toLocaleString()}</span>
                 </div>
+
+                {addonsTotalUSD > 0 && (
+                  <div className="flex items-center justify-between text-stone-600 font-medium">
+                    <span>
+                      Add-ons ({travelers} {travelers === 1 ? "traveler" : "travelers"} × US${addonsPerPersonUSD.toLocaleString()} / person)
+                    </span>
+                    <span className="text-stone-900 font-semibold">+US${addonsTotalUSD.toLocaleString()}</span>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between border-t border-stone-200 pt-2 text-sm font-bold text-stone-900">
                   <span>Estimated Total</span>
                   <span className="text-stone-900 font-bold">US${totalPriceUSD.toLocaleString()}</span>

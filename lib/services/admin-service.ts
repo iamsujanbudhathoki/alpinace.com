@@ -763,6 +763,16 @@ export const TrekService = {
     }
   },
 
+  async getById(id: string): Promise<TrekItem | null> {
+    try {
+      const res = await apiClient.get<any>(`/admin/treks/${id}`);
+      return res?.data ? formatBackendTrek(res.data) : null;
+    } catch (e) {
+      console.warn("Backend trek by id fetch error:", e);
+      return null;
+    }
+  },
+
   async create(data: TrekFormValues): Promise<ApiResponse<TrekItem>> {
     const payload = cleanPackagePayload(data);
     const res = await apiClient.post<any>("/admin/treks", payload);
@@ -825,6 +835,16 @@ export const TourService = {
     }
   },
 
+  async getById(id: string): Promise<PackageItem | null> {
+    try {
+      const res = await apiClient.get<any>(`/admin/tours/${id}`);
+      return res?.data ? formatBackendPackage(res.data) : null;
+    } catch (e) {
+      console.warn("Backend tour by id fetch error:", e);
+      return null;
+    }
+  },
+
   async create(data: TourFormValues): Promise<ApiResponse<PackageItem>> {
     const payload = cleanPackagePayload(data);
     const res = await apiClient.post<any>("/admin/tours", payload);
@@ -883,6 +903,16 @@ export const ExpeditionService = {
       return res?.data ? formatBackendPackage(res.data) : null;
     } catch (e) {
       console.warn("Backend expedition by slug fetch error:", e);
+      return null;
+    }
+  },
+
+  async getById(id: string): Promise<PackageItem | null> {
+    try {
+      const res = await apiClient.get<any>(`/admin/expeditions/${id}`);
+      return res?.data ? formatBackendPackage(res.data) : null;
+    } catch (e) {
+      console.warn("Backend expedition by id fetch error:", e);
       return null;
     }
   },

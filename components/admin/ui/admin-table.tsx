@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Eye, Edit, Trash2, SearchX, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
@@ -244,7 +245,8 @@ export function AdminTableLoading({
 interface AdminActionButtonProps {
   icon?: React.ReactNode;
   label?: string;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
+  href?: string;
   title?: string;
   variant?: "view" | "edit" | "delete" | "default";
   className?: string;
@@ -254,6 +256,7 @@ export function AdminActionButton({
   icon,
   label,
   onClick,
+  href,
   title,
   variant = "default",
   className = "",
@@ -270,6 +273,26 @@ export function AdminActionButton({
   } else if (variant === "delete") {
     styleClass = "text-rose-600 hover:text-rose-700 hover:bg-rose-50 font-semibold";
     if (!defaultIcon) defaultIcon = <Trash2 className="w-3.5 h-3.5" />;
+  }
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        onClick={onClick}
+        title={title || label}
+        className={cn(
+          "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50",
+          label ? "h-7 px-2 text-xs" : "h-7 w-7 p-0",
+          "cursor-pointer transition-colors rounded-md",
+          styleClass,
+          className
+        )}
+      >
+        {defaultIcon}
+        {label && <span className="ml-1">{label}</span>}
+      </Link>
+    );
   }
 
   return (

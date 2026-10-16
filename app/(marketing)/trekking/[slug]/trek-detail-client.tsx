@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   Mountain,
   Compass,
@@ -20,7 +20,7 @@ import { calculateApplicablePrice, getLowestGroupPrice } from "@/lib/pricing-uti
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
-import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
+
 import {
   PackageDetailHero,
   PackageHighlightsGrid,
@@ -56,8 +56,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
 
   const { setDetailNav } = useDetailNav();
 
-  // Booking & Inquiry submission states
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const router = useRouter();
   const [isBooked, setIsBooked] = useState(false);
   const [isInquired, setIsInquired] = useState(false);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
@@ -241,14 +240,14 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
       activeTab,
       onTabChange: handleTabChange,
       priceUSD: trek.priceUSD,
-      onBookClick: isBooked ? undefined : () => setIsBookingModalOpen(true),
-      bookButtonLabel: isBooked ? "Booking Submitted" : "Book Trek",
+      onBookClick: () => navigateToBooking(),
+      bookButtonLabel: "Book Trek",
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [trek, availableTabs, activeTab, isBooked, setDetailNav]);
+  }, [trek, availableTabs, activeTab, setDetailNav, calculatorTravelers, selectedDeparture, selectedAddonIds]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -336,9 +335,27 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     notFound();
   }
 
+  const navigateToBooking = (departureDate?: string) => {
+    if (!trek) return;
+    const params = new URLSearchParams();
+    params.set("type", "trekking");
+    params.set("slug", trek.slug);
+    if (calculatorTravelers) {
+      params.set("travelers", String(calculatorTravelers));
+    }
+    const dateToUse = departureDate || selectedDeparture?.startDate;
+    if (dateToUse) {
+      params.set("date", dateToUse);
+    }
+    if (selectedAddonIds.length > 0) {
+      params.set("addons", selectedAddonIds.join(","));
+    }
+    router.push(`/book?${params.toString()}`);
+  };
+
   const handleBookDeparture = (dateSlot: TripDepartureDate) => {
     setSelectedDeparture(dateSlot);
-    setIsBookingModalOpen(true);
+    navigateToBooking(dateSlot.startDate);
   };
 
   return (
@@ -360,7 +377,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             : "Starting Price"
         }
         bookButtonLabel="Book Trek"
-        onBookClick={() => setIsBookingModalOpen(true)}
+        onBookClick={() => navigateToBooking()}
         isBooked={isBooked}
         isInquired={isInquired}
         badges={[
@@ -495,7 +512,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               onTravelersChange={setCalculatorTravelers}
               addons={bookingAddons}
               totalPrice={totalPrice}
-              onBookClick={() => setIsBookingModalOpen(true)}
+              onBookClick={() => navigateToBooking()}
               bookButtonLabel="Book Trek"
               packageType={InquiryType.TREKKING}
               isBooked={isBooked}
@@ -521,30 +538,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         />
       )}
 
-      {/* 6. BOOKING MODAL */}
-      <PublicBookingModal
-        isOpen={isBookingModalOpen}
-        onClose={() => setIsBookingModalOpen(false)}
-        onSuccess={() => setIsBooked(true)}
-        trip={{
-          id: trek.id,
-          title: trek.title,
-          slug: trek.slug,
-          region: trek.region,
-          durationDays: trek.durationDays,
-          maxAltitudeMeters: trek.maxAltitudeMeters,
-          difficulty: trek.difficulty,
-          priceUSD: trek.priceUSD,
-          image: trek.image,
-          categoryType: BookingPackageType.TREKKING,
-          groupPricingEnabled: trek.groupPricingEnabled,
-          groupPricing: trek.groupPricing,
-          addons: trek.addons,
-        }}
-        initialTravelers={calculatorTravelers}
-        initialSelectedAddonIds={selectedAddonIds}
-        initialDate={selectedDeparture?.startDate}
-      />
     </div>
   );
 }

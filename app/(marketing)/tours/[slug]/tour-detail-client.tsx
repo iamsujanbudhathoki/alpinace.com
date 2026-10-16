@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   BedDouble,
   Calendar,
@@ -15,7 +15,7 @@ import { calculateApplicablePrice, getLowestGroupPrice } from "@/lib/pricing-uti
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
-import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
+
 import {
   PackageBookingSidebar,
   PackageDetailHero,
@@ -46,7 +46,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
   const [tour, setTour] = useState<TourItem | any | null>(initialTour);
   const [loading, setLoading] = useState(!initialTour);
   const [relatedTours, setRelatedTours] = useState<TourItem[]>([]);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const router = useRouter();
   const [isBooked, setIsBooked] = useState(false);
   const [isInquired, setIsInquired] = useState(false);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
@@ -257,14 +257,14 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       activeTab,
       onTabChange: handleTabChange,
       priceUSD: tour.priceUSD,
-      onBookClick: isBooked ? undefined : () => setIsBookingModalOpen(true),
-      bookButtonLabel: isBooked ? "Booking Submitted" : "Reserve Private Tour",
+      onBookClick: () => navigateToBooking(),
+      bookButtonLabel: "Reserve Private Tour",
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [tour, availableTabs, activeTab, isBooked, setDetailNav]);
+  }, [tour, availableTabs, activeTab, setDetailNav, calculatorTravelers, selectedDeparture, selectedAddonIds]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -317,9 +317,27 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     return notFound();
   }
 
+  const navigateToBooking = (departureDate?: string) => {
+    if (!tour) return;
+    const params = new URLSearchParams();
+    params.set("type", "tour");
+    params.set("slug", tour.slug);
+    if (calculatorTravelers) {
+      params.set("travelers", String(calculatorTravelers));
+    }
+    const dateToUse = departureDate || selectedDeparture?.startDate;
+    if (dateToUse) {
+      params.set("date", dateToUse);
+    }
+    if (selectedAddonIds.length > 0) {
+      params.set("addons", selectedAddonIds.join(","));
+    }
+    router.push(`/book?${params.toString()}`);
+  };
+
   const handleBookDeparture = (dateSlot: TripDepartureDate) => {
     setSelectedDeparture(dateSlot);
-    setIsBookingModalOpen(true);
+    navigateToBooking(dateSlot.startDate);
   };
 
   return (
@@ -341,7 +359,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             : "Starting Price"
         }
         bookButtonLabel="Book Tour"
-        onBookClick={() => setIsBookingModalOpen(true)}
+        onBookClick={() => navigateToBooking()}
         isBooked={isBooked}
         isInquired={isInquired}
         badges={[
@@ -476,7 +494,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               onTravelersChange={setCalculatorTravelers}
               addons={bookingAddons}
               totalPrice={totalPrice}
-              onBookClick={() => setIsBookingModalOpen(true)}
+              onBookClick={() => navigateToBooking()}
               bookButtonLabel="Reserve Private Tour"
               packageType={InquiryType.TOUR}
               isBooked={isBooked}
@@ -515,30 +533,6 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       )}
 
 
-      {/* 6. BOOKING MODAL */}
-      <PublicBookingModal
-        isOpen={isBookingModalOpen}
-        onClose={() => setIsBookingModalOpen(false)}
-        onSuccess={() => setIsBooked(true)}
-        trip={{
-          id: tour.id,
-          title: tour.title,
-          slug: tour.slug,
-          region: tour.region,
-          durationDays: tour.durationDays,
-          maxAltitudeMeters: tour.maxAltitudeMeters || 1400,
-          difficulty: tour.difficulty || "Easy",
-          priceUSD: tour.priceUSD,
-          image: tour.image,
-          categoryType: BookingPackageType.TOUR,
-          groupPricingEnabled: tour.groupPricingEnabled,
-          groupPricing: tour.groupPricing,
-          addons: tour.addons,
-        }}
-        initialTravelers={calculatorTravelers}
-        initialSelectedAddonIds={selectedAddonIds}
-        initialDate={selectedDeparture?.startDate}
-      />
     </div>
   );
 }

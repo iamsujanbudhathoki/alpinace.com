@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   Calendar,
   Mountain,
@@ -26,7 +26,7 @@ import { calculateApplicablePrice, getLowestGroupPrice } from "@/lib/pricing-uti
 import { Testimonial } from "@/lib/home-data";
 import { useDetailNav } from "@/lib/detail-nav-context";
 import { PackageDetailSkeleton } from "@/components/marketing/skeletons/package-detail-skeleton";
-import { PublicBookingModal } from "@/components/marketing/modals/public-booking-modal";
+
 import {
   PackageDetailHero,
   PackageHighlightsGrid,
@@ -61,7 +61,7 @@ export function ExpeditionDetailClient({
     initialExpedition,
   );
   const [loading, setLoading] = useState(!initialExpedition);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const router = useRouter();
   const [isBooked, setIsBooked] = useState(false);
   const [isInquired, setIsInquired] = useState(false);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
@@ -286,14 +286,14 @@ export function ExpeditionDetailClient({
       activeTab,
       onTabChange: handleTabChange,
       priceUSD: expedition.priceUSD,
-      onBookClick: isBooked ? undefined : () => setIsBookingModalOpen(true),
-      bookButtonLabel: isBooked ? "Booking Submitted" : "Apply for Expedition",
+      onBookClick: () => navigateToBooking(),
+      bookButtonLabel: "Apply for Expedition",
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [expedition, availableTabs, activeTab, isBooked, setDetailNav]);
+  }, [expedition, availableTabs, activeTab, setDetailNav, calculatorClimbers, selectedDeparture, selectedAddonIds]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -346,9 +346,27 @@ export function ExpeditionDetailClient({
     return notFound();
   }
 
+  const navigateToBooking = (departureDate?: string) => {
+    if (!expedition) return;
+    const params = new URLSearchParams();
+    params.set("type", "expedition");
+    params.set("slug", expedition.slug);
+    if (calculatorClimbers) {
+      params.set("travelers", String(calculatorClimbers));
+    }
+    const dateToUse = departureDate || selectedDeparture?.startDate;
+    if (dateToUse) {
+      params.set("date", dateToUse);
+    }
+    if (selectedAddonIds.length > 0) {
+      params.set("addons", selectedAddonIds.join(","));
+    }
+    router.push(`/book?${params.toString()}`);
+  };
+
   const handleBookDeparture = (dateSlot: TripDepartureDate) => {
     setSelectedDeparture(dateSlot);
-    setIsBookingModalOpen(true);
+    navigateToBooking(dateSlot.startDate);
   };
 
   const peakMeters = expedition.peakHeightM || expedition.maxAltitudeMeters || 8000;
@@ -372,7 +390,7 @@ export function ExpeditionDetailClient({
             : "Starting Price"
         }
         bookButtonLabel="Book Expedition"
-        onBookClick={() => setIsBookingModalOpen(true)}
+        onBookClick={() => navigateToBooking()}
         isBooked={isBooked}
         isInquired={isInquired}
         badges={[
@@ -507,7 +525,7 @@ export function ExpeditionDetailClient({
               onTravelersChange={setCalculatorClimbers}
               addons={bookingAddons}
               totalPrice={totalPrice}
-              onBookClick={() => setIsBookingModalOpen(true)}
+              onBookClick={() => navigateToBooking()}
               bookButtonLabel="Apply for Expedition"
               packageType={InquiryType.EXPEDITION}
               isBooked={isBooked}
@@ -546,30 +564,6 @@ export function ExpeditionDetailClient({
       )}
 
 
-      {/* 6. BOOKING MODAL */}
-      <PublicBookingModal
-        isOpen={isBookingModalOpen}
-        onClose={() => setIsBookingModalOpen(false)}
-        onSuccess={() => setIsBooked(true)}
-        trip={{
-          id: expedition.id,
-          title: expedition.title,
-          slug: expedition.slug,
-          region: expedition.region,
-          durationDays: expedition.durationDays,
-          maxAltitudeMeters: expedition.peakHeightM || expedition.maxAltitudeMeters || 8000,
-          difficulty: expedition.difficulty || "Extreme",
-          priceUSD: expedition.priceUSD,
-          image: expedition.image,
-          categoryType: BookingPackageType.EXPEDITION,
-          groupPricingEnabled: expedition.groupPricingEnabled,
-          groupPricing: expedition.groupPricing,
-          addons: expedition.addons,
-        }}
-        initialTravelers={calculatorClimbers}
-        initialSelectedAddonIds={selectedAddonIds}
-        initialDate={selectedDeparture?.startDate}
-      />
     </div>
   );
 }

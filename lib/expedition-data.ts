@@ -1,4 +1,4 @@
-import { ClimbingGrade, PackageRegion, PackageStatus, TripDifficulty, TripDepartureDate, TripPackageFile, GroupPricingTier } from "./admin-data";
+import { ClimbingGrade, PackageRegion, PackageStatus, TripDifficulty, TripDepartureDate, TripPackageFile, GroupPricingTier, PackageAddonItem } from "./admin-data";
 import { TripFaqItem, TripItineraryDay, TripReviewItem } from "./trek-data";
 
 export { ClimbingGrade };
@@ -30,6 +30,7 @@ export interface ExpeditionItem {
   inclusionsText?: string;
   exclusionsText?: string;
   addonsText?: string;
+  addons?: PackageAddonItem[];
   usefulInfoText?: string;
   departureDates?: TripDepartureDate[];
   galleryImages?: string[];

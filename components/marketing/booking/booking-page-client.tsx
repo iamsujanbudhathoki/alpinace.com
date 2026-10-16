@@ -73,18 +73,28 @@ export interface BookingTripDetails {
   departureDates?: TripDepartureDate[];
 }
 
-export function BookingPageClient() {
+export interface BookingPageClientProps {
+  initialSlug?: string;
+  initialType?: BookingPackageType | "trekking" | "tour" | "expedition";
+  initialTrip?: BookingTripDetails | null;
+}
+
+export function BookingPageClient({
+  initialSlug,
+  initialType,
+  initialTrip,
+}: BookingPageClientProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const queryType = searchParams.get("type") || "trekking";
-  const querySlug = searchParams.get("slug") || "";
+  const queryType = (initialType || searchParams.get("type") || "trekking") as string;
+  const querySlug = initialSlug || searchParams.get("slug") || "";
   const queryTravelers = Number(searchParams.get("travelers")) || 2;
   const queryDate = searchParams.get("date") || "";
   const queryAddons = searchParams.get("addons") || "";
 
-  const [loadingTrip, setLoadingTrip] = useState<boolean>(Boolean(querySlug));
-  const [trip, setTrip] = useState<BookingTripDetails | null>(null);
+  const [loadingTrip, setLoadingTrip] = useState<boolean>(!initialTrip && Boolean(querySlug));
+  const [trip, setTrip] = useState<BookingTripDetails | null>(initialTrip || null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   // Available packages for switching/fallback selection
@@ -117,6 +127,12 @@ export function BookingPageClient() {
 
   // Fetch package based on slug and type
   useEffect(() => {
+    if (initialTrip) {
+      setTrip(initialTrip);
+      setLoadingTrip(false);
+      return;
+    }
+
     let isMounted = true;
 
     async function loadTargetTrip() {

@@ -349,8 +349,6 @@ export function ExpeditionDetailClient({
   const navigateToBooking = (departureDate?: string) => {
     if (!expedition) return;
     const params = new URLSearchParams();
-    params.set("type", "expedition");
-    params.set("slug", expedition.slug);
     if (calculatorClimbers) {
       params.set("travelers", String(calculatorClimbers));
     }
@@ -361,7 +359,8 @@ export function ExpeditionDetailClient({
     if (selectedAddonIds.length > 0) {
       params.set("addons", selectedAddonIds.join(","));
     }
-    router.push(`/book?${params.toString()}`);
+    const queryString = params.toString() ? `?${params.toString()}` : "";
+    router.push(`/expeditions/${expedition.slug}/booking${queryString}`);
   };
 
   const handleBookDeparture = (dateSlot: TripDepartureDate) => {

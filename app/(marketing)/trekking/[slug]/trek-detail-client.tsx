@@ -338,8 +338,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
   const navigateToBooking = (departureDate?: string) => {
     if (!trek) return;
     const params = new URLSearchParams();
-    params.set("type", "trekking");
-    params.set("slug", trek.slug);
     if (calculatorTravelers) {
       params.set("travelers", String(calculatorTravelers));
     }
@@ -350,7 +348,8 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     if (selectedAddonIds.length > 0) {
       params.set("addons", selectedAddonIds.join(","));
     }
-    router.push(`/book?${params.toString()}`);
+    const queryString = params.toString() ? `?${params.toString()}` : "";
+    router.push(`/trekking/${trek.slug}/booking${queryString}`);
   };
 
   const handleBookDeparture = (dateSlot: TripDepartureDate) => {

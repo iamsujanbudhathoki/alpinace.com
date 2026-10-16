@@ -320,8 +320,6 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
   const navigateToBooking = (departureDate?: string) => {
     if (!tour) return;
     const params = new URLSearchParams();
-    params.set("type", "tour");
-    params.set("slug", tour.slug);
     if (calculatorTravelers) {
       params.set("travelers", String(calculatorTravelers));
     }
@@ -332,7 +330,8 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     if (selectedAddonIds.length > 0) {
       params.set("addons", selectedAddonIds.join(","));
     }
-    router.push(`/book?${params.toString()}`);
+    const queryString = params.toString() ? `?${params.toString()}` : "";
+    router.push(`/tours/${tour.slug}/booking${queryString}`);
   };
 
   const handleBookDeparture = (dateSlot: TripDepartureDate) => {

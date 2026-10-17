@@ -109,6 +109,7 @@ export function BookingPageClient({
   // Form State
   const [travelers, setTravelers] = useState<number>(queryTravelers > 0 ? queryTravelers : 2);
   const [startDate, setStartDate] = useState<string>(queryDate);
+  const [isGroupPricingOpen, setIsGroupPricingOpen] = useState(true);
 
   // Add-on quantities map: addonId -> quantity (0 = not selected)
   const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>(() => {
@@ -256,6 +257,17 @@ export function BookingPageClient({
     if (!trip) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
     return calculateApplicablePrice(trip, travelers);
   }, [trip, travelers]);
+
+  const hasGroupPricing = Boolean(
+    trip?.groupPricingEnabled && trip?.groupPricing && trip.groupPricing.length > 0
+  );
+
+  const sortedTiers = useMemo(() => {
+    if (!hasGroupPricing || !trip?.groupPricing) return null;
+    return [...trip.groupPricing].sort(
+      (a, b) => Number(a.minTravelers) - Number(b.minTravelers)
+    );
+  }, [hasGroupPricing, trip]);
 
   const maxAllowedTravelers = useMemo(() => {
     if (!trip) return 20;
@@ -743,6 +755,97 @@ export function BookingPageClient({
                       </h3>
                     </div>
                   </div>
+
+                  {/* Collapsible Group Pricing Section (identically styled as details page) */}
+                  {hasGroupPricing && sortedTiers && sortedTiers.length > 0 && (
+                    <div className="border border-stone-200 rounded-md overflow-hidden bg-white shadow-2xs">
+                      <button
+                        type="button"
+                        onClick={() => setIsGroupPricingOpen(!isGroupPricingOpen)}
+                        aria-expanded={isGroupPricingOpen}
+                        className="w-full flex items-center justify-between px-3.5 py-2.5 text-left font-semibold text-stone-900 text-xs sm:text-sm hover:bg-stone-50 transition-colors cursor-pointer"
+                      >
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
+                          <span className="font-heading font-semibold text-stone-900 text-xs sm:text-sm">
+                            We offer group price
+                          </span>
+                        </div>
+                        <span className="text-stone-500 flex items-center justify-center">
+                          {isGroupPricingOpen ? (
+                            <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
+                          ) : (
+                            <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
+                          )}
+                        </span>
+                      </button>
+
+                      {isGroupPricingOpen && (
+                        <div className="border-t border-stone-200 divide-y divide-stone-100">
+                          {sortedTiers.map((tier, idx) => {
+                            const isApplicable =
+                              travelers >= Number(tier.minTravelers) &&
+                              travelers <= Number(tier.maxTravelers);
+                            const paxText =
+                              Number(tier.minTravelers) === Number(tier.maxTravelers)
+                                ? `${tier.minTravelers} pax`
+                                : `${tier.minTravelers} - ${tier.maxTravelers} pax`;
+
+                            return (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setTravelers(Number(tier.minTravelers))}
+                                className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs transition-all cursor-pointer text-left ${
+                                  isApplicable
+                                    ? "bg-emerald-50/90 text-stone-950 border-l-[3px] border-emerald-600 pl-3 font-semibold shadow-2xs"
+                                    : "text-stone-700 hover:bg-stone-50/80 border-l-[3px] border-transparent pl-3"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span
+                                    className={
+                                      isApplicable
+                                        ? "text-stone-950 font-bold"
+                                        : "text-stone-700 font-normal"
+                                    }
+                                  >
+                                    {paxText}
+                                  </span>
+                                  {isApplicable && (
+                                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 bg-emerald-100/90 border border-emerald-300/60 px-2 py-0.5 rounded-sm shrink-0">
+                                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                                      Active
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="flex items-baseline gap-1 text-right shrink-0">
+                                  <span
+                                    className={`text-sm ${
+                                      isApplicable
+                                        ? "text-emerald-950 font-bold"
+                                        : "text-stone-900 font-medium"
+                                    }`}
+                                  >
+                                    US${Number(tier.pricePerPerson).toLocaleString()}
+                                  </span>
+                                  <span
+                                    className={`text-xs ${
+                                      isApplicable
+                                        ? "text-emerald-800 font-medium"
+                                        : "text-stone-500 font-normal"
+                                    }`}
+                                  >
+                                    / person
+                                  </span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Departure Date */}

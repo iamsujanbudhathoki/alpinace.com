@@ -4,6 +4,8 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { navLinks } from "@/lib/site-config";
+import { useSettings } from "@/lib/settings-context";
 import {
   Calendar,
   Users,
@@ -86,6 +88,7 @@ export function BookingPageClient({
 }: BookingPageClientProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { settings } = useSettings();
 
   const queryType = (initialType || searchParams.get("type") || "trekking") as string;
   const querySlug = initialSlug || searchParams.get("slug") || "";
@@ -422,16 +425,16 @@ export function BookingPageClient({
   // 1. CONFIRMATION RECEIPT VIEW
   if (confirmedBooking) {
     return (
-      <div className="min-h-screen bg-stone-50/70 pt-28 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-[#fafaf8] py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
           {/* Header Card */}
           <div className="bg-white rounded-md border border-stone-200 p-6 sm:p-8 text-center shadow-xs space-y-3">
-            <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center mx-auto shadow-2xs">
-              <CheckCircle2 className="w-8 h-8" strokeWidth={2} />
+            <div className="w-14 h-14 rounded-full bg-stone-100 text-stone-900 border border-stone-200 flex items-center justify-center mx-auto shadow-2xs">
+              <CheckCircle2 className="w-8 h-8 text-stone-900" strokeWidth={2} />
             </div>
             <div className="space-y-1">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-3 py-0.5 rounded-xs">
-                <CheckCheck className="w-3.5 h-3.5" /> Reservation Request Received
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-800 bg-stone-100 border border-stone-200 px-3 py-1 rounded-md">
+                <CheckCheck className="w-3.5 h-3.5 text-stone-700" /> Reservation Request Received
               </span>
               <h1 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
                 Thank You, {confirmedBooking.guestName}!
@@ -459,8 +462,8 @@ export function BookingPageClient({
                 <span className="text-xs uppercase font-semibold text-stone-400 block tracking-wider">
                   Status
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-200 bg-emerald-900/80 px-2.5 py-1 rounded-xs border border-emerald-700">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-200 bg-stone-800 px-2.5 py-1 rounded-md border border-stone-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                   Permits In Review
                 </span>
               </div>
@@ -518,7 +521,7 @@ export function BookingPageClient({
               )}
 
               {/* Price summary */}
-              <div className="bg-stone-50 rounded-sm p-4 space-y-2 border border-stone-200">
+              <div className="bg-stone-50 rounded-md p-4 space-y-2 border border-stone-200">
                 <div className="flex items-center justify-between text-stone-600">
                   <span>Total Estimated Trip Value:</span>
                   <span className="text-stone-900 font-bold text-base">
@@ -540,9 +543,9 @@ export function BookingPageClient({
               </div>
 
               {/* Next Steps Road Map */}
-              <div className="bg-stone-50 border border-stone-200 rounded-sm p-4.5 space-y-2.5">
+              <div className="bg-stone-50 border border-stone-200 rounded-md p-4.5 space-y-2.5">
                 <h4 className="font-bold text-stone-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-emerald-700" /> What Happens Next?
+                  <Clock className="w-4 h-4 text-stone-700" /> What Happens Next?
                 </h4>
                 <ol className="list-decimal list-inside space-y-1.5 text-xs text-stone-700 leading-relaxed font-normal">
                   <li>
@@ -562,7 +565,7 @@ export function BookingPageClient({
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-sm border border-stone-300 text-xs font-semibold text-stone-700 hover:bg-stone-50 cursor-pointer transition-colors"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-stone-300 text-xs font-semibold text-stone-700 hover:bg-stone-50 cursor-pointer transition-colors"
                 >
                   <Printer className="w-4 h-4" /> Print / Save Voucher
                 </button>
@@ -570,13 +573,13 @@ export function BookingPageClient({
                 <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
                   <Link
                     href={`/${queryType.toLowerCase().includes("tour") ? "tours" : queryType.toLowerCase().includes("expedition") ? "expeditions" : "trekking"}/${trip?.slug || ""}`}
-                    className="w-full sm:w-auto text-center px-4 py-2.5 rounded-sm bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold transition-colors cursor-pointer"
+                    className="w-full sm:w-auto text-center px-4 py-2.5 rounded-md bg-stone-900 hover:bg-black text-white text-xs font-semibold transition-colors cursor-pointer"
                   >
                     View Trip Itinerary
                   </Link>
                   <Link
                     href="/"
-                    className="w-full sm:w-auto text-center px-4 py-2.5 rounded-sm border border-stone-300 text-xs font-semibold text-stone-700 hover:bg-stone-50 transition-colors"
+                    className="w-full sm:w-auto text-center px-4 py-2.5 rounded-md border border-stone-300 text-xs font-semibold text-stone-700 hover:bg-stone-50 transition-colors"
                   >
                     Back to Home
                   </Link>
@@ -592,8 +595,8 @@ export function BookingPageClient({
   // 2. LOADING STATE
   if (loadingTrip) {
     return (
-      <div className="min-h-[70vh] bg-stone-50/50 flex flex-col items-center justify-center p-6 space-y-3 pt-32">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-700" />
+      <div className="min-h-[70vh] bg-[#fafaf8] flex flex-col items-center justify-center p-6 space-y-3 pt-20">
+        <Loader2 className="w-8 h-8 animate-spin text-stone-800" />
         <p className="text-sm font-medium text-stone-600">
           Loading reservation details for your adventure...
         </p>
@@ -607,35 +610,63 @@ export function BookingPageClient({
     : "/trekking";
 
   return (
-    <div className="min-h-screen bg-stone-50/60 pb-24 lg:pb-32 pt-[74px] sm:pt-[82px] md:pt-[90px]">
-      {/* Top Breadcrumb & Clean Status */}
-      <div className="bg-white border-b border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs text-stone-500 font-medium">
-            <Link
-              href={packageBackHref}
-              className="inline-flex items-center gap-1.5 font-semibold text-stone-700 hover:text-stone-950 transition-colors"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to {trip?.title || "Trip"}</span>
-            </Link>
-            <span>/</span>
-            <span className="text-stone-900 font-semibold">Booking</span>
-          </div>
+    <div className="min-h-screen bg-[#fafaf8] pb-24 lg:pb-32">
+      {/* Dedicated Clean Booking Header */}
+      <header className="bg-white border-b border-stone-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-4">
+          {/* Left: Prominent Back Button */}
+          <Link
+            href={packageBackHref}
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 rounded-md bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-xs sm:text-sm transition-colors cursor-pointer group shrink-0"
+          >
+            <ArrowLeft className="w-4 h-4 text-stone-700 group-hover:-translate-x-0.5 transition-transform shrink-0" />
+            <span className="sm:hidden">Back</span>
+            <span className="hidden sm:inline">Back to {trip?.title || "Trip"}</span>
+          </Link>
 
-          <div className="flex items-center gap-1.5 text-xs text-stone-600 font-medium">
-            <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-            <span>No payment required today</span>
+          {/* Center: Brand Identity */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 cursor-pointer">
+            <Image
+              src={settings.siteLogo || "/logo.jpg"}
+              alt={settings.siteName || "Alpine Ace"}
+              width={36}
+              height={36}
+              className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-md border border-stone-200 bg-white shrink-0"
+            />
+            <span className="font-heading font-bold text-base sm:text-lg text-stone-900 tracking-tight hidden sm:inline">
+              {settings.siteName || "Alpine Ace"}
+            </span>
+          </Link>
+
+          {/* Right: Security & Assistance */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="hidden md:flex items-center gap-1.5 text-xs text-stone-700 font-medium bg-stone-50 border border-stone-200 px-3 py-1.5 rounded-md">
+              <ShieldCheck className="w-4 h-4 text-stone-700 shrink-0" />
+              <span>No payment required today</span>
+            </div>
+            {settings.whatsappNumber && (
+              <a
+                href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 border border-stone-200 px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5"
+              >
+                <span>Help / WhatsApp</span>
+              </a>
+            )}
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10">
         {/* Page Heading */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8 space-y-1">
           <h1 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
             Book {trip?.title || "Your Adventure"}
           </h1>
+          <p className="text-xs sm:text-sm text-stone-500 font-medium">
+            Select your travel dates, party size, and optional add-ons below.
+          </p>
         </div>
 
         {/* Missing Package / Load Error Warning */}
@@ -664,7 +695,7 @@ export function BookingPageClient({
                     const found = allPackages.find((p) => p.slug === e.target.value);
                     if (found) handlePackageSelect(found);
                   }}
-                  className="w-full sm:max-w-md text-xs font-semibold px-3 py-2.5 rounded-sm border border-stone-300 bg-white text-stone-900 focus:outline-hidden focus:border-emerald-700"
+                  className="w-full sm:max-w-md text-xs font-semibold px-3 py-2.5 rounded-md border border-stone-300 bg-white text-stone-900 focus:outline-hidden focus:border-stone-900"
                 >
                   <option value="">-- Choose an Adventure --</option>
                   {allPackages.map((p) => (
@@ -685,23 +716,23 @@ export function BookingPageClient({
             <div className="lg:col-span-7 space-y-6">
               <form onSubmit={handleSubmit} noValidate className="space-y-6">
                 {errorMessage && (
-                  <div className="p-3.5 rounded-sm bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800 flex items-center gap-2">
+                  <div className="p-3.5 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                     <span>{errorMessage}</span>
                   </div>
                 )}
 
                 {pricingResult.error && (
-                  <div className="p-3.5 rounded-sm bg-stone-100 border border-stone-300 text-xs font-semibold text-stone-800">
+                  <div className="p-3.5 rounded-md bg-stone-100 border border-stone-300 text-xs font-semibold text-stone-800">
                     {pricingResult.error}
                   </div>
                 )}
 
                 {/* STEP 1: Dates & Travelers */}
-                <div className="bg-white rounded-sm border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
+                <div className="bg-white rounded-md border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-stone-100">
                     <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-xs bg-emerald-50 text-emerald-800 border border-emerald-200/70 font-bold text-xs flex items-center justify-center font-mono">
+                      <span className="w-6 h-6 rounded-md bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
                         1
                       </span>
                       <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
@@ -725,10 +756,10 @@ export function BookingPageClient({
                           if (formErrors.startDate)
                             setFormErrors((prev) => ({ ...prev, startDate: undefined }));
                         }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
+                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-md border font-medium transition-all focus:outline-hidden ${
                           formErrors.startDate
                             ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-200 hover:border-stone-300 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700/20 bg-white text-stone-900"
+                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
                         }`}
                       />
                       {formErrors.startDate ? (
@@ -755,7 +786,7 @@ export function BookingPageClient({
                             const newCount = Math.max(1, travelers - 1);
                             setTravelers(newCount);
                           }}
-                          className="w-10 h-10 flex items-center justify-center rounded-l-sm border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
+                          className="w-10 h-10 flex items-center justify-center rounded-l-md border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                         >
                           <Minus className="w-4 h-4" strokeWidth={2} />
                         </button>
@@ -769,7 +800,7 @@ export function BookingPageClient({
                             const newCount = Math.min(maxAllowedTravelers, travelers + 1);
                             setTravelers(newCount);
                           }}
-                          className="w-10 h-10 flex items-center justify-center rounded-r-sm border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
+                          className="w-10 h-10 flex items-center justify-center rounded-r-md border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                         >
                           <Plus className="w-4 h-4" strokeWidth={2} />
                         </button>
@@ -789,9 +820,9 @@ export function BookingPageClient({
                             key={d.startDate}
                             type="button"
                             onClick={() => setStartDate(d.startDate)}
-                            className={`px-3 py-1.5 rounded-sm border text-xs font-medium transition-colors cursor-pointer ${
+                            className={`px-3 py-1.5 rounded-md border text-xs font-medium transition-colors cursor-pointer ${
                               startDate === d.startDate
-                                ? "bg-emerald-800 text-white border-emerald-800"
+                                ? "bg-stone-900 text-white border-stone-900"
                                 : "bg-stone-50 text-stone-700 border-stone-200 hover:border-stone-400"
                             }`}
                           >
@@ -804,9 +835,9 @@ export function BookingPageClient({
                 </div>
 
                 {/* STEP 2: Lead Traveler Details */}
-                <div className="bg-white rounded-sm border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
+                <div className="bg-white rounded-md border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
                   <div className="flex items-center gap-2.5 pb-3 border-b border-stone-100">
-                    <span className="w-6 h-6 rounded-xs bg-emerald-50 text-emerald-800 border border-emerald-200/70 font-bold text-xs flex items-center justify-center font-mono">
+                    <span className="w-6 h-6 rounded-md bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
                       2
                     </span>
                     <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
@@ -829,10 +860,10 @@ export function BookingPageClient({
                           if (formErrors.guestName)
                             setFormErrors((prev) => ({ ...prev, guestName: undefined }));
                         }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
+                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-md border font-medium transition-all focus:outline-hidden ${
                           formErrors.guestName
                             ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-200 hover:border-stone-300 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700/20 bg-white text-stone-900"
+                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
                         }`}
                       />
                       {formErrors.guestName && (
@@ -856,10 +887,10 @@ export function BookingPageClient({
                           if (formErrors.guestEmail)
                             setFormErrors((prev) => ({ ...prev, guestEmail: undefined }));
                         }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
+                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-md border font-medium transition-all focus:outline-hidden ${
                           formErrors.guestEmail
                             ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-200 hover:border-stone-300 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700/20 bg-white text-stone-900"
+                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
                         }`}
                       />
                       {formErrors.guestEmail && (
@@ -883,10 +914,10 @@ export function BookingPageClient({
                           if (formErrors.guestPhone)
                             setFormErrors((prev) => ({ ...prev, guestPhone: undefined }));
                         }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
+                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-md border font-medium transition-all focus:outline-hidden ${
                           formErrors.guestPhone
                             ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-200 hover:border-stone-300 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700/20 bg-white text-stone-900"
+                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
                         }`}
                       />
                       {formErrors.guestPhone && (
@@ -908,10 +939,10 @@ export function BookingPageClient({
                           if (formErrors.country)
                             setFormErrors((prev) => ({ ...prev, country: undefined }));
                         }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all cursor-pointer focus:outline-hidden ${
+                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-md border font-medium transition-all cursor-pointer focus:outline-hidden ${
                           formErrors.country
                             ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-200 hover:border-stone-300 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700/20 bg-white text-stone-900"
+                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
                         }`}
                       >
                         <option value="">Select Country...</option>
@@ -932,17 +963,17 @@ export function BookingPageClient({
 
                 {/* STEP 3: Add-ons & Optional Upgrades */}
                 {activeAddons.length > 0 && (
-                  <div className="bg-white rounded-sm border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
+                  <div className="bg-white rounded-md border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
                     <div className="flex items-center justify-between pb-3 border-b border-stone-100">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-6 h-6 rounded-xs bg-emerald-50 text-emerald-800 border border-emerald-200/70 font-bold text-xs flex items-center justify-center font-mono">
+                        <span className="w-6 h-6 rounded-md bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
                           3
                         </span>
                         <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
                           Optional Add-ons
                         </h3>
                       </div>
-                      <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-xs">
+                      <span className="text-xs font-semibold text-stone-900 bg-stone-100 border border-stone-300 px-2.5 py-0.5 rounded-md">
                         {selectedAddonsWithDetails.length} Selected
                       </span>
                     </div>
@@ -956,9 +987,9 @@ export function BookingPageClient({
                         return (
                           <div
                             key={addon.id}
-                            className={`rounded-sm border p-4 sm:p-5 transition-all ${
+                            className={`rounded-md border p-4 sm:p-5 transition-all ${
                               isSelected
-                                ? "bg-emerald-50/25 border-emerald-700/70 shadow-2xs"
+                                ? "bg-stone-50 border-stone-900 shadow-2xs"
                                 : "bg-white border-stone-200 hover:border-stone-300"
                             }`}
                           >
@@ -969,7 +1000,7 @@ export function BookingPageClient({
                                   id={`addon-check-${addon.id}`}
                                   checked={isSelected}
                                   onChange={() => handleToggleAddon(addon.id, travelers)}
-                                  className="w-4 h-4 mt-1 accent-emerald-700 rounded-xs cursor-pointer shrink-0"
+                                  className="w-4 h-4 mt-1 accent-stone-900 rounded-sm cursor-pointer shrink-0"
                                 />
                                 <div className="space-y-1">
                                   <label
@@ -998,14 +1029,14 @@ export function BookingPageClient({
 
                             {/* When Selected: Interactive Quantity / Traveler Selector */}
                             {isSelected && (
-                              <div className="mt-3.5 pt-3.5 border-t border-emerald-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/90 rounded-sm p-3">
+                              <div className="mt-3.5 pt-3.5 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white rounded-md p-3 border border-stone-200">
                                 <div className="flex items-center gap-2.5 flex-wrap">
                                   <span className="text-xs font-semibold text-stone-700">Quantity:</span>
                                   <div className="flex items-center">
                                     <button
                                       type="button"
                                       onClick={() => handleSetAddonQty(addon.id, qty - 1)}
-                                      className="w-7 h-7 rounded-l-sm border border-stone-300 bg-stone-50 hover:bg-stone-100 text-stone-800 flex items-center justify-center cursor-pointer transition-colors"
+                                      className="w-7 h-7 rounded-l-md border border-stone-300 bg-stone-50 hover:bg-stone-100 text-stone-800 flex items-center justify-center cursor-pointer transition-colors"
                                       title="Decrease quantity"
                                     >
                                       <Minus className="w-3.5 h-3.5" />
@@ -1016,7 +1047,7 @@ export function BookingPageClient({
                                     <button
                                       type="button"
                                       onClick={() => handleSetAddonQty(addon.id, qty + 1)}
-                                      className="w-7 h-7 rounded-r-sm border border-stone-300 bg-stone-50 hover:bg-stone-100 text-stone-800 flex items-center justify-center cursor-pointer transition-colors"
+                                      className="w-7 h-7 rounded-r-md border border-stone-300 bg-stone-50 hover:bg-stone-100 text-stone-800 flex items-center justify-center cursor-pointer transition-colors"
                                       title="Increase quantity"
                                     >
                                       <Plus className="w-3.5 h-3.5" />
@@ -1029,9 +1060,9 @@ export function BookingPageClient({
                                       <button
                                         type="button"
                                         onClick={() => handleSetAddonQty(addon.id, 1)}
-                                        className={`text-[11px] px-2.5 py-1 rounded-sm border font-semibold transition-colors cursor-pointer ${
+                                        className={`text-[11px] px-2.5 py-1 rounded-md border font-semibold transition-colors cursor-pointer ${
                                           qty === 1
-                                            ? "bg-emerald-800 text-white border-emerald-800"
+                                            ? "bg-stone-900 text-white border-stone-900"
                                             : "bg-white text-stone-600 border-stone-200 hover:border-stone-400"
                                         }`}
                                       >
@@ -1040,9 +1071,9 @@ export function BookingPageClient({
                                       <button
                                         type="button"
                                         onClick={() => handleSetAddonQty(addon.id, travelers)}
-                                        className={`text-[11px] px-2.5 py-1 rounded-sm border font-semibold transition-colors cursor-pointer ${
+                                        className={`text-[11px] px-2.5 py-1 rounded-md border font-semibold transition-colors cursor-pointer ${
                                           qty === travelers
-                                            ? "bg-emerald-800 text-white border-emerald-800"
+                                            ? "bg-stone-900 text-white border-stone-900"
                                             : "bg-white text-stone-600 border-stone-200 hover:border-stone-400"
                                         }`}
                                       >
@@ -1054,7 +1085,7 @@ export function BookingPageClient({
 
                                 <div className="flex items-baseline justify-between sm:justify-end gap-2 text-xs">
                                   <span className="text-stone-500 font-medium">Add-on Subtotal:</span>
-                                  <span className="font-bold text-emerald-800 text-sm">
+                                  <span className="font-bold text-stone-900 text-sm">
                                     +US${subtotal.toLocaleString()}
                                   </span>
                                 </div>
@@ -1068,9 +1099,9 @@ export function BookingPageClient({
                 )}
 
                 {/* STEP 4: Special Requirements / Notes */}
-                <div className="bg-white rounded-sm border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
+                <div className="bg-white rounded-md border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
                   <div className="flex items-center gap-2.5 pb-3 border-b border-stone-100">
-                    <span className="w-6 h-6 rounded-xs bg-emerald-50 text-emerald-800 border border-emerald-200/70 font-bold text-xs flex items-center justify-center font-mono">
+                    <span className="w-6 h-6 rounded-md bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
                       {activeAddons.length > 0 ? "4" : "3"}
                     </span>
                     <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
@@ -1088,13 +1119,13 @@ export function BookingPageClient({
                       rows={3}
                       value={specialRequests}
                       onChange={(e) => setSpecialRequests(e.target.value)}
-                      className="w-full text-xs sm:text-sm p-3 rounded-sm border border-stone-200 hover:border-stone-300 focus:outline-hidden focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700/20 bg-white text-stone-900 resize-none font-medium transition-all"
+                      className="w-full text-xs sm:text-sm p-3 rounded-md border border-stone-300 hover:border-stone-400 focus:outline-hidden focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900 resize-none font-medium transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Terms & Conditions Checkbox */}
-                <div className="bg-white rounded-sm border border-stone-200 p-4.5 sm:p-5 space-y-2">
+                <div className="bg-white rounded-md border border-stone-200 p-4.5 sm:p-5 space-y-2">
                   <label className="flex items-start gap-3 cursor-pointer text-xs text-stone-700 font-medium select-none">
                     <input
                       type="checkbox"
@@ -1104,7 +1135,7 @@ export function BookingPageClient({
                         if (formErrors.agreedToTerms)
                           setFormErrors((prev) => ({ ...prev, agreedToTerms: undefined }));
                       }}
-                      className="w-4 h-4 mt-0.5 accent-emerald-700 rounded-xs cursor-pointer shrink-0"
+                      className="w-4 h-4 mt-0.5 accent-stone-900 rounded-sm cursor-pointer shrink-0"
                     />
                     <span className="leading-relaxed">
                       I agree to the booking policies and cancellation terms. <strong className="text-stone-900 font-semibold">No payment is required today.</strong> A 25% deposit is payable only after your route allocations and permits are confirmed.
@@ -1118,7 +1149,7 @@ export function BookingPageClient({
                 </div>
 
                 {/* Turnstile Security Widget */}
-                <div className="bg-white rounded-sm border border-stone-200 p-4 flex justify-center">
+                <div className="bg-white rounded-md border border-stone-200 p-4 flex justify-center">
                   <TurnstileWidget
                     ref={turnstileRef}
                     onVerify={(t) => setTurnstileToken(t)}
@@ -1131,7 +1162,7 @@ export function BookingPageClient({
                 <Button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
-                  className="w-full py-3.5 px-6 rounded-sm bg-emerald-700 hover:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+                  className="w-full py-4 px-6 rounded-md bg-stone-900 hover:bg-black text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
@@ -1149,8 +1180,8 @@ export function BookingPageClient({
             </div>
 
             {/* RIGHT COLUMN: Sticky Order & Summary Card (5 Cols) */}
-            <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
-              <div className="bg-white rounded-sm border border-stone-200 shadow-2xs overflow-hidden">
+            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
+              <div className="bg-white rounded-md border border-stone-200 shadow-2xs overflow-hidden">
                 {/* Trip Photo Preview */}
                 {trip.image && (
                   <div className="relative h-44 sm:h-52 w-full bg-stone-100 overflow-hidden">
@@ -1161,7 +1192,7 @@ export function BookingPageClient({
                       className="object-cover"
                       priority
                     />
-                    <div className="absolute top-3 left-3 bg-stone-900/90 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs backdrop-blur-xs">
+                    <div className="absolute top-3 left-3 bg-stone-900/90 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-sm backdrop-blur-xs">
                       {trip.region}
                     </div>
                   </div>
@@ -1171,7 +1202,7 @@ export function BookingPageClient({
                 <div className="p-5 sm:p-6 space-y-5 text-xs">
                   {/* Trip Title & Meta Tags */}
                   <div className="space-y-2 pb-4 border-b border-stone-100">
-                    <span className="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider block">
+                    <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">
                       {trip.categoryType === BookingPackageType.TOUR
                         ? "Tour"
                         : trip.categoryType === BookingPackageType.EXPEDITION
@@ -1182,16 +1213,16 @@ export function BookingPageClient({
                       {trip.title}
                     </h2>
                     <div className="flex items-center gap-2 flex-wrap pt-1">
-                      <span className="bg-stone-100 border border-stone-200 text-stone-700 px-2 py-0.5 rounded-xs text-xs font-medium">
+                      <span className="bg-stone-100 border border-stone-200 text-stone-700 px-2 py-0.5 rounded-sm text-xs font-medium">
                         {trip.durationDays} Days Total
                       </span>
                       {trip.difficulty && (
-                        <span className="bg-stone-100 border border-stone-200 text-stone-700 px-2 py-0.5 rounded-xs text-xs font-medium">
+                        <span className="bg-stone-100 border border-stone-200 text-stone-700 px-2 py-0.5 rounded-sm text-xs font-medium">
                           {trip.difficulty}
                         </span>
                       )}
                       {trip.maxAltitudeMeters ? (
-                        <span className="bg-stone-100 border border-stone-200 text-stone-700 px-2 py-0.5 rounded-xs text-xs font-medium">
+                        <span className="bg-stone-100 border border-stone-200 text-stone-700 px-2 py-0.5 rounded-sm text-xs font-medium">
                           {trip.maxAltitudeMeters.toLocaleString()}m altitude
                         </span>
                       ) : null}
@@ -1255,7 +1286,7 @@ export function BookingPageClient({
 
                     {/* Group Tier Badge if applied */}
                     {pricingResult.applicableTier && (
-                      <div className="flex items-center justify-between text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-xs text-[11px] font-semibold">
+                      <div className="flex items-center justify-between text-stone-800 bg-stone-100 border border-stone-300 px-2.5 py-1 rounded-md text-[11px] font-semibold">
                         <span>Group Tier Rate Applied</span>
                         <span>Saving vs Solo Rate</span>
                       </div>
@@ -1288,16 +1319,16 @@ export function BookingPageClient({
                       <span className="font-bold text-stone-900 text-sm sm:text-base">
                         Total Amount
                       </span>
-                      <span className="font-heading font-extrabold text-stone-900 text-lg sm:text-xl text-emerald-800">
+                      <span className="font-heading font-extrabold text-stone-900 text-lg sm:text-2xl">
                         US${totalPriceUSD.toLocaleString()}
                       </span>
                     </div>
 
                     {/* Deposit info */}
-                    <div className="bg-stone-50 rounded-sm p-3.5 space-y-1.5 border border-stone-200">
+                    <div className="bg-stone-50 rounded-md p-3.5 space-y-1.5 border border-stone-200">
                       <div className="flex items-center justify-between text-stone-700 font-semibold">
                         <span>Due Today:</span>
-                        <span className="text-emerald-800 font-bold">US$0.00</span>
+                        <span className="text-stone-900 font-bold">US$0.00</span>
                       </div>
                       <div className="flex items-center justify-between text-stone-600 text-[11px]">
                         <span>25% Deposit Upon Confirmation:</span>

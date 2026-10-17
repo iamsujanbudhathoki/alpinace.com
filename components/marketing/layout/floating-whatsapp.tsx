@@ -10,6 +10,11 @@ export function FloatingWhatsApp() {
   const { settings } = useSettings();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  // Check if current page is a booking/checkout page
+  const isBookingPage = Boolean(
+    pathname && (pathname.startsWith("/book") || pathname.includes("/booking"))
+  );
+
   // Check if current page is a tour, trek, or expedition detail page
   const isDetailPage = Boolean(
     pathname &&
@@ -21,6 +26,8 @@ export function FloatingWhatsApp() {
 
   const rawNumber = settings.whatsappNumber || "";
   const cleanNumber = rawNumber.replace(/\D/g, "");
+
+  if (isBookingPage) return null;
 
   useEffect(() => {
     const handleScroll = () => {

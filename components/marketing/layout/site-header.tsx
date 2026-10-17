@@ -305,6 +305,15 @@ export function SiteHeader() {
     }
   };
 
+  // Omit global marketing header on dedicated booking and checkout routes
+  const isBookingPage = Boolean(
+    pathname && (pathname.startsWith("/book") || pathname.includes("/booking"))
+  );
+
+  if (isBookingPage) {
+    return null;
+  }
+
   return (
     <>
       <header

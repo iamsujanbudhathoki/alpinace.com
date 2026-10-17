@@ -40,7 +40,6 @@ import {
   Minus,
   Plus,
   Printer,
-  ShieldCheck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -1331,7 +1330,7 @@ export function BookingPageClient({
                     </div>
 
                     {/* Primary Reservation CTA Button */}
-                    <div className="pt-2 space-y-2.5">
+                    <div className="pt-2">
                       <button
                         type="submit"
                         disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
@@ -1349,10 +1348,6 @@ export function BookingPageClient({
                           </>
                         )}
                       </button>
-                      <div className="flex items-center justify-center gap-1.5 text-xs text-stone-500 font-medium">
-                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>No payment required today &bull; Free cancellation</span>
-                      </div>
                     </div>
                   </div>
                 </div>

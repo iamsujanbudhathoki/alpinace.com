@@ -31,7 +31,6 @@ import {
   PackageDepartures,
   PackageTrekMap,
   PackageDownloads,
-  PackageAddons,
   PackageUsefulInfo,
 } from "@/components/marketing/package-details";
 import { hasRichText, isHtmlContent } from "@/lib/utils";
@@ -50,13 +49,14 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
   const [isBooked, setIsBooked] = useState(false);
   const [isInquired, setIsInquired] = useState(false);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
+  const [isNavigatingToBooking, setIsNavigatingToBooking] = useState(false);
+  const [selectedBookingDate, setSelectedBookingDate] = useState<string | undefined>(undefined);
 
   const { setDetailNav } = useDetailNav();
 
   const [globalFaqs, setGlobalFaqs] = useState<FaqItem[]>([]);
   const [globalReviews, setGlobalReviews] = useState<Testimonial[]>([]);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
-  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("overview");
   const isClickScrollingRef = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -117,40 +117,14 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     return [tour.image];
   }, [tour]);
 
-  // Active addons and pricing
-  const activeAddons = useMemo(() => {
-    return (tour?.addons || []).filter((a: any) => a.isActive !== false && a.title?.trim());
-  }, [tour?.addons]);
-
-  const bookingAddons = useMemo(() => {
-    return activeAddons.map((addon: any) => ({
-      id: addon.id,
-      label: addon.title,
-      description: addon.description || "",
-      pricePerPerson: Number(addon.priceUSD) || 0,
-      checked: selectedAddonIds.includes(addon.id),
-      onChange: (checked: boolean) => {
-        setSelectedAddonIds((prev) =>
-          checked ? [...prev, addon.id] : prev.filter((id) => id !== addon.id)
-        );
-      },
-    }));
-  }, [activeAddons, selectedAddonIds]);
-
-  const addonsPerPerson = useMemo(() => {
-    return activeAddons
-      .filter((a: any) => selectedAddonIds.includes(a.id))
-      .reduce((sum: number, a: any) => sum + (Number(a.priceUSD) || 0), 0);
-  }, [activeAddons, selectedAddonIds]);
-
   // Price calculations
   const applicablePricing = useMemo(() => {
     if (!tour) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
     return calculateApplicablePrice(tour, calculatorTravelers);
   }, [tour, calculatorTravelers]);
 
-  const perPersonCalculated = applicablePricing.pricePerPerson + addonsPerPerson;
-  const totalPrice = perPersonCalculated * calculatorTravelers;
+  const perPersonCalculated = applicablePricing.pricePerPerson;
+  const totalPrice = applicablePricing.totalPrice;
 
   // Inclusions vs Exclusions existence based on schema
   const hasCostSection = hasRichText(tour?.inclusionsText) || hasRichText(tour?.exclusionsText);
@@ -211,9 +185,6 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if ((tour?.addons && tour.addons.some((a: any) => a.isActive !== false && a.title)) || hasRichText(tour?.addonsText)) {
-      list.push({ key: "addons", label: "Add-Ons" });
-    }
     if (tour?.departureDates && tour.departureDates.length > 0) {
       list.push({ key: "departures", label: "Departure Dates" });
     }
@@ -259,12 +230,13 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
       priceUSD: tour.priceUSD,
       onBookClick: () => navigateToBooking(),
       bookButtonLabel: "Reserve Private Tour",
+      isBookingLoading: isNavigatingToBooking,
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [tour, availableTabs, activeTab, setDetailNav, calculatorTravelers, selectedDeparture, selectedAddonIds]);
+  }, [tour, availableTabs, activeTab, setDetailNav, calculatorTravelers, selectedDeparture, isNavigatingToBooking]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -319,6 +291,8 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
 
   const navigateToBooking = (departureDate?: string) => {
     if (!tour) return;
+    setIsNavigatingToBooking(true);
+    setSelectedBookingDate(departureDate);
     const params = new URLSearchParams();
     if (calculatorTravelers) {
       params.set("travelers", String(calculatorTravelers));
@@ -326,9 +300,6 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
     const dateToUse = departureDate || selectedDeparture?.startDate;
     if (dateToUse) {
       params.set("date", dateToUse);
-    }
-    if (selectedAddonIds.length > 0) {
-      params.set("addons", selectedAddonIds.join(","));
     }
     const queryString = params.toString() ? `?${params.toString()}` : "";
     router.push(`/tours/${tour.slug}/booking${queryString}`);
@@ -359,11 +330,12 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
         }
         bookButtonLabel="Book Tour"
         onBookClick={() => navigateToBooking()}
+        isBookingLoading={isNavigatingToBooking}
         isBooked={isBooked}
         isInquired={isInquired}
         badges={[
           ...(tour.region ? [{ label: tour.region }] : []),
-          { label: tour.tourType || "Heritage Tour", highlight: true },
+          ...(tour.tourType ? [{ label: tour.tourType, highlight: true }] : []),
           { label: `${tour.durationDays} Days` },
         ]}
       />
@@ -397,11 +369,7 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
             {/* SECTION: OVERVIEW */}
             {hasRichText(tour.shortDesc) && (
               <section id="overview" className="scroll-mt-24">
-                <PackageSection
-                  icon={Compass}
-                  eyebrow="The experience"
-                  title="Overview"
-                >
+                <PackageSection title="Overview">
                   <div
                     className="prose-editorial max-w-none"
                     dangerouslySetInnerHTML={{ __html: tour.shortDesc }}
@@ -430,13 +398,6 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               </section>
             )}
 
-            {/* SECTION: ADD-ONS */}
-            {((tour.addons && tour.addons.length > 0) || hasRichText(tour.addonsText)) && (
-              <section id="addons" className="scroll-mt-24">
-                <PackageAddons addons={tour.addons} addonsText={tour.addonsText} />
-              </section>
-            )}
-
             {/* SECTION: DEPARTURE DATES */}
             {tour.departureDates && tour.departureDates.length > 0 && (
               <section id="departures" className="scroll-mt-24">
@@ -444,6 +405,8 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
                   dates={tour.departureDates}
                   defaultPrice={tour.priceUSD}
                   onBookDate={handleBookDeparture}
+                  isBookingLoading={isNavigatingToBooking}
+                  activeDepartureDate={selectedBookingDate}
                 />
               </section>
             )}
@@ -491,10 +454,10 @@ export function TourDetailClient({ initialTour, slug }: TourDetailClientProps) {
               durationDays={tour.durationDays}
               travelers={calculatorTravelers}
               onTravelersChange={setCalculatorTravelers}
-              addons={bookingAddons}
               totalPrice={totalPrice}
               onBookClick={() => navigateToBooking()}
               bookButtonLabel="Reserve Private Tour"
+              isBookingLoading={isNavigatingToBooking}
               packageType={InquiryType.TOUR}
               isBooked={isBooked}
               isInquired={isInquired}

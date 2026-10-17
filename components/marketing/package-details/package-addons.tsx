@@ -107,11 +107,7 @@ export function PackageAddons({ addons, addonsText }: PackageAddonsProps) {
   if (!hasContent) return null;
 
   return (
-    <PackageSection
-      icon={Sparkles}
-      eyebrow="Make it yours"
-      title="Add-ons & optional upgrades"
-    >
+    <PackageSection title="Add-ons & optional upgrades">
       {parsedItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 pt-1">
           {parsedItems.map((item, idx) => (

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Download, Loader2, Map as MapIcon } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { openSingleImage } from "@/lib/utils/lightbox";
 import { PackageSection } from "./package-section";
 
@@ -53,8 +53,6 @@ export function PackageTrekMap({ mapImage, title }: PackageTrekMapProps) {
 
   return (
     <PackageSection
-      icon={MapIcon}
-      eyebrow="The experience"
       title="Route map"
       action={
         <button

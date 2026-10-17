@@ -94,8 +94,6 @@ export function PackageReviews({
 
   return (
     <PackageSection
-      icon={Star}
-      eyebrow="Traveler stories"
       title={title}
       action={
         <div className="flex items-center gap-3">

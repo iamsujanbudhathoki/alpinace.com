@@ -674,18 +674,26 @@ export function BookingFormModal({
                   Selected Add-ons &amp; Upgrades ({initialData.addons.length})
                 </span>
                 <span className="text-[11px] font-bold text-slate-600">
-                  Total: +${initialData.addons.reduce((sum, a) => sum + (Number(a.priceUSD || 0) * (initialData.groupSize || 1)), 0).toLocaleString()} USD
+                  Total: +${initialData.addons.reduce((sum, a) => {
+                    const qty = a.quantity !== undefined ? a.quantity : (initialData.groupSize || 1);
+                    return sum + (a.priceUSD * qty);
+                  }, 0).toLocaleString()} USD
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                {initialData.addons.map((addon) => (
-                  <div key={addon.id} className="p-2.5 rounded-lg bg-white border border-slate-200/90 flex items-center justify-between text-xs">
-                    <span className="font-medium text-slate-800">{addon.title}</span>
-                    <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 text-[11px]">
-                      +${Number(addon.priceUSD || 0).toLocaleString()} / person
-                    </span>
-                  </div>
-                ))}
+                {initialData.addons.map((addon) => {
+                  const qty = addon.quantity !== undefined ? addon.quantity : (initialData.groupSize || 1);
+                  return (
+                    <div key={addon.id} className="p-2.5 rounded-lg bg-white border border-slate-200/90 flex items-center justify-between text-xs">
+                      <span className="font-medium text-slate-800">
+                        {addon.title} {qty > 1 ? `(×${qty})` : ""}
+                      </span>
+                      <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 text-[11px]">
+                        +${(addon.priceUSD * qty).toLocaleString()} USD
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

@@ -36,7 +36,6 @@ import {
   PackageDepartures,
   PackageTrekMap,
   PackageDownloads,
-  PackageAddons,
   PackageUsefulInfo,
 } from "@/components/marketing/package-details";
 import { hasRichText, isHtmlContent } from "@/lib/utils";
@@ -60,8 +59,9 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
   const [isBooked, setIsBooked] = useState(false);
   const [isInquired, setIsInquired] = useState(false);
   const [calculatorTravelers, setCalculatorTravelers] = useState<number>(2);
-  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
+  const [isNavigatingToBooking, setIsNavigatingToBooking] = useState(false);
+  const [selectedBookingDate, setSelectedBookingDate] = useState<string | undefined>(undefined);
 
   const [activeTab, setActiveTab] = useState<string>("overview");
   const isClickScrollingRef = useRef(false);
@@ -194,9 +194,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if ((trek?.addons && trek.addons.some((a) => a.isActive !== false && a.title)) || hasRichText(trek?.addonsText)) {
-      list.push({ key: "addons", label: "Add-Ons" });
-    }
     if (trek?.departureDates && trek.departureDates.length > 0) {
       list.push({ key: "departures", label: "Departure Dates" });
     }
@@ -242,12 +239,13 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
       priceUSD: trek.priceUSD,
       onBookClick: () => navigateToBooking(),
       bookButtonLabel: "Book Trek",
+      isBookingLoading: isNavigatingToBooking,
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [trek, availableTabs, activeTab, setDetailNav, calculatorTravelers, selectedDeparture, selectedAddonIds]);
+  }, [trek, availableTabs, activeTab, setDetailNav, calculatorTravelers, selectedDeparture, isNavigatingToBooking]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -292,40 +290,14 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     };
   }, [availableTabs]);
 
-  // Active addons and pricing
-  const activeAddons = useMemo(() => {
-    return (trek?.addons || []).filter((a) => a.isActive !== false && a.title?.trim());
-  }, [trek?.addons]);
-
-  const bookingAddons = useMemo(() => {
-    return activeAddons.map((addon) => ({
-      id: addon.id,
-      label: addon.title,
-      description: addon.description || "",
-      pricePerPerson: Number(addon.priceUSD) || 0,
-      checked: selectedAddonIds.includes(addon.id),
-      onChange: (checked: boolean) => {
-        setSelectedAddonIds((prev) =>
-          checked ? [...prev, addon.id] : prev.filter((id) => id !== addon.id)
-        );
-      },
-    }));
-  }, [activeAddons, selectedAddonIds]);
-
-  const addonsPerPerson = useMemo(() => {
-    return activeAddons
-      .filter((a) => selectedAddonIds.includes(a.id))
-      .reduce((sum, a) => sum + (Number(a.priceUSD) || 0), 0);
-  }, [activeAddons, selectedAddonIds]);
-
   // Price calculations
   const applicablePricing = useMemo(() => {
     if (!trek) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
     return calculateApplicablePrice(trek, calculatorTravelers);
   }, [trek, calculatorTravelers]);
 
-  const perPersonCalculated = applicablePricing.pricePerPerson + addonsPerPerson;
-  const totalPrice = perPersonCalculated * calculatorTravelers;
+  const perPersonCalculated = applicablePricing.pricePerPerson;
+  const totalPrice = applicablePricing.totalPrice;
 
   if (loading) {
     return <PackageDetailSkeleton />;
@@ -337,6 +309,8 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
 
   const navigateToBooking = (departureDate?: string) => {
     if (!trek) return;
+    setIsNavigatingToBooking(true);
+    setSelectedBookingDate(departureDate);
     const params = new URLSearchParams();
     if (calculatorTravelers) {
       params.set("travelers", String(calculatorTravelers));
@@ -344,9 +318,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
     const dateToUse = departureDate || selectedDeparture?.startDate;
     if (dateToUse) {
       params.set("date", dateToUse);
-    }
-    if (selectedAddonIds.length > 0) {
-      params.set("addons", selectedAddonIds.join(","));
     }
     const queryString = params.toString() ? `?${params.toString()}` : "";
     router.push(`/trekking/${trek.slug}/booking${queryString}`);
@@ -377,11 +348,12 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
         }
         bookButtonLabel="Book Trek"
         onBookClick={() => navigateToBooking()}
+        isBookingLoading={isNavigatingToBooking}
         isBooked={isBooked}
         isInquired={isInquired}
         badges={[
           ...(trek.region ? [{ label: trek.region }] : []),
-          { label: trek.difficulty || "Moderate", highlight: true },
+          ...(trek.difficulty ? [{ label: trek.difficulty, highlight: true }] : []),
           { label: `${trek.durationDays} Days` },
         ]}
       />
@@ -415,11 +387,7 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
             {/* SECTION: OVERVIEW */}
             {hasRichText(trek.shortDesc) && (
               <section id="overview" className="scroll-mt-24">
-                <PackageSection
-                  icon={Compass}
-                  eyebrow="The experience"
-                  title="Overview"
-                >
+                <PackageSection title="Overview">
                   <div
                     className="prose-editorial max-w-none"
                     dangerouslySetInnerHTML={{ __html: trek.shortDesc }}
@@ -448,13 +416,6 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               </section>
             )}
 
-            {/* SECTION: ADD-ONS */}
-            {((trek.addons && trek.addons.length > 0) || hasRichText(trek.addonsText)) && (
-              <section id="addons" className="scroll-mt-24">
-                <PackageAddons addons={trek.addons} addonsText={trek.addonsText} />
-              </section>
-            )}
-
             {/* SECTION: DEPARTURE DATES */}
             {trek.departureDates && trek.departureDates.length > 0 && (
               <section id="departures" className="scroll-mt-24">
@@ -462,6 +423,8 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
                   dates={trek.departureDates}
                   defaultPrice={trek.priceUSD}
                   onBookDate={handleBookDeparture}
+                  isBookingLoading={isNavigatingToBooking}
+                  activeDepartureDate={selectedBookingDate}
                 />
               </section>
             )}
@@ -509,10 +472,10 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
               durationDays={trek.durationDays}
               travelers={calculatorTravelers}
               onTravelersChange={setCalculatorTravelers}
-              addons={bookingAddons}
               totalPrice={totalPrice}
               onBookClick={() => navigateToBooking()}
               bookButtonLabel="Book Trek"
+              isBookingLoading={isNavigatingToBooking}
               packageType={InquiryType.TREKKING}
               isBooked={isBooked}
               isInquired={isInquired}

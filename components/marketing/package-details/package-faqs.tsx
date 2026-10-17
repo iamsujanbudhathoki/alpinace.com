@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { PackageSection } from "./package-section";
 
 export interface FaqItemProp {
@@ -53,8 +53,6 @@ export function PackageFaqs({
 
   return (
     <PackageSection
-      icon={HelpCircle}
-      eyebrow="Good to know"
       title={title}
       action={
         validFaqs.length > 1 ? (

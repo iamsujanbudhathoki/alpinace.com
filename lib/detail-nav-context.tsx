@@ -13,6 +13,7 @@ export interface DetailNavData {
   priceUSD?: number;
   onBookClick?: () => void;
   bookButtonLabel?: string;
+  isBookingLoading?: boolean;
 }
 
 interface DetailNavContextType {

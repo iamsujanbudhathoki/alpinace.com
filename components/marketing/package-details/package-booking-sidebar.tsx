@@ -9,6 +9,7 @@ import {
   Check,
   Heart,
   Calendar,
+  Loader2,
 } from "lucide-react";
 import { PackageInquiryModal } from "./package-inquiry-modal";
 import { InquiryType } from "@/lib/admin-data";
@@ -45,6 +46,7 @@ export interface PackageBookingSidebarProps {
   groupPricing?: GroupPricingTier[];
   departureDates?: any[];
   onCheckAvailability?: () => void;
+  isBookingLoading?: boolean;
 }
 
 export function PackageBookingSidebar({
@@ -62,6 +64,7 @@ export function PackageBookingSidebar({
   isBooked = false,
   isInquired = false,
   onResetBooked,
+  isBookingLoading = false,
   onResetInquired,
   onInquirySuccess,
   basePriceUSD,
@@ -364,10 +367,18 @@ export function PackageBookingSidebar({
               <div className="space-y-2">
                 <button
                   type="button"
+                  disabled={isBookingLoading}
                   onClick={onBookClick}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer transition-colors shadow-xs flex items-center justify-center gap-1.5"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-700/80 text-white font-bold py-2.5 px-4 rounded-xs text-xs sm:text-sm uppercase tracking-wide cursor-pointer disabled:cursor-not-allowed transition-colors shadow-xs flex items-center justify-center gap-2"
                 >
-                  <span>{bookButtonLabel}</span>
+                  {isBookingLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <span>Opening Reservation...</span>
+                    </>
+                  ) : (
+                    <span>{bookButtonLabel}</span>
+                  )}
                 </button>
                 {isInquired ? (
                   <div className="p-3 rounded-xs bg-yellow-50 border border-yellow-200 text-xs text-stone-800 font-medium text-center">
@@ -428,10 +439,18 @@ export function PackageBookingSidebar({
           </button>
           <button
             type="button"
+            disabled={isBookingLoading}
             onClick={onBookClick}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-4 min-h-10 flex items-center gap-1.5 rounded-xs transition-colors cursor-pointer shadow-xs uppercase tracking-wide"
+            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-700/80 text-white font-bold text-xs py-2 px-4 min-h-10 flex items-center gap-1.5 rounded-xs transition-colors cursor-pointer disabled:cursor-not-allowed shadow-xs uppercase tracking-wide"
           >
-            <span>{bookButtonLabel}</span>
+            {isBookingLoading ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                <span>Opening...</span>
+              </>
+            ) : (
+              <span>{bookButtonLabel}</span>
+            )}
           </button>
         </div>
       </div>

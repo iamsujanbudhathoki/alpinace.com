@@ -31,7 +31,7 @@ export function PackageSeoTab({
     <div className="space-y-4">
       {/* Live Google Search Result Snippet Card */}
       <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-1">
-        <span className="text-[11px] font-bold text-slate-500 block uppercase tracking-wider">
+        <span className="text-[11px] font-bold text-slate-500 block">
           Search Result Live Preview
         </span>
         <div className="space-y-0.5 font-sans">

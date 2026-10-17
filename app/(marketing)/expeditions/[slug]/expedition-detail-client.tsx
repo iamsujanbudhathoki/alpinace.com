@@ -42,7 +42,6 @@ import {
   PackageDepartures,
   PackageTrekMap,
   PackageDownloads,
-  PackageAddons,
   PackageUsefulInfo,
 } from "@/components/marketing/package-details";
 import { hasRichText, isHtmlContent } from "@/lib/utils";
@@ -65,6 +64,8 @@ export function ExpeditionDetailClient({
   const [isBooked, setIsBooked] = useState(false);
   const [isInquired, setIsInquired] = useState(false);
   const [selectedDeparture, setSelectedDeparture] = useState<TripDepartureDate | null>(null);
+  const [isNavigatingToBooking, setIsNavigatingToBooking] = useState(false);
+  const [selectedBookingDate, setSelectedBookingDate] = useState<string | undefined>(undefined);
   const [relatedExpeditions, setRelatedExpeditions] = useState<ExpeditionItem[]>(
     [],
   );
@@ -77,7 +78,6 @@ export function ExpeditionDetailClient({
   const [globalReviews, setGlobalReviews] = useState<Testimonial[]>([]);
 
   const [calculatorClimbers, setCalculatorClimbers] = useState<number>(1);
-  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("overview");
   const isClickScrollingRef = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -138,40 +138,14 @@ export function ExpeditionDetailClient({
     return [expedition.image];
   }, [expedition]);
 
-  // Active addons and pricing
-  const activeAddons = useMemo(() => {
-    return (expedition?.addons || []).filter((a: any) => a.isActive !== false && a.title?.trim());
-  }, [expedition?.addons]);
-
-  const bookingAddons = useMemo(() => {
-    return activeAddons.map((addon: any) => ({
-      id: addon.id,
-      label: addon.title,
-      description: addon.description || "",
-      pricePerPerson: Number(addon.priceUSD) || 0,
-      checked: selectedAddonIds.includes(addon.id),
-      onChange: (checked: boolean) => {
-        setSelectedAddonIds((prev) =>
-          checked ? [...prev, addon.id] : prev.filter((id) => id !== addon.id)
-        );
-      },
-    }));
-  }, [activeAddons, selectedAddonIds]);
-
-  const addonsPerPerson = useMemo(() => {
-    return activeAddons
-      .filter((a: any) => selectedAddonIds.includes(a.id))
-      .reduce((sum: number, a: any) => sum + (Number(a.priceUSD) || 0), 0);
-  }, [activeAddons, selectedAddonIds]);
-
   // Price calculations
   const applicablePricing = useMemo(() => {
     if (!expedition) return { pricePerPerson: 0, totalPrice: 0, applicableTier: null };
     return calculateApplicablePrice(expedition, calculatorClimbers);
   }, [expedition, calculatorClimbers]);
 
-  const perPersonCalculated = applicablePricing.pricePerPerson + addonsPerPerson;
-  const totalPrice = perPersonCalculated * calculatorClimbers;
+  const perPersonCalculated = applicablePricing.pricePerPerson;
+  const totalPrice = applicablePricing.totalPrice;
 
   // Inclusions vs Exclusions existence based on schema
   const hasCostSection = hasRichText(expedition?.inclusionsText) || hasRichText(expedition?.exclusionsText);
@@ -240,9 +214,6 @@ export function ExpeditionDetailClient({
     if (hasCostSection) {
       list.push({ key: "cost", label: "Includes/Excludes" });
     }
-    if ((expedition?.addons && expedition.addons.some((a: any) => a.isActive !== false && a.title)) || hasRichText(expedition?.addonsText)) {
-      list.push({ key: "addons", label: "Add-Ons" });
-    }
     if (expedition?.departureDates && expedition.departureDates.length > 0) {
       list.push({ key: "departures", label: "Departure Dates" });
     }
@@ -288,12 +259,13 @@ export function ExpeditionDetailClient({
       priceUSD: expedition.priceUSD,
       onBookClick: () => navigateToBooking(),
       bookButtonLabel: "Apply for Expedition",
+      isBookingLoading: isNavigatingToBooking,
     });
 
     return () => {
       setDetailNav(null);
     };
-  }, [expedition, availableTabs, activeTab, setDetailNav, calculatorClimbers, selectedDeparture, selectedAddonIds]);
+  }, [expedition, availableTabs, activeTab, setDetailNav, calculatorClimbers, selectedDeparture, isNavigatingToBooking]);
 
   // Scroll-spy to keep active tab synchronized with manual page scrolling
   useEffect(() => {
@@ -348,6 +320,8 @@ export function ExpeditionDetailClient({
 
   const navigateToBooking = (departureDate?: string) => {
     if (!expedition) return;
+    setIsNavigatingToBooking(true);
+    setSelectedBookingDate(departureDate);
     const params = new URLSearchParams();
     if (calculatorClimbers) {
       params.set("travelers", String(calculatorClimbers));
@@ -355,9 +329,6 @@ export function ExpeditionDetailClient({
     const dateToUse = departureDate || selectedDeparture?.startDate;
     if (dateToUse) {
       params.set("date", dateToUse);
-    }
-    if (selectedAddonIds.length > 0) {
-      params.set("addons", selectedAddonIds.join(","));
     }
     const queryString = params.toString() ? `?${params.toString()}` : "";
     router.push(`/expeditions/${expedition.slug}/booking${queryString}`);
@@ -368,7 +339,7 @@ export function ExpeditionDetailClient({
     navigateToBooking(dateSlot.startDate);
   };
 
-  const peakMeters = expedition.peakHeightM || expedition.maxAltitudeMeters || 8000;
+  const peakMeters = expedition.peakHeightM !== undefined ? expedition.peakHeightM : expedition.maxAltitudeMeters;
 
   return (
     <div className="min-h-screen bg-white pb-24 lg:pb-20">
@@ -390,12 +361,13 @@ export function ExpeditionDetailClient({
         }
         bookButtonLabel="Book Expedition"
         onBookClick={() => navigateToBooking()}
+        isBookingLoading={isNavigatingToBooking}
         isBooked={isBooked}
         isInquired={isInquired}
         badges={[
-          { label: `${peakMeters.toLocaleString()}m Summit` },
-          { label: expedition.climbingGrade || "Technical Grade", highlight: true },
-          { label: expedition.sherpaGuideRatio || "1:1 Personal Guide" },
+          ...(peakMeters !== undefined ? [{ label: `${peakMeters.toLocaleString()}m Summit` }] : []),
+          ...(expedition.climbingGrade ? [{ label: expedition.climbingGrade, highlight: true }] : []),
+          ...(expedition.sherpaGuideRatio ? [{ label: expedition.sherpaGuideRatio }] : []),
         ]}
       />
 
@@ -428,11 +400,7 @@ export function ExpeditionDetailClient({
             {/* SECTION: OVERVIEW */}
             {hasRichText(expedition.shortDesc) && (
               <section id="overview" className="scroll-mt-24">
-                <PackageSection
-                  icon={Compass}
-                  eyebrow="The experience"
-                  title="Overview"
-                >
+                <PackageSection title="Overview">
                   <div
                     className="prose-editorial max-w-none"
                     dangerouslySetInnerHTML={{ __html: expedition.shortDesc }}
@@ -461,13 +429,6 @@ export function ExpeditionDetailClient({
               </section>
             )}
 
-            {/* SECTION: ADD-ONS */}
-            {((expedition.addons && expedition.addons.length > 0) || hasRichText(expedition.addonsText)) && (
-              <section id="addons" className="scroll-mt-24">
-                <PackageAddons addons={expedition.addons} addonsText={expedition.addonsText} />
-              </section>
-            )}
-
             {/* SECTION: DEPARTURE DATES */}
             {expedition.departureDates && expedition.departureDates.length > 0 && (
               <section id="departures" className="scroll-mt-24">
@@ -475,6 +436,8 @@ export function ExpeditionDetailClient({
                   dates={expedition.departureDates}
                   defaultPrice={expedition.priceUSD}
                   onBookDate={handleBookDeparture}
+                  isBookingLoading={isNavigatingToBooking}
+                  activeDepartureDate={selectedBookingDate}
                 />
               </section>
             )}
@@ -522,10 +485,10 @@ export function ExpeditionDetailClient({
               durationDays={expedition.durationDays}
               travelers={calculatorClimbers}
               onTravelersChange={setCalculatorClimbers}
-              addons={bookingAddons}
               totalPrice={totalPrice}
               onBookClick={() => navigateToBooking()}
               bookButtonLabel="Apply for Expedition"
+              isBookingLoading={isNavigatingToBooking}
               packageType={InquiryType.EXPEDITION}
               isBooked={isBooked}
               isInquired={isInquired}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 
 export interface HeroBadge {
   label: string;
@@ -21,6 +21,7 @@ export interface PackageDetailHeroProps {
   bookButtonLabel?: string;
   isBooked?: boolean;
   isInquired?: boolean;
+  isBookingLoading?: boolean;
 }
 
 export function PackageDetailHero({
@@ -35,6 +36,7 @@ export function PackageDetailHero({
   bookButtonLabel = "Book Expedition",
   isBooked = false,
   isInquired = false,
+  isBookingLoading = false,
 }: PackageDetailHeroProps) {
   return (
     <section className="relative min-h-[360px] sm:h-[380px] lg:h-[420px] w-full overflow-hidden bg-stone-950 flex flex-col justify-between">
@@ -109,11 +111,21 @@ export function PackageDetailHero({
               ) : (
                 <button
                   type="button"
+                  disabled={isBookingLoading}
                   onClick={onBookClick}
-                  className="btn-accent text-xs sm:text-sm flex items-center gap-2 group cursor-pointer shrink-0"
+                  className="btn-accent text-xs sm:text-sm flex items-center gap-2 group cursor-pointer disabled:cursor-not-allowed disabled:opacity-85 shrink-0"
                 >
-                  <span>{bookButtonLabel}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
+                  {isBookingLoading ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                      <span>Opening Reservation...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{bookButtonLabel}</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
+                    </>
+                  )}
                 </button>
               )}
             </div>

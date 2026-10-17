@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 
 function BookingLoadingFallback() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center py-24 px-4">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="w-10 h-10 text-emerald-400 animate-spin" />
-        <p className="text-slate-400 text-sm font-medium">
+    <div className="min-h-[60vh] bg-stone-50/50 flex flex-col items-center justify-center py-20 px-4">
+      <div className="flex flex-col items-center gap-3">
+        <Loader2 className="w-8 h-8 text-emerald-700 animate-spin" />
+        <p className="text-stone-600 text-sm font-medium">
           Loading booking reservation details...
         </p>
       </div>

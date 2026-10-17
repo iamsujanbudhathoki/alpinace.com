@@ -56,7 +56,7 @@ export function PackageBasicInfoTab({
       {/* 1. Basic Details */}
       <div className="space-y-4">
         <div className="pb-2 border-b border-slate-100">
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-slate-800">
             General Information
           </h3>
         </div>
@@ -157,7 +157,7 @@ export function PackageBasicInfoTab({
       {/* 2. Trip Specifications & Logistics */}
       <div className="space-y-4">
         <div className="pb-2 border-b border-slate-100">
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-slate-800">
             Trip Specifications &amp; Logistics
           </h3>
         </div>
@@ -267,7 +267,7 @@ export function PackageBasicInfoTab({
       {/* 3. Pricing & Highlights */}
       <div className="space-y-4">
         <div className="pb-2 border-b border-slate-100">
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-slate-800">
             Pricing &amp; Highlights
           </h3>
         </div>
@@ -331,7 +331,7 @@ export function PackageBasicInfoTab({
       {/* 4. Overview Description */}
       <div className="space-y-3">
         <div className="pb-2 border-b border-slate-100">
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-slate-800">
             Overview Description
           </h3>
         </div>

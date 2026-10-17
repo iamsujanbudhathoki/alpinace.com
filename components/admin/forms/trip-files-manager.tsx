@@ -218,7 +218,7 @@ export function TripFilesManager({
                   <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
                     {file.fileSize && <span>{file.fileSize}</span>}
                     {file.fileType && (
-                      <span className="uppercase font-semibold text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">
+                      <span className="font-semibold text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">
                         {file.fileType}
                       </span>
                     )}

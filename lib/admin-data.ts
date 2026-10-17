@@ -279,6 +279,7 @@ export interface BookingSelectedAddon {
   id: string;
   title: string;
   priceUSD: number;
+  quantity?: number;
 }
 
 export interface PackageItem {

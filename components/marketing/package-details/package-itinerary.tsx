@@ -10,7 +10,7 @@ import {
   Compass,
   MapPin,
   Footprints,
-  Route,
+  Flag,
 } from "lucide-react";
 import { TripItineraryDay, TripItineraryDetail } from "@/lib/trek-data";
 import { PackageSection } from "./package-section";
@@ -42,8 +42,6 @@ export function PackageItinerary({
 
   return (
     <PackageSection
-      icon={Route}
-      eyebrow="The experience"
       title={title}
       action={
         <button
@@ -61,6 +59,7 @@ export function PackageItinerary({
           const dayNum = Number(day.day || idx + 1);
           const formattedDayLabel = `Day ${String(dayNum).padStart(2, "0")}`;
           const isOpen = isAllExpanded || openDay === dayNum;
+          const isLastDay = idx === days.length - 1;
 
           // Resolve Altitude
           const altitudeVal = day.maxAltitude || day.altitude;
@@ -153,8 +152,17 @@ export function PackageItinerary({
 
           return (
             <article key={idx} className="relative group">
-              {/* Timeline Marker Dot */}
-              <div className="absolute -left-6 sm:-left-8 top-3.5 w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-white" />
+              {/* Timeline Marker Dot / Victory Flag */}
+              {isLastDay ? (
+                <div
+                  className="absolute -left-[27px] sm:-left-[35px] top-2.5 w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full bg-emerald-700 text-white flex items-center justify-center ring-4 ring-white shadow-2xs z-10"
+                  title="Final destination & trip completion"
+                >
+                  <Flag className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current" />
+                </div>
+              ) : (
+                <div className="absolute -left-6 sm:-left-8 top-3.5 w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-white" />
+              )}
 
               {/* Day Header */}
               <button
@@ -167,6 +175,12 @@ export function PackageItinerary({
                     <span className="type-caption text-stone-900 font-bold block">
                       {formattedDayLabel}
                     </span>
+                    {isLastDay && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        <Flag className="w-2.5 h-2.5 text-emerald-700" />
+                        Final Destination
+                      </span>
+                    )}
                   </div>
 
                   <h3 className="type-heading-md text-stone-900 group-hover:underline transition-colors">

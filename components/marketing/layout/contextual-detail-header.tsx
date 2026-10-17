@@ -34,9 +34,7 @@ export function ContextualDetailHeader({
           unoptimized={Boolean(settings.siteLogo && (settings.siteLogo.startsWith("http") || settings.siteLogo.startsWith("data:")))}
           className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-md border border-stone-200 bg-white shrink-0"
         />
-        <span className="hidden sm:inline font-heading text-xs sm:text-sm font-bold text-stone-900 transition-colors truncate tracking-tight">
-          {settings.siteName || "Alpine Ace"}
-        </span>
+       
       </Link>
 
       {/* Modular Detail Tab Navigation Component */}

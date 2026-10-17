@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Download, File, FileDown } from "lucide-react";
+import { FileText, Download, File } from "lucide-react";
 import { TripPackageFile } from "@/lib/admin-data";
 import { PackageSection } from "./package-section";
 
@@ -25,11 +25,7 @@ export function PackageDownloads({ files = [] }: PackageDownloadsProps) {
   };
 
   return (
-    <PackageSection
-      icon={FileDown}
-      eyebrow="Before you go"
-      title="Downloads"
-    >
+    <PackageSection title="Downloads">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {files.map((file, idx) => (
           <div

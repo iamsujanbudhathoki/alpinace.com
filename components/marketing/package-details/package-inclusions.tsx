@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Minus, ListChecks } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 import { hasRichText, isHtmlContent } from "@/lib/utils";
 import { PackageSection } from "./package-section";
 
@@ -57,11 +57,7 @@ export function PackageInclusions({
   if (!showInclusions && !showExclusions) return null;
 
   return (
-    <PackageSection
-      icon={ListChecks}
-      eyebrow="Your package"
-      title={title}
-    >
+    <PackageSection title={title}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10">
         {/* Inclusions Column */}
         {showInclusions && (

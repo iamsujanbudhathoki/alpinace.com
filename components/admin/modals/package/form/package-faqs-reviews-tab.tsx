@@ -12,7 +12,7 @@ export function PackageFaqsReviewsTab({ control, errors }: PackageFaqsReviewsTab
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+        <h4 className="text-xs font-bold text-slate-800">
           Frequently Asked Questions
         </h4>
         <Controller
@@ -33,7 +33,7 @@ export function PackageFaqsReviewsTab({ control, errors }: PackageFaqsReviewsTab
       </div>
 
       <div className="space-y-2 pt-4 border-t border-slate-100">
-        <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+        <h4 className="text-xs font-bold text-slate-800">
           Customer Reviews
         </h4>
         <Controller

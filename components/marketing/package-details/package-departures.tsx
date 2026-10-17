@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CalendarDays } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TripDepartureDate, DepartureDateStatus } from "@/lib/admin-data";
 import { PackageSection } from "./package-section";
@@ -9,6 +9,8 @@ interface PackageDeparturesProps {
   dates: TripDepartureDate[];
   defaultPrice?: number;
   onBookDate?: (date: TripDepartureDate) => void;
+  isBookingLoading?: boolean;
+  activeDepartureDate?: string;
 }
 
 const STATUS_BADGES: Record<string, { label: string; bg: string }> = {
@@ -22,15 +24,13 @@ export function PackageDepartures({
   dates = [],
   defaultPrice,
   onBookDate,
+  isBookingLoading = false,
+  activeDepartureDate,
 }: PackageDeparturesProps) {
   if (!dates || dates.length === 0) return null;
 
   return (
-    <PackageSection
-      icon={CalendarDays}
-      eyebrow="Plan your dates"
-      title="Scheduled departure dates"
-    >
+    <PackageSection title="Scheduled departure dates">
       <div className="divide-y divide-stone-200">
         {dates.map((item, idx) => {
           const statusConfig = STATUS_BADGES[item.status || DepartureDateStatus.GUARANTEED] || STATUS_BADGES[DepartureDateStatus.GUARANTEED];
@@ -78,11 +78,21 @@ export function PackageDepartures({
                 {onBookDate && item.status !== DepartureDateStatus.FULL && (
                   <button
                     type="button"
+                    disabled={isBookingLoading}
                     onClick={() => onBookDate(item)}
-                    className="btn-primary py-2 px-4 min-h-[42px] text-xs font-semibold"
+                    className="btn-primary py-2 px-4 min-h-[42px] text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-85 flex items-center justify-center gap-1.5"
                   >
-                    <span>Reserve</span>
-                    <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
+                    {isBookingLoading && activeDepartureDate === item.startDate ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                        <span>Opening...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Reserve</span>
+                        <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
+                      </>
+                    )}
                   </button>
                 )}
               </div>

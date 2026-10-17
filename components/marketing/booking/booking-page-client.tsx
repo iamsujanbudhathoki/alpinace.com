@@ -9,6 +9,8 @@ import { useSettings } from "@/lib/settings-context";
 import {
   Calendar,
   Users,
+  User,
+  Compass,
   MapPin,
   Sparkles,
   Check,
@@ -76,6 +78,8 @@ export interface BookingTripDetails {
   departureDates?: TripDepartureDate[];
 }
 
+export type TravelStyle = "solo" | "private_group" | "open_group";
+
 export interface BookingPageClientProps {
   initialSlug?: string;
   initialType?: BookingPackageType | "trekking" | "tour" | "expedition";
@@ -106,9 +110,35 @@ export function BookingPageClient({
     Array<{ slug: string; title: string; type: BookingPackageType }>
   >([]);
 
+  // Travel Style State
+  const [travelStyle, setTravelStyle] = useState<TravelStyle>(() => {
+    const paramStyle = searchParams.get("style")?.toLowerCase();
+    if (paramStyle === "solo") return "solo";
+    if (paramStyle === "group" || paramStyle === "open_group" || paramStyle === "join") return "open_group";
+    if (paramStyle === "private" || paramStyle === "private_group") return "private_group";
+    return queryTravelers === 1 ? "solo" : "private_group";
+  });
+
   // Form State
   const [travelers, setTravelers] = useState<number>(queryTravelers > 0 ? queryTravelers : 2);
   const [startDate, setStartDate] = useState<string>(queryDate);
+
+  const handleSelectTravelStyle = (style: TravelStyle) => {
+    setTravelStyle(style);
+    if (style === "solo") {
+      setTravelers(1);
+    } else if (style === "private_group") {
+      if (travelers <= 1) {
+        setTravelers(2);
+      }
+    }
+  };
+
+  const travelStyleLabel = useMemo(() => {
+    if (travelStyle === "solo") return "Solo (Private Trek)";
+    if (travelStyle === "private_group") return `Private Group (${travelers} travelers)`;
+    return `Join an Open Group (${travelers} spot${travelers > 1 ? "s" : ""})`;
+  }, [travelStyle, travelers]);
 
   // Add-on quantities map: addonId -> quantity (0 = not selected)
   const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>(() => {
@@ -374,6 +404,13 @@ export function BookingPageClient({
 
     setIsSubmitting(true);
     try {
+      const formattedSpecialRequests = [
+        `[Trip Style: ${travelStyleLabel}]`,
+        specialRequests.trim(),
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+
       const payload: BookingFormValues & { cfTurnstileToken?: string; addons?: BookingSelectedAddon[] } = {
         guestName: guestName.trim(),
         guestEmail: guestEmail.trim(),
@@ -389,7 +426,7 @@ export function BookingPageClient({
         totalAmountUSD: totalPriceUSD,
         paymentStatus: BookingPaymentStatus.PENDING,
         permitStatus: BookingPermitStatus.PROCESSING,
-        specialRequests: specialRequests.trim(),
+        specialRequests: formattedSpecialRequests,
         addons: selectedAddonsWithDetails.map((a) => ({
           id: a.id,
           title: a.title,
@@ -501,7 +538,10 @@ export function BookingPageClient({
                     {confirmedBooking.startDate} &rarr; {confirmedBooking.endDate}
                   </div>
                   <div className="text-stone-600 font-medium">
-                    Group: {confirmedBooking.groupSize} {confirmedBooking.groupSize === 1 ? "Traveler" : "Travelers"}
+                    Party: {confirmedBooking.groupSize} {confirmedBooking.groupSize === 1 ? "Traveler" : "Travelers"}
+                  </div>
+                  <div className="text-stone-800 font-semibold text-xs mt-1">
+                    Style: {travelStyleLabel}
                   </div>
                 </div>
               </div>
@@ -732,20 +772,161 @@ export function BookingPageClient({
                   </div>
                 )}
 
-                {/* STEP 1: Dates & Travelers */}
-                <div className="bg-white rounded-md border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
+                {/* STEP 1: Travel Style, Dates & Travelers */}
+                <div className="bg-white rounded-md border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-5">
                   <div className="flex items-center justify-between pb-3 border-b border-stone-100">
                     <div className="flex items-center gap-2.5">
                       <span className="w-6 h-6 rounded-md bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
                         1
                       </span>
                       <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                        Dates &amp; Travelers
+                        Travel Style, Dates &amp; Travelers
                       </h3>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Travel Style Selector */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-semibold text-stone-700">
+                        Choose Your Travel Style <span className="text-rose-500">*</span>
+                      </label>
+                      <span className="text-[11px] text-stone-500 font-medium">
+                        {travelStyle === "solo"
+                          ? "Private guide & single room"
+                          : travelStyle === "private_group"
+                          ? "Exclusive party & crew"
+                          : "Join open departures"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {/* 1. Solo (Private) */}
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTravelStyle("solo")}
+                        className={`p-3.5 rounded-md border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          travelStyle === "solo"
+                            ? "border-stone-900 bg-stone-900 text-white ring-1 ring-stone-900 shadow-2xs"
+                            : "border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/60 text-stone-900"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${
+                              travelStyle === "solo" ? "text-white" : "text-stone-900"
+                            }`}>
+                              <User className="w-3.5 h-3.5" />
+                              Solo (Private)
+                            </span>
+                            {travelStyle === "solo" && (
+                              <Check className="w-3.5 h-3.5 text-white" />
+                            )}
+                          </div>
+                          <p className={`text-[11px] leading-relaxed ${
+                            travelStyle === "solo" ? "text-stone-300" : "text-stone-500"
+                          }`}>
+                            1 Traveler. Dedicated private guide and personal porter. Custom pace and private room.
+                          </p>
+                        </div>
+                      </button>
+
+                      {/* 2. Private Group */}
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTravelStyle("private_group")}
+                        className={`p-3.5 rounded-md border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          travelStyle === "private_group"
+                            ? "border-stone-900 bg-stone-900 text-white ring-1 ring-stone-900 shadow-2xs"
+                            : "border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/60 text-stone-900"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${
+                              travelStyle === "private_group" ? "text-white" : "text-stone-900"
+                            }`}>
+                              <Users className="w-3.5 h-3.5" />
+                              Private Group
+                            </span>
+                            {travelStyle === "private_group" && (
+                              <Check className="w-3.5 h-3.5 text-white" />
+                            )}
+                          </div>
+                          <p className={`text-[11px] leading-relaxed ${
+                            travelStyle === "private_group" ? "text-stone-300" : "text-stone-500"
+                          }`}>
+                            2+ Travelers. Dedicated crew exclusively for your family, friends, or club with tiered savings.
+                          </p>
+                        </div>
+                      </button>
+
+                      {/* 3. Join an Open Group */}
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTravelStyle("open_group")}
+                        className={`p-3.5 rounded-md border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          travelStyle === "open_group"
+                            ? "border-stone-900 bg-stone-900 text-white ring-1 ring-stone-900 shadow-2xs"
+                            : "border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50/60 text-stone-900"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${
+                              travelStyle === "open_group" ? "text-white" : "text-stone-900"
+                            }`}>
+                              <Compass className="w-3.5 h-3.5" />
+                              Join a Group
+                            </span>
+                            {travelStyle === "open_group" && (
+                              <Check className="w-3.5 h-3.5 text-white" />
+                            )}
+                          </div>
+                          <p className={`text-[11px] leading-relaxed ${
+                            travelStyle === "open_group" ? "text-stone-300" : "text-stone-500"
+                          }`}>
+                            1+ Travelers. Join scheduled departures with like-minded international adventurers.
+                          </p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Scheduled Departures Quick-Select (when Join a Group is selected and trip has dates) */}
+                  {travelStyle === "open_group" && trip.departureDates && trip.departureDates.length > 0 && (
+                    <div className="p-3.5 rounded-md bg-stone-50 border border-stone-200 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-semibold text-stone-800">
+                        <span>Upcoming Open Group Departures:</span>
+                        <span className="text-[11px] text-stone-500 font-normal">Click a date to select</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {trip.departureDates.slice(0, 6).map((d, idx) => {
+                          const isSelected = startDate === d.startDate;
+                          return (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => {
+                                setStartDate(d.startDate);
+                                if (formErrors.startDate)
+                                  setFormErrors((prev) => ({ ...prev, startDate: undefined }));
+                              }}
+                              className={`text-xs px-2.5 py-1.5 rounded-md border font-medium transition-colors cursor-pointer ${
+                                isSelected
+                                  ? "bg-stone-900 text-white border-stone-900"
+                                  : "bg-white text-stone-700 border-stone-200 hover:border-stone-400"
+                              }`}
+                            >
+                              {d.startDate} &rarr; {d.endDate} {d.seatsAvailable ? `(${d.seatsAvailable} left)` : ""}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                     {/* Departure Date */}
                     <div>
                       <label className="block text-xs font-semibold text-stone-700 mb-1.5">
@@ -774,14 +955,22 @@ export function BookingPageClient({
                         <p className="text-[11px] text-stone-500 mt-1 font-medium">
                           Estimated Return: <strong className="text-stone-800">{endDate}</strong>
                         </p>
-                      ) : null}
+                      ) : (
+                        <p className="text-[11px] text-stone-500 mt-1 font-medium">
+                          {travelStyle === "open_group"
+                            ? "Choose an open departure or propose a date."
+                            : "Private departures operate on any date."}
+                        </p>
+                      )}
                     </div>
 
                     {/* Travelers Counter */}
                     <div>
-                      <label className="block text-xs font-semibold text-stone-700 mb-1.5">
-                        Number of Travelers <span className="text-rose-500">*</span>
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs font-semibold text-stone-700">
+                          {travelStyle === "open_group" ? "Spots to Reserve" : "Number of Travelers"} <span className="text-rose-500">*</span>
+                        </label>
+                      </div>
                       <div className="flex items-center">
                         <button
                           type="button"
@@ -789,13 +978,16 @@ export function BookingPageClient({
                           onClick={() => {
                             const newCount = Math.max(1, travelers - 1);
                             setTravelers(newCount);
+                            if (newCount === 1 && travelStyle === "private_group") {
+                              setTravelStyle("solo");
+                            }
                           }}
                           className="w-10 h-10 flex items-center justify-center rounded-l-md border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                         >
                           <Minus className="w-4 h-4" strokeWidth={2} />
                         </button>
                         <div className="flex-1 h-10 flex items-center justify-center border-y border-stone-300 bg-white text-xs sm:text-sm font-bold text-stone-900">
-                          {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
+                          {travelers} {travelers === 1 ? (travelStyle === "open_group" ? "Spot (Solo in group)" : "Traveler (Solo)") : (travelStyle === "open_group" ? "Spots (Joining group)" : "Travelers (Private)")}
                         </div>
                         <button
                           type="button"
@@ -803,12 +995,22 @@ export function BookingPageClient({
                           onClick={() => {
                             const newCount = Math.min(maxAllowedTravelers, travelers + 1);
                             setTravelers(newCount);
+                            if (travelStyle === "solo" && newCount > 1) {
+                              setTravelStyle("private_group");
+                            }
                           }}
                           className="w-10 h-10 flex items-center justify-center rounded-r-md border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 cursor-pointer transition-colors"
                         >
                           <Plus className="w-4 h-4" strokeWidth={2} />
                         </button>
                       </div>
+                      <p className="text-[11px] text-stone-500 mt-1 font-medium">
+                        {travelStyle === "solo"
+                          ? "Single traveler. Increasing count will switch to private group."
+                          : travelStyle === "private_group"
+                          ? "Private party. Group tier discounts apply automatically."
+                          : "Reserve 1 or multiple spots to join a group departure."}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1209,14 +1411,28 @@ export function BookingPageClient({
                   </div>
 
                   {/* Compact Trip Specifications Row */}
-                  <div className="py-3 border-b border-stone-100 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="text-stone-500 block text-xs">Travelers &amp; duration</span>
-                      <span className="font-semibold text-stone-900">{travelers} {travelers === 1 ? "Traveler" : "Travelers"} &bull; {trip.durationDays} Days</span>
+                  <div className="py-3 border-b border-stone-100 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-stone-500 block text-xs">Trip style</span>
+                        <span className="font-semibold text-stone-900">{travelStyleLabel}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-stone-500 block text-xs">Duration</span>
+                        <span className="font-semibold text-stone-900">{trip.durationDays} Days</span>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-stone-500 block text-xs">Departure</span>
-                      <span className="font-semibold text-stone-900">{startDate || "Not selected"}</span>
+                    <div className="flex items-center justify-between pt-1.5 border-t border-stone-100/60">
+                      <div>
+                        <span className="text-stone-500 block text-xs">Party size</span>
+                        <span className="font-semibold text-stone-900">
+                          {travelers} {travelers === 1 ? (travelStyle === "open_group" ? "Spot" : "Person") : (travelStyle === "open_group" ? "Spots" : "Persons")}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-stone-500 block text-xs">Departure</span>
+                        <span className="font-semibold text-stone-900">{startDate || "Not selected"}</span>
+                      </div>
                     </div>
                   </div>
 

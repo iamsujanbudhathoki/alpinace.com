@@ -608,9 +608,9 @@ export function BookingPageClient({
 
   return (
     <div className="min-h-screen bg-stone-50/60 pb-24 lg:pb-32">
-      {/* Top Breadcrumb & Guarantee Bar */}
+      {/* Top Breadcrumb & Clean Status */}
       <div className="bg-white border-b border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs text-stone-500 font-medium">
             <Link
               href={packageBackHref}
@@ -620,48 +620,22 @@ export function BookingPageClient({
               <span>Back to {trip?.title || "Trip"}</span>
             </Link>
             <span>/</span>
-            <span className="text-stone-900 font-semibold">Reservation</span>
+            <span className="text-stone-900 font-semibold">Booking</span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-            <ShieldCheck className="w-4 h-4 text-emerald-700" />
-            <span>Guaranteed Departures &bull; No Payment Required Today</span>
+          <div className="flex items-center gap-1.5 text-xs text-stone-600 font-medium">
+            <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+            <span>No payment required today</span>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
-        {/* Reservation Steps Indicator */}
-        <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-          <div className="flex items-center gap-2 p-2.5 rounded-sm bg-white border border-stone-200 shadow-2xs">
-            <span className="w-5 h-5 rounded-xs bg-emerald-50 text-emerald-800 font-bold flex items-center justify-center text-[11px] shrink-0 font-mono">1</span>
-            <span className="font-semibold text-stone-800 truncate">Dates &amp; Group</span>
-          </div>
-          <div className="flex items-center gap-2 p-2.5 rounded-sm bg-white border border-stone-200 shadow-2xs">
-            <span className="w-5 h-5 rounded-xs bg-emerald-50 text-emerald-800 font-bold flex items-center justify-center text-[11px] shrink-0 font-mono">2</span>
-            <span className="font-semibold text-stone-800 truncate">Lead Traveler</span>
-          </div>
-          <div className="flex items-center gap-2 p-2.5 rounded-sm bg-white border border-stone-200 shadow-2xs">
-            <span className="w-5 h-5 rounded-xs bg-emerald-50 text-emerald-800 font-bold flex items-center justify-center text-[11px] shrink-0 font-mono">3</span>
-            <span className="font-semibold text-stone-800 truncate">Upgrades &amp; Add-ons</span>
-          </div>
-          <div className="flex items-center gap-2 p-2.5 rounded-sm bg-white border border-stone-200 shadow-2xs">
-            <span className="w-5 h-5 rounded-xs bg-emerald-50 text-emerald-800 font-bold flex items-center justify-center text-[11px] shrink-0 font-mono">4</span>
-            <span className="font-semibold text-stone-800 truncate">Confirm &amp; Lock-in</span>
-          </div>
-        </div>
-
         {/* Page Heading */}
-        <div className="mb-6 sm:mb-8 space-y-1">
-          <span className="text-xs font-semibold uppercase tracking-wider text-emerald-800 block">
-            Online Reservation
-          </span>
+        <div className="mb-6 sm:mb-8">
           <h1 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
-            Reserve Your Himalayan Adventure
+            Book {trip?.title || "Your Adventure"}
           </h1>
-          <p className="text-xs sm:text-sm text-stone-600 max-w-2xl leading-relaxed">
-            Lock in your preferred dates, add-ons, and permits. Our operations desk verifies lodge room allocations and confirms within 12 business hours.
-          </p>
         </div>
 
         {/* Missing Package / Load Error Warning */}
@@ -731,12 +705,9 @@ export function BookingPageClient({
                         1
                       </span>
                       <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                        Dates &amp; Group Size
+                        Dates &amp; Travelers
                       </h3>
                     </div>
-                    <span className="text-xs text-stone-500 font-medium bg-stone-50 border border-stone-200 px-2 py-0.5 rounded-xs">
-                      Duration: {trip.durationDays} Days
-                    </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -803,11 +774,6 @@ export function BookingPageClient({
                           <Plus className="w-4 h-4" strokeWidth={2} />
                         </button>
                       </div>
-                      {trip.groupPricingEnabled && travelers >= maxAllowedTravelers && (
-                        <p className="text-[11px] text-stone-500 font-medium mt-1">
-                          Online limit: {maxAllowedTravelers} travelers. Contact us for larger groups.
-                        </p>
-                      )}
                     </div>
                   </div>
 
@@ -815,7 +781,7 @@ export function BookingPageClient({
                   {trip.departureDates && trip.departureDates.length > 0 && (
                     <div className="pt-3 border-t border-stone-100 space-y-2">
                       <span className="text-[11px] font-bold uppercase tracking-wider text-stone-600 block">
-                        Or Pick a Fixed Group Departure:
+                        Select From Available Departures:
                       </span>
                       <div className="flex items-center gap-2 flex-wrap">
                         {trip.departureDates.slice(0, 5).map((d) => (
@@ -844,7 +810,7 @@ export function BookingPageClient({
                       2
                     </span>
                     <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                      Lead Traveler Information
+                      Lead Traveler Details
                     </h3>
                   </div>
 
@@ -972,14 +938,9 @@ export function BookingPageClient({
                         <span className="w-6 h-6 rounded-xs bg-emerald-50 text-emerald-800 border border-emerald-200/70 font-bold text-xs flex items-center justify-center font-mono">
                           3
                         </span>
-                        <div>
-                          <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                            Add-ons &amp; Optional Upgrades
-                          </h3>
-                          <p className="text-xs text-stone-500">
-                            Select individual upgrades and tailor quantities for your team.
-                          </p>
-                        </div>
+                        <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
+                          Optional Add-ons
+                        </h3>
                       </div>
                       <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-xs">
                         {selectedAddonsWithDetails.length} Selected
@@ -1030,7 +991,7 @@ export function BookingPageClient({
                                   US${addon.priceUSD.toLocaleString()}
                                 </span>
                                 <span className="text-[11px] text-stone-500 font-medium block">
-                                  per person / unit
+                                  per unit
                                 </span>
                               </div>
                             </div>
@@ -1113,17 +1074,17 @@ export function BookingPageClient({
                       {activeAddons.length > 0 ? "4" : "3"}
                     </span>
                     <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                      Special Requirements &amp; Notes
+                      Special Requests
                     </h3>
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-stone-700 mb-1.5">
-                      Dietary preferences, room requests, or flight arrival notes{" "}
+                      Dietary requirements, room preferences, or arrival details{" "}
                       <span className="text-stone-400 font-normal">(Optional)</span>
                     </label>
                     <textarea
-                      placeholder="e.g. Vegetarian meals required, private twin room preference, arriving at Tribhuvan Airport on flight QR648..."
+                      placeholder="e.g. Vegetarian meals required, private twin room preference, arriving on flight QR648..."
                       rows={3}
                       value={specialRequests}
                       onChange={(e) => setSpecialRequests(e.target.value)}
@@ -1146,7 +1107,7 @@ export function BookingPageClient({
                       className="w-4 h-4 mt-0.5 accent-emerald-700 rounded-xs cursor-pointer shrink-0"
                     />
                     <span className="leading-relaxed">
-                      I understand that submitting this request secures my route permits and lodge room allocations. <strong className="text-stone-900 font-semibold">No payment is required today.</strong> A 25% deposit is due only after AlpineAce confirms all route allocations. Free cancellation is available up to 30 days prior to departure.
+                      I agree to the booking policies and cancellation terms. <strong className="text-stone-900 font-semibold">No payment is required today.</strong> A 25% deposit is payable only after your route allocations and permits are confirmed.
                     </span>
                   </label>
                   {formErrors.agreedToTerms && (
@@ -1170,17 +1131,17 @@ export function BookingPageClient({
                 <Button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
-                  className="w-full py-4 px-6 rounded-sm bg-emerald-700 hover:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+                  className="w-full py-3.5 px-6 rounded-sm bg-emerald-700 hover:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      Processing Your Reservation...
+                      Processing Reservation...
                     </span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <Send className="w-4 h-4 text-white" />
-                      Submit Reservation Request &bull; US${totalPriceUSD.toLocaleString()}
+                      Complete Reservation &bull; US${totalPriceUSD.toLocaleString()}
                     </span>
                   )}
                 </Button>
@@ -1211,7 +1172,11 @@ export function BookingPageClient({
                   {/* Trip Title & Meta Tags */}
                   <div className="space-y-2 pb-4 border-b border-stone-100">
                     <span className="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider block">
-                      {trip.categoryType} Expedition
+                      {trip.categoryType === BookingPackageType.TOUR
+                        ? "Tour"
+                        : trip.categoryType === BookingPackageType.EXPEDITION
+                        ? "Expedition"
+                        : "Trek"}
                     </span>
                     <h2 className="font-heading text-lg sm:text-xl font-bold text-stone-900 leading-snug">
                       {trip.title}
@@ -1253,7 +1218,7 @@ export function BookingPageClient({
                     </div>
                     <div>
                       <span className="text-stone-500 font-semibold block text-[11px] uppercase tracking-wider">
-                        Group Size
+                        Travelers
                       </span>
                       <span className="font-bold text-stone-900 text-sm">
                         {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
@@ -1261,10 +1226,10 @@ export function BookingPageClient({
                     </div>
                     <div>
                       <span className="text-stone-500 font-semibold block text-[11px] uppercase tracking-wider">
-                        Permit Allocation
+                        Duration
                       </span>
-                      <span className="font-bold text-emerald-800 text-sm flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5 text-emerald-700" /> Guaranteed Slot
+                      <span className="font-bold text-stone-900 text-sm">
+                        {trip.durationDays} Days
                       </span>
                     </div>
                   </div>
@@ -1278,7 +1243,7 @@ export function BookingPageClient({
                     {/* Base Trip Rate */}
                     <div className="flex items-center justify-between text-stone-600 font-medium">
                       <div>
-                        <span>Base Package Rate</span>
+                        <span>Base Rate</span>
                         <span className="block text-[11px] text-stone-500">
                           {travelers} &times; US${unitCostPerPerson.toLocaleString()}
                         </span>
@@ -1300,7 +1265,7 @@ export function BookingPageClient({
                     {selectedAddonsWithDetails.length > 0 && (
                       <div className="pt-2 border-t border-dashed border-stone-200 space-y-1.5">
                         <span className="text-stone-500 font-semibold text-[11px] block">
-                          Selected Upgrades &amp; Add-ons:
+                          Selected Add-ons:
                         </span>
                         {selectedAddonsWithDetails.map((addon) => (
                           <div
@@ -1321,7 +1286,7 @@ export function BookingPageClient({
                     {/* Estimated Total */}
                     <div className="pt-3 border-t border-stone-200 flex items-baseline justify-between">
                       <span className="font-bold text-stone-900 text-sm sm:text-base">
-                        Total Estimated Cost
+                        Total Amount
                       </span>
                       <span className="font-heading font-extrabold text-stone-900 text-lg sm:text-xl text-emerald-800">
                         US${totalPriceUSD.toLocaleString()}
@@ -1335,29 +1300,13 @@ export function BookingPageClient({
                         <span className="text-emerald-800 font-bold">US$0.00</span>
                       </div>
                       <div className="flex items-center justify-between text-stone-600 text-[11px]">
-                        <span>25% Deposit Upon Permit Approval:</span>
+                        <span>25% Deposit Upon Confirmation:</span>
                         <span className="font-semibold text-stone-800">US${depositUSD.toLocaleString()}</span>
                       </div>
                       <div className="flex items-center justify-between text-stone-500 text-[11px]">
                         <span>Remaining Balance in Nepal:</span>
                         <span>US${balanceUSD.toLocaleString()}</span>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Trust badges list */}
-                  <div className="pt-4 border-t border-stone-100 space-y-2 text-stone-600 font-medium text-[11px]">
-                    <div className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Zero cancellation fees up to 30 days prior</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Government registered TAAN &amp; NMA licensed guides</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Mountain className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>24/7 Satellite phone &amp; high-altitude emergency coverage</span>
                     </div>
                   </div>
                 </div>

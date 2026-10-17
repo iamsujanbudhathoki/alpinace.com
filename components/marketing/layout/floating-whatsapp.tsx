@@ -27,8 +27,6 @@ export function FloatingWhatsApp() {
   const rawNumber = settings.whatsappNumber || "";
   const cleanNumber = rawNumber.replace(/\D/g, "");
 
-  if (isBookingPage) return null;
-
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
@@ -45,6 +43,8 @@ export function FloatingWhatsApp() {
       behavior: "smooth",
     });
   };
+
+  if (isBookingPage) return null;
 
   const defaultMessage = "Hello AlpineAce team! I would like to inquire about planning a trip to Nepal.";
   const whatsappUrl = cleanNumber

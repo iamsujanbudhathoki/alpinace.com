@@ -57,6 +57,7 @@ import {
   calculateApplicablePrice,
   getMaxGroupTravelers,
 } from "@/lib/pricing-util";
+import { COMMON_ADDON_PRESETS } from "@/lib/constants/package-presets";
 
 export interface BookingTripDetails {
   id?: string;
@@ -263,10 +264,20 @@ export function BookingPageClient({
       : 20;
   }, [trip]);
 
-  // Active addons configured on this package
-  const activeAddons = useMemo(() => {
-    if (!trip || !Array.isArray(trip.addons)) return [];
-    return trip.addons.filter((a) => a.isActive !== false && a.title?.trim());
+  // Active addons configured on this package, falling back to standard adventure add-ons
+  const activeAddons = useMemo<PackageAddonItem[]>(() => {
+    if (!trip) return [];
+    if (Array.isArray(trip.addons) && trip.addons.length > 0) {
+      const configured = trip.addons.filter((a) => a.isActive !== false && a.title?.trim());
+      if (configured.length > 0) return configured;
+    }
+    return COMMON_ADDON_PRESETS.map((p) => ({
+      id: p.id,
+      title: p.title,
+      description: p.description,
+      priceUSD: p.priceUSD,
+      isActive: true,
+    }));
   }, [trip]);
 
   // Add-on selection handlers
@@ -640,10 +651,6 @@ export function BookingPageClient({
 
           {/* Right: Security & Assistance */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="hidden md:flex items-center gap-1.5 text-xs text-stone-700 font-medium bg-stone-50 border border-stone-200 px-3 py-1.5 rounded-md">
-              <ShieldCheck className="w-4 h-4 text-stone-700 shrink-0" />
-              <span>No payment required today</span>
-            </div>
             {settings.whatsappNumber && (
               <a
                 href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}`}
@@ -660,13 +667,10 @@ export function BookingPageClient({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10">
         {/* Page Heading */}
-        <div className="mb-6 sm:mb-8 space-y-1">
+        <div className="mb-6 sm:mb-8">
           <h1 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
             Book {trip?.title || "Your Adventure"}
           </h1>
-          <p className="text-xs sm:text-sm text-stone-500 font-medium">
-            Select your travel dates, party size, and optional add-ons below.
-          </p>
         </div>
 
         {/* Missing Package / Load Error Warning */}
@@ -807,31 +811,6 @@ export function BookingPageClient({
                       </div>
                     </div>
                   </div>
-
-                  {/* Scheduled Departures Quick Selector (if present on package) */}
-                  {trip.departureDates && trip.departureDates.length > 0 && (
-                    <div className="pt-3 border-t border-stone-100 space-y-2">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-stone-600 block">
-                        Select From Available Departures:
-                      </span>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {trip.departureDates.slice(0, 5).map((d) => (
-                          <button
-                            key={d.startDate}
-                            type="button"
-                            onClick={() => setStartDate(d.startDate)}
-                            className={`px-3 py-1.5 rounded-md border text-xs font-medium transition-colors cursor-pointer ${
-                              startDate === d.startDate
-                                ? "bg-stone-900 text-white border-stone-900"
-                                : "bg-stone-50 text-stone-700 border-stone-200 hover:border-stone-400"
-                            }`}
-                          >
-                            {d.startDate} &rarr; {d.endDate}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* STEP 2: Lead Traveler Details */}
@@ -1138,7 +1117,7 @@ export function BookingPageClient({
                       className="w-4 h-4 mt-0.5 accent-stone-900 rounded-sm cursor-pointer shrink-0"
                     />
                     <span className="leading-relaxed">
-                      I agree to the booking policies and cancellation terms. <strong className="text-stone-900 font-semibold">No payment is required today.</strong> A 25% deposit is payable only after your route allocations and permits are confirmed.
+                      I agree to the booking policies and cancellation terms. <strong className="text-stone-900 font-semibold">No payment is required today.</strong>
                     </span>
                   </label>
                   {formErrors.agreedToTerms && (
@@ -1229,39 +1208,15 @@ export function BookingPageClient({
                     </div>
                   </div>
 
-                  {/* Trip Specifications Grid */}
-                  <div className="grid grid-cols-2 gap-3 pb-4 border-b border-stone-100">
+                  {/* Compact Trip Specifications Row */}
+                  <div className="py-3 border-b border-stone-100 flex items-center justify-between text-xs">
                     <div>
-                      <span className="text-stone-500 font-semibold block text-[11px] uppercase tracking-wider">
-                        Departure Date
-                      </span>
-                      <span className="font-bold text-stone-900 text-sm">
-                        {startDate || "Not selected"}
-                      </span>
+                      <span className="text-stone-400 block text-[10px] uppercase font-semibold">Travelers &amp; Duration</span>
+                      <span className="font-bold text-stone-900">{travelers} {travelers === 1 ? "Traveler" : "Travelers"} &bull; {trip.durationDays} Days</span>
                     </div>
-                    <div>
-                      <span className="text-stone-500 font-semibold block text-[11px] uppercase tracking-wider">
-                        Est. Return Date
-                      </span>
-                      <span className="font-bold text-stone-900 text-sm">
-                        {endDate || "—"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-stone-500 font-semibold block text-[11px] uppercase tracking-wider">
-                        Travelers
-                      </span>
-                      <span className="font-bold text-stone-900 text-sm">
-                        {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-stone-500 font-semibold block text-[11px] uppercase tracking-wider">
-                        Duration
-                      </span>
-                      <span className="font-bold text-stone-900 text-sm">
-                        {trip.durationDays} Days
-                      </span>
+                    <div className="text-right">
+                      <span className="text-stone-400 block text-[10px] uppercase font-semibold">Departure</span>
+                      <span className="font-bold text-stone-900">{startDate || "Not selected"}</span>
                     </div>
                   </div>
 

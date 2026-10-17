@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   TurnstileWidget,
   TurnstileWidgetRef,
@@ -32,6 +31,7 @@ import { useSettings } from "@/lib/settings-context";
 import {
   AlertCircle,
   ArrowLeft,
+  ArrowRight,
   Check,
   CheckCheck,
   CheckCircle2,
@@ -40,7 +40,7 @@ import {
   Minus,
   Plus,
   Printer,
-  Send
+  ShieldCheck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -1331,27 +1331,28 @@ export function BookingPageClient({
                     </div>
 
                     {/* Primary Reservation CTA Button */}
-                    <div className="pt-2 space-y-2">
-                      <Button
+                    <div className="pt-2 space-y-2.5">
+                      <button
                         type="submit"
                         disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
-                        className="w-full py-4 px-6 rounded-md bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+                        className="group w-full py-3.5 px-5 rounded-md bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-sm font-semibold shadow-xs hover:shadow-sm cursor-pointer transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30"
                       >
                         {isSubmitting ? (
-                          <span className="flex items-center gap-2">
+                          <>
                             <Loader2 className="w-4 h-4 animate-spin text-white" />
-                            Processing Reservation...
-                          </span>
+                            <span>Confirming Reservation...</span>
+                          </>
                         ) : (
-                          <span className="flex items-center justify-center gap-2">
-                            <Send className="w-4 h-4 text-white" />
-                            Complete Reservation &bull; US${totalPriceUSD.toLocaleString()}
-                          </span>
+                          <>
+                            <span>Confirm Reservation</span>
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                          </>
                         )}
-                      </Button>
-                      <p className="text-[11px] text-stone-500 text-center font-medium">
-                        Instant reservation request &bull; No payment required today
-                      </p>
+                      </button>
+                      <div className="flex items-center justify-center gap-1.5 text-xs text-stone-500 font-medium">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>No payment required today &bull; Free cancellation</span>
+                      </div>
                     </div>
                   </div>
                 </div>

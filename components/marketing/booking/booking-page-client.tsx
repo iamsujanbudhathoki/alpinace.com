@@ -422,7 +422,7 @@ export function BookingPageClient({
   // 1. CONFIRMATION RECEIPT VIEW
   if (confirmedBooking) {
     return (
-      <div className="min-h-screen bg-stone-50/70 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-stone-50/70 pt-28 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
           {/* Header Card */}
           <div className="bg-white rounded-md border border-stone-200 p-6 sm:p-8 text-center shadow-xs space-y-3">
@@ -592,7 +592,7 @@ export function BookingPageClient({
   // 2. LOADING STATE
   if (loadingTrip) {
     return (
-      <div className="min-h-[60vh] bg-stone-50/50 flex flex-col items-center justify-center p-6 space-y-3">
+      <div className="min-h-[70vh] bg-stone-50/50 flex flex-col items-center justify-center p-6 space-y-3 pt-32">
         <Loader2 className="w-8 h-8 animate-spin text-emerald-700" />
         <p className="text-sm font-medium text-stone-600">
           Loading reservation details for your adventure...
@@ -607,7 +607,7 @@ export function BookingPageClient({
     : "/trekking";
 
   return (
-    <div className="min-h-screen bg-stone-50/60 pb-24 lg:pb-32">
+    <div className="min-h-screen bg-stone-50/60 pb-24 lg:pb-32 pt-[74px] sm:pt-[82px] md:pt-[90px]">
       {/* Top Breadcrumb & Clean Status */}
       <div className="bg-white border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -1149,7 +1149,7 @@ export function BookingPageClient({
             </div>
 
             {/* RIGHT COLUMN: Sticky Order & Summary Card (5 Cols) */}
-            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
+            <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
               <div className="bg-white rounded-sm border border-stone-200 shadow-2xs overflow-hidden">
                 {/* Trip Photo Preview */}
                 {trip.image && (

@@ -548,7 +548,7 @@ export function BookingPageClient({
                 <div className="flex items-center justify-between text-stone-500 text-[11px] pt-1.5 border-t border-stone-200">
                   <span>Payment status:</span>
                   <span className="font-semibold text-stone-700">
-                    No Upfront Payment Required Today
+                    Pending Confirmation
                   </span>
                 </div>
               </div>
@@ -1180,7 +1180,7 @@ export function BookingPageClient({
                       className="w-4 h-4 mt-0.5 accent-stone-900 rounded-sm cursor-pointer shrink-0"
                     />
                     <span className="leading-relaxed">
-                      I agree to the booking policies and cancellation terms. <strong className="text-stone-900 font-semibold">No payment is required today.</strong>
+                      I agree to the booking policies and cancellation terms.
                     </span>
                   </label>
                   {formErrors.agreedToTerms && (

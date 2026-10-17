@@ -665,14 +665,13 @@ export function BookingPageClient({
       {/* Dedicated Clean Booking Header */}
       <header className="bg-white border-b border-stone-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-4">
-          {/* Left: Prominent Back Button */}
+          {/* Left: Clean Back Navigation Button */}
           <Link
             href={packageBackHref}
-            className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 rounded-md bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-xs sm:text-sm transition-colors cursor-pointer group shrink-0"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-2 rounded-md bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-xs sm:text-sm transition-colors cursor-pointer group shrink-0"
           >
             <ArrowLeft className="w-4 h-4 text-stone-700 group-hover:-translate-x-0.5 transition-transform shrink-0" />
-            <span className="sm:hidden">Back</span>
-            <span className="hidden sm:inline">Back to {trip?.title || "Trip"}</span>
+            <span>Back</span>
           </Link>
 
           {/* Center: Brand Identity */}
@@ -1343,7 +1342,7 @@ export function BookingPageClient({
                 <Button
                   type="submit"
                   disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
-                  className="w-full py-4 px-6 rounded-md bg-stone-900 hover:bg-black text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+                  className="w-full py-4 px-6 rounded-md bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">

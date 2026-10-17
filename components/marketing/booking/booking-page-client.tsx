@@ -1,63 +1,52 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
-import { navLinks } from "@/lib/site-config";
-import { useSettings } from "@/lib/settings-context";
-import {
-  Calendar,
-  Users,
-  MapPin,
-  Sparkles,
-  Check,
-  ArrowLeft,
-  Loader2,
-  Send,
-  CheckCircle2,
-  ChevronRight,
-  Phone,
-  Mail,
-  Globe,
-  Clock,
-  Mountain,
-  AlertCircle,
-  Printer,
-  ShieldCheck,
-  CheckCheck,
-  Minus,
-  Plus,
-} from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Booking,
-  BookingPackageType,
-  BookingPaymentStatus,
-  BookingPermitStatus,
-  PackageAddonItem,
-  BookingSelectedAddon,
-  TripDepartureDate,
-} from "@/lib/admin-data";
-import { BookingFormValues } from "@/lib/admin-schemas";
-import {
-  BookingService,
-  TrekService,
-  TourService,
-  ExpeditionService,
-} from "@/lib/services/admin-service";
-import { COUNTRY_OPTIONS } from "@/lib/country-list";
 import {
   TurnstileWidget,
   TurnstileWidgetRef,
 } from "@/components/ui/turnstile-widget";
 import {
+  Booking,
+  BookingPackageType,
+  BookingPaymentStatus,
+  BookingPermitStatus,
+  BookingSelectedAddon,
+  PackageAddonItem,
+  TripDepartureDate,
+} from "@/lib/admin-data";
+import { BookingFormValues } from "@/lib/admin-schemas";
+import { COMMON_ADDON_PRESETS } from "@/lib/constants/package-presets";
+import { COUNTRY_OPTIONS } from "@/lib/country-list";
+import {
   GroupPricingTier,
   calculateApplicablePrice,
   getMaxGroupTravelers,
 } from "@/lib/pricing-util";
-import { COMMON_ADDON_PRESETS } from "@/lib/constants/package-presets";
+import {
+  BookingService,
+  ExpeditionService,
+  TourService,
+  TrekService,
+} from "@/lib/services/admin-service";
+import { useSettings } from "@/lib/settings-context";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Check,
+  CheckCheck,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Minus,
+  Plus,
+  Printer,
+  Send
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export interface BookingTripDetails {
   id?: string;
@@ -1312,14 +1301,6 @@ export function BookingPageClient({
                         US${baseTripTotalUSD.toLocaleString()}
                       </span>
                     </div>
-
-                    {/* Group Tier Badge if applied */}
-                    {pricingResult.applicableTier && (
-                      <div className="flex items-center justify-between text-stone-800 bg-stone-100 border border-stone-300 px-2.5 py-1 rounded-md text-[11px] font-semibold">
-                        <span>Group Tier Rate Applied</span>
-                        <span>Saving vs Solo Rate</span>
-                      </div>
-                    )}
 
                     {/* Selected Add-ons itemized with quantities */}
                     {selectedAddonsWithDetails.length > 0 && (

@@ -462,20 +462,20 @@ export function BookingPageClient({
           <div className="bg-white rounded-md border border-stone-200 overflow-hidden shadow-xs">
             <div className="bg-stone-900 text-white px-6 sm:px-8 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="text-xs uppercase font-semibold text-stone-400 block tracking-wider">
-                  Booking Reference
+                <span className="text-xs font-medium text-stone-400 block">
+                  Booking reference
                 </span>
                 <span className="font-mono text-xl sm:text-2xl font-bold text-white tracking-wider">
                   {confirmedBooking.reference}
                 </span>
               </div>
               <div className="text-left sm:text-right">
-                <span className="text-xs uppercase font-semibold text-stone-400 block tracking-wider">
+                <span className="text-xs font-medium text-stone-400 block">
                   Status
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-200 bg-stone-800 px-2.5 py-1 rounded-md border border-stone-700">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                  Permits In Review
+                  Permits in review
                 </span>
               </div>
             </div>
@@ -483,8 +483,8 @@ export function BookingPageClient({
             <div className="p-6 sm:p-8 space-y-6 text-xs sm:text-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-6 border-b border-stone-200">
                 <div>
-                  <span className="text-stone-500 font-semibold block text-xs uppercase tracking-wider mb-1">
-                    Lead Traveler
+                  <span className="text-stone-500 font-medium block text-xs mb-1">
+                    Lead traveler
                   </span>
                   <div className="font-bold text-stone-900">{confirmedBooking.guestName}</div>
                   <div className="text-stone-600">{confirmedBooking.guestEmail}</div>
@@ -493,8 +493,8 @@ export function BookingPageClient({
                 </div>
 
                 <div>
-                  <span className="text-stone-500 font-semibold block text-xs uppercase tracking-wider mb-1">
-                    Adventure Specs
+                  <span className="text-stone-500 font-medium block text-xs mb-1">
+                    Adventure details
                   </span>
                   <div className="font-bold text-stone-900">{confirmedBooking.packageName}</div>
                   <div className="text-stone-600">
@@ -509,8 +509,8 @@ export function BookingPageClient({
               {/* Addons breakdown if any */}
               {confirmedBooking.addons && confirmedBooking.addons.length > 0 && (
                 <div className="pb-6 border-b border-stone-200 space-y-2">
-                  <span className="text-stone-500 font-semibold block text-xs uppercase tracking-wider">
-                    Selected Add-ons &amp; Upgrades
+                  <span className="text-stone-500 font-medium block text-xs">
+                    Selected add-ons
                   </span>
                   <div className="space-y-1.5">
                     {confirmedBooking.addons.map((a: BookingSelectedAddon) => {
@@ -555,8 +555,8 @@ export function BookingPageClient({
 
               {/* Next Steps Road Map */}
               <div className="bg-stone-50 border border-stone-200 rounded-md p-4.5 space-y-2.5">
-                <h4 className="font-bold text-stone-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-stone-700" /> What Happens Next?
+                <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-stone-700" /> What happens next?
                 </h4>
                 <ol className="list-decimal list-inside space-y-1.5 text-xs text-stone-700 leading-relaxed font-normal">
                   <li>
@@ -690,8 +690,8 @@ export function BookingPageClient({
 
             {allPackages.length > 0 && (
               <div className="pt-2">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-stone-700 block mb-1.5">
-                  Select Adventure Package:
+                <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                  Select adventure package:
                 </label>
                 <select
                   value={trip?.slug || ""}
@@ -704,7 +704,7 @@ export function BookingPageClient({
                   <option value="">-- Choose an Adventure --</option>
                   {allPackages.map((p) => (
                     <option key={`${p.type}-${p.slug}`} value={p.slug}>
-                      [{p.type.toUpperCase()}] {p.title}
+                      [{p.type.charAt(0).toUpperCase() + p.type.slice(1)}] {p.title}
                     </option>
                   ))}
                 </select>
@@ -1171,7 +1171,7 @@ export function BookingPageClient({
                       className="object-cover"
                       priority
                     />
-                    <div className="absolute top-3 left-3 bg-stone-900/90 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-sm backdrop-blur-xs">
+                    <div className="absolute top-3 left-3 bg-stone-900/90 text-white text-xs font-medium px-2.5 py-1 rounded-sm backdrop-blur-xs">
                       {trip.region}
                     </div>
                   </div>
@@ -1181,7 +1181,7 @@ export function BookingPageClient({
                 <div className="p-5 sm:p-6 space-y-5 text-xs">
                   {/* Trip Title & Meta Tags */}
                   <div className="space-y-2 pb-4 border-b border-stone-100">
-                    <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">
+                    <span className="text-xs font-medium text-stone-500 block">
                       {trip.categoryType === BookingPackageType.TOUR
                         ? "Tour"
                         : trip.categoryType === BookingPackageType.EXPEDITION
@@ -1211,19 +1211,19 @@ export function BookingPageClient({
                   {/* Compact Trip Specifications Row */}
                   <div className="py-3 border-b border-stone-100 flex items-center justify-between text-xs">
                     <div>
-                      <span className="text-stone-400 block text-[10px] uppercase font-semibold">Travelers &amp; Duration</span>
-                      <span className="font-bold text-stone-900">{travelers} {travelers === 1 ? "Traveler" : "Travelers"} &bull; {trip.durationDays} Days</span>
+                      <span className="text-stone-500 block text-xs">Travelers &amp; duration</span>
+                      <span className="font-semibold text-stone-900">{travelers} {travelers === 1 ? "Traveler" : "Travelers"} &bull; {trip.durationDays} Days</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-stone-400 block text-[10px] uppercase font-semibold">Departure</span>
-                      <span className="font-bold text-stone-900">{startDate || "Not selected"}</span>
+                      <span className="text-stone-500 block text-xs">Departure</span>
+                      <span className="font-semibold text-stone-900">{startDate || "Not selected"}</span>
                     </div>
                   </div>
 
                   {/* Financial Breakdown */}
                   <div className="space-y-3">
-                    <span className="font-bold text-stone-900 text-xs uppercase tracking-wider block">
-                      Price Breakdown
+                    <span className="font-bold text-stone-900 text-sm block">
+                      Price breakdown
                     </span>
 
                     {/* Base Trip Rate */}

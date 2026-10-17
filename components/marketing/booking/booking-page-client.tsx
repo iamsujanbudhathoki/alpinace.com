@@ -715,10 +715,10 @@ export function BookingPageClient({
 
         {/* Main 2-Column Checkout Layout */}
         {trip && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* LEFT COLUMN: Booking Form (7 Cols) */}
-            <div className="lg:col-span-7 space-y-6">
-              <form onSubmit={handleSubmit} noValidate className="space-y-6">
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* LEFT COLUMN: Booking Form (7 Cols) */}
+              <div className="lg:col-span-7 space-y-6">
                 {errorMessage && (
                   <div className="p-3.5 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
@@ -1199,27 +1199,7 @@ export function BookingPageClient({
                     onError={() => setTurnstileToken("")}
                   />
                 </div>
-
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
-                  className="w-full py-4 px-6 rounded-md bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      Processing Reservation...
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center gap-2">
-                      <Send className="w-4 h-4 text-white" />
-                      Complete Reservation &bull; US${totalPriceUSD.toLocaleString()}
-                    </span>
-                  )}
-                </Button>
-              </form>
-            </div>
+              </div>
 
             {/* RIGHT COLUMN: Sticky Order & Summary Card (5 Cols) */}
             <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
@@ -1349,12 +1329,37 @@ export function BookingPageClient({
                         <span>US${balanceUSD.toLocaleString()}</span>
                       </div>
                     </div>
+
+                    {/* Primary Reservation CTA Button */}
+                    <div className="pt-2 space-y-2">
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting || !turnstileToken || Boolean(pricingResult.error)}
+                        className="w-full py-4 px-6 rounded-md bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+                      >
+                        {isSubmitting ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="w-4 h-4 animate-spin text-white" />
+                            Processing Reservation...
+                          </span>
+                        ) : (
+                          <span className="flex items-center justify-center gap-2">
+                            <Send className="w-4 h-4 text-white" />
+                            Complete Reservation &bull; US${totalPriceUSD.toLocaleString()}
+                          </span>
+                        )}
+                      </Button>
+                      <p className="text-[11px] text-stone-500 text-center font-medium">
+                        Instant reservation request &bull; No payment required today
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </form>
+      )}
       </div>
     </div>
   );

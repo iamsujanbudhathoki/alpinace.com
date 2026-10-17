@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { Plus, Trash2, Calendar, DollarSign, Users, AlertCircle, CheckCircle2, Info, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { TripDepartureDate, DepartureDateStatus } from "@/lib/admin-data";
+import { toast } from "sonner";
 
 interface TripDepartureDatesManagerProps {
   dates: TripDepartureDate[];
@@ -58,17 +60,28 @@ export function TripDepartureDatesManager({
     const nextDates = [...dates];
     if (editingIndex === -1) {
       nextDates.push({ ...formData, id: `dep-${Date.now()}` });
+      toast.success("Departure date slot added.");
     } else if (editingIndex !== null && editingIndex >= 0) {
       nextDates[editingIndex] = { ...formData };
+      toast.success("Departure date slot updated.");
     }
     onChange(nextDates);
     setEditingIndex(null);
   };
 
-  const handleDelete = (index: number) => {
-    const nextDates = dates.filter((_, i) => i !== index);
-    onChange(nextDates);
-    if (editingIndex === index) setEditingIndex(null);
+  const [dateToDelete, setDateToDelete] = useState<{
+    index: number;
+    date: TripDepartureDate;
+  } | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (dateToDelete !== null) {
+      const nextDates = dates.filter((_, i) => i !== dateToDelete.index);
+      onChange(nextDates);
+      if (editingIndex === dateToDelete.index) setEditingIndex(null);
+      toast.success("Departure date slot removed.");
+      setDateToDelete(null);
+    }
   };
 
   return (
@@ -76,7 +89,7 @@ export function TripDepartureDatesManager({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
         <div>
           <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-emerald-600" />
+            <Calendar className="w-4 h-4 text-amber-500" />
             <span>Fixed Departure Dates &amp; Availability</span>
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -88,9 +101,9 @@ export function TripDepartureDatesManager({
             type="button"
             onClick={handleStartAdd}
             size="sm"
-            className="bg-emerald-700 hover:bg-emerald-800 text-white gap-1.5 text-xs h-9 px-3"
+            className="bg-slate-900 hover:bg-slate-800 text-white gap-1.5 text-xs h-9 px-3 shadow-xs cursor-pointer font-semibold"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-3.5 h-3.5 text-amber-400" />
             <span>Add Departure Date</span>
           </Button>
         )}
@@ -98,13 +111,12 @@ export function TripDepartureDatesManager({
 
       {/* Form Drawer / Card */}
       {editingIndex !== null && !readOnly && (
-        <div className="p-4 sm:p-5 bg-white border border-emerald-200 shadow-sm rounded-xl space-y-4">
+        <div className="p-4 sm:p-5 bg-white border border-slate-200 shadow-sm rounded-xl space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-emerald-600" />
+              <Calendar className="w-4 h-4 text-amber-500" />
               <span>{editingIndex === -1 ? "New Departure Date Slot" : "Edit Departure Date Slot"}</span>
             </h4>
-            <span className="text-xs text-slate-400">Step {editingIndex === -1 ? "1" : "2"} of 2</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -116,7 +128,7 @@ export function TripDepartureDatesManager({
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 bg-white"
+                className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 bg-white"
               />
             </div>
 
@@ -128,7 +140,7 @@ export function TripDepartureDatesManager({
                 type="date"
                 value={formData.endDate}
                 onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 bg-white"
+                className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 bg-white"
               />
             </div>
 
@@ -148,7 +160,7 @@ export function TripDepartureDatesManager({
                       priceUSD: e.target.value !== "" ? Number(e.target.value) : undefined,
                     })
                   }
-                  className="w-full h-9 text-xs pl-8 pr-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 bg-white"
+                  className="w-full h-9 text-xs pl-8 pr-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 bg-white"
                 />
               </div>
             </div>
@@ -160,7 +172,7 @@ export function TripDepartureDatesManager({
               <select
                 value={formData.status || DepartureDateStatus.GUARANTEED}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as DepartureDateStatus })}
-                className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 bg-white"
+                className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 bg-white"
               >
                 {STATUS_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -188,7 +200,7 @@ export function TripDepartureDatesManager({
                       seatsAvailable: e.target.value !== "" ? Number(e.target.value) : undefined,
                     })
                   }
-                  className="w-full h-9 text-xs pl-8 pr-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 bg-white"
+                  className="w-full h-9 text-xs pl-8 pr-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 bg-white"
                 />
               </div>
             </div>
@@ -202,7 +214,7 @@ export function TripDepartureDatesManager({
                 placeholder="e.g. Early Bird Discount Available"
                 value={formData.notes || ""}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 bg-white"
+                className="w-full h-9 text-xs px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 bg-white"
               />
             </div>
           </div>
@@ -213,7 +225,7 @@ export function TripDepartureDatesManager({
               variant="outline"
               size="sm"
               onClick={() => setEditingIndex(null)}
-              className="text-xs h-8"
+              className="text-xs h-8 cursor-pointer"
             >
               Cancel
             </Button>
@@ -222,7 +234,7 @@ export function TripDepartureDatesManager({
               size="sm"
               onClick={handleSave}
               disabled={!formData.startDate || !formData.endDate}
-              className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs h-8 px-4"
+              className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 px-4 cursor-pointer font-semibold shadow-xs"
             >
               {editingIndex === -1 ? "Save Date Slot" : "Update Date Slot"}
             </Button>
@@ -251,7 +263,7 @@ export function TripDepartureDatesManager({
                 className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80 transition-colors"
               >
                 <div className="flex items-start gap-3">
-                  <div className="p-2.5 bg-emerald-50 rounded-lg text-emerald-700 shrink-0 mt-0.5">
+                  <div className="p-2.5 bg-slate-100 rounded-lg text-slate-700 shrink-0 mt-0.5">
                     <Calendar className="w-4 h-4" />
                   </div>
                   <div className="space-y-1">
@@ -292,15 +304,15 @@ export function TripDepartureDatesManager({
                     <button
                       type="button"
                       onClick={() => handleStartEdit(idx)}
-                      className="p-1.5 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-md transition-colors text-xs flex items-center gap-1"
+                      className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors text-xs flex items-center gap-1 cursor-pointer"
                       title="Edit Date Slot"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(idx)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors text-xs"
+                      onClick={() => setDateToDelete({ index: idx, date: item })}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors text-xs cursor-pointer"
                       title="Delete Date Slot"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -312,6 +324,21 @@ export function TripDepartureDatesManager({
           })}
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <AdminConfirmModal
+        isOpen={dateToDelete !== null}
+        onClose={() => setDateToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Departure Date"
+        description={
+          dateToDelete
+            ? `Are you sure you want to remove the departure slot for ${dateToDelete.date.startDate} to ${dateToDelete.date.endDate}? This action cannot be undone.`
+            : "Are you sure you want to remove this departure date? This action cannot be undone."
+        }
+        confirmText="Delete Date"
+        variant="danger"
+      />
     </div>
   );
 }

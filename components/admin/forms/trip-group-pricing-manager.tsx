@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { GroupPricingTier, validateGroupPricingTiers } from "@/lib/pricing-util";
+import { toast } from "sonner";
 
 export interface TripGroupPricingManagerProps {
   enabled: boolean;
@@ -113,6 +114,7 @@ export function TripGroupPricingManager({
     }
 
     onChange(nextTiers);
+    toast.success(editingIndex === -1 ? "Pricing tier added." : "Pricing tier updated.");
     setEditingIndex(null);
     setEditError(null);
   };
@@ -120,6 +122,7 @@ export function TripGroupPricingManager({
   const handleDeleteTier = (index: number) => {
     const nextTiers = tiers.filter((_, i) => i !== index);
     onChange(nextTiers);
+    toast.success("Pricing tier removed.");
     if (editingIndex === index) {
       setEditingIndex(null);
       setEditError(null);
@@ -160,7 +163,7 @@ export function TripGroupPricingManager({
               type="checkbox"
               checked={enabled}
               onChange={(e) => onEnabledChange(e.target.checked)}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer"
+              className="w-4 h-4 rounded text-slate-900 focus:ring-slate-800 border-slate-300 cursor-pointer accent-slate-900"
             />
             <span className="text-xs font-semibold text-slate-900">
               Enable group pricing
@@ -213,9 +216,9 @@ export function TripGroupPricingManager({
                   type="button"
                   size="sm"
                   onClick={handleStartAdd}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white gap-1.5 text-xs h-7.5 px-2.5 shadow-xs font-medium cursor-pointer"
+                  className="bg-slate-900 hover:bg-slate-800 text-white gap-1.5 text-xs h-7.5 px-2.5 shadow-xs font-semibold cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5 text-amber-400" />
                   <span>Add pricing tier</span>
                 </Button>
               )}
@@ -329,9 +332,9 @@ export function TripGroupPricingManager({
                   type="button"
                   size="sm"
                   onClick={handleStartAdd}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white gap-1.5 text-xs h-8 px-4 font-medium cursor-pointer"
+                  className="bg-slate-900 hover:bg-slate-800 text-white gap-1.5 text-xs h-8 px-4 font-semibold shadow-xs cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5 text-amber-400" />
                   <span>Add pricing tier</span>
                 </Button>
               </div>
@@ -437,7 +440,7 @@ export function TripGroupPricingManager({
                   type="button"
                   size="sm"
                   onClick={handleSaveTier}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white h-8 text-xs px-4 font-medium"
+                  className="bg-slate-900 hover:bg-slate-800 text-white h-8 text-xs px-4 font-semibold shadow-xs cursor-pointer"
                 >
                   {editingIndex === -1 ? "Save tier" : "Update tier"}
                 </Button>

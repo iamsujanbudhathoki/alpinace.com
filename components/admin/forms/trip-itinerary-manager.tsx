@@ -17,10 +17,18 @@ import {
   AlertCircle,
   AlertTriangle,
   CheckCircle2,
+  GripVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { TripItineraryDay, TripItineraryDetail } from "@/lib/trek-data";
+import { toast } from "sonner";
+import {
+  COMMON_ACCOMMODATION_OPTIONS,
+  COMMON_MEAL_OPTIONS,
+  generateStandardItineraryDump,
+} from "@/lib/constants/package-presets";
 
 interface TripItineraryManagerProps {
   itinerary: TripItineraryDay[];
@@ -36,6 +44,9 @@ export function TripItineraryManager({
   errors,
 }: TripItineraryManagerProps) {
   const [openDayIndices, setOpenDayIndices] = useState<number[]>([0]);
+  const [confirmDumpOpen, setConfirmDumpOpen] = useState(false);
+  const [draggedDayIndex, setDraggedDayIndex] = useState<number | null>(null);
+  const [dragOverDayIndex, setDragOverDayIndex] = useState<number | null>(null);
 
   // Find errors for a specific day only if React Hook Form has flagged it
   const getDayErrors = (index: number) => {
@@ -84,23 +95,60 @@ export function TripItineraryManager({
     setOpenDayIndices([nextList.length - 1]);
   };
 
-  const handleAutoGenerateFromDuration = () => {
-    if (!durationDays || durationDays <= 0) return;
-    const days: TripItineraryDay[] = Array.from({ length: durationDays }, (_, i) => ({
-      day: i + 1,
-      title: i === 0 ? "Arrive in Kathmandu" : i === durationDays - 1 ? "Final Departure" : `Trek Route - Day ${i + 1}`,
-      description: i === 0 
-        ? "Airport arrival reception and transfer to luxury hotel in Kathmandu. Welcome orientation and gear check."
-        : i === durationDays - 1
-        ? "Morning breakfast and transfer to Tribhuvan International Airport for scheduled departure."
-        : `Scenic day on the trail progressing according to route itinerary and acclimatization pace.`,
-      maxAltitude: i === 0 ? "Kathmandu (1,400 m)" : "",
-      accommodation: i === 0 ? "Overnight in Kathmandu" : "Tea House / Mountain Lodge",
-      meals: i === 0 ? "Meals not included" : "Breakfast, Lunch & Dinner",
-      details: [],
-    }));
-    onChange(days);
+  const handleExecuteDump = () => {
+    const count = durationDays && durationDays > 0 ? durationDays : 12;
+    const dumpedDays = generateStandardItineraryDump(count);
+    onChange(dumpedDays);
     setOpenDayIndices([0]);
+    setConfirmDumpOpen(false);
+    toast.success(`Loaded standard ${count}-day Himalayan route itinerary.`);
+  };
+
+  const handlePromptDump = () => {
+    if (itinerary.length > 0) {
+      setConfirmDumpOpen(true);
+    } else {
+      handleExecuteDump();
+    }
+  };
+
+  const handleDayDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedDayIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDayDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedDayIndex !== null && draggedDayIndex !== index) {
+      setDragOverDayIndex(index);
+    }
+  };
+
+  const handleDayDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedDayIndex === null || draggedDayIndex === targetIndex) {
+      setDraggedDayIndex(null);
+      setDragOverDayIndex(null);
+      return;
+    }
+
+    const reordered = [...itinerary];
+    const [moved] = reordered.splice(draggedDayIndex, 1);
+    reordered.splice(targetIndex, 0, moved);
+
+    const updated = reordered.map((item, idx) => ({
+      ...item,
+      day: idx + 1,
+    }));
+
+    onChange(updated);
+    setDraggedDayIndex(null);
+    setDragOverDayIndex(null);
+    toast.success(`Moved Day ${moved.day || draggedDayIndex + 1} to position ${targetIndex + 1}.`);
+  };
+
+  const handleAutoGenerateFromDuration = () => {
+    handlePromptDump();
   };
 
   const handleUpdateDay = (index: number, field: keyof TripItineraryDay, value: any) => {
@@ -113,11 +161,22 @@ export function TripItineraryManager({
     onChange(updated);
   };
 
-  const handleRemoveDay = (index: number) => {
-    const filtered = itinerary
-      .filter((_, i) => i !== index)
-      .map((item, i) => ({ ...item, day: i + 1 }));
-    onChange(filtered);
+  const [dayToDelete, setDayToDelete] = useState<{
+    index: number;
+    day: TripItineraryDay;
+  } | null>(null);
+
+  const handleConfirmRemoveDay = () => {
+    if (dayToDelete !== null) {
+      const dayNum = dayToDelete.index + 1;
+      const title = dayToDelete.day?.title;
+      const filtered = itinerary
+        .filter((_, i) => i !== dayToDelete.index)
+        .map((item, i) => ({ ...item, day: i + 1 }));
+      onChange(filtered);
+      toast.success(title ? `Day ${dayNum} ("${title}") removed.` : `Day ${dayNum} removed.`);
+      setDayToDelete(null);
+    }
   };
 
   const handleMoveDay = (index: number, direction: "up" | "down") => {
@@ -223,25 +282,25 @@ export function TripItineraryManager({
             </div>
           )}
 
-          {Boolean(durationDays && durationDays > 0 && itinerary.length === 0) ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAutoGenerateFromDuration}
-              className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold h-8 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 mr-1 text-slate-500" />
-              Generate {durationDays} Days
-            </Button>
-          ) : null}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handlePromptDump}
+            className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold h-8 cursor-pointer shadow-2xs"
+            title={`Dump full ${durationDays && durationDays > 0 ? `${durationDays}-day` : "12-day"} standard Himalayan route`}
+          >
+            <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-500" />
+            <span>Dump Standard Route</span>
+          </Button>
 
           <Button
             type="button"
             size="sm"
             onClick={handleAddDay}
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-8 cursor-pointer shadow-xs"
           >
-            <Plus className="w-3.5 h-3.5 mr-1" />
+            <Plus className="w-3.5 h-3.5 mr-1 text-amber-400" />
             Add Day
           </Button>
         </div>
@@ -258,46 +317,44 @@ export function TripItineraryManager({
           </div>
           <button
             type="button"
-            onClick={handleAutoGenerateFromDuration}
+            onClick={handlePromptDump}
             className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline shrink-0 cursor-pointer"
           >
-            Re-generate {durationDays} Days
+            Re-dump {durationDays} Days Route
           </button>
         </div>
       )}
 
       {/* Empty State */}
       {itinerary.length === 0 ? (
-        <div className="text-center py-10 px-4 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 space-y-3">
+        <div className="text-center py-10 px-4 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 space-y-4">
           <Calendar className="w-10 h-10 text-slate-300 mx-auto" />
           <div className="space-y-1 max-w-sm mx-auto">
             <p className="text-xs font-bold text-slate-800">No itinerary days added yet</p>
             <p className="text-[11px] text-slate-500">
-              Add day-by-day route details including descriptions, summit heights, overnight stays, and meal plans.
+              Dump a complete standard {durationDays && durationDays > 0 ? `${durationDays}-day` : "12-day"} route with 1 click, or add days manually.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-            {Boolean(durationDays && durationDays > 0) ? (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleAutoGenerateFromDuration}
-                className="text-xs font-semibold cursor-pointer border-amber-300 text-amber-900 hover:bg-amber-50"
-              >
-                <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" />
-                Auto-generate {durationDays} Days
-              </Button>
-            ) : null}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleExecuteDump}
+              className="text-xs font-semibold cursor-pointer border-amber-300 text-amber-900 hover:bg-amber-50 shadow-2xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" />
+              Dump Complete {durationDays && durationDays > 0 ? `${durationDays}-Day` : "12-Day"} Route
+            </Button>
             <Button
               type="button"
               size="sm"
               onClick={handleAddDay}
-              className="text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
+              className="text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer shadow-xs"
             >
               <Plus className="w-3.5 h-3.5 mr-1 text-amber-400" />
-              Add Day 1
+              Add Blank Day 1
             </Button>
           </div>
         </div>
@@ -311,12 +368,26 @@ export function TripItineraryManager({
             const hasTitleError = !!dayError?.title;
             const hasDescError = !!dayError?.description;
             const hasDayError = !!dayError;
+            const isDragging = draggedDayIndex === index;
+            const isOver = dragOverDayIndex === index;
 
             return (
               <div
                 key={index}
+                draggable
+                onDragStart={(e) => handleDayDragStart(e, index)}
+                onDragOver={(e) => handleDayDragOver(e, index)}
+                onDrop={(e) => handleDayDrop(e, index)}
+                onDragEnd={() => {
+                  setDraggedDayIndex(null);
+                  setDragOverDayIndex(null);
+                }}
                 className={`rounded-xl bg-white border shadow-2xs overflow-hidden transition-all duration-200 ${
-                  hasDayError
+                  isDragging
+                    ? "opacity-40 bg-amber-50/50 border-dashed border-amber-300"
+                    : isOver
+                    ? "border-t-2 border-amber-500 bg-amber-50/20"
+                    : hasDayError
                     ? "border-rose-300 ring-1 ring-rose-200"
                     : "border-slate-200"
                 }`}
@@ -327,6 +398,13 @@ export function TripItineraryManager({
                     hasDayError ? "bg-rose-50/50 border-rose-100" : "bg-slate-50/80 border-slate-100"
                   }`}
                 >
+                  <div
+                    className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-700 p-0.5 rounded transition-colors shrink-0"
+                    title="Drag to reorder day"
+                  >
+                    <GripVertical className="w-4 h-4" />
+                  </div>
+
                   <div
                     onClick={() => toggleDayOpen(index)}
                     className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer group"
@@ -383,9 +461,9 @@ export function TripItineraryManager({
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleRemoveDay(index)}
+                      onClick={() => setDayToDelete({ index, day: dayItem })}
                       title="Remove Day"
-                      className="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer ml-1"
+                      className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors cursor-pointer ml-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -493,8 +571,9 @@ export function TripItineraryManager({
                         </label>
                         <Input
                           id={`itinerary-day-lodging-${index}`}
+                          list="itinerary-accommodation-options"
                           type="text"
-                          placeholder="e.g. Overnight in Kathmandu"
+                          placeholder="e.g. Tea House / Mountain Lodge"
                           value={dayItem.accommodation || ""}
                           onChange={(e) => handleUpdateDay(index, "accommodation", e.target.value)}
                           className="h-8 text-xs placeholder:text-slate-400"
@@ -508,8 +587,9 @@ export function TripItineraryManager({
                         </label>
                         <Input
                           id={`itinerary-day-meals-${index}`}
+                          list="itinerary-meal-options"
                           type="text"
-                          placeholder="e.g. Meals not included / B, L, D"
+                          placeholder="e.g. Breakfast, Lunch & Dinner"
                           value={dayItem.meals || ""}
                           onChange={(e) => handleUpdateDay(index, "meals", e.target.value)}
                           className="h-8 text-xs placeholder:text-slate-400"
@@ -576,6 +656,46 @@ export function TripItineraryManager({
           })}
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <AdminConfirmModal
+        isOpen={dayToDelete !== null}
+        onClose={() => setDayToDelete(null)}
+        onConfirm={handleConfirmRemoveDay}
+        title="Remove Itinerary Day"
+        description={
+          dayToDelete
+            ? `Are you sure you want to remove Day ${dayToDelete.day.day}${dayToDelete.day.title ? ` ("${dayToDelete.day.title}")` : ""}? Subsequent days will be renumbered.`
+            : "Are you sure you want to remove this day?"
+        }
+        confirmText="Remove Day"
+        variant="danger"
+      />
+
+      {/* Confirm Dump Route Modal */}
+      <AdminConfirmModal
+        isOpen={confirmDumpOpen}
+        onClose={() => setConfirmDumpOpen(false)}
+        onConfirm={handleExecuteDump}
+        title="Dump Standard Itinerary Route"
+        description={`Are you sure you want to load the standard Himalayan route? This will replace your currently defined ${itinerary.length} days with a complete standard ${
+          durationDays && durationDays > 0 ? durationDays : 12
+        }-day itinerary.`}
+        confirmText="Dump Route"
+        variant="warning"
+      />
+
+      {/* Autocomplete Datalists for Accommodation & Meals */}
+      <datalist id="itinerary-accommodation-options">
+        {COMMON_ACCOMMODATION_OPTIONS.map((opt) => (
+          <option key={opt} value={opt} />
+        ))}
+      </datalist>
+      <datalist id="itinerary-meal-options">
+        {COMMON_MEAL_OPTIONS.map((opt) => (
+          <option key={opt} value={opt} />
+        ))}
+      </datalist>
     </div>
   );
 }

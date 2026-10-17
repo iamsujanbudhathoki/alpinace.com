@@ -19,7 +19,7 @@ export function ExpeditionExtraFields({
     <>
       <div>
         <AdminInputField
-          label="Peak Altitude Height (Meters)"
+          label="Peak Altitude (Meters)"
           type="number"
           required
           placeholder="e.g. 6812"
@@ -30,8 +30,8 @@ export function ExpeditionExtraFields({
 
       <div>
         <AdminInputField
-          label="Climbing Grade / Technical Rating"
-          placeholder="e.g. Technical Alpine Grade (TD/5.7)"
+          label="Climbing Grade"
+          placeholder="e.g. Alpine TD / 5.7"
           error={errors.climbingGrade?.message as string}
           {...register("climbingGrade")}
         />
@@ -40,7 +40,7 @@ export function ExpeditionExtraFields({
       <div>
         <AdminInputField
           label="Sherpa Guide Ratio"
-          placeholder="e.g. 1:1 Dedicated Sherpa Ratio"
+          placeholder="e.g. 1:1 Dedicated Sherpa"
           error={errors.sherpaGuideRatio?.message as string}
           {...register("sherpaGuideRatio")}
         />
@@ -51,9 +51,9 @@ export function ExpeditionExtraFields({
           <input
             type="checkbox"
             {...register("oxygenRequired")}
-            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+            className="w-4 h-4 rounded border-slate-300 accent-slate-900 cursor-pointer"
           />
-          <span className="text-sm font-medium text-slate-700">Supplementary Oxygen Required</span>
+          <span className="text-xs font-semibold text-slate-700">Oxygen Required</span>
         </label>
       </div>
     </>

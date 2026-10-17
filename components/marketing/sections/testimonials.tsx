@@ -3,7 +3,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
-import { ChevronLeft, ChevronRight, Star, CheckCircle2 } from "lucide-react";
+import { Star, CheckCircle2 } from "lucide-react";
+import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import Image from "next/image";
 import { adminTestimonialsApi, SettingService, TestimonialItem } from "@/lib/services/admin-service";
 import { TestimonialStatus } from "@/lib/admin-data";
@@ -124,20 +125,16 @@ export function TestimonialsSection() {
           {/* Navigation Arrows */}
           {displayItems.length > 1 && (
             <>
-              <button
+              <CarouselNavButton
+                direction="prev"
                 onClick={scrollPrev}
-                aria-label="Previous Testimonial"
-                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white text-stone-900 border border-stone-200/90 shadow-md items-center justify-center hover:bg-stone-950 hover:text-white hover:border-stone-950 transition-all cursor-pointer"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
+                ariaLabel="Previous Testimonial"
+              />
+              <CarouselNavButton
+                direction="next"
                 onClick={scrollNext}
-                aria-label="Next Testimonial"
-                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white text-stone-900 border border-stone-200/90 shadow-md items-center justify-center hover:bg-stone-950 hover:text-white hover:border-stone-950 transition-all cursor-pointer"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+                ariaLabel="Next Testimonial"
+              />
             </>
           )}
 

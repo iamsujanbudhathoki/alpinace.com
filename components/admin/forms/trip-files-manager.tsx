@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { cn } from "@/lib/utils";
 import { MediaService } from "@/lib/services/admin-service";
 import { TripPackageFile } from "@/lib/admin-data";
@@ -95,10 +96,18 @@ export function TripFilesManager({
     toast.success("Document title updated");
   };
 
-  const handleRemoveFile = (index: number) => {
-    const next = files.filter((_, i) => i !== index);
-    onChange(next);
-    toast.info("Document removed from package");
+  const [fileToDelete, setFileToDelete] = useState<{
+    index: number;
+    file: TripPackageFile;
+  } | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (fileToDelete !== null) {
+      const next = files.filter((_, i) => i !== fileToDelete.index);
+      onChange(next);
+      toast.info("Document removed from package");
+      setFileToDelete(null);
+    }
   };
 
   const getFileIcon = (fileType?: string) => {
@@ -119,21 +128,21 @@ export function TripFilesManager({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
         <div>
           <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-emerald-600" />
-            <span>Downloadable Package Files &amp; Brochures ({files.length})</span>
+            <FileText className="w-4 h-4 text-amber-500" />
+            <span>Downloadable Documents &amp; Brochures ({files.length})</span>
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Upload PDF brochures, packing lists, or detail guides available for Marketing Associates and clients to download.
+            Upload PDF brochures, packing lists, or detail guides available for download.
           </p>
         </div>
 
         {!readOnly && (
           <label className="cursor-pointer shrink-0">
-            <span className={cn(buttonVariants({ variant: "default", size: "sm" }), "bg-emerald-700 hover:bg-emerald-800 text-white")}>
+            <span className={cn(buttonVariants({ variant: "default", size: "sm" }), "bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-xs cursor-pointer")}>
               {isUploading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
-                <UploadCloud className="w-3.5 h-3.5" />
+                <UploadCloud className="w-3.5 h-3.5 text-amber-400" />
               )}
               <span>Upload Document (PDF/Doc)</span>
             </span>
@@ -163,7 +172,7 @@ export function TripFilesManager({
           {files.map((file, idx) => (
             <div
               key={file.id || idx}
-              className="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 shadow-xs hover:border-emerald-200 transition-colors"
+              className="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 shadow-xs hover:border-slate-300 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <div className="p-2.5 bg-slate-100 rounded-lg shrink-0">
@@ -177,13 +186,13 @@ export function TripFilesManager({
                         type="text"
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
-                        className="h-7 text-xs px-2 rounded border border-emerald-400 focus:outline-none w-full"
+                        className="h-7 text-xs px-2 rounded border border-slate-400 focus:outline-none w-full"
                         autoFocus
                       />
                       <button
                         type="button"
                         onClick={() => handleSaveTitle(idx)}
-                        className="p-1 text-emerald-700 hover:bg-emerald-50 rounded"
+                        className="p-1 text-slate-900 hover:bg-slate-100 rounded"
                       >
                         <Check className="w-3.5 h-3.5" />
                       </button>
@@ -223,7 +232,7 @@ export function TripFilesManager({
                   target="_blank"
                   rel="noopener noreferrer"
                   download
-                  className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-md transition-colors text-xs flex items-center gap-1"
+                  className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors text-xs flex items-center gap-1 cursor-pointer"
                   title="Download File"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -232,8 +241,8 @@ export function TripFilesManager({
                 {!readOnly && (
                   <button
                     type="button"
-                    onClick={() => handleRemoveFile(idx)}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors text-xs"
+                    onClick={() => setFileToDelete({ index: idx, file })}
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors text-xs cursor-pointer"
                     title="Delete File"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -244,6 +253,21 @@ export function TripFilesManager({
           ))}
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <AdminConfirmModal
+        isOpen={fileToDelete !== null}
+        onClose={() => setFileToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title="Remove Document"
+        description={
+          fileToDelete?.file.title
+            ? `Are you sure you want to remove "${fileToDelete.file.title}" from this package? This action cannot be undone.`
+            : "Are you sure you want to remove this document? This action cannot be undone."
+        }
+        confirmText="Remove Document"
+        variant="danger"
+      />
     </div>
   );
 }

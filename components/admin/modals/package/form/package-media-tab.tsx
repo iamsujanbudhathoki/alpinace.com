@@ -27,7 +27,7 @@ export function PackageMediaTab({
       {/* Primary Cover Image */}
       <div className="space-y-1.5">
         <label className="text-xs font-bold text-slate-800 block">
-          Primary Cover Banner Image <span className="text-rose-500">*</span>
+          Cover Image <span className="text-rose-500">*</span>
         </label>
         <Controller
           name="image"
@@ -47,10 +47,10 @@ export function PackageMediaTab({
         />
       </div>
 
-      {/* Interactive Route Map */}
-      <div className="space-y-1.5 pt-4 border-t border-slate-200">
+      {/* Route Map */}
+      <div className="space-y-1.5 pt-4 border-t border-slate-100">
         <label className="text-xs font-bold text-slate-800 block">
-          Route Map Illustration &amp; Topographic Image
+          Route Map
         </label>
         <Controller
           name="mapImage"
@@ -70,10 +70,10 @@ export function PackageMediaTab({
         />
       </div>
 
-      {/* Media Photo Gallery */}
-      <div className="space-y-1.5 pt-4 border-t border-slate-200">
+      {/* Photo Gallery */}
+      <div className="space-y-1.5 pt-4 border-t border-slate-100">
         <label className="text-xs font-bold text-slate-800 block">
-          Photo Gallery Images
+          Photo Gallery
         </label>
         <Controller
           name="galleryImages"

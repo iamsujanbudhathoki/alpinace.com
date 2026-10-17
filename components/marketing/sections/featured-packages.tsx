@@ -5,7 +5,7 @@ import { TravelPackage } from "@/lib/home-data";
 import { apiClient } from "@/lib/services/api-client";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -300,22 +300,16 @@ export function FeaturedPackages({
           {/* Navigation Arrows (Only on desktop if more than 1 item) */}
           {!loading && currentPackages.length > 1 && (
             <>
-              <button
-                type="button"
+              <CarouselNavButton
+                direction="prev"
                 onClick={scrollPrev}
-                aria-label="Previous Destination"
-                className="hidden md:flex absolute -left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white text-stone-800 border border-stone-200 shadow-md items-center justify-center hover:bg-yellow-400 hover:border-yellow-400 hover:text-stone-950 transition-all cursor-pointer active:scale-95"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                type="button"
+                ariaLabel="Previous Destination"
+              />
+              <CarouselNavButton
+                direction="next"
                 onClick={scrollNext}
-                aria-label="Next Destination"
-                className="hidden md:flex absolute -right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white text-stone-800 border border-stone-200 shadow-md items-center justify-center hover:bg-yellow-400 hover:border-yellow-400 hover:text-stone-950 transition-all cursor-pointer active:scale-95"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+                ariaLabel="Next Destination"
+              />
             </>
           )}
 

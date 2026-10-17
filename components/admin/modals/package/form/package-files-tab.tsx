@@ -12,7 +12,7 @@ export function PackageFilesTab({ control }: PackageFilesTabProps) {
     <div className="space-y-4">
       <div className="space-y-1.5">
         <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-          Downloadable PDF Brochures &amp; Permits
+          Documents &amp; Attachments
         </h4>
         <Controller
           name="packageFiles"

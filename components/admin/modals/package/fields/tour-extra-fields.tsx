@@ -19,7 +19,7 @@ export function TourExtraFields({
     <>
       <div>
         <AdminSelectField
-          label="Tour Category Type"
+          label="Tour Type"
           value={watch("tourType") || ""}
           onChange={(val) => setValue("tourType", val, { shouldValidate: true })}
           error={errors.tourType?.message as string}
@@ -36,7 +36,7 @@ export function TourExtraFields({
 
       <div>
         <AdminInputField
-          label="Transportation Mode"
+          label="Transportation"
           placeholder="e.g. Private Luxury SUV / Flight / Helicopter"
           error={errors.transportation?.message as string}
           {...register("transportation")}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import { ActivityItem } from "@/lib/admin-data";
 import { ActivityService } from "@/lib/services/admin-service";
 
@@ -132,20 +132,16 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
           {/* Navigation Arrows (Only if more than 1 item) */}
           {!loading && activities.length > 1 && (
             <>
-              <button
+              <CarouselNavButton
+                direction="prev"
                 onClick={scrollPrev}
-                aria-label="Previous Activity"
-                className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-all cursor-pointer"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
+                ariaLabel="Previous Activity"
+              />
+              <CarouselNavButton
+                direction="next"
                 onClick={scrollNext}
-                aria-label="Next Activity"
-                className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 text-stone-900 border border-stone-200 shadow-sm items-center justify-center hover:bg-stone-900 hover:text-white transition-all cursor-pointer"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+                ariaLabel="Next Activity"
+              />
             </>
           )}
 

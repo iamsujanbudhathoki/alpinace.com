@@ -47,10 +47,10 @@ export function PackageSeoTab({
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div>
           <AdminInputField
-            label="Meta Title (SEO Title)"
+            label="Meta Title"
             placeholder="e.g. Everest Base Camp Trek 14 Days | Alpine Ace"
             error={errors.metaTitle?.message as string}
             {...register("metaTitle")}
@@ -62,8 +62,8 @@ export function PackageSeoTab({
 
         <div>
           <AdminTextareaField
-            label="Meta Description (Search Snippet)"
-            placeholder="Concise summary for search engines and social sharing preview..."
+            label="Meta Description"
+            placeholder="Concise summary for search engines and social sharing..."
             rows={3}
             error={errors.metaDescription?.message as string}
             {...register("metaDescription")}
@@ -75,7 +75,7 @@ export function PackageSeoTab({
 
         <div>
           <AdminInputField
-            label="Focus Keywords (Comma Separated)"
+            label="Keywords"
             placeholder="e.g. Everest trek, Nepal trekking, high altitude hike"
             error={errors.keywords?.message as string}
             {...register("keywords")}

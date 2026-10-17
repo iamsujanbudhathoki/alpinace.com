@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { DialogFooter } from "@/components/ui/dialog";
 import { MediaService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
@@ -109,11 +110,19 @@ export function TripGalleryManager({
 
 
 
-  const handleRemoveImage = (index: number) => {
-    const nextImages = images.filter((_, i) => i !== index);
-    const nextMediaIds = galleryMediaIds.filter((_, i) => i !== index);
-    onChange(nextImages, nextMediaIds);
-    toast.info("Image removed from gallery");
+  const [imageToDelete, setImageToDelete] = useState<{
+    index: number;
+    url: string;
+  } | null>(null);
+
+  const handleConfirmRemoveImage = () => {
+    if (imageToDelete !== null) {
+      const nextImages = images.filter((_, i) => i !== imageToDelete.index);
+      const nextMediaIds = galleryMediaIds.filter((_, i) => i !== imageToDelete.index);
+      onChange(nextImages, nextMediaIds);
+      toast.info("Image removed from gallery");
+      setImageToDelete(null);
+    }
   };
 
   const handleMoveImage = (index: number, direction: "up" | "down") => {
@@ -176,7 +185,7 @@ export function TripGalleryManager({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
         <div>
           <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-            <ImageIcon className="w-4 h-4 text-emerald-600" />
+            <ImageIcon className="w-4 h-4 text-amber-500" />
             <span>Package Image Gallery ({images.length})</span>
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -187,11 +196,11 @@ export function TripGalleryManager({
         {!readOnly && (
           <div className="flex items-center gap-2">
             <label className="cursor-pointer">
-              <span className="inline-flex items-center gap-1.5 h-9 px-3 text-xs font-medium rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-colors">
+              <span className="inline-flex items-center gap-1.5 h-9 px-3 text-xs font-semibold rounded-lg bg-slate-900 hover:bg-slate-800 text-white shadow-xs transition-colors">
                 {isUploading ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  <UploadCloud className="w-3.5 h-3.5" />
+                  <UploadCloud className="w-3.5 h-3.5 text-amber-400" />
                 )}
                 <span>Upload Photos</span>
               </span>
@@ -250,7 +259,7 @@ export function TripGalleryManager({
                   <button
                     type="button"
                     onClick={() => openSingleImage(url, `Gallery Image ${idx + 1}`)}
-                    className="p-1 text-white hover:text-emerald-400 transition-colors"
+                    className="p-1 text-white hover:text-amber-400 transition-colors"
                     title="Zoom Image"
                   >
                     <Maximize2 className="w-3.5 h-3.5" />
@@ -281,8 +290,8 @@ export function TripGalleryManager({
                     )}
                     <button
                       type="button"
-                      onClick={() => handleRemoveImage(idx)}
-                      className="p-1 bg-rose-600/80 hover:bg-rose-600 text-white rounded-md text-xs"
+                      onClick={() => setImageToDelete({ index: idx, url })}
+                      className="p-1 bg-rose-600/80 hover:bg-rose-600 text-white rounded-md text-xs cursor-pointer"
                       title="Remove Image"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -335,8 +344,8 @@ export function TripGalleryManager({
                         isAlreadyInGallery
                           ? "opacity-40 cursor-not-allowed border-slate-200"
                           : isSelected
-                          ? "border-emerald-600 ring-2 ring-emerald-500/30"
-                          : "border-slate-200 hover:border-emerald-400"
+                          ? "border-amber-500 ring-2 ring-amber-500/30"
+                          : "border-slate-200 hover:border-slate-400"
                       }`}
                     >
                       <div className="relative h-24 bg-slate-800 overflow-hidden">
@@ -346,8 +355,8 @@ export function TripGalleryManager({
                           className="w-full h-full object-cover"
                         />
                         {isSelected && (
-                          <div className="absolute inset-0 bg-emerald-900/40 flex items-center justify-center">
-                            <Check className="w-6 h-6 text-white bg-emerald-600 rounded-full p-1 shadow-md" />
+                          <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center">
+                            <Check className="w-6 h-6 text-white bg-amber-500 rounded-full p-1 shadow-md" />
                           </div>
                         )}
                         {isAlreadyInGallery && (
@@ -370,7 +379,7 @@ export function TripGalleryManager({
                 variant="outline"
                 size="sm"
                 onClick={() => setIsLibraryOpen(false)}
-                className="text-xs h-8"
+                className="text-xs h-8 cursor-pointer"
               >
                 Cancel
               </Button>
@@ -379,7 +388,7 @@ export function TripGalleryManager({
                 size="sm"
                 onClick={handleConfirmLibrarySelection}
                 disabled={selectedUrls.length === 0}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs h-8"
+                className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 font-semibold shadow-xs cursor-pointer"
               >
                 Add {selectedUrls.length} Photo(s)
               </Button>
@@ -387,6 +396,17 @@ export function TripGalleryManager({
           </div>
         </AdminModal>
       )}
+
+      {/* Confirmation Modal */}
+      <AdminConfirmModal
+        isOpen={imageToDelete !== null}
+        onClose={() => setImageToDelete(null)}
+        onConfirm={handleConfirmRemoveImage}
+        title="Remove Photo from Gallery"
+        description="Are you sure you want to remove this photo from the package gallery? This will not delete the photo from your media library."
+        confirmText="Remove Photo"
+        variant="danger"
+      />
     </div>
   );
 }

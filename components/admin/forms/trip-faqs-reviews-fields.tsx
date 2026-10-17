@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MediaService } from "@/lib/services/admin-service";
 import { AdminCountrySelect } from "@/components/admin/forms/admin-country-select";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { toast } from "sonner";
 
 export interface TripFaqItem {
@@ -41,6 +42,11 @@ interface TripFaqsManagerProps {
 }
 
 export function TripFaqsManager({ faqs = [], onChange }: TripFaqsManagerProps) {
+  const [faqToDelete, setFaqToDelete] = useState<{
+    index: number;
+    question: string;
+  } | null>(null);
+
   const handleAddFaq = () => {
     onChange([
       ...faqs,
@@ -61,8 +67,13 @@ export function TripFaqsManager({ faqs = [], onChange }: TripFaqsManagerProps) {
     onChange(updated);
   };
 
-  const handleRemoveFaq = (index: number) => {
-    onChange(faqs.filter((_, i) => i !== index));
+  const handleConfirmRemoveFaq = () => {
+    if (faqToDelete !== null) {
+      const q = faqToDelete.question;
+      onChange(faqs.filter((_, i) => i !== faqToDelete.index));
+      toast.success(q ? `FAQ "${q.slice(0, 30)}..." removed.` : "FAQ removed.");
+      setFaqToDelete(null);
+    }
   };
 
   return (
@@ -118,7 +129,7 @@ export function TripFaqsManager({ faqs = [], onChange }: TripFaqsManagerProps) {
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleRemoveFaq(index)}
+                  onClick={() => setFaqToDelete({ index, question: faq.question })}
                   className="text-slate-400 hover:text-rose-600 transition-colors p-1 rounded-md hover:bg-rose-50 cursor-pointer"
                   title="Remove FAQ"
                 >
@@ -157,6 +168,21 @@ export function TripFaqsManager({ faqs = [], onChange }: TripFaqsManagerProps) {
           ))}
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <AdminConfirmModal
+        isOpen={faqToDelete !== null}
+        onClose={() => setFaqToDelete(null)}
+        onConfirm={handleConfirmRemoveFaq}
+        title="Delete FAQ"
+        description={
+          faqToDelete?.question
+            ? `Are you sure you want to remove the FAQ: "${faqToDelete.question}"? This action cannot be undone.`
+            : "Are you sure you want to remove this FAQ? This action cannot be undone."
+        }
+        confirmText="Delete FAQ"
+        variant="danger"
+      />
     </div>
   );
 }
@@ -191,6 +217,10 @@ const PRESET_AVATARS = [
 
 export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManagerProps) {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [reviewToDelete, setReviewToDelete] = useState<{
+    index: number;
+    author: string;
+  } | null>(null);
   const fileInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
 
   const handleAddReview = () => {
@@ -222,8 +252,13 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
     onChange(updated);
   };
 
-  const handleRemoveReview = (index: number) => {
-    onChange(reviews.filter((_, i) => i !== index));
+  const handleConfirmRemoveReview = () => {
+    if (reviewToDelete !== null) {
+      const author = reviewToDelete.author;
+      onChange(reviews.filter((_, i) => i !== reviewToDelete.index));
+      toast.success(author ? `Review by "${author}" removed.` : "Review removed.");
+      setReviewToDelete(null);
+    }
   };
 
   const handleAvatarFileUpload = async (index: number, file: File) => {
@@ -328,7 +363,7 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
 
                   <button
                     type="button"
-                    onClick={() => handleRemoveReview(index)}
+                    onClick={() => setReviewToDelete({ index, author: rev.author })}
                     className="text-slate-400 hover:text-rose-600 transition-colors p-1 rounded-md hover:bg-rose-50 cursor-pointer ml-1"
                     title="Remove Review"
                   >
@@ -506,6 +541,21 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
           ))}
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <AdminConfirmModal
+        isOpen={reviewToDelete !== null}
+        onClose={() => setReviewToDelete(null)}
+        onConfirm={handleConfirmRemoveReview}
+        title="Delete Review"
+        description={
+          reviewToDelete?.author
+            ? `Are you sure you want to remove the review by "${reviewToDelete.author}"? This action cannot be undone.`
+            : "Are you sure you want to remove this client review? This action cannot be undone."
+        }
+        confirmText="Delete Review"
+        variant="danger"
+      />
     </div>
   );
 }

@@ -171,44 +171,6 @@ const TAB_ORDER: TabType[] = [
   "seo",
 ];
 
-const TAB_DESCRIPTIONS: Record<TabType, { title: string; subtitle: string }> = {
-  general: {
-    title: "Overview & Specifications",
-    subtitle: "Configure trip title, category classification, pricing, altitude, duration, and overview summary.",
-  },
-  itinerary: {
-    title: "Day-by-Day Itinerary",
-    subtitle: "Detail daily trekking/tour progression, elevation gains, accommodations, and included meals.",
-  },
-  inclusions: {
-    title: "Inclusions & Exclusions",
-    subtitle: "Define what services, permits, gear, and domestic transfers are included or excluded.",
-  },
-  addons: {
-    title: "Trip Add-ons & Optional Upgrades",
-    subtitle: "Configure optional client upgrades such as helicopter returns, single room supplements, and gear rentals.",
-  },
-  departures: {
-    title: "Fixed Group Departures",
-    subtitle: "Manage upcoming scheduled dates, group availability slots, and departure status.",
-  },
-  media: {
-    title: "Visual Media & Interactive Map",
-    subtitle: "Upload hero cover image, high-resolution photo gallery, and interactive trail/route map.",
-  },
-  files: {
-    title: "Downloadable Documents & PDFs",
-    subtitle: "Attach downloadable route dossiers, packing checklists, and comprehensive trip brochures.",
-  },
-  faqs: {
-    title: "Frequently Asked Questions & Reviews",
-    subtitle: "Answer common traveler queries and showcase verified client reviews.",
-  },
-  seo: {
-    title: "Search Engine Optimization (SEO)",
-    subtitle: "Customize SERP titles, meta descriptions, canonical URL slug, and focus keywords.",
-  },
-};
 
 export function PackageAdminForm({
   packageType,
@@ -516,20 +478,21 @@ export function PackageAdminForm({
     (Array.isArray(errors.itinerary) ? errors.itinerary.some(Boolean) : true)
   );
 
-  const hasInclusionsErrors = isSubmitted && !!(errors.inclusionsText || errors.exclusionsText);
+  const hasInclusionsErrors = isSubmitted && !!(errors.inclusionsText || errors.exclusionsText || errors.usefulInfoText);
+  const hasAddonErrors = isSubmitted && !!(errors.addons || errors.addonsText);
   const hasFaqErrors = isSubmitted && !!errors.faqs;
   const hasReviewErrors = isSubmitted && !!errors.reviews;
   const hasMediaErrors = isSubmitted && !!errors.image;
   const hasSeoErrors = isSubmitted && !!(errors.metaTitle || errors.metaDescription || errors.keywords);
 
   const tabs: { id: TabType; label: string; icon: React.ComponentType<{ className?: string }>; count?: number; hasError?: boolean }[] = [
-    { id: "general", label: "Overview & Specs", icon: Info, hasError: hasGeneralErrors },
+    { id: "general", label: "General", icon: Info, hasError: hasGeneralErrors },
     { id: "itinerary", label: "Itinerary", icon: Calendar, count: watchItinerary.length, hasError: hasItineraryErrors },
-    { id: "inclusions", label: "Includes / Excludes", icon: CheckCircle2, hasError: hasInclusionsErrors },
-    { id: "addons", label: "Add-ons", icon: Sparkles, count: watchAddons.length },
-    { id: "departures", label: "Departure Dates", icon: Clock, count: watchDepartureDates.length },
-    { id: "media", label: "Media & Map", icon: ImageIcon, count: watchGalleryImages.length, hasError: hasMediaErrors },
-    { id: "files", label: "Files & Downloads", icon: FileText, count: watchPackageFiles.length },
+    { id: "inclusions", label: "Inclusions", icon: CheckCircle2, hasError: hasInclusionsErrors },
+    { id: "addons", label: "Add-ons", icon: Sparkles, count: watchAddons.length, hasError: hasAddonErrors },
+    { id: "departures", label: "Dates", icon: Clock, count: watchDepartureDates.length },
+    { id: "media", label: "Media", icon: ImageIcon, count: watchGalleryImages.length, hasError: hasMediaErrors },
+    { id: "files", label: "Documents", icon: FileText, count: watchPackageFiles.length },
     { id: "faqs", label: "FAQs & Reviews", icon: MessageSquareQuote, count: watchFaqs.length + watchReviews.length, hasError: hasFaqErrors || hasReviewErrors },
     { id: "seo", label: "SEO", icon: Search, hasError: hasSeoErrors },
   ];
@@ -557,8 +520,10 @@ export function PackageAdminForm({
       setActiveTab("general");
     } else if (formErrors.itinerary) {
       setActiveTab("itinerary");
-    } else if (formErrors.inclusionsText || formErrors.exclusionsText) {
+    } else if (formErrors.inclusionsText || formErrors.exclusionsText || formErrors.usefulInfoText) {
       setActiveTab("inclusions");
+    } else if (formErrors.addons || formErrors.addonsText) {
+      setActiveTab("addons");
     } else if (formErrors.image) {
       setActiveTab("media");
     } else if (formErrors.faqs || formErrors.reviews) {
@@ -808,18 +773,13 @@ export function PackageAdminForm({
       {/* Main Form Body Container */}
       <form id="package-full-form" onSubmit={handleSubmit(onFormSubmit, onFormInvalid)}>
         <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 sm:p-8 space-y-6">
-          {/* Active Tab Heading & Subtitle */}
-          <div className="border-b border-slate-100 pb-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <span>{TAB_DESCRIPTIONS[activeTab].title}</span>
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {TAB_DESCRIPTIONS[activeTab].subtitle}
-              </p>
-            </div>
-            <div className="text-[11px] font-semibold text-slate-400 shrink-0">
-              Step {currentTabIndex + 1} of {TAB_ORDER.length}
+          {/* Active Tab Heading */}
+          <div className="border-b border-slate-100 pb-3 mb-6 flex items-center justify-between">
+            <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <span>{tabs.find((t) => t.id === activeTab)?.label}</span>
+            </h2>
+            <div className="text-xs font-semibold text-slate-400">
+              {currentTabIndex + 1} of {TAB_ORDER.length}
             </div>
           </div>
 
@@ -902,8 +862,8 @@ export function PackageAdminForm({
       </form>
 
       {/* Bottom Step Navigation Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs">
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+      <div className="flex items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+        <div>
           {prevTab ? (
             <Button
               type="button"
@@ -913,29 +873,14 @@ export function PackageAdminForm({
               className="cursor-pointer text-slate-700 font-semibold"
             >
               <ChevronLeft className="w-4 h-4 mr-1 text-slate-500" />
-              Previous: {tabs.find((t) => t.id === prevTab)?.label}
+              Previous
             </Button>
           ) : (
             <div />
           )}
-
-          <span className="text-xs font-semibold text-slate-500 hidden sm:inline">
-            Step {currentTabIndex + 1} of {TAB_ORDER.length}
-          </span>
         </div>
 
-        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={loading}
-            onClick={handleCancelClick}
-            className="cursor-pointer"
-          >
-            Cancel
-          </Button>
-
+        <div className="flex items-center gap-2.5">
           {nextTab && (
             <Button
               type="button"

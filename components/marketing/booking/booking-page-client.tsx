@@ -628,12 +628,6 @@ export function BookingPageClient({
     ? `/${trip.categoryType === BookingPackageType.TOUR ? "tours" : trip.categoryType === BookingPackageType.EXPEDITION ? "expeditions" : "trekking"}/${trip.slug}`
     : "/trekking";
 
-  const categoryLabel =
-    trip?.categoryType === BookingPackageType.TOUR
-      ? "Tour"
-      : trip?.categoryType === BookingPackageType.EXPEDITION
-      ? "Expedition"
-      : "Trekking";
 
   const formatDate = (value: string) => {
     if (!value) return "";
@@ -696,25 +690,8 @@ export function BookingPageClient({
         {/* Main Booking Form */}
         {trip && (
           <form onSubmit={handleSubmit} noValidate>
-            {/* Header Title & Details (Clean, no extra boxes) */}
+            {/* Header Title */}
             <div className="mb-8">
-              <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-stone-500 mb-1.5">
-                <span className="font-bold text-stone-900 uppercase tracking-wider">{categoryLabel}</span>
-                {trip.region && (
-                  <>
-                    <span>•</span>
-                    <span>{trip.region}</span>
-                  </>
-                )}
-                <span>•</span>
-                <span>{trip.durationDays} Days</span>
-                {trip.maxAltitudeMeters ? (
-                  <>
-                    <span>•</span>
-                    <span>{trip.maxAltitudeMeters.toLocaleString()}m Altitude</span>
-                  </>
-                ) : null}
-              </div>
               <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
                 Book {trip.title}
               </h1>
@@ -1068,7 +1045,7 @@ export function BookingPageClient({
                   <div className="p-5 sm:p-6 space-y-4 text-xs">
                     {/* Title */}
                     <div className="space-y-1 pb-3 border-b border-stone-100">
-                      <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">
+                      <span className="text-xs font-semibold text-stone-500 block">
                         Order Summary
                       </span>
                       <h2 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug">
@@ -1165,7 +1142,7 @@ export function BookingPageClient({
                       <button
                         type="submit"
                         disabled={isSubmitting || Boolean(pricingResult.error)}
-                        className="group w-full py-3 px-4 rounded-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-hidden"
+                        className="group w-full py-3 px-4 rounded-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-sm transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-hidden"
                       >
                         {isSubmitting ? (
                           <>
@@ -1212,7 +1189,7 @@ export function BookingPageClient({
               <button
                 type="submit"
                 disabled={isSubmitting || Boolean(pricingResult.error)}
-                className="h-11 px-5 rounded-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
+                className="h-11 px-5 rounded-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
               >
                 {isSubmitting && <Loader2 className="w-4 h-4 animate-spin text-white" />}
                 <span>{isSubmitting ? "Confirming..." : "Confirm Reservation"}</span>

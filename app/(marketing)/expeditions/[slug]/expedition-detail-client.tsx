@@ -185,17 +185,23 @@ export function ExpeditionDetailClient({
         id: r.id || `exp-rev-${i}`,
         author: r.author,
         country: r.country,
-        content: r.content,
+        date: r.date,
+        title: r.title,
+        content: r.content || r.comment || "",
+        comment: r.comment || r.content || "",
         avatar: r.avatar,
         rating: r.rating,
       }));
     }
     if (globalReviews && globalReviews.length > 0) {
-      return globalReviews.map((r) => ({
+      return globalReviews.map((r: any) => ({
         id: r.id,
         author: r.author,
         country: r.country,
-        content: r.content,
+        date: r.date,
+        title: r.title,
+        content: r.content || r.comment || "",
+        comment: r.comment || r.content || "",
         avatar: r.avatar,
         rating: r.rating,
       }));

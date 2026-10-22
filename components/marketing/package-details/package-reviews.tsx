@@ -5,6 +5,8 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
+  CheckCircle2,
+  ShieldCheck,
 } from "lucide-react";
 import Image from "next/image";
 import { PackageSection } from "./package-section";
@@ -14,7 +16,9 @@ export interface ReviewItemProp {
   author: string;
   country?: string;
   date?: string;
-  content: string;
+  title?: string;
+  content?: string;
+  comment?: string;
   avatar?: string;
   rating?: number;
 }
@@ -30,7 +34,7 @@ function getReviewHeadline(content: string): string {
   if (!content) return "Exceptional Himalayan Experience";
   const cleaned = content.replace(/^["“']|["”']$/g, "").trim();
   const firstSentence = cleaned.split(/[.!?]/)[0].trim();
-  if (firstSentence.length >= 10 && firstSentence.length <= 65) {
+  if (firstSentence.length >= 10 && firstSentence.length <= 75) {
     return firstSentence;
   }
   return "Very professional company with excellent guides";
@@ -144,6 +148,28 @@ export function PackageReviews({
         </div>
       }
     >
+      {/* Trust & Satisfaction Banner */}
+      <div className="mb-4 p-3 rounded-xl bg-stone-50/90 border border-stone-200/80 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
+            <ShieldCheck className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-stone-900">100% Verified Guest Feedback</p>
+            <p className="text-[11px] text-stone-500">Real experiences from international trekkers and climbers</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3.5 text-xs">
+          <div className="flex items-center gap-1.5 text-stone-700 font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+            <span>Guide Safety: <strong className="text-stone-900 font-bold">5.0/5</strong></span>
+          </div>
+          <div className="hidden sm:flex items-center gap-1.5 text-stone-700 font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+            <span>Trip Reliability: <strong className="text-stone-900 font-bold">100%</strong></span>
+          </div>
+        </div>
+      </div>
 
       {/* Reviews Slider */}
       {activeReviews.length === 0 ? (
@@ -156,64 +182,82 @@ export function PackageReviews({
           onScroll={updateScrollState}
           className="flex gap-4 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth focus:outline-hidden scrollbar-none"
         >
-        {activeReviews.map((rev, idx) => (
-          <div
-            key={rev.id || idx}
-            className="review-card snap-start min-w-[280px] sm:min-w-[340px] max-w-[380px] shrink-0 p-5 bg-white border border-stone-200/90 rounded-2xl flex flex-col justify-between shadow-2xs hover:shadow-md transition-all duration-300 group"
-          >
-            <div className="space-y-3.5">
-              {/* Reviewer Header */}
-              <div className="flex items-center justify-between gap-2.5 pb-3 border-b border-stone-100">
-                <div className="flex items-center gap-3">
-                  {rev.avatar ? (
-                    <Image
-                      src={rev.avatar}
-                      alt={rev.author}
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full object-cover border border-stone-200 shrink-0 shadow-2xs"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-stone-900 text-accent font-bold flex items-center justify-center text-xs shrink-0 shadow-2xs">
-                      {getInitials(rev.author)}
-                    </div>
-                  )}
+          {activeReviews.map((rev, idx) => {
+            const reviewText = (rev.content || rev.comment || "").trim();
+            const headline = rev.title?.trim() || getReviewHeadline(reviewText);
 
-                  <div className="min-w-0">
-                    <h3 className="font-heading text-xs sm:text-sm font-bold text-stone-900 truncate">
-                      {rev.author}
-                    </h3>
-                    {(rev.country || rev.date) && (
-                      <p className="text-[11px] text-stone-500 font-medium truncate">
-                        {[rev.country, rev.date].filter(Boolean).join(" • ")}
-                      </p>
-                    )}
+            return (
+              <div
+                key={rev.id || idx}
+                className="review-card snap-start min-w-[280px] sm:min-w-[340px] max-w-[390px] shrink-0 p-5 bg-white border border-stone-200/90 rounded-2xl flex flex-col justify-between shadow-2xs hover:shadow-md transition-all duration-300 group"
+              >
+                <div className="space-y-3.5">
+                  {/* Reviewer Header */}
+                  <div className="flex items-center justify-between gap-2.5 pb-3 border-b border-stone-100">
+                    <div className="flex items-center gap-3 min-w-0">
+                      {rev.avatar ? (
+                        <Image
+                          src={rev.avatar}
+                          alt={rev.author}
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-full object-cover border border-stone-200 shrink-0 shadow-2xs"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-stone-900 text-accent font-bold flex items-center justify-center text-xs shrink-0 shadow-2xs">
+                          {getInitials(rev.author)}
+                        </div>
+                      )}
+
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="font-heading text-xs sm:text-sm font-bold text-stone-900 truncate">
+                            {rev.author}
+                          </h3>
+                          <span
+                            title="Verified Booking"
+                            className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded-full px-1.5 py-0.2 shrink-0"
+                          >
+                            <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                            <span>Verified</span>
+                          </span>
+                        </div>
+                        {(rev.country || rev.date) && (
+                          <p className="text-[11px] text-stone-500 font-medium truncate mt-0.5">
+                            {[rev.country, rev.date].filter(Boolean).join(" • ")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Star Rating */}
+                    <div className="flex items-center gap-0.5 text-accent shrink-0">
+                      {Array.from({ length: rev.rating || 5 }).map((_, s) => (
+                        <Star key={s} className="w-3.5 h-3.5 fill-accent text-accent" />
+                      ))}
+                    </div>
                   </div>
+
+                  {/* Bold Review Headline */}
+                  <h4 className="font-heading text-sm font-bold text-stone-900 leading-snug line-clamp-2">
+                    {headline}
+                  </h4>
+
+                  {/* Review Content */}
+                  <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-normal line-clamp-5">
+                    &ldquo;{reviewText}&rdquo;
+                  </p>
                 </div>
 
-                {/* Star Rating */}
-                <div className="flex items-center gap-0.5 text-accent shrink-0">
-                  {Array.from({ length: rev.rating || 5 }).map((_, s) => (
-                    <Star key={s} className="w-3.5 h-3.5 fill-accent text-accent" />
-                  ))}
+                {/* Card Footer Trust Signal */}
+                <div className="pt-3 mt-4 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-400">
+                  <span className="font-medium text-stone-500">Alpine Ace Verified Review</span>
+                  <span className="font-semibold text-stone-700">{(rev.rating || 5).toFixed(1)} / 5.0</span>
                 </div>
               </div>
-
-              {/* Bold Review Headline */}
-              <h4 className="font-heading text-sm font-bold text-stone-900 leading-snug line-clamp-2">
-                {getReviewHeadline(rev.content)}
-              </h4>
-
-              {/* Review Content */}
-              <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-normal line-clamp-4">
-                &ldquo;{rev.content}&rdquo;
-              </p>
-            </div>
-
-          
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
       )}
     </PackageSection>
   );

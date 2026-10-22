@@ -142,21 +142,27 @@ export function TrekDetailClient({ initialTrek, slug }: TrekDetailClientProps) {
   // Reviews from package JSONB or global backend settings
   const displayReviews = useMemo(() => {
     if (trek?.reviews && Array.isArray(trek.reviews) && trek.reviews.length > 0) {
-      return trek.reviews.map((r, i) => ({
+      return trek.reviews.map((r: any, i: number) => ({
         id: r.id || `trek-rev-${i}`,
         author: r.author,
         country: r.country,
-        content: r.content,
+        date: r.date,
+        title: r.title,
+        content: r.content || r.comment || "",
+        comment: r.comment || r.content || "",
         avatar: r.avatar,
         rating: r.rating,
       }));
     }
     if (globalReviews && globalReviews.length > 0) {
-      return globalReviews.map((r) => ({
+      return globalReviews.map((r: any) => ({
         id: r.id,
         author: r.author,
         country: r.country,
-        content: r.content,
+        date: r.date,
+        title: r.title,
+        content: r.content || r.comment || "",
+        comment: r.comment || r.content || "",
         avatar: r.avatar,
         rating: r.rating,
       }));

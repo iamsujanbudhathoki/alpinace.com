@@ -972,28 +972,34 @@ export function BookingPageClient({
                           return (
                             <div
                               key={addon.id}
-                              className="py-3 flex items-center justify-between gap-3 text-xs sm:text-sm"
+                              className="py-3.5 flex items-start sm:items-center justify-between gap-3 text-xs sm:text-sm"
                             >
                               <label
                                 htmlFor={`addon-${addon.id}`}
-                                className="flex items-center gap-3 cursor-pointer min-w-0"
+                                className="flex items-start sm:items-center gap-3 cursor-pointer min-w-0 flex-1"
                               >
                                 <input
                                   type="checkbox"
                                   id={`addon-${addon.id}`}
                                   checked={isSelected}
                                   onChange={() => handleToggleAddon(addon.id, travelers)}
-                                  className="w-4 h-4 accent-stone-900 rounded-sm cursor-pointer shrink-0"
+                                  className="w-4 h-4 mt-0.5 sm:mt-0 accent-stone-900 rounded-sm cursor-pointer shrink-0"
                                 />
-                                <span className="font-medium text-stone-900 truncate">
-                                  {addon.title}
-                                </span>
+                                <div className="min-w-0">
+                                  <span className="font-medium text-stone-900 block leading-tight">
+                                    {addon.title}
+                                  </span>
+                                  {addon.description && (
+                                    <p className="text-[11px] sm:text-xs text-stone-500 mt-0.5 leading-relaxed line-clamp-2">
+                                      {addon.description}
+                                    </p>
+                                  )}
+                                </div>
                               </label>
 
-                              <div className="flex items-center gap-3 shrink-0">
-                                <span className="font-semibold text-stone-900">
+                              <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+                                <span className="font-semibold text-stone-900 whitespace-nowrap">
                                   +US${addon.priceUSD.toLocaleString()}
-                                  <span className="text-[11px] font-normal text-stone-500 ml-1">/ person</span>
                                 </span>
 
                                 {isSelected && (

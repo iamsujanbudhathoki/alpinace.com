@@ -29,15 +29,18 @@ export function CarouselNavButton({
       disabled={disabled}
       aria-label={ariaLabel}
       className={cn(
-        // Visibility: Hidden on small mobile touchscreens (users swipe naturally), visible on tablet and up
-        "hidden md:flex absolute top-1/2 -translate-y-1/2 z-20",
+        // Visibility & positioning:
+        // Visible across all devices, enhanced with hover-reveal on desktop/laptop via CSS pointer query
+        "flex absolute top-1/2 -translate-y-1/2 z-20 carousel-nav-btn touch-manipulation",
         // Proportional responsive sizing across viewports:
-        // Tablet (md: 36px) -> Laptop/14" (lg: 40px) -> Desktop (xl: 44px)
-        "w-9 h-9 md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11",
+        // Mobile (32px/34px) -> Tablet (md: 36px) -> Laptop/14" (lg: 40px) -> Desktop (xl: 44px)
+        "w-8 h-8 sm:w-9 sm:h-9 md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11",
+        // Expanded touch hit area for mobile/touch accessibility (WCAG 44px min tap zone)
+        "after:absolute after:-inset-2 sm:after:-inset-1.5 after:content-['']",
         // Balanced responsive offsets avoiding card overlap and viewport clipping
         isPrev
-          ? "-left-3 md:-left-3.5 lg:-left-4 xl:-left-5"
-          : "-right-3 md:-right-3.5 lg:-right-4 xl:-right-5",
+          ? "-left-1 sm:-left-3 md:-left-3.5 lg:-left-4 xl:-left-5"
+          : "-right-1 sm:-right-3 md:-right-3.5 lg:-right-4 xl:-right-5",
         // Clean circular button with glassmorphic backing & subtle elevation
         "rounded-full bg-white/95 backdrop-blur-xs text-stone-800 border border-stone-200/90 shadow-md",
         "items-center justify-center cursor-pointer select-none",

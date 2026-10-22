@@ -54,7 +54,10 @@ export function SiteHeader() {
       const scrollY = window.scrollY;
       setIsScrolled(scrollY > 10);
 
-      if (!detailNav) {
+      const isBooking = Boolean(
+        pathname && (pathname.startsWith("/book") || pathname.includes("/booking"))
+      );
+      if (isBooking || !detailNav) {
         setShowDetailNav(false);
         return;
       }
@@ -305,14 +308,6 @@ export function SiteHeader() {
     }
   };
 
-  // Omit global marketing header on dedicated booking and checkout routes
-  const isBookingPage = Boolean(
-    pathname && (pathname.startsWith("/book") || pathname.includes("/booking"))
-  );
-
-  if (isBookingPage) {
-    return null;
-  }
 
   return (
     <>

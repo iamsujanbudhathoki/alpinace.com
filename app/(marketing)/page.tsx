@@ -16,7 +16,7 @@ import {
   ExpeditionService,
   BlogService,
 } from "@/lib/services/admin-service";
-import { BlogStatus, PackageStatus, CategoryType } from "@/lib/admin-data";
+import { BlogStatus, PackageStatus, CategoryType, BlogArticle } from "@/lib/admin-data";
 import { TravelPackage, BlogPost } from "@/lib/home-data";
 
 export const revalidate = 3600; // revalidate hourly
@@ -39,7 +39,7 @@ export default async function Home() {
 
     initialTreks = rawTreks
       .filter((p) => p.isFeatured || p.status === PackageStatus.ACTIVE)
-      .sort((a, b) => (a.isFeatured ? -1 : 1))
+      .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured))
       .slice(0, 20)
       .map((p) => ({
         id: p.id,
@@ -62,7 +62,7 @@ export default async function Home() {
 
     initialTours = rawTours
       .filter((p) => p.isFeatured || p.status === PackageStatus.ACTIVE)
-      .sort((a, b) => (a.isFeatured ? -1 : 1))
+      .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured))
       .slice(0, 20)
       .map((p) => ({
         id: p.id,
@@ -85,7 +85,7 @@ export default async function Home() {
 
     initialExpeditions = rawExpeditions
       .filter((p) => p.isFeatured || p.status === PackageStatus.ACTIVE)
-      .sort((a, b) => (a.isFeatured ? -1 : 1))
+      .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured))
       .slice(0, 20)
       .map((p) => ({
         id: p.id,
@@ -112,7 +112,7 @@ export default async function Home() {
       ...initialExpeditions.filter((p) => p.isPopular),
     ];
 
-    initialBlogs = rawBlogs.slice(0, 3).map((b: any) => ({
+    initialBlogs = rawBlogs.slice(0, 10).map((b: BlogArticle) => ({
       id: b.id,
       title: b.title,
       slug: b.slug,

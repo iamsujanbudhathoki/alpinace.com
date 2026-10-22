@@ -921,3 +921,57 @@ body[data-modal-open="true"] [data-slot="admin-sidebar"] [class*="group-hover:op
     animation: none;
   }
 }
+
+/* ── Carousel Navigation Controls: Hover-to-reveal on desktop/laptop, always visible on touch/mobile ── */
+.carousel-nav-btn {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) scale(1);
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              color 0.2s ease;
+}
+
+/* On devices with mouse/trackpad pointer and hover capabilities (Laptops, Desktops, External Monitors) */
+@media (hover: hover) and (pointer: fine) {
+  .carousel-nav-btn {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) scale(0.92);
+  }
+
+  /* Reveal when hovering over the carousel container, when container has keyboard focus inside, or button itself is focused */
+  .group\/carousel:hover .carousel-nav-btn,
+  .group\/carousel:focus-within .carousel-nav-btn,
+  .carousel-nav-btn:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) scale(1);
+  }
+
+  .carousel-nav-btn:hover {
+    transform: translateY(-50%) scale(1.06);
+  }
+
+  .carousel-nav-btn:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+/* On touchscreens, smartphones, and tablets without hover capability */
+@media (hover: none), (pointer: coarse) {
+  .carousel-nav-btn {
+    opacity: 0.95;
+    pointer-events: auto;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-nav-btn {
+    transition: none !important;
+  }
+}

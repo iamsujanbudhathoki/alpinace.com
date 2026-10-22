@@ -45,7 +45,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "@bprogress/next";
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -445,7 +446,7 @@ export function BookingPageClient({
   // 1. CONFIRMATION RECEIPT VIEW
   if (confirmedBooking) {
     return (
-      <div className="min-h-screen bg-[#fafaf8] py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-[#fafaf8] pt-28 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
           {/* Header Card */}
           <div className="bg-white rounded-md border border-stone-200 p-6 sm:p-8 text-center shadow-xs space-y-3">
@@ -644,55 +645,20 @@ export function BookingPageClient({
   const whatsappNumberClean = (settings.whatsappNumber || "9779764398491").replace(/\D/g, "");
 
   return (
-    <div className="min-h-screen bg-[#fafaf8] pb-24 lg:pb-32">
-      {/* Dedicated Clean Booking Header */}
-      <header className="bg-white border-b border-stone-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-4">
-          {/* Left: Back Navigation Button */}
-          <Link
-            href={packageBackHref}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-sm bg-stone-100 hover:bg-stone-200 text-stone-900 font-semibold text-xs sm:text-sm transition-colors cursor-pointer group shrink-0"
-          >
-            <ArrowLeft className="w-4 h-4 text-stone-700 group-hover:-translate-x-0.5 transition-transform shrink-0" />
-            <span>Back</span>
-          </Link>
+    <div className="min-h-screen bg-[#fafaf8] pt-24 sm:pt-28 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back Link */}
+        <Link
+          href={packageBackHref}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 transition-colors mb-6 group cursor-pointer"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-stone-500" />
+          <span>Back to {trip ? trip.title : "adventures"}</span>
+        </Link>
 
-          {/* Center: Brand Identity */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 cursor-pointer">
-            <Image
-              src={settings.siteLogo || "/logo.jpg"}
-              alt={settings.siteName || "Alpine Ace"}
-              width={36}
-              height={36}
-              className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-sm border border-stone-200 bg-white shrink-0"
-            />
-            <span className="font-heading font-bold text-base sm:text-lg text-stone-900 tracking-tight hidden sm:inline">
-              {settings.siteName || "Alpine Ace"}
-            </span>
-          </Link>
-
-          {/* Right: Direct WhatsApp Contact */}
-          <div className="flex items-center gap-3 shrink-0">
-            <a
-              href={`https://wa.me/${whatsappNumberClean}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Contact us on WhatsApp"
-              className="text-xs font-semibold text-stone-900 bg-stone-100 hover:bg-stone-200 border border-stone-200 px-3 py-1.5 rounded-sm transition-colors flex items-center gap-1.5"
-            >
-              <svg className="w-3.5 h-3.5 fill-emerald-600 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.205 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
-              </svg>
-              <span>WhatsApp</span>
-            </a>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10">
         {/* Missing Package Warning */}
         {(!trip || loadError) && (
-          <div className="p-5 rounded-sm bg-stone-100 border border-stone-200 mb-8 space-y-3">
+          <div className="p-5 rounded-md bg-stone-100 border border-stone-200 mb-8 space-y-3">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
               <div className="space-y-1">
@@ -727,516 +693,362 @@ export function BookingPageClient({
           </div>
         )}
 
-        {/* Main Booking Content */}
+        {/* Main Booking Form */}
         {trip && (
           <form onSubmit={handleSubmit} noValidate>
-            {/* Trip Header Banner with Tags */}
-            <div className="mb-6 sm:mb-8 space-y-2.5">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs bg-stone-900 text-white">
-                  {categoryLabel}
-                </span>
+            {/* Header Title & Details (Clean, no extra boxes) */}
+            <div className="mb-8">
+              <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-stone-500 mb-1.5">
+                <span className="font-bold text-stone-900 uppercase tracking-wider">{categoryLabel}</span>
                 {trip.region && (
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-xs bg-white border border-stone-200 text-stone-800 shadow-2xs">
-                    {trip.region}
-                  </span>
+                  <>
+                    <span>•</span>
+                    <span>{trip.region}</span>
+                  </>
                 )}
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-xs bg-white border border-stone-200 text-stone-800 shadow-2xs flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-stone-500" />
-                  {trip.durationDays} Days Total
-                </span>
+                <span>•</span>
+                <span>{trip.durationDays} Days</span>
                 {trip.maxAltitudeMeters ? (
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-xs bg-white border border-stone-200 text-stone-800 shadow-2xs flex items-center gap-1.5">
-                    <Mountain className="w-3.5 h-3.5 text-stone-500" />
-                    {trip.maxAltitudeMeters.toLocaleString()}m Altitude
-                  </span>
+                  <>
+                    <span>•</span>
+                    <span>{trip.maxAltitudeMeters.toLocaleString()}m Altitude</span>
+                  </>
                 ) : null}
-                {trip.difficulty && (
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-xs bg-white border border-stone-200 text-stone-800 shadow-2xs capitalize">
-                    {trip.difficulty}
-                  </span>
-                )}
               </div>
-              <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900 tracking-tight">
-                {trip.title}
+              <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
+                Book {trip.title}
               </h1>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* LEFT COLUMN: Booking Form Steps (7 Cols) */}
+              {/* LEFT COLUMN: Clean Form */}
               <div className="lg:col-span-7 space-y-6">
                 {errorMessage && (
-                  <div className="p-3.5 rounded-sm bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800 flex items-center gap-2">
+                  <div className="p-3.5 rounded-md bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-800 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                     <span>{errorMessage}</span>
                   </div>
                 )}
 
                 {pricingResult.error && (
-                  <div className="p-3.5 rounded-sm bg-stone-100 border border-stone-300 text-xs font-semibold text-stone-800">
+                  <div className="p-3.5 rounded-md bg-stone-100 border border-stone-300 text-xs font-semibold text-stone-800">
                     {pricingResult.error}
                   </div>
                 )}
 
-                {/* STEP 1: Dates & Travelers */}
-                <div className="bg-white rounded-sm border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
-                  <div className="flex items-center gap-2.5 pb-3 border-b border-stone-100">
-                    <span className="w-6 h-6 rounded-sm bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
-                      1
-                    </span>
-                    <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                      Dates &amp; Travelers
-                    </h3>
-                  </div>
+                <div className="bg-white rounded-md border border-stone-200 p-6 sm:p-7 shadow-2xs space-y-7">
+                  {/* Section 1: Dates & Travelers */}
+                  <div className="space-y-4">
+                    <h2 className="font-heading text-base font-bold text-stone-900 tracking-tight">
+                      Trip Dates &amp; Travelers
+                    </h2>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Departure Date */}
-                    <div>
-                      <label htmlFor="booking-start-date" className="block text-xs font-semibold text-stone-700 mb-1.5">
-                        Departure Date <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        id="booking-start-date"
-                        type="date"
-                        min={todayStr}
-                        value={startDate}
-                        onChange={(e) => {
-                          setStartDate(e.target.value);
-                          if (formErrors.startDate)
-                            setFormErrors((prev) => ({ ...prev, startDate: undefined }));
-                        }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
-                          formErrors.startDate
-                            ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
-                        }`}
-                      />
-                      {formErrors.startDate ? (
-                        <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                          {formErrors.startDate}
-                        </p>
-                      ) : startDate && endDate ? (
-                        <p className="text-[11px] text-stone-500 mt-1 font-medium">
-                          Estimated Return: <strong className="text-stone-800">{formatDate(endDate)}</strong>
-                        </p>
-                      ) : null}
-                    </div>
-
-                    {/* Number of Travelers Stepper */}
-                    <div>
-                      <label className="block text-xs font-semibold text-stone-700 mb-1.5">
-                        Number of Travelers <span className="text-rose-500">*</span>
-                      </label>
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          aria-label="Decrease traveler count"
-                          disabled={travelers <= 1}
-                          onClick={() => setTravelers(Math.max(1, travelers - 1))}
-                          className="w-10 h-10 flex items-center justify-center rounded-l-sm border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-colors shadow-2xs"
-                        >
-                          <Minus className="w-4 h-4" strokeWidth={2} />
-                        </button>
-                        <div className="flex-1 h-10 flex items-center justify-center border-y border-stone-300 bg-white text-xs sm:text-sm font-bold text-stone-900">
-                          {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
-                        </div>
-                        <button
-                          type="button"
-                          aria-label="Increase traveler count"
-                          disabled={travelers >= maxAllowedTravelers}
-                          onClick={() => setTravelers(Math.min(maxAllowedTravelers, travelers + 1))}
-                          className="w-10 h-10 flex items-center justify-center rounded-r-sm border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-colors shadow-2xs"
-                        >
-                          <Plus className="w-4 h-4" strokeWidth={2} />
-                        </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Departure Date */}
+                      <div>
+                        <label htmlFor="booking-start-date" className="block text-xs font-semibold text-stone-700 mb-1.5">
+                          Departure Date <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          id="booking-start-date"
+                          type="date"
+                          min={todayStr}
+                          value={startDate}
+                          onChange={(e) => {
+                            setStartDate(e.target.value);
+                            if (formErrors.startDate)
+                              setFormErrors((prev) => ({ ...prev, startDate: undefined }));
+                          }}
+                          className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
+                            formErrors.startDate
+                              ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
+                              : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
+                          }`}
+                        />
+                        {formErrors.startDate ? (
+                          <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                            {formErrors.startDate}
+                          </p>
+                        ) : startDate && endDate ? (
+                          <p className="text-[11px] text-stone-500 mt-1 font-medium">
+                            Estimated Return: <strong className="text-stone-800">{formatDate(endDate)}</strong>
+                          </p>
+                        ) : null}
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Enhanced Group Pricing Table (Consistent with package detail sidebar) */}
-                  {hasGroupPricing && sortedTiers && sortedTiers.length > 0 && (
-                    <div className="pt-2">
-                      <div className="border border-stone-200 rounded-sm overflow-hidden bg-white shadow-2xs">
-                        <div className="bg-stone-50 px-3.5 py-2.5 border-b border-stone-200 flex items-center justify-between">
-                          <span className="font-heading font-bold text-xs text-stone-900 uppercase tracking-wider">
-                            Tiered Group Rates
-                          </span>
-                          <span className="text-[11px] text-stone-500 font-medium">
-                            Select group size to view savings
-                          </span>
-                        </div>
-
-                        <div className="divide-y divide-stone-100">
-                          {sortedTiers.map((tier, idx) => {
-                            const min = Number(tier.minTravelers);
-                            const max = Number(tier.maxTravelers);
-                            const isApplicable = travelers >= min && travelers <= max;
-                            const paxText =
-                              min === max
-                                ? `${min} ${min === 1 ? "Traveler (Solo)" : "Travelers"}`
-                                : `${min} - ${max} Travelers`;
-                            const tierPrice = Number(tier.pricePerPerson);
-                            const maxTierPrice = Math.max(...sortedTiers.map((t) => Number(t.pricePerPerson)));
-                            const savings = maxTierPrice - tierPrice;
-
-                            return (
-                              <button
-                                key={idx}
-                                type="button"
-                                onClick={() => setTravelers(min)}
-                                className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs transition-colors cursor-pointer text-left ${
-                                  isApplicable
-                                    ? "bg-emerald-50/90 text-stone-950 border-l-[3px] border-emerald-600 pl-3 font-semibold shadow-2xs"
-                                    : "text-stone-700 hover:bg-stone-50/80 border-l-[3px] border-transparent pl-3"
-                                }`}
-                              >
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <span
-                                    className={
-                                      isApplicable
-                                        ? "text-stone-950 font-bold"
-                                        : "text-stone-700 font-normal"
-                                    }
-                                  >
-                                    {paxText}
-                                  </span>
-                                  {isApplicable && (
-                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-100/90 border border-emerald-300/60 px-2 py-0.5 rounded-xs shrink-0">
-                                      <Check className="w-3 h-3 stroke-[2.5]" />
-                                      Active Tier
-                                    </span>
-                                  )}
-                                </div>
-
-                                <div className="flex items-center gap-3 text-right shrink-0">
-                                  {savings > 0 && (
-                                    <span className="text-[11px] font-semibold text-emerald-700 hidden sm:inline">
-                                      Save US${savings.toLocaleString()} / person
-                                    </span>
-                                  )}
-                                  <div className="flex items-baseline gap-1">
-                                    <span
-                                      className={`text-xs sm:text-sm ${
-                                        isApplicable
-                                          ? "text-emerald-950 font-bold"
-                                          : "text-stone-900 font-semibold"
-                                      }`}
-                                    >
-                                      US${tierPrice.toLocaleString()}
-                                    </span>
-                                    <span
-                                      className={`text-[11px] ${
-                                        isApplicable
-                                          ? "text-emerald-800 font-medium"
-                                          : "text-stone-500 font-normal"
-                                      }`}
-                                    >
-                                      / person
-                                    </span>
-                                  </div>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* STEP 2: Lead Traveler Details */}
-                <div className="bg-white rounded-sm border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
-                  <div className="flex items-center gap-2.5 pb-3 border-b border-stone-100">
-                    <span className="w-6 h-6 rounded-sm bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
-                      2
-                    </span>
-                    <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                      Lead Traveler Information
-                    </h3>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Full Name */}
-                    <div>
-                      <label htmlFor="booking-guest-name" className="block text-xs font-semibold text-stone-700 mb-1.5">
-                        Full Name <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        id="booking-guest-name"
-                        type="text"
-                        name="name"
-                        autoComplete="name"
-                        placeholder="e.g. Marcus Vance"
-                        value={guestName}
-                        onChange={(e) => {
-                          setGuestName(e.target.value);
-                          if (formErrors.guestName)
-                            setFormErrors((prev) => ({ ...prev, guestName: undefined }));
-                        }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
-                          formErrors.guestName
-                            ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
-                        }`}
-                      />
-                      {formErrors.guestName && (
-                        <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                          {formErrors.guestName}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Email Address */}
-                    <div>
-                      <label htmlFor="booking-guest-email" className="block text-xs font-semibold text-stone-700 mb-1.5">
-                        Email Address <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        id="booking-guest-email"
-                        type="email"
-                        name="email"
-                        autoComplete="email"
-                        placeholder="marcus@example.com"
-                        value={guestEmail}
-                        onChange={(e) => {
-                          setGuestEmail(e.target.value);
-                          if (formErrors.guestEmail)
-                            setFormErrors((prev) => ({ ...prev, guestEmail: undefined }));
-                        }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
-                          formErrors.guestEmail
-                            ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
-                        }`}
-                      />
-                      {formErrors.guestEmail && (
-                        <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                          {formErrors.guestEmail}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Phone / WhatsApp */}
-                    <div>
-                      <label htmlFor="booking-guest-phone" className="block text-xs font-semibold text-stone-700 mb-1.5">
-                        Phone / WhatsApp <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        id="booking-guest-phone"
-                        type="tel"
-                        name="tel"
-                        autoComplete="tel"
-                        placeholder="+1 555-019-2834"
-                        value={guestPhone}
-                        onChange={(e) => {
-                          setGuestPhone(e.target.value);
-                          if (formErrors.guestPhone)
-                            setFormErrors((prev) => ({ ...prev, guestPhone: undefined }));
-                        }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
-                          formErrors.guestPhone
-                            ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
-                        }`}
-                      />
-                      {formErrors.guestPhone && (
-                        <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                          {formErrors.guestPhone}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Country of Residence */}
-                    <div>
-                      <label htmlFor="booking-guest-country" className="block text-xs font-semibold text-stone-700 mb-1.5">
-                        Country of Residence <span className="text-rose-500">*</span>
-                      </label>
-                      <select
-                        id="booking-guest-country"
-                        name="country"
-                        autoComplete="country-name"
-                        value={country}
-                        onChange={(e) => {
-                          setCountry(e.target.value);
-                          if (formErrors.country)
-                            setFormErrors((prev) => ({ ...prev, country: undefined }));
-                        }}
-                        className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all cursor-pointer focus:outline-hidden ${
-                          formErrors.country
-                            ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
-                            : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
-                        }`}
-                      >
-                        <option value="">Select Country...</option>
-                        {COUNTRY_OPTIONS.map((c) => (
-                          <option key={c.value} value={c.value}>
-                            {c.label}
-                          </option>
-                        ))}
-                      </select>
-                      {formErrors.country && (
-                        <p className="text-[11px] font-semibold text-rose-600 mt-1">
-                          {formErrors.country}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* STEP 3: Add-ons & Optional Upgrades (Compact Title + Tooltip + Stepper) */}
-                {activeAddons.length > 0 && (
-                  <div className="bg-white rounded-sm border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-stone-100">
-                      <div className="flex items-center gap-2.5">
-                        <span className="w-6 h-6 rounded-sm bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
-                          3
-                        </span>
-                        <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                          Optional Add-ons &amp; Upgrades
-                        </h3>
-                      </div>
-                      {selectedAddonsWithDetails.length > 0 && (
-                        <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-xs">
-                          {selectedAddonsWithDetails.length} Selected
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      {activeAddons.map((addon) => {
-                        const qty = addonQuantities[addon.id] || 0;
-                        const isSelected = qty > 0;
-
-                        return (
-                          <div
-                            key={addon.id}
-                            className={`p-3 sm:p-3.5 rounded-sm border flex items-center justify-between gap-3 transition-colors ${
-                              isSelected
-                                ? "bg-stone-50 border-stone-700 shadow-2xs"
-                                : "bg-white border-stone-200 hover:border-stone-300"
-                            }`}
+                      {/* Number of Travelers Stepper */}
+                      <div>
+                        <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+                          Number of Travelers <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="flex items-center">
+                          <button
+                            type="button"
+                            aria-label="Decrease traveler count"
+                            disabled={travelers <= 1}
+                            onClick={() => setTravelers(Math.max(1, travelers - 1))}
+                            className="w-10 h-10 flex items-center justify-center rounded-l-sm border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-colors shadow-2xs"
                           >
-                            {/* Left: Checkbox & Title with Description Tooltip */}
-                            <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                              <input
-                                type="checkbox"
-                                id={`addon-${addon.id}`}
-                                checked={isSelected}
-                                onChange={() => handleToggleAddon(addon.id, travelers)}
-                                className="w-4 h-4 accent-stone-900 rounded-sm cursor-pointer shrink-0"
-                              />
-                              <div className="flex items-center gap-1.5 min-w-0">
-                                <label
-                                  htmlFor={`addon-${addon.id}`}
-                                  className="font-semibold text-xs sm:text-sm text-stone-900 cursor-pointer select-none truncate"
-                                >
-                                  {addon.title}
-                                </label>
+                            <Minus className="w-4 h-4" strokeWidth={2} />
+                          </button>
+                          <div className="flex-1 h-10 flex items-center justify-center border-y border-stone-300 bg-white text-xs sm:text-sm font-bold text-stone-900">
+                            {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
+                          </div>
+                          <button
+                            type="button"
+                            aria-label="Increase traveler count"
+                            disabled={travelers >= maxAllowedTravelers}
+                            onClick={() => setTravelers(Math.min(maxAllowedTravelers, travelers + 1))}
+                            className="w-10 h-10 flex items-center justify-center rounded-r-sm border border-stone-300 bg-stone-50 text-stone-800 font-bold hover:bg-stone-100 active:bg-stone-200 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-colors shadow-2xs"
+                          >
+                            <Plus className="w-4 h-4" strokeWidth={2} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
 
-                                {addon.description && (
-                                  <div
-                                    className="relative group/tip inline-flex items-center shrink-0"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
+                    {/* Group pricing note if applicable */}
+                    {hasGroupPricing && (
+                      <div className="flex items-center justify-between text-xs text-stone-600 bg-stone-50 px-3.5 py-2.5 rounded-sm border border-stone-200">
+                        <span>Group rate for {travelers} {travelers === 1 ? "traveler" : "travelers"}:</span>
+                        <span className="font-bold text-stone-900">US${unitCostPerPerson.toLocaleString()} / person</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Section 2: Lead Traveler Details */}
+                  <div className="pt-6 border-t border-stone-100 space-y-4">
+                    <h2 className="font-heading text-base font-bold text-stone-900 tracking-tight">
+                      Lead Traveler Information
+                    </h2>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Full Name */}
+                      <div>
+                        <label htmlFor="booking-guest-name" className="block text-xs font-semibold text-stone-700 mb-1.5">
+                          Full Name <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          id="booking-guest-name"
+                          type="text"
+                          name="name"
+                          autoComplete="name"
+                          placeholder="e.g. John Doe"
+                          value={guestName}
+                          onChange={(e) => {
+                            setGuestName(e.target.value);
+                            if (formErrors.guestName)
+                              setFormErrors((prev) => ({ ...prev, guestName: undefined }));
+                          }}
+                          className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
+                            formErrors.guestName
+                              ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
+                              : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
+                          }`}
+                        />
+                        {formErrors.guestName && (
+                          <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                            {formErrors.guestName}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Email Address */}
+                      <div>
+                        <label htmlFor="booking-guest-email" className="block text-xs font-semibold text-stone-700 mb-1.5">
+                          Email Address <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          id="booking-guest-email"
+                          type="email"
+                          name="email"
+                          autoComplete="email"
+                          placeholder="e.g. john@example.com"
+                          value={guestEmail}
+                          onChange={(e) => {
+                            setGuestEmail(e.target.value);
+                            if (formErrors.guestEmail)
+                              setFormErrors((prev) => ({ ...prev, guestEmail: undefined }));
+                          }}
+                          className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
+                            formErrors.guestEmail
+                              ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
+                              : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
+                          }`}
+                        />
+                        {formErrors.guestEmail && (
+                          <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                            {formErrors.guestEmail}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Phone / WhatsApp */}
+                      <div>
+                        <label htmlFor="booking-guest-phone" className="block text-xs font-semibold text-stone-700 mb-1.5">
+                          Phone / WhatsApp <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          id="booking-guest-phone"
+                          type="tel"
+                          name="tel"
+                          autoComplete="tel"
+                          placeholder="e.g. +1 555-019-2834"
+                          value={guestPhone}
+                          onChange={(e) => {
+                            setGuestPhone(e.target.value);
+                            if (formErrors.guestPhone)
+                              setFormErrors((prev) => ({ ...prev, guestPhone: undefined }));
+                          }}
+                          className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all focus:outline-hidden ${
+                            formErrors.guestPhone
+                              ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
+                              : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
+                          }`}
+                        />
+                        {formErrors.guestPhone && (
+                          <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                            {formErrors.guestPhone}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Country of Residence */}
+                      <div>
+                        <label htmlFor="booking-guest-country" className="block text-xs font-semibold text-stone-700 mb-1.5">
+                          Country of Residence <span className="text-rose-500">*</span>
+                        </label>
+                        <select
+                          id="booking-guest-country"
+                          name="country"
+                          autoComplete="country-name"
+                          value={country}
+                          onChange={(e) => {
+                            setCountry(e.target.value);
+                            if (formErrors.country)
+                              setFormErrors((prev) => ({ ...prev, country: undefined }));
+                          }}
+                          className={`w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-sm border font-medium transition-all cursor-pointer focus:outline-hidden ${
+                            formErrors.country
+                              ? "border-rose-400 bg-rose-50/30 text-rose-950 focus:border-rose-500"
+                              : "border-stone-300 hover:border-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900"
+                          }`}
+                        >
+                          <option value="">Select Country...</option>
+                          {COUNTRY_OPTIONS.map((c) => (
+                            <option key={c.value} value={c.value}>
+                              {c.label}
+                            </option>
+                          ))}
+                        </select>
+                        {formErrors.country && (
+                          <p className="text-[11px] font-semibold text-rose-600 mt-1">
+                            {formErrors.country}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 3: Optional Add-ons */}
+                  {activeAddons.length > 0 && (
+                    <div className="pt-6 border-t border-stone-100 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h2 className="font-heading text-base font-bold text-stone-900 tracking-tight">
+                          Optional Add-ons
+                        </h2>
+                        {selectedAddonsWithDetails.length > 0 && (
+                          <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-xs">
+                            {selectedAddonsWithDetails.length} selected
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="divide-y divide-stone-100">
+                        {activeAddons.map((addon) => {
+                          const qty = addonQuantities[addon.id] || 0;
+                          const isSelected = qty > 0;
+
+                          return (
+                            <div
+                              key={addon.id}
+                              className="py-3 flex items-center justify-between gap-3 text-xs sm:text-sm"
+                            >
+                              <label
+                                htmlFor={`addon-${addon.id}`}
+                                className="flex items-center gap-3 cursor-pointer min-w-0"
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`addon-${addon.id}`}
+                                  checked={isSelected}
+                                  onChange={() => handleToggleAddon(addon.id, travelers)}
+                                  className="w-4 h-4 accent-stone-900 rounded-sm cursor-pointer shrink-0"
+                                />
+                                <span className="font-medium text-stone-900 truncate">
+                                  {addon.title}
+                                </span>
+                              </label>
+
+                              <div className="flex items-center gap-3 shrink-0">
+                                <span className="font-semibold text-stone-900">
+                                  +US${addon.priceUSD.toLocaleString()}
+                                  <span className="text-[11px] font-normal text-stone-500 ml-1">/ person</span>
+                                </span>
+
+                                {isSelected && (
+                                  <div className="flex items-center border border-stone-300 rounded-sm bg-white overflow-hidden shadow-2xs">
                                     <button
                                       type="button"
-                                      aria-label="Addon details"
-                                      className="text-stone-400 hover:text-stone-700 transition-colors cursor-help p-0.5"
+                                      aria-label="Decrease quantity"
+                                      onClick={() => handleSetAddonQty(addon.id, qty - 1)}
+                                      className="w-6 h-6 flex items-center justify-center text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
                                     >
-                                      <HelpCircle className="w-3.5 h-3.5" />
+                                      <Minus className="w-3 h-3" />
                                     </button>
-                                    <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block w-64 p-2.5 rounded-sm bg-stone-900 text-white text-[11px] leading-relaxed shadow-lg z-50 text-left font-normal border border-stone-800">
-                                      {addon.description}
-                                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-stone-900" />
-                                    </div>
+                                    <span className="w-6 h-6 flex items-center justify-center text-xs font-bold text-stone-900 bg-stone-50 font-mono">
+                                      {qty}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      aria-label="Increase quantity"
+                                      onClick={() => handleSetAddonQty(addon.id, qty + 1)}
+                                      className="w-6 h-6 flex items-center justify-center text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
+                                    >
+                                      <Plus className="w-3 h-3" />
+                                    </button>
                                   </div>
                                 )}
                               </div>
                             </div>
-
-                            {/* Right: Price & Stepper */}
-                            <div className="flex items-center gap-3 shrink-0">
-                              <span className="text-xs sm:text-sm font-bold text-stone-900 whitespace-nowrap">
-                                +US${addon.priceUSD.toLocaleString()}
-                                <span className="text-[11px] font-normal text-stone-500 ml-1">/ person</span>
-                              </span>
-
-                              {isSelected && (
-                                <div className="flex items-center border border-stone-300 rounded-sm bg-white overflow-hidden shadow-2xs">
-                                  <button
-                                    type="button"
-                                    aria-label="Decrease quantity"
-                                    onClick={() => handleSetAddonQty(addon.id, qty - 1)}
-                                    className="w-7 h-7 flex items-center justify-center text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
-                                  >
-                                    <Minus className="w-3 h-3" />
-                                  </button>
-                                  <span className="w-7 h-7 flex items-center justify-center text-xs font-bold text-stone-900 bg-stone-50 font-mono">
-                                    {qty}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    aria-label="Increase quantity"
-                                    onClick={() => handleSetAddonQty(addon.id, qty + 1)}
-                                    className="w-7 h-7 flex items-center justify-center text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
-                                  >
-                                    <Plus className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {/* STEP 4: Special Requirements / Notes */}
-                <div className="bg-white rounded-sm border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-3">
-                  <div className="flex items-center gap-2.5 pb-2 border-b border-stone-100">
-                    <span className="w-6 h-6 rounded-sm bg-stone-900 text-white font-bold text-xs flex items-center justify-center font-mono">
-                      {activeAddons.length > 0 ? "4" : "3"}
-                    </span>
-                    <h3 className="font-heading text-base font-bold text-stone-900 tracking-tight">
-                      Special Requests &amp; Notes
-                    </h3>
-                  </div>
-
-                  {isNoteOpen || specialRequests ? (
-                    <div>
-                      <label htmlFor="booking-special-requests" className="block text-xs font-semibold text-stone-700 mb-1.5">
-                        Dietary requirements, room preferences, or flight arrival details{" "}
-                        <span className="text-stone-400 font-normal">(Optional)</span>
-                      </label>
-                      <textarea
-                        id="booking-special-requests"
-                        rows={3}
-                        placeholder="e.g. Vegetarian meals required, twin room preference, arriving on flight QR648..."
-                        value={specialRequests}
-                        onChange={(e) => setSpecialRequests(e.target.value)}
-                        className="w-full text-xs sm:text-sm p-3 rounded-sm border border-stone-300 hover:border-stone-400 focus:outline-hidden focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900 placeholder:text-stone-400 resize-none font-medium transition-all"
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setIsNoteOpen(true)}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 hover:text-stone-900 cursor-pointer transition-colors"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add special requests, room preferences, or dietary needs (Optional)</span>
-                    </button>
                   )}
+
+                  {/* Section 4: Special Requests & Notes */}
+                  <div className="pt-6 border-t border-stone-100 space-y-3">
+                    <h2 className="font-heading text-base font-bold text-stone-900 tracking-tight">
+                      Special Requests &amp; Notes
+                    </h2>
+                    <textarea
+                      id="booking-special-requests"
+                      rows={3}
+                      placeholder="Dietary requirements, room preferences, flight details, or other notes..."
+                      value={specialRequests}
+                      onChange={(e) => setSpecialRequests(e.target.value)}
+                      className="w-full text-xs sm:text-sm p-3 rounded-sm border border-stone-300 hover:border-stone-400 focus:outline-hidden focus:border-stone-900 focus:ring-1 focus:ring-stone-900/10 bg-white text-stone-900 placeholder:text-stone-400 resize-none font-medium transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* RIGHT COLUMN: Sticky Order Summary & Confirmation CTA (5 Cols) */}
-              <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
-                <div className="bg-white rounded-sm border border-stone-200 shadow-md overflow-hidden">
-                  {/* Trip Photo Preview */}
+              {/* RIGHT COLUMN: Sticky Order Summary */}
+              <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-4">
+                <div className="bg-white rounded-md border border-stone-200 shadow-xs overflow-hidden">
                   {trip.image && (
-                    <div className="relative h-44 sm:h-52 w-full bg-stone-100 overflow-hidden">
+                    <div className="relative h-44 w-full bg-stone-100 overflow-hidden">
                       <Image
                         src={trip.image}
                         alt={trip.title}
@@ -1244,37 +1056,30 @@ export function BookingPageClient({
                         className="object-cover"
                         priority
                       />
-                      <div className="absolute top-3 left-3 bg-stone-900/90 text-white text-xs font-semibold px-2.5 py-1 rounded-xs backdrop-blur-xs shadow-sm">
-                        {trip.region || categoryLabel}
-                      </div>
-                      <div className="absolute bottom-3 left-3 bg-stone-900/80 text-white text-xs font-medium px-2.5 py-0.5 rounded-xs backdrop-blur-xs">
-                        {trip.durationDays} Days Total
-                      </div>
                     </div>
                   )}
 
-                  {/* Summary Details Content */}
-                  <div className="p-5 sm:p-6 space-y-5 text-xs">
-                    {/* Trip Title & Category */}
-                    <div className="space-y-1 pb-4 border-b border-stone-100">
-                      <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">
-                        Reservation Summary
+                  <div className="p-5 sm:p-6 space-y-4 text-xs">
+                    {/* Title */}
+                    <div className="space-y-1 pb-3 border-b border-stone-100">
+                      <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">
+                        Order Summary
                       </span>
-                      <h2 className="font-heading text-lg font-bold text-stone-900 leading-snug">
+                      <h2 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug">
                         {trip.title}
                       </h2>
                     </div>
 
-                    {/* Specifications Row */}
-                    <div className="py-3 border-b border-stone-100 flex items-center justify-between text-xs">
+                    {/* Specifications */}
+                    <div className="py-2 border-b border-stone-100 flex items-center justify-between text-xs">
                       <div>
-                        <span className="text-stone-500 block text-xs">Travelers</span>
+                        <span className="text-stone-500 block">Travelers</span>
                         <span className="font-semibold text-stone-900">
                           {travelers} {travelers === 1 ? "Traveler" : "Travelers"}
                         </span>
                       </div>
                       <div className="text-right">
-                        <span className="text-stone-500 block text-xs">Departure Date</span>
+                        <span className="text-stone-500 block">Departure Date</span>
                         <span className="font-semibold text-stone-900">
                           {startDate ? formatDate(startDate) : "Not selected"}
                         </span>
@@ -1282,37 +1087,20 @@ export function BookingPageClient({
                     </div>
 
                     {/* Price Breakdown */}
-                    <div className="space-y-3">
-                      <span className="font-bold text-stone-900 text-xs uppercase tracking-wider block">
-                        Price Breakdown
-                      </span>
-
-                      {/* Base Trip Rate */}
-                      <div className="flex items-center justify-between text-stone-600 font-medium">
-                        <div>
-                          <span>Base Adventure Rate</span>
-                          <span className="block text-[11px] text-stone-500">
-                            {travelers} &times; US${unitCostPerPerson.toLocaleString()}
-                          </span>
-                        </div>
-                        <span className="font-bold text-stone-900 text-sm">
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between text-stone-600">
+                        <span>Base Rate ({travelers} × ${unitCostPerPerson.toLocaleString()})</span>
+                        <span className="font-semibold text-stone-900">
                           US${baseTripTotalUSD.toLocaleString()}
                         </span>
                       </div>
 
-                      {/* Selected Add-ons itemized */}
                       {selectedAddonsWithDetails.length > 0 && (
-                        <div className="pt-2 border-t border-dashed border-stone-200 space-y-1.5">
-                          <span className="text-stone-500 font-semibold text-[11px] block">
-                            Selected Add-ons:
-                          </span>
+                        <div className="pt-2 border-t border-dashed border-stone-200 space-y-1">
                           {selectedAddonsWithDetails.map((addon) => (
-                            <div
-                              key={addon.id}
-                              className="flex items-center justify-between text-stone-700 text-xs"
-                            >
+                            <div key={addon.id} className="flex items-center justify-between text-stone-600 text-xs">
                               <span className="truncate pr-2 font-medium">
-                                • {addon.title} {addon.quantity > 1 ? `(×${addon.quantity})` : ""}
+                                {addon.title} {addon.quantity > 1 ? `(×${addon.quantity})` : ""}
                               </span>
                               <span className="font-semibold text-stone-900 shrink-0">
                                 +US${addon.subtotalUSD.toLocaleString()}
@@ -1322,31 +1110,20 @@ export function BookingPageClient({
                         </div>
                       )}
 
-                      {/* Total Amount */}
                       <div className="pt-3 border-t border-stone-200 flex items-baseline justify-between">
-                        <span className="font-bold text-stone-900 text-sm sm:text-base">
-                          Total Amount
-                        </span>
-                        <span className="font-heading font-extrabold text-stone-900 text-xl sm:text-2xl">
+                        <span className="font-bold text-stone-900 text-sm">Total</span>
+                        <span className="font-heading font-extrabold text-stone-900 text-xl">
                           US${totalPriceUSD.toLocaleString()}
                         </span>
                       </div>
 
-                      {/* Deposit Notice */}
-                      <div className="bg-stone-50 rounded-sm p-3 border border-stone-200 text-[11px] text-stone-600 space-y-1">
-                        <div className="flex items-center justify-between font-semibold text-stone-800">
-                          <span>Deposit Upon Confirmation:</span>
-                          <span className="text-stone-900 font-bold">US${depositUSD.toLocaleString()}</span>
-                        </div>
-                        <p className="text-[11px] text-stone-500">
-                          25% deposit payable once your permits and departure dates are officially confirmed.
-                        </p>
-                      </div>
+                      <p className="text-[11px] text-stone-500">
+                        25% deposit (US${depositUSD.toLocaleString()}) payable once permits are confirmed.
+                      </p>
                     </div>
 
-                    {/* Terms Checkbox, Security, & CTA Button */}
-                    <div className="pt-2 space-y-4 border-t border-stone-100">
-                      {/* Terms & Conditions Checkbox */}
+                    {/* Terms & Submit */}
+                    <div className="pt-3 space-y-3 border-t border-stone-100">
                       <div>
                         <label className="flex items-start gap-2.5 cursor-pointer text-xs text-stone-700 font-medium select-none">
                           <input
@@ -1370,7 +1147,6 @@ export function BookingPageClient({
                         )}
                       </div>
 
-                      {/* Turnstile Security Widget */}
                       <div id="booking-verify" className="flex justify-center">
                         <TurnstileWidget
                           ref={turnstileRef}
@@ -1380,40 +1156,36 @@ export function BookingPageClient({
                         />
                       </div>
 
-                      {/* Primary Reservation CTA Button */}
-                      <div className="space-y-2">
-                        <button
-                          type="submit"
-                          disabled={isSubmitting || Boolean(pricingResult.error)}
-                          className="group w-full py-3.5 px-5 rounded-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-hidden focus:ring-2 focus:ring-emerald-600/30"
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <Loader2 className="w-4 h-4 animate-spin text-white" />
-                              <span>Confirming Reservation...</span>
-                            </>
-                          ) : (
-                            <>
-                              <span>Confirm Reservation</span>
-                              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                            </>
-                          )}
-                        </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting || Boolean(pricingResult.error)}
+                        className="group w-full py-3 px-4 rounded-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-hidden"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin text-white" />
+                            <span>Confirming...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Confirm Reservation</span>
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                          </>
+                        )}
+                      </button>
 
-                        {/* Direct WhatsApp Contact below CTA */}
-                        <div className="flex items-center justify-center pt-1">
-                          <a
-                            href={`https://wa.me/${whatsappNumberClean}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 hover:text-emerald-700 transition-colors"
-                          >
-                            <svg className="w-3.5 h-3.5 fill-emerald-600 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
-                              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.205 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
-                            </svg>
-                            <span>+{(settings.whatsappNumber || "977 9764398491")}</span>
-                          </a>
-                        </div>
+                      <div className="flex items-center justify-center pt-1">
+                        <a
+                          href={`https://wa.me/${whatsappNumberClean}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-emerald-700 transition-colors"
+                        >
+                          <svg className="w-3.5 h-3.5 fill-emerald-600 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.205 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                          </svg>
+                          <span>Have questions? Chat on WhatsApp</span>
+                        </a>
                       </div>
                     </div>
                   </div>

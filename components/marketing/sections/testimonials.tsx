@@ -1,14 +1,20 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
-import { Star, CheckCircle2 } from "lucide-react";
+import { Star } from "lucide-react";
 import { CarouselNavButton } from "@/components/ui/carousel-nav-button";
 import Image from "next/image";
 import { adminTestimonialsApi, SettingService, TestimonialItem } from "@/lib/services/admin-service";
 import { TestimonialStatus } from "@/lib/admin-data";
 import { Testimonial } from "@/lib/home-data";
+
+type UnifiedTestimonial = (Testimonial | TestimonialItem) & {
+  avatar?: string;
+  image?: string;
+  title?: string;
+};
 
 function getReviewHeadline(content: string, tripName?: string): string {
   if (!content) return tripName ? `Review for ${tripName}` : "Exceptional Himalayan Journey";
@@ -21,11 +27,12 @@ function getReviewHeadline(content: string, tripName?: string): string {
 }
 
 export function TestimonialsSection() {
-  const [items, setItems] = useState<(Testimonial | TestimonialItem)[]>([]);
+  const [items, setItems] = useState<UnifiedTestimonial[]>([]);
 
   // Continuous infinite auto scroll configuration
-  const autoScroll = useRef(
-    AutoScroll({ speed: 1.1, stopOnInteraction: false, stopOnMouseEnter: true })
+  const plugins = useMemo(
+    () => [AutoScroll({ speed: 1.1, stopOnInteraction: false, stopOnMouseEnter: true })],
+    []
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -33,7 +40,7 @@ export function TestimonialsSection() {
       loop: true,
       align: "start",
     },
-    [autoScroll.current]
+    plugins
   );
 
   const scrollPrev = useCallback(() => {
@@ -51,8 +58,8 @@ export function TestimonialsSection() {
         const fetched = await adminTestimonialsApi.getPublicAll({ status: TestimonialStatus.ACTIVE });
         const list = Array.isArray(fetched)
           ? fetched
-          : Array.isArray((fetched as any)?.items)
-          ? (fetched as any).items
+          : Array.isArray((fetched as { items?: UnifiedTestimonial[] })?.items)
+          ? ((fetched as { items: UnifiedTestimonial[] }).items)
           : [];
 
         if (list.length > 0) {
@@ -67,7 +74,7 @@ export function TestimonialsSection() {
             if (Array.isArray(parsed) && parsed.length > 0) {
               if (isMounted) setItems(parsed);
             }
-          } catch (e) {
+          } catch {
             // Ignore parse error
           }
         }
@@ -121,7 +128,7 @@ export function TestimonialsSection() {
         </div>
 
         {/* Carousel Container */}
-        <div className="relative group/carousel pt-2">
+        <div className="relative group/carousel pt-2 select-none">
           {/* Navigation Arrows */}
           {displayItems.length > 1 && (
             <>
@@ -142,8 +149,8 @@ export function TestimonialsSection() {
           <div className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y" ref={emblaRef}>
             <div className="flex -ml-6">
               {displayItems.map((item, idx) => {
-                const avatarUrl = (item as any).avatar || (item as any).image;
-                const headline = (item as any).title || getReviewHeadline(item.content, item.tripName);
+                const avatarUrl = item.avatar || item.image;
+                const headline = item.title || getReviewHeadline(item.content, item.tripName);
 
                 return (
                   <div

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
@@ -22,8 +22,9 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Autoplay configuration
-  const autoplay = useRef(
-    Autoplay({ delay: 4500, stopOnInteraction: false, stopOnMouseEnter: true })
+  const plugins = useMemo(
+    () => [Autoplay({ delay: 4500, stopOnInteraction: false, stopOnMouseEnter: true })],
+    []
   );
 
   // Embla Carousel with dragFree enabled for responsive inertia dragging
@@ -35,7 +36,7 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
       dragFree: true,
       containScroll: false,
     },
-    [autoplay.current]
+    plugins
   );
 
   const scrollPrev = useCallback(() => {
@@ -105,7 +106,8 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
   };
 
   const getTripCountLabel = (act: ActivityItem) => {
-    const count = act.tripCount ?? (act as any).itemCount ?? (act as any).packagesCount;
+    const raw = act as ActivityItem & { itemCount?: number; packagesCount?: number };
+    const count = raw.tripCount ?? raw.itemCount ?? raw.packagesCount;
     if (typeof count === "number" && count >= 0) {
       return `${count} ${count === 1 ? "Trip" : "Trips"}`;
     }
@@ -213,7 +215,7 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                   return (
                     <div
                       key={act.id}
-                      className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] min-w-0 pl-6 sm:pl-7 lg:pl-8 shrink-0"
+                      className="flex-[0_0_88%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] min-w-0 pl-6 sm:pl-7 lg:pl-8 shrink-0"
                     >
                       <Link
                         href={`/activities/${act.slug}`}

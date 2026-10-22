@@ -126,6 +126,15 @@ export function BookingPageClient({
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string | undefined>>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeTooltipId, setActiveTooltipId] = useState<string | null>(null);
+
+  // Close tooltip when clicking outside
+  useEffect(() => {
+    if (!activeTooltipId) return;
+    const handleOutsideClick = () => setActiveTooltipId(null);
+    window.addEventListener("click", handleOutsideClick);
+    return () => window.removeEventListener("click", handleOutsideClick);
+  }, [activeTooltipId]);
 
   const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
 
@@ -949,30 +958,57 @@ export function BookingPageClient({
                           return (
                             <div
                               key={addon.id}
-                              className="py-3.5 flex items-start sm:items-center justify-between gap-3 text-xs sm:text-sm"
+                              className="py-3 flex items-center justify-between gap-3 text-xs sm:text-sm"
                             >
-                              <label
-                                htmlFor={`addon-${addon.id}`}
-                                className="flex items-start sm:items-center gap-3 cursor-pointer min-w-0 flex-1"
-                              >
+                              <div className="flex items-center gap-2.5 min-w-0 flex-1">
                                 <input
                                   type="checkbox"
                                   id={`addon-${addon.id}`}
                                   checked={isSelected}
                                   onChange={() => handleToggleAddon(addon.id, travelers)}
-                                  className="w-4 h-4 mt-0.5 sm:mt-0 accent-stone-900 rounded-sm cursor-pointer shrink-0"
+                                  className="w-4 h-4 accent-stone-900 rounded-sm cursor-pointer shrink-0"
                                 />
-                                <div className="min-w-0">
-                                  <span className="font-medium text-stone-900 block leading-tight">
-                                    {addon.title}
-                                  </span>
-                                  {addon.description && (
-                                    <p className="text-[11px] sm:text-xs text-stone-500 mt-0.5 leading-relaxed line-clamp-2">
-                                      {addon.description}
-                                    </p>
-                                  )}
-                                </div>
-                              </label>
+                                <label
+                                  htmlFor={`addon-${addon.id}`}
+                                  className="font-medium text-stone-900 cursor-pointer select-none truncate"
+                                >
+                                  {addon.title}
+                                </label>
+
+                                {addon.description && (
+                                  <div
+                                    className="relative inline-flex items-center group/tooltip shrink-0"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <button
+                                      type="button"
+                                      aria-label={`About ${addon.title}`}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setActiveTooltipId(activeTooltipId === addon.id ? null : addon.id);
+                                      }}
+                                      className="w-4 h-4 rounded-full bg-stone-100 hover:bg-stone-200 active:bg-stone-300 text-stone-500 hover:text-stone-800 flex items-center justify-center text-[10px] font-bold transition-colors cursor-help focus:outline-hidden"
+                                    >
+                                      ?
+                                    </button>
+
+                                    {/* Tooltip bubble on hover and tap */}
+                                    <div
+                                      role="tooltip"
+                                      className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 sm:w-72 p-3 bg-stone-900 text-stone-100 text-xs rounded-lg shadow-xl pointer-events-none transition-all duration-200 z-50 ${
+                                        activeTooltipId === addon.id
+                                          ? "opacity-100 visible translate-y-0"
+                                          : "opacity-0 invisible translate-y-1 group-hover/tooltip:opacity-100 group-hover/tooltip:visible group-hover/tooltip:translate-y-0"
+                                      }`}
+                                    >
+                                      <p className="font-semibold text-white mb-1 leading-snug">{addon.title}</p>
+                                      <p className="text-stone-300 leading-relaxed text-[11px] font-normal">{addon.description}</p>
+                                      <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
 
                               <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
                                 <span className="font-semibold text-stone-900 whitespace-nowrap">

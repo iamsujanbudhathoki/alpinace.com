@@ -85,9 +85,6 @@ export function ActivityDetailClient({
                         {pkg.region}
                       </span>
                     )}
-                    <span className="absolute top-3 right-3 bg-white/90 text-stone-900 text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm backdrop-blur-xs">
-                      {pkg.category}
-                    </span>
                   </div>
 
                   {/* Card Content */}

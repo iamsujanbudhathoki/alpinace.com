@@ -102,7 +102,7 @@ export function ActivityDetailClient({
                       </h3>
 
                       {desc && (
-                        <p className="text-xs sm:text-sm text-stone-600 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
                           {desc}
                         </p>
                       )}

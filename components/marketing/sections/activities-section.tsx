@@ -207,10 +207,6 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                         </h3>
                       </div>
 
-                      <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between text-xs sm:text-sm font-semibold text-stone-900 group-hover:text-yellow-600 group-hover:underline">
-                        <span>Explore Activity</span>
-                        <span className="group-hover:translate-x-1 transition-transform text-yellow-500 font-bold">&rarr;</span>
-                      </div>
                     </div>
                   </Link>
                 );
@@ -262,11 +258,6 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                             <h3 className="font-heading text-lg sm:text-xl font-bold text-stone-900 group-hover:text-yellow-600 transition-colors leading-snug line-clamp-1">
                               {act.name}
                             </h3>
-                          </div>
-
-                          <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between text-xs sm:text-sm font-semibold text-stone-900 group-hover:text-yellow-600 group-hover:underline">
-                            <span>Explore Activity</span>
-                            <span className="group-hover:translate-x-1 transition-transform text-yellow-500 font-bold">&rarr;</span>
                           </div>
                         </div>
                       </Link>

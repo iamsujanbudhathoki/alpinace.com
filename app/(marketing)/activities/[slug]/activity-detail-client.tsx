@@ -11,6 +11,18 @@ interface ActivityDetailClientProps {
   expeditions: TravelPackage[];
 }
 
+function cleanShortDesc(text?: string) {
+  if (!text) return "";
+  return text
+    .replace(/<[^>]*>?/gm, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function ActivityDetailClient({
   activityName,
   treks,
@@ -50,6 +62,7 @@ export function ActivityDetailClient({
               : type === "expeditions"
               ? `/expeditions/${pkg.slug}`
               : `/trekking/${pkg.slug}`;
+          const desc = cleanShortDesc(pkg.shortDesc);
 
           return (
             <div
@@ -79,7 +92,7 @@ export function ActivityDetailClient({
 
                   {/* Card Content */}
                   <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
                         <span>{pkg.durationDays} Days</span>
                         {pkg.maxAltitudeMeters > 0 && (
@@ -87,9 +100,15 @@ export function ActivityDetailClient({
                         )}
                       </div>
 
-                      <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-600 group-hover:underline transition-colors leading-snug line-clamp-1">
+                      <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-yellow-600 transition-colors leading-snug line-clamp-1">
                         {pkg.title}
                       </h3>
+
+                      {desc && (
+                        <p className="text-xs sm:text-sm text-stone-600 line-clamp-2 leading-relaxed">
+                          {desc}
+                        </p>
+                      )}
                     </div>
 
                     {/* Pricing & CTA */}

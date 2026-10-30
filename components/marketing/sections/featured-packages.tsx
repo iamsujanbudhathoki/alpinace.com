@@ -248,7 +248,7 @@ export function FeaturedPackages({
 
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1780px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
         {/* Filter Navigation Bar: Perfectly Centered across all screen sizes with horizontal touch-scroll on mobile */}
         <div className="relative flex items-center justify-center pb-3 sm:pb-4 border-b border-stone-200">
           {/* Scrollable container on mobile, centered row */}
@@ -314,8 +314,8 @@ export function FeaturedPackages({
           )}
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((n) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
                   className="bg-white rounded-2xl border border-stone-200 p-4 space-y-4 animate-pulse"
@@ -394,7 +394,7 @@ export function FeaturedPackages({
               })}
             </div>
           ) : (
-            /* Multi-item Embla Carousel: Mobile swipeable cards with visual peek, tablet 2-card, desktop 3-card grid */
+            /* Multi-item Embla Carousel: Mobile swipeable cards with visual peek, tablet 2-card, laptop 3-card, desktop 4-card grid */
             <div
               className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-4 -my-4"
               ref={emblaRef}
@@ -402,14 +402,14 @@ export function FeaturedPackages({
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
             >
-              <div className="flex flex-nowrap -ml-4 sm:-ml-6 lg:-ml-8">
+              <div className="flex flex-nowrap -ml-4 sm:-ml-6 lg:-ml-7">
                 {displayPackages.map((pkg, index) => {
                   const packageHref = getPackageLink(pkg, activeTab);
 
                   return (
                     <div
                       key={`${pkg.id}-${index}`}
-                      className="flex-[0_0_88%] xs:flex-[0_0_85%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] min-w-0 pl-4 sm:pl-6 lg:pl-8 shrink-0"
+                      className="flex-[0_0_88%] xs:flex-[0_0_85%] sm:flex-[0_0_50%] md:flex-[0_0_33.333333%] xl:flex-[0_0_25%] min-w-0 pl-4 sm:pl-6 lg:pl-7 shrink-0"
                     >
                       <Link
                         href={packageHref}
@@ -422,7 +422,7 @@ export function FeaturedPackages({
                             src={pkg.image || "/mountain-placeholder.jpg"}
                             alt={pkg.title}
                             fill
-                            sizes="(max-width: 640px) 88vw, (max-width: 1024px) 50vw, 33vw"
+                            sizes="(max-width: 640px) 88vw, (max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                             className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             draggable={false}
                           />

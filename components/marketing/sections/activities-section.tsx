@@ -118,9 +118,15 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
     return null;
   }
 
+  // Ensure sufficient item sequence if between 2 and 9 items for smooth continuous loop with 4 cards visible
+  const displayActivities =
+    activities.length > 1 && activities.length < 10
+      ? [...activities, ...activities, ...activities]
+      : activities;
+
   return (
     <section className="py-16 sm:py-20 bg-stone-50 border-b border-stone-200 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1780px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
         {/* Section Header */}
         <div className="text-center mb-8">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-stone-900 leading-snug">
@@ -148,16 +154,19 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
           )}
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((n) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
-                  className="bg-white rounded-lg border border-stone-200 p-0 overflow-hidden space-y-0 animate-pulse"
+                  className="bg-white rounded-2xl border border-stone-200 p-0 overflow-hidden space-y-0 animate-pulse"
                 >
-                  <div className="aspect-[16/11] bg-stone-200 w-full" />
-                  <div className="p-4 space-y-2">
+                  <div className="aspect-[1/1] bg-stone-200 w-full" />
+                  <div className="p-5 sm:p-6 space-y-4">
                     <div className="h-5 bg-stone-200 rounded w-3/4" />
-                    <div className="h-4 bg-stone-100 rounded w-1/3" />
+                    <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between">
+                      <div className="h-4 bg-stone-100 rounded w-1/3" />
+                      <div className="h-4 bg-stone-100 rounded w-6" />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -171,10 +180,10 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                   <Link
                     key={act.id}
                     href={`/activities/${act.slug}`}
-                    className="group flex flex-col h-full bg-white rounded-lg border border-stone-200 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.14)]"
+                    className="group flex flex-col h-full bg-white rounded-2xl border border-stone-200/90 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
                   >
-                    {/* Image Frame with contained zoom */}
-                    <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
+                    {/* Taller Image Frame with contained zoom */}
+                    <div className="relative aspect-[1/1] w-full overflow-hidden bg-stone-100">
                       <Image
                         src={act.image || "/mountain-placeholder.jpg"}
                         alt={act.name}
@@ -184,24 +193,31 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                       />
                       {/* Trip Count Badge */}
                       {tripLabel && (
-                        <span className="absolute top-3 right-3 bg-yellow-400 text-stone-950 font-bold text-xs px-3 py-1 rounded-md shadow-xs pointer-events-none">
+                        <span className="absolute top-3.5 right-3.5 bg-yellow-400 text-stone-950 font-bold text-xs px-3 py-1 rounded-md shadow-xs pointer-events-none">
                           {tripLabel}
                         </span>
                       )}
                     </div>
 
-                    {/* Card Content: Title Only */}
-                    <div className="p-4 sm:p-5 bg-white border-t border-stone-100">
-                      <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 leading-snug line-clamp-1">
-                        {act.name}
-                      </h3>
+                    {/* Card Content */}
+                    <div className="p-5 sm:p-6 bg-white flex-1 flex flex-col justify-between space-y-4 border-t border-stone-100">
+                      <div>
+                        <h3 className="font-heading text-lg sm:text-xl font-bold text-stone-900 group-hover:text-yellow-600 transition-colors leading-snug line-clamp-1">
+                          {act.name}
+                        </h3>
+                      </div>
+
+                      <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between text-xs sm:text-sm font-semibold text-stone-900 group-hover:text-yellow-600 group-hover:underline">
+                        <span>Explore Activity</span>
+                        <span className="group-hover:translate-x-1 transition-transform text-yellow-500 font-bold">&rarr;</span>
+                      </div>
                     </div>
                   </Link>
                 );
               })}
             </div>
           ) : (
-            /* Multi-item Embla Carousel with Substantial 3-Card Desktop Grid */
+            /* Multi-item Embla Carousel with 4-Card Desktop Grid */
             <div
               className="overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y py-4 -my-4"
               ref={emblaRef}
@@ -209,13 +225,13 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
             >
-              <div className="flex -ml-6 sm:-ml-7 lg:-ml-8">
-                {activities.map((act) => {
+              <div className="flex -ml-4 sm:-ml-6 lg:-ml-7">
+                {displayActivities.map((act, index) => {
                   const tripLabel = getTripCountLabel(act);
                   return (
                     <div
-                      key={act.id}
-                      className="flex-[0_0_88%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] min-w-0 pl-6 sm:pl-7 lg:pl-8 shrink-0"
+                      key={`${act.id}-${index}`}
+                      className="flex-[0_0_88%] xs:flex-[0_0_82%] sm:flex-[0_0_50%] md:flex-[0_0_33.333333%] xl:flex-[0_0_25%] min-w-0 pl-4 sm:pl-6 lg:pl-7 shrink-0"
                     >
                       <Link
                         href={`/activities/${act.slug}`}
@@ -223,12 +239,12 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                         className="group flex flex-col h-full bg-white rounded-2xl border border-stone-200/90 overflow-hidden transition-all duration-300 ease-out hover:border-stone-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
                       >
                         {/* Taller Image Frame with contained zoom */}
-                        <div className="relative aspect-[16/11] w-full overflow-hidden bg-stone-100">
+                        <div className="relative aspect-[1/1] w-full overflow-hidden bg-stone-100">
                           <Image
                             src={act.image || "/mountain-placeholder.jpg"}
                             alt={act.name}
                             fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                             className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             draggable={false}
                           />
@@ -243,14 +259,14 @@ export function ActivitiesSection({ initialActivities = [] }: ActivitiesSectionP
                         {/* Card Content: Title & CTA */}
                         <div className="p-5 sm:p-6 bg-white flex-1 flex flex-col justify-between space-y-4 border-t border-stone-100">
                           <div>
-                            <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-stone-700 transition-colors leading-snug line-clamp-1">
+                            <h3 className="font-heading text-lg sm:text-xl font-bold text-stone-900 group-hover:text-yellow-600 transition-colors leading-snug line-clamp-1">
                               {act.name}
                             </h3>
                           </div>
 
-                          <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between text-xs sm:text-sm font-semibold text-stone-900 group-hover:underline">
+                          <div className="pt-3.5 border-t border-stone-100 flex items-center justify-between text-xs sm:text-sm font-semibold text-stone-900 group-hover:text-yellow-600 group-hover:underline">
                             <span>Explore Activity</span>
-                            <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                            <span className="group-hover:translate-x-1 transition-transform text-yellow-500 font-bold">&rarr;</span>
                           </div>
                         </div>
                       </Link>

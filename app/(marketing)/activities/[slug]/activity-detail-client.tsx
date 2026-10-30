@@ -97,7 +97,7 @@ export function ActivityDetailClient({
                         )}
                       </div>
 
-                      <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-yellow-600 transition-colors leading-snug line-clamp-1">
+                      <h3 className="font-heading text-base sm:text-lg font-bold text-stone-900 group-hover:text-yellow-600 group-hover:underline transition-colors leading-snug line-clamp-1">
                         {pkg.title}
                       </h3>
 

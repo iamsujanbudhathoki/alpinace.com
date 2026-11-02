@@ -13,23 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
 import { CategoryType } from "@/lib/admin-data";
-import { CategoryService, MediaService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService, MediaItem } from "@/lib/services/admin-service";
 import { openLightbox, openSingleImage } from "@/lib/utils/lightbox";
 
-interface MediaAsset {
-  id: string;
-  title: string;
-  categoryId?: string;
-  categoryName?: string;
-  category: string;
-  url: string;
-  mimeType?: string;
-  description?: string;
-  altText?: string;
-  fileSize: string;
-  dimensions?: string;
-  createdAt: string;
-}
+type MediaAsset = MediaItem;
 
 const isImageMedia = (asset: MediaAsset): boolean => {
   if (asset.mimeType) {
@@ -89,18 +76,8 @@ export default function AdminMediaPage() {
   const [editDescription, setEditDescription] = useState("");
   const [editAltText, setEditAltText] = useState("");
 
-  // Normalize a PaginatedList<T> (array with .pagination property) into list + pagination
-  const parseMediaResponse = (res: any): { list: any[]; pagination?: any } => {
-    if (Array.isArray(res)) {
-      // PaginatedList<T> is an array extended with .pagination
-      return { list: res, pagination: (res as any).pagination };
-    }
-    if (res && Array.isArray(res.data)) return { list: res.data, pagination: res.pagination ?? res.meta };
-    return { list: [] };
-  };
-
   // Deduplicate by URL (normalized)
-  const deduplicateByUrl = (list: any[]): any[] => {
+  const deduplicateByUrl = (list: MediaAsset[]): MediaAsset[] => {
     const seen = new Set<string>();
     return list.filter((item) => {
       if (!item?.url) return false;
@@ -110,20 +87,6 @@ export default function AdminMediaPage() {
       return true;
     });
   };
-
-  const mapAsset = (m: any): MediaAsset => ({
-    id: m.id,
-    title: m.title || m.name,
-    categoryId: m.categoryId ?? "",
-    categoryName: m.categoryName ?? "",
-    category: m.categoryName ?? "",
-    url: m.url,
-    mimeType: m.mimeType ?? "",
-    description: m.description ?? "",
-    altText: m.altText ?? "",
-    fileSize: m.fileSize ? `${(Number(m.fileSize) / 1024).toFixed(1)} KB` : "0 KB",
-    createdAt: m.createdAt ? new Date(m.createdAt).toISOString().split("T")[0] : "",
-  });
 
   // Load categories for filter dropdown
   const loadCategories = useCallback(async () => {
@@ -140,13 +103,12 @@ export default function AdminMediaPage() {
   const loadStats = useCallback(async () => {
     try {
       const res = await MediaService.getAllMedia({ limit: 1000 });
-      const { list } = parseMediaResponse(res);
+      const list: MediaAsset[] = Array.isArray(res) ? res : ((res as any)?.data ?? []);
       const unique = deduplicateByUrl(list);
-      setAllAssetsForStats(unique.map(mapAsset));
+      setAllAssetsForStats(unique);
     } catch (e) {
       console.warn("Failed to load media stats:", e);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -201,9 +163,10 @@ export default function AdminMediaPage() {
         page,
         limit,
       });
-      const { list, pagination } = parseMediaResponse(res);
+      const list: MediaAsset[] = Array.isArray(res) ? res : ((res as any)?.data ?? []);
+      const pagination = res.pagination ?? (res as any)?.pagination;
       const unique = deduplicateByUrl(list);
-      setAssets(unique.map(mapAsset));
+      setAssets(unique);
       if (pagination) {
         setTotalItems(pagination.count ?? pagination.total ?? unique.length);
         setTotalPages(pagination.lastPage ?? pagination.pageCount ?? Math.max(1, Math.ceil((pagination.count ?? unique.length) / limit)));
@@ -260,7 +223,7 @@ export default function AdminMediaPage() {
       items: imageAssets.map((a) => ({
         img: a.url,
         thumb: a.url,
-        caption: `${a.title}${a.dimensions ? ` • ${a.dimensions}` : ""}${a.category ? ` • ${a.category}` : ""}`,
+        caption: `${a.title}${a.categoryName ? ` • ${a.categoryName}` : ""}`,
         alt: a.altText || a.title,
       })),
       position: position >= 0 ? position : 0,
@@ -415,21 +378,21 @@ export default function AdminMediaPage() {
 
         <AdminStatsCard
           label="Everest Assets"
-          value={allAssetsForStats.filter((a) => a.category === "Everest & Peaks").length}
+          value={allAssetsForStats.filter((a) => a.categoryName === "Everest & Peaks").length}
           icon={FolderOpen}
           iconBgClass="bg-blue-50 border border-blue-200 text-blue-700"
         />
 
         <AdminStatsCard
           label="Annapurna Assets"
-          value={allAssetsForStats.filter((a) => a.category === "Annapurna Region").length}
+          value={allAssetsForStats.filter((a) => a.categoryName === "Annapurna Region").length}
           icon={Tag}
           iconBgClass="bg-purple-50 border border-purple-200 text-purple-700"
         />
 
         <AdminStatsCard
           label="Helicopter Charters"
-          value={allAssetsForStats.filter((a) => a.category === "Helicopter Charters").length}
+          value={allAssetsForStats.filter((a) => a.categoryName === "Helicopter Charters").length}
           icon={Check}
           iconBgClass="bg-emerald-50 border border-emerald-200 text-emerald-700"
         />
@@ -565,9 +528,9 @@ export default function AdminMediaPage() {
                 {/* Asset Meta Specs */}
                 <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
                   <div>
-                    {asset.category && (
+                    {asset.categoryName && (
                       <span className="bg-slate-100 text-slate-700 font-semibold text-xs px-2.5 py-0.5 rounded-md border border-slate-200 w-fit block mb-1">
-                        {asset.category}
+                        {asset.categoryName}
                       </span>
                     )}
                     <h3 className="font-bold text-slate-900 text-xs line-clamp-1 group-hover:text-slate-950 transition-colors">
@@ -581,8 +544,8 @@ export default function AdminMediaPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-xs text-slate-700 font-semibold pt-2 border-t border-slate-100">
-                    <span>{asset.dimensions || getFileExtension(asset.url, asset.title)}</span>
-                    <span>{asset.fileSize}</span>
+                    <span>{getFileExtension(asset.url, asset.name || asset.title)}</span>
+                    <span>{asset.fileSize ? `${(Number(asset.fileSize) / 1024).toFixed(1)} KB` : "0 KB"}</span>
                   </div>
                 </div>
               </div>

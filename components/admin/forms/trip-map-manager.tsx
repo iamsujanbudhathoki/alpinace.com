@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { DialogFooter } from "@/components/ui/dialog";
-import { MediaService, CategoryService } from "@/lib/services/admin-service";
+import { MediaService, CategoryService, MediaItem } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface TripMapManagerProps {
@@ -30,13 +30,7 @@ interface TripMapManagerProps {
   packageTitle?: string;
 }
 
-interface MediaAsset {
-  id: string;
-  title: string;
-  categoryId?: string;
-  categoryName?: string;
-  url: string;
-}
+type MediaAsset = MediaItem;
 
 export function TripMapManager({
   mapImage = "",
@@ -76,18 +70,11 @@ export function TripMapManager({
     try {
       const res = await MediaService.uploadFile(file);
       if (res.success && res.data?.url) {
-        const url = res.data.url;
-        const mediaId = res.data.id;
-        const newAsset: MediaAsset = {
-          id: mediaId,
-          title: file.name.replace(/\.[^/.]+$/, ""),
-          categoryName: "Route Maps",
-          url: url,
-        };
-        setAssets((prev) => [newAsset, ...prev.filter((a) => a.url !== url)]);
-        setTempSelectedAsset(newAsset);
+        const uploadedAsset: MediaAsset = res.data;
+        setAssets((prev) => [uploadedAsset, ...prev.filter((a) => a.url !== uploadedAsset.url)]);
+        setTempSelectedAsset(uploadedAsset);
         setShowModalUploader(false);
-        toast.success(res.message || `Map "${file.name}" uploaded to media library!`);
+        toast.success(res.message || `Map "${uploadedAsset.name || file.name}" uploaded to media library!`);
       } else {
         toast.error(res?.message || "Failed to upload map image.");
       }
@@ -102,33 +89,27 @@ export function TripMapManager({
   const loadMedia = async (page: number, catId: string, search?: string) => {
     setIsLibraryLoading(true);
     try {
-      const res: any = await MediaService.getAllMedia({
+      const res = await MediaService.getAllMedia({
         limit: MEDIA_LIMIT,
         page,
         categoryId: catId !== "All" ? catId : undefined,
         search: search?.trim() || undefined,
       });
-      const mediaList = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
-      const pagination = (res as any).pagination ?? res?.pagination;
-      const mapped: MediaAsset[] = mediaList.map((m: any) => ({
-        id: m.id || `media-${Math.random()}`,
-        title: m.title || m.name || m.originalName || "Media Asset",
-        categoryId: m.categoryId,
-        categoryName: m.categoryName || m.category?.name || "",
-        url: m.url,
-      }));
-      setAssets(mapped);
+      const mediaList: MediaAsset[] = Array.isArray(res) ? res : ((res as any)?.data ?? []);
+      const pagination = res.pagination ?? (res as any)?.pagination;
+
+      setAssets(mediaList);
       if (pagination) {
         setMediaTotalPages(pagination.lastPage ?? pagination.pageCount ?? 1);
-        setMediaTotalItems(pagination.count ?? pagination.total ?? mapped.length);
+        setMediaTotalItems(pagination.count ?? pagination.total ?? mediaList.length);
       } else {
         setMediaTotalPages(1);
-        setMediaTotalItems(mapped.length);
+        setMediaTotalItems(mediaList.length);
       }
 
       // Preselect current map asset if matching URL or ID exists
       if (!tempSelectedAsset) {
-        const current = mapped.find(
+        const current = mediaList.find(
           (a) => (mapMediaId && a.id === mapMediaId) || (mapImage && a.url === mapImage)
         );
         if (current) setTempSelectedAsset(current);

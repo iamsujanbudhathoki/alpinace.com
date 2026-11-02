@@ -48,8 +48,27 @@ export function makePaginatedList<T>(data: T[], pagination?: PaginationMeta): Pa
   return list;
 }
 
+export interface MediaItem {
+  id: string;
+  name: string;
+  title: string;
+  categoryId?: string;
+  categoryName?: string;
+  category?: {
+    id: string;
+    name: string;
+    slug?: string;
+  };
+  description?: string;
+  altText?: string;
+  url: string;
+  mimeType?: string;
+  fileSize?: string;
+  createdAt?: string | Date;
+}
+
 export const MediaService = {
-  async getAllMedia(params?: { categoryId?: string; category?: string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<any>> {
+  async getAllMedia(params?: { categoryId?: string; category?: string; search?: string; limit?: number; page?: number }): Promise<PaginatedList<MediaItem>> {
     try {
       const query = new URLSearchParams();
       if (params?.categoryId && params.categoryId !== "All") query.set("categoryId", params.categoryId);
@@ -59,7 +78,7 @@ export const MediaService = {
       if (params?.page) query.set("page", String(params.page));
       const q = query.toString() ? `?${query.toString()}` : "";
 
-      const res = await apiClient.get<any[]>(`/admin/media${q}`);
+      const res = await apiClient.get<MediaItem[]>(`/admin/media${q}`);
       const items = Array.isArray(res?.data) ? res.data : [];
       return makePaginatedList(items, res?.pagination);
     } catch (e) {
@@ -68,13 +87,13 @@ export const MediaService = {
     }
   },
 
-  async uploadFile(file: File, categoryId?: string): Promise<ApiResponse<any>> {
+  async uploadFile(file: File, categoryId?: string): Promise<ApiResponse<MediaItem>> {
     const formData = new FormData();
     formData.append("file", file);
 
     const q = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : "";
     try {
-      const response = await axiosInstance.post<ApiResponse<any>>(
+      const response = await axiosInstance.post<ApiResponse<MediaItem>>(
         `/admin/media/upload${q}`,
         formData,
         {
@@ -89,8 +108,8 @@ export const MediaService = {
     }
   },
 
-  async update(id: string, data: { title?: string; categoryId?: string; description?: string; altText?: string }): Promise<ApiResponse<any>> {
-    return apiClient.put<any>(`/admin/media/${id}`, data);
+  async update(id: string, data: { title?: string; categoryId?: string; description?: string; altText?: string }): Promise<ApiResponse<MediaItem>> {
+    return apiClient.put<MediaItem>(`/admin/media/${id}`, data);
   },
 
   async delete(id: string): Promise<ApiResponse<boolean>> {

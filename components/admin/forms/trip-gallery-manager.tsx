@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
 import { DialogFooter } from "@/components/ui/dialog";
-import { MediaService } from "@/lib/services/admin-service";
+import { MediaService, MediaItem } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface TripGalleryManagerProps {
@@ -29,12 +29,7 @@ interface TripGalleryManagerProps {
   readOnly?: boolean;
 }
 
-interface MediaAsset {
-  id: string;
-  title: string;
-  url: string;
-  category?: string;
-}
+type MediaAsset = MediaItem;
 
 export function TripGalleryManager({
   images = [],
@@ -58,21 +53,16 @@ export function TripGalleryManager({
     try {
       const res = await MediaService.uploadFile(file);
       if (res.success && res.data?.url) {
-        const url = res.data.url;
-        const mediaId = res.data.id;
-        const newAsset: MediaAsset = {
-          id: mediaId,
-          title: file.name.replace(/\.[^/.]+$/, ""),
-          category: "General",
-          url: url,
-        };
-        setMediaAssets((prev) => [newAsset, ...prev.filter((a) => a.url !== url)]);
-        if (!selectedUrls.includes(url)) {
-          setSelectedUrls((prev) => [...prev, url]);
-          setSelectedMediaIds((prev) => [...prev, mediaId]);
+        const uploadedAsset: MediaAsset = res.data;
+        setMediaAssets((prev) => [uploadedAsset, ...prev.filter((a) => a.url !== uploadedAsset.url)]);
+        if (!selectedUrls.includes(uploadedAsset.url)) {
+          setSelectedUrls((prev) => [...prev, uploadedAsset.url]);
+          if (uploadedAsset.id) {
+            setSelectedMediaIds((prev) => [...prev, uploadedAsset.id]);
+          }
         }
         setShowModalUploader(false);
-        toast.success(res.message || `Photo "${file.name}" uploaded to media library!`);
+        toast.success(res.message || `Photo "${uploadedAsset.name || file.name}" uploaded to media library!`);
       } else {
         toast.error(res?.message || "Failed to upload photo.");
       }
@@ -99,26 +89,21 @@ export function TripGalleryManager({
   const loadMedia = async (page: number, search?: string) => {
     setIsLibraryLoading(true);
     try {
-      const res: any = await MediaService.getAllMedia({
+      const res = await MediaService.getAllMedia({
         limit: MEDIA_LIMIT,
         page,
         search: search?.trim() || undefined,
       });
-      const items = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
-      const pagination = (res as any).pagination ?? res?.pagination;
-      const mapped: MediaAsset[] = items.map((m: any) => ({
-        id: m.id || `media-${Math.random()}`,
-        title: m.title || m.name || m.originalName || "Media Asset",
-        category: m.categoryName || m.category?.name || m.category,
-        url: m.url,
-      }));
-      setMediaAssets(mapped);
+      const items: MediaAsset[] = Array.isArray(res) ? res : ((res as any)?.data ?? []);
+      const pagination = res.pagination ?? (res as any)?.pagination;
+
+      setMediaAssets(items);
       if (pagination) {
         setMediaTotalPages(pagination.lastPage ?? pagination.pageCount ?? 1);
-        setMediaTotalItems(pagination.count ?? pagination.total ?? mapped.length);
+        setMediaTotalItems(pagination.count ?? pagination.total ?? items.length);
       } else {
         setMediaTotalPages(1);
-        setMediaTotalItems(mapped.length);
+        setMediaTotalItems(items.length);
       }
     } catch (e) {
       console.warn("Failed to load media assets:", e);
@@ -471,9 +456,9 @@ export function TripGalleryManager({
                         <p className="text-[11px] font-bold text-slate-900 dark:text-slate-100 truncate">
                           {asset.title}
                         </p>
-                        {asset.category && (
+                        {(asset.categoryName || asset.category?.name) && (
                           <p className="text-[9px] text-slate-500 truncate mt-0.5">
-                            {asset.category}
+                            {asset.categoryName || asset.category?.name}
                           </p>
                         )}
                       </div>

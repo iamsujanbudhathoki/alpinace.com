@@ -47,20 +47,21 @@ export function TripFilesManager({
         const file = uploadedFiles[i];
         const res = await MediaService.uploadFile(file);
 
-        const mediaId = res?.data?.id;
-        const url = res?.data?.url || (res as any)?.url;
-        const name = res?.data?.originalName || res?.data?.filename || res?.data?.title || file.name;
-        const sizeBytes = res?.data?.fileSize || res?.data?.size || file.size;
+        const mediaId = res.data?.id;
+        const url = res.data?.url;
+        const name = res.data?.name || file.name;
+        const title = res.data?.title || name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+        const sizeBytes = res.data?.fileSize;
         const sizeFormatted = sizeBytes
           ? `${(Number(sizeBytes) / (1024 * 1024)).toFixed(1)} MB`
-          : "PDF Document";
+          : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
 
         if (url || mediaId) {
           const ext = name.split(".").pop()?.toLowerCase() || "pdf";
           newPackageFiles.push({
             id: `file-${Date.now()}-${i}`,
             mediaId,
-            title: name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
+            title,
             fileUrl: url,
             fileName: name,
             fileSize: sizeFormatted,

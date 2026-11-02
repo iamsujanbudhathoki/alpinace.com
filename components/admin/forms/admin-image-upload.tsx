@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { DialogFooter } from "@/components/ui/dialog";
-import { CategoryService, MediaService } from "@/lib/services/admin-service";
+import { CategoryService, MediaService, MediaItem } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface AdminImageUploadProps {
@@ -28,14 +28,7 @@ interface AdminImageUploadProps {
   libraryOnly?: boolean;
 }
 
-interface MediaAsset {
-  id: string;
-  title: string;
-  categoryId?: string;
-  categoryName?: string;
-  category?: string;
-  url: string;
-}
+type MediaAsset = MediaItem;
 
 // Helper to normalize URL for strict deduplication
 const normalizeUrl = (url: string): string => {
@@ -100,29 +93,22 @@ export function AdminImageUpload({
   const loadMedia = async (page: number, categoryId: string, search?: string) => {
     setIsLibraryLoading(true);
     try {
-      const res: any = await MediaService.getAllMedia({
+      const res = await MediaService.getAllMedia({
         categoryId: categoryId !== "All" ? categoryId : undefined,
         search: search?.trim() || undefined,
         limit: MEDIA_LIMIT,
         page,
       });
-      const mediaList = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
-      const pagination = (res as any).pagination ?? res?.pagination;
-      const mapped: MediaAsset[] = mediaList.map((m: any) => ({
-        id: m.id || `media-${Math.random()}`,
-        title: m.title || m.name || "Uploaded Media",
-        categoryId: m.categoryId ?? undefined,
-        categoryName: m.categoryName ?? "",
-        category: m.categoryName ?? "",
-        url: m.url,
-      }));
-      setAssets(deduplicateAssets(mapped));
+      const mediaList: MediaAsset[] = Array.isArray(res) ? res : ((res as any)?.data ?? []);
+      const pagination = res.pagination ?? (res as any)?.pagination;
+
+      setAssets(deduplicateAssets(mediaList));
       if (pagination) {
         setMediaTotalPages(pagination.lastPage ?? pagination.pageCount ?? 1);
-        setMediaTotalItems(pagination.count ?? pagination.total ?? mapped.length);
+        setMediaTotalItems(pagination.count ?? pagination.total ?? mediaList.length);
       } else {
         setMediaTotalPages(1);
-        setMediaTotalItems(mapped.length);
+        setMediaTotalItems(mediaList.length);
       }
     } catch (e) {
       console.warn("Failed to load media:", e);
@@ -191,19 +177,14 @@ export function AdminImageUpload({
         const mediaId = res.data.id;
 
         if (fromModal) {
-          const newAsset: MediaAsset = {
-            id: mediaId,
-            title: file.name.replace(/\.[^/.]+$/, ""),
-            category: "General",
-            url: url,
-          };
+          const newAsset: MediaAsset = res.data;
           setAssets((prev) => deduplicateAssets([newAsset, ...prev]));
           setTempSelectedUrl(url);
           setShowModalUploader(false);
         } else {
           onChange(url, mediaId);
         }
-        toast.success(res.message || `Photo "${file.name}" uploaded successfully!`);
+        toast.success(res.message || `Photo "${res.data.name || file.name}" uploaded successfully!`);
       } else {
         toast.error(res?.message || "Failed to upload image.");
       }
@@ -573,8 +554,8 @@ export function AdminImageUpload({
                       {/* Title + category label */}
                       <div className="px-2 py-1.5 bg-white">
                         <p className="text-[11px] font-bold text-slate-900 truncate leading-tight">{asset.title}</p>
-                        {asset.category && (
-                          <p className="text-[10px] text-slate-500 font-semibold truncate mt-0.5">{asset.category}</p>
+                        {(asset.categoryName || asset.category?.name) && (
+                          <p className="text-[10px] text-slate-500 font-semibold truncate mt-0.5">{asset.categoryName || asset.category?.name}</p>
                         )}
                       </div>
                     </div>

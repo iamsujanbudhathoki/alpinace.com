@@ -27,7 +27,7 @@ interface MediaAsset {
   description?: string;
   altText?: string;
   fileSize: string;
-  dimensions: string;
+  dimensions?: string;
   createdAt: string;
 }
 
@@ -113,16 +113,15 @@ export default function AdminMediaPage() {
 
   const mapAsset = (m: any): MediaAsset => ({
     id: m.id,
-    title: m.title ?? m.name ?? "Media Asset",
+    title: m.title || m.name || "Media Asset",
     categoryId: m.categoryId ?? "",
-    categoryName: m.categoryName ?? "",
-    category: m.categoryName ?? "",
+    categoryName: m.categoryName ?? m.category?.name ?? "",
+    category: m.categoryName ?? m.category?.name ?? "",
     url: m.url,
-    mimeType: m.mimeType ?? m.mime_type ?? "",
+    mimeType: m.mimeType ?? "",
     description: m.description ?? "",
     altText: m.altText ?? m.title ?? m.name ?? "",
     fileSize: m.fileSize ? `${(Number(m.fileSize) / 1024).toFixed(1)} KB` : "0 KB",
-    dimensions: "1920 x 1080",
     createdAt: m.createdAt ? new Date(m.createdAt).toISOString().split("T")[0] : "",
   });
 
@@ -582,7 +581,7 @@ export default function AdminMediaPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-xs text-slate-700 font-semibold pt-2 border-t border-slate-100">
-                    <span>{asset.dimensions}</span>
+                    <span>{asset.dimensions || getFileExtension(asset.url, asset.title)}</span>
                     <span>{asset.fileSize}</span>
                   </div>
                 </div>

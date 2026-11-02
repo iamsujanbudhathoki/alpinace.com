@@ -84,33 +84,59 @@ export function TripGalleryManager({
     }
   };
 
-  // Load backend media library
+  const MEDIA_LIMIT = 12;
+  const [mediaPage, setMediaPage] = useState(1);
+  const [mediaTotalPages, setMediaTotalPages] = useState(1);
+  const [mediaTotalItems, setMediaTotalItems] = useState(0);
+  const [isLibraryLoading, setIsLibraryLoading] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 350);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  const loadMedia = async (page: number, search?: string) => {
+    setIsLibraryLoading(true);
+    try {
+      const res: any = await MediaService.getAllMedia({
+        limit: MEDIA_LIMIT,
+        page,
+        search: search?.trim() || undefined,
+      });
+      const items = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+      const pagination = (res as any).pagination ?? res?.pagination;
+      const mapped: MediaAsset[] = items.map((m: any) => ({
+        id: m.id || `media-${Math.random()}`,
+        title: m.title || m.name || m.originalName || "Media Asset",
+        category: m.categoryName || m.category?.name || m.category,
+        url: m.url,
+      }));
+      setMediaAssets(mapped);
+      if (pagination) {
+        setMediaTotalPages(pagination.lastPage ?? pagination.pageCount ?? 1);
+        setMediaTotalItems(pagination.count ?? pagination.total ?? mapped.length);
+      } else {
+        setMediaTotalPages(1);
+        setMediaTotalItems(mapped.length);
+      }
+    } catch (e) {
+      console.warn("Failed to load media assets:", e);
+      setMediaAssets([]);
+    } finally {
+      setIsLibraryLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isLibraryOpen) {
-      MediaService.getAllMedia({ limit: 100 })
-        .then((res: any) => {
-          const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
-          if (items.length > 0) {
-            const mapped: MediaAsset[] = items.map((m: any) => ({
-              id: m.id || Math.random().toString(),
-              title: m.title || m.name || m.originalName || "Media Asset",
-              category: m.categoryName || m.category?.name || m.category,
-              url: m.url,
-            }));
-            const seen = new Set<string>();
-            const unique = mapped.filter((item) => {
-              if (!item.url) return false;
-              const clean = item.url.trim().toLowerCase();
-              if (seen.has(clean)) return false;
-              seen.add(clean);
-              return true;
-            });
-            setMediaAssets(unique);
-          }
-        })
-        .catch((e) => console.warn("Failed to load media assets:", e));
+      loadMedia(mediaPage, debouncedSearch);
     }
-  }, [isLibraryOpen]);
+  }, [isLibraryOpen, mediaPage, debouncedSearch]);
+
+  useEffect(() => {
+    if (isLibraryOpen) setMediaPage(1);
+  }, [debouncedSearch]);
 
   const [imageToDelete, setImageToDelete] = useState<{
     index: number;
@@ -379,13 +405,26 @@ export function TripGalleryManager({
               </div>
             )}
 
-            <div className="max-h-80 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 gap-3 p-1">
-              {filteredAssets.length === 0 ? (
-                <div className="col-span-full py-8 text-center text-xs text-slate-400">
-                  No matching media found in library.
-                </div>
-              ) : (
-                filteredAssets.map((asset) => {
+            {/* ── Media Grid ── */}
+            {isLibraryLoading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 p-1">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className="rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 animate-pulse overflow-hidden">
+                    <div style={{ height: 90 }} className="bg-slate-200/80 dark:bg-slate-700 w-full" />
+                    <div className="p-2 space-y-1.5">
+                      <div className="h-2.5 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                      <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded w-1/2" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredAssets.length === 0 ? (
+              <div className="col-span-full py-8 text-center text-xs text-slate-400">
+                No matching media found in library.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 max-h-80 overflow-y-auto p-1">
+                {filteredAssets.map((asset) => {
                   const isSelected = selectedUrls.includes(asset.url);
                   const isAlreadyInGallery = images.includes(asset.url);
 
@@ -395,11 +434,11 @@ export function TripGalleryManager({
                       type="button"
                       disabled={isAlreadyInGallery}
                       onClick={() => toggleLibrarySelection(asset)}
-                      className={`group relative rounded-lg overflow-hidden border text-left transition-all block w-full ${
+                      className={`group relative rounded-xl overflow-hidden border-2 text-left transition-all block w-full cursor-pointer ${
                         isAlreadyInGallery
                           ? "opacity-40 cursor-not-allowed border-slate-200"
                           : isSelected
-                          ? "border-amber-500 ring-2 ring-amber-500/30"
+                          ? "border-amber-500 ring-2 ring-amber-500/30 shadow-md"
                           : "border-slate-200 hover:border-slate-400"
                       }`}
                     >
@@ -408,7 +447,12 @@ export function TripGalleryManager({
                         <img
                           src={asset.url}
                           alt={asset.title}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
                         />
                         {isSelected && (
                           <div className="absolute top-1.5 right-1.5 bg-slate-900 text-white p-1 rounded-full shadow-md z-10">
@@ -435,9 +479,40 @@ export function TripGalleryManager({
                       </div>
                     </button>
                   );
-                })
-              )}
-            </div>
+                })}
+              </div>
+            )}
+
+            {/* ── Pagination Controls ── */}
+            {!isLibraryLoading && mediaTotalPages > 1 && (
+              <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 gap-2">
+                <p className="text-[11px] text-slate-600 font-semibold shrink-0">
+                  Page {mediaPage} of {mediaTotalPages} ({mediaTotalItems} items)
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={mediaPage <= 1}
+                    onClick={() => setMediaPage((p) => Math.max(1, p - 1))}
+                    className="h-7 px-2.5 text-xs font-semibold"
+                  >
+                    ← Prev
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={mediaPage >= mediaTotalPages}
+                    onClick={() => setMediaPage((p) => Math.min(mediaTotalPages, p + 1))}
+                    className="h-7 px-2.5 text-xs font-semibold"
+                  >
+                    Next →
+                  </Button>
+                </div>
+              </div>
+            )}
 
             <DialogFooter className="flex items-center justify-between border-t border-slate-100 pt-3">
               <span className="text-xs text-slate-600 font-semibold">

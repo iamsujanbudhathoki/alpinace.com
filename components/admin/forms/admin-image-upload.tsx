@@ -531,6 +531,8 @@ export function AdminImageUpload({
                         <img
                           src={asset.url}
                           alt={asset.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{ width: "100%", height: "100%", objectFit: "cover" }}
                           className="group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {

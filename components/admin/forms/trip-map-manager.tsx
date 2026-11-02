@@ -57,6 +57,17 @@ export function TripMapManager({
   const [isUploading, setIsUploading] = useState(false);
   const [showModalUploader, setShowModalUploader] = useState(false);
 
+  const MEDIA_LIMIT = 12;
+  const [mediaPage, setMediaPage] = useState(1);
+  const [mediaTotalPages, setMediaTotalPages] = useState(1);
+  const [mediaTotalItems, setMediaTotalItems] = useState(0);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 350);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
   const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -88,56 +99,69 @@ export function TripMapManager({
     }
   };
 
-  // Load media and categories when library modal opens
+  const loadMedia = async (page: number, catId: string, search?: string) => {
+    setIsLibraryLoading(true);
+    try {
+      const res: any = await MediaService.getAllMedia({
+        limit: MEDIA_LIMIT,
+        page,
+        categoryId: catId !== "All" ? catId : undefined,
+        search: search?.trim() || undefined,
+      });
+      const mediaList = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+      const pagination = (res as any).pagination ?? res?.pagination;
+      const mapped: MediaAsset[] = mediaList.map((m: any) => ({
+        id: m.id || `media-${Math.random()}`,
+        title: m.title || m.name || m.originalName || "Media Asset",
+        categoryId: m.categoryId,
+        categoryName: m.categoryName || m.category?.name || "",
+        url: m.url,
+      }));
+      setAssets(mapped);
+      if (pagination) {
+        setMediaTotalPages(pagination.lastPage ?? pagination.pageCount ?? 1);
+        setMediaTotalItems(pagination.count ?? pagination.total ?? mapped.length);
+      } else {
+        setMediaTotalPages(1);
+        setMediaTotalItems(mapped.length);
+      }
+
+      // Preselect current map asset if matching URL or ID exists
+      if (!tempSelectedAsset) {
+        const current = mapped.find(
+          (a) => (mapMediaId && a.id === mapMediaId) || (mapImage && a.url === mapImage)
+        );
+        if (current) setTempSelectedAsset(current);
+      }
+    } catch (e) {
+      console.warn("Failed to load media for route map:", e);
+      setAssets([]);
+    } finally {
+      setIsLibraryLoading(false);
+    }
+  };
+
+  // Load categories once when library modal opens
   useEffect(() => {
     if (isLibraryOpen) {
-      setIsLibraryLoading(true);
-      setSearchQuery("");
-      setSelectedCategory("All");
-
-      Promise.all([
-        MediaService.getAllMedia({ limit: 100 }),
-        CategoryService.getAll({ limit: 100 }),
-      ])
-        .then(([mediaRes, catRes]: [any, any]) => {
-          const mediaList = Array.isArray(mediaRes)
-            ? mediaRes
-            : Array.isArray(mediaRes?.data)
-            ? mediaRes.data
-            : [];
-          const mapped: MediaAsset[] = mediaList.map((m: any) => ({
-            id: m.id || `media-${Math.random()}`,
-            title: m.title || m.name || m.originalName || "Media Asset",
-            categoryId: m.categoryId,
-            categoryName: m.categoryName || m.category?.name || "",
-            url: m.url,
-          }));
-          setAssets(mapped);
-
-          const catList = Array.isArray(catRes)
-            ? catRes
-            : Array.isArray(catRes?.data)
-            ? catRes.data
-            : [];
-          setCategories(
-            catList.map((c: any) => ({ id: c.id, name: c.name || c.title || "" }))
-          );
-
-          // Preselect current map asset if matching URL or ID exists
-          const current = mapped.find(
-            (a) => (mapMediaId && a.id === mapMediaId) || (mapImage && a.url === mapImage)
-          );
-          setTempSelectedAsset(current || null);
+      CategoryService.getAll({ limit: 100 })
+        .then((catRes: any) => {
+          const catList = Array.isArray(catRes) ? catRes : (Array.isArray(catRes?.data) ? catRes.data : []);
+          setCategories(catList.map((c: any) => ({ id: c.id, name: c.name || c.title || "" })));
         })
-        .catch((e) => {
-          console.warn("Failed to load media for route map:", e);
-          setAssets([]);
-        })
-        .finally(() => {
-          setIsLibraryLoading(false);
-        });
+        .catch(() => {});
     }
-  }, [isLibraryOpen, mapImage, mapMediaId]);
+  }, [isLibraryOpen]);
+
+  useEffect(() => {
+    if (isLibraryOpen) {
+      loadMedia(mediaPage, selectedCategory, debouncedSearch);
+    }
+  }, [isLibraryOpen, mediaPage, selectedCategory, debouncedSearch]);
+
+  useEffect(() => {
+    if (isLibraryOpen) setMediaPage(1);
+  }, [selectedCategory, debouncedSearch]);
 
   const handleConfirmSelection = () => {
     if (tempSelectedAsset) {
@@ -152,22 +176,7 @@ export function TripMapManager({
     toast.info("Route map removed");
   };
 
-  const filteredAssets = assets.filter((asset) => {
-    if (
-      selectedCategory !== "All" &&
-      asset.categoryId !== selectedCategory &&
-      asset.categoryName !== selectedCategory
-    ) {
-      return false;
-    }
-    if (
-      searchQuery.trim() &&
-      !asset.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
-    ) {
-      return false;
-    }
-    return true;
-  });
+  const filteredAssets = assets;
 
   return (
     <div className="space-y-4">
@@ -410,7 +419,12 @@ export function TripMapManager({
                           <img
                             src={asset.url}
                             alt={asset.title}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = "none";
+                            }}
                           />
                           <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 z-10">
                             <button
@@ -442,6 +456,37 @@ export function TripMapManager({
                 </div>
               )}
             </div>
+
+            {/* ── Pagination Controls ── */}
+            {!isLibraryLoading && mediaTotalPages > 1 && (
+              <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 gap-2">
+                <p className="text-[11px] text-slate-600 font-semibold shrink-0">
+                  Page {mediaPage} of {mediaTotalPages} ({mediaTotalItems} items)
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={mediaPage <= 1}
+                    onClick={() => setMediaPage((p) => Math.max(1, p - 1))}
+                    className="h-7 px-2.5 text-xs font-semibold"
+                  >
+                    ← Prev
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={mediaPage >= mediaTotalPages}
+                    onClick={() => setMediaPage((p) => Math.min(mediaTotalPages, p + 1))}
+                    className="h-7 px-2.5 text-xs font-semibold"
+                  >
+                    Next →
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {/* Modal Footer */}
             <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-between w-full">

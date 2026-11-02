@@ -61,8 +61,8 @@ body[data-modal-open="true"] [data-slot="admin-main"] {
 body[data-modal-open="true"] [data-slot="admin-layout"] {
   pointer-events: none !important;
   user-select: none !important;
-  filter: blur(2.5px) brightness(0.85) !important;
-  transition: filter 0.2s ease-out;
+  opacity: 0.85 !important;
+  transition: opacity 0.15s ease-out;
 }
 
 /* Suppress tooltips on collapsed sidebar items during modal state */

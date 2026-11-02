@@ -554,8 +554,8 @@ export function AdminImageUpload({
                       {/* Title + category label */}
                       <div className="px-2 py-1.5 bg-white">
                         <p className="text-[11px] font-bold text-slate-900 truncate leading-tight">{asset.title}</p>
-                        {(asset.categoryName || asset.category?.name) && (
-                          <p className="text-[10px] text-slate-500 font-semibold truncate mt-0.5">{asset.categoryName || asset.category?.name}</p>
+                        {asset.categoryName && (
+                          <p className="text-[10px] text-slate-500 font-semibold truncate mt-0.5">{asset.categoryName}</p>
                         )}
                       </div>
                     </div>

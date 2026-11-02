@@ -456,9 +456,9 @@ export function TripGalleryManager({
                         <p className="text-[11px] font-bold text-slate-900 dark:text-slate-100 truncate">
                           {asset.title}
                         </p>
-                        {(asset.categoryName || asset.category?.name) && (
+                        {asset.categoryName && (
                           <p className="text-[9px] text-slate-500 truncate mt-0.5">
-                            {asset.categoryName || asset.category?.name}
+                            {asset.categoryName}
                           </p>
                         )}
                       </div>

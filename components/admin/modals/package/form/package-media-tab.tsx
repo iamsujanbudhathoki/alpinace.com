@@ -35,11 +35,10 @@ export function PackageMediaTab({
           render={({ field }) => (
             <AdminImageUpload
               value={field.value || ""}
+              libraryOnly={true}
               onChange={(url, mediaId) => {
                 field.onChange(url);
-                if (mediaId) {
-                  setValue("coverMediaId", mediaId, { shouldValidate: true });
-                }
+                setValue("coverMediaId", mediaId || "", { shouldValidate: true, shouldDirty: true });
               }}
               error={errors.image?.message as string}
             />
@@ -58,11 +57,10 @@ export function PackageMediaTab({
           render={({ field }) => (
             <TripMapManager
               mapImage={field.value || ""}
+              mapMediaId={watch("mapMediaId") || ""}
               onChange={(url, mediaId) => {
                 field.onChange(url);
-                if (mediaId) {
-                  setValue("mapMediaId", mediaId, { shouldValidate: true });
-                }
+                setValue("mapMediaId", mediaId || "", { shouldValidate: true, shouldDirty: true });
               }}
               packageTitle={watchTitle}
             />
@@ -81,11 +79,10 @@ export function PackageMediaTab({
           render={({ field }) => (
             <TripGalleryManager
               images={field.value || []}
+              galleryMediaIds={watch("galleryMediaIds") || []}
               onChange={(images, mediaIds) => {
                 field.onChange(images);
-                if (mediaIds) {
-                  setValue("galleryMediaIds", mediaIds, { shouldValidate: true });
-                }
+                setValue("galleryMediaIds", mediaIds || [], { shouldValidate: true, shouldDirty: true });
               }}
             />
           )}

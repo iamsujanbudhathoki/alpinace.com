@@ -1,30 +1,28 @@
 "use client";
 
-import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
-import { AdminModal } from "@/components/admin/ui/admin-modal";
-import { Button } from "@/components/ui/button";
-import { DialogFooter } from "@/components/ui/dialog";
-import { MediaService } from "@/lib/services/admin-service";
-import { openSingleImage } from "@/lib/utils/lightbox";
+import { useState, useEffect } from "react";
 import {
-  Check,
   FolderOpen,
   Image as ImageIcon,
-  Loader2,
   Maximize2,
   MoveDown,
   MoveUp,
   Search,
   Trash2,
-  UploadCloud
+  Check,
 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
+import { DialogFooter } from "@/components/ui/dialog";
+import { MediaService } from "@/lib/services/admin-service";
+import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface TripGalleryManagerProps {
   images: string[];
   galleryMediaIds?: string[];
-  onChange: (images: string[], mediaIds?: string[]) => void;
+  onChange: (images: string[], mediaIds: string[]) => void;
   readOnly?: boolean;
 }
 
@@ -41,7 +39,6 @@ export function TripGalleryManager({
   onChange,
   readOnly = false,
 }: TripGalleryManagerProps) {
-  const [isUploading, setIsUploading] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,9 +48,9 @@ export function TripGalleryManager({
   // Load backend media library
   useEffect(() => {
     if (isLibraryOpen) {
-      MediaService.getAllMedia()
+      MediaService.getAllMedia({ limit: 100 })
         .then((res: any) => {
-          const items = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+          const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
           if (items.length > 0) {
             const mapped: MediaAsset[] = items.map((m: any) => ({
               id: m.id || Math.random().toString(),
@@ -76,39 +73,6 @@ export function TripGalleryManager({
     }
   }, [isLibraryOpen]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    setIsUploading(true);
-
-    const uploadedUrls: string[] = [];
-    const uploadedMediaIds: string[] = [];
-    try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const res = await MediaService.uploadFile(file);
-        const url = res?.data?.url || (res as any)?.url;
-        const mediaId = res?.data?.id;
-
-        if (url) uploadedUrls.push(url);
-        if (mediaId) uploadedMediaIds.push(mediaId);
-      }
-      if (uploadedUrls.length > 0) {
-        const nextImages = [...images, ...uploadedUrls];
-        const nextMediaIds = Array.from(new Set([...galleryMediaIds, ...uploadedMediaIds]));
-        onChange(nextImages, nextMediaIds);
-        toast.success(`${uploadedUrls.length} image(s) uploaded to gallery`);
-      }
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to upload image(s)");
-    } finally {
-      setIsUploading(false);
-      e.target.value = "";
-    }
-  };
-
-
-
   const [imageToDelete, setImageToDelete] = useState<{
     index: number;
     url: string;
@@ -117,7 +81,7 @@ export function TripGalleryManager({
   const handleConfirmRemoveImage = () => {
     if (imageToDelete !== null) {
       const nextImages = images.filter((_, i) => i !== imageToDelete.index);
-      const nextMediaIds = galleryMediaIds.filter((_, i) => i !== imageToDelete.index);
+      const nextMediaIds = (galleryMediaIds || []).filter((_, i) => i !== imageToDelete.index);
       onChange(nextImages, nextMediaIds);
       toast.info("Image removed from gallery");
       setImageToDelete(null);
@@ -137,7 +101,7 @@ export function TripGalleryManager({
     nextImages[index] = nextImages[targetIdx];
     nextImages[targetIdx] = temp;
 
-    const nextMediaIds = [...galleryMediaIds];
+    const nextMediaIds = [...(galleryMediaIds || [])];
     if (index < nextMediaIds.length && targetIdx < nextMediaIds.length) {
       const tempId = nextMediaIds[index];
       nextMediaIds[index] = nextMediaIds[targetIdx];
@@ -147,8 +111,17 @@ export function TripGalleryManager({
   };
 
   const handleConfirmLibrarySelection = () => {
-    const nextImages = Array.from(new Set([...images, ...selectedUrls]));
-    const nextMediaIds = Array.from(new Set([...galleryMediaIds, ...selectedMediaIds]));
+    const nextImages = [...images];
+    const nextMediaIds = [...(galleryMediaIds || [])];
+
+    selectedUrls.forEach((url, i) => {
+      if (!nextImages.includes(url)) {
+        nextImages.push(url);
+        const id = selectedMediaIds[i];
+        if (id) nextMediaIds.push(id);
+      }
+    });
+
     onChange(nextImages, nextMediaIds);
     setSelectedUrls([]);
     setSelectedMediaIds([]);
@@ -158,17 +131,14 @@ export function TripGalleryManager({
 
   const toggleLibrarySelection = (asset: MediaAsset) => {
     const url = asset.url;
+    const assetId = asset.id;
 
     if (selectedUrls.includes(url)) {
       setSelectedUrls(selectedUrls.filter((u) => u !== url));
-      if (asset.id) {
-        setSelectedMediaIds(selectedMediaIds.filter((id) => id !== asset.id));
-      }
+      setSelectedMediaIds(selectedMediaIds.filter((id) => id !== assetId));
     } else {
       setSelectedUrls([...selectedUrls, url]);
-      if (asset.id) {
-        setSelectedMediaIds([...selectedMediaIds, asset.id]);
-      }
+      setSelectedMediaIds([...selectedMediaIds, assetId]);
     }
   };
 
@@ -188,53 +158,57 @@ export function TripGalleryManager({
             <span>Package Image Gallery ({images.length})</span>
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Upload multiple photos to showcase the complete visual journey for this package.
+            Select photos from your Media Library to showcase the complete visual journey for this package.
           </p>
         </div>
 
         {!readOnly && (
-          <div className="flex items-center gap-2">
-            <label className="cursor-pointer">
-              <span className="inline-flex items-center gap-1.5 h-9 px-3 text-xs font-semibold rounded-lg bg-slate-900 hover:bg-slate-800 text-white shadow-xs transition-colors">
-                {isUploading ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <UploadCloud className="w-3.5 h-3.5 text-amber-400" />
-                )}
-                <span>Upload Photos</span>
-              </span>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleFileUpload}
-                disabled={isUploading}
-                className="hidden"
-              />
-            </label>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsLibraryOpen(true)}
-              className="text-xs h-9 px-3 gap-1.5 border-slate-300 hover:bg-slate-100"
-            >
-              <FolderOpen className="w-3.5 h-3.5 text-slate-500" />
-              <span>Media Library</span>
-            </Button>
-          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setIsLibraryOpen(true)}
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-3.5 gap-1.5 cursor-pointer shadow-xs shrink-0"
+          >
+            <FolderOpen className="w-3.5 h-3.5 text-amber-400" />
+            <span>Browse Media Library</span>
+          </Button>
         )}
       </div>
 
       {/* Images Grid */}
       {images.length === 0 ? (
-        <div className="p-8 text-center bg-slate-50/70 border border-dashed border-slate-200 rounded-xl">
-          <ImageIcon className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-          <p className="text-xs font-semibold text-slate-600">No Gallery Images Uploaded</p>
-          <p className="text-[11px] text-slate-400 max-w-sm mx-auto mt-1">
-            The single Cover Image is set separately under the Media section. Add photos here to create a rich photo gallery for Marketing Associates.
-          </p>
+        <div
+          onClick={() => !readOnly && setIsLibraryOpen(true)}
+          className={`p-8 text-center bg-slate-50/70 border border-dashed border-slate-200 rounded-xl space-y-3 ${
+            !readOnly ? "cursor-pointer hover:bg-slate-100/60 transition-colors" : ""
+          }`}
+        >
+          <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+            <ImageIcon className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-800">No Gallery Images Added</p>
+            <p className="text-[11px] text-slate-400 max-w-sm mx-auto mt-0.5">
+              The single Cover Image is set separately. Choose photos here from your Media Library to create a rich photo gallery.
+            </p>
+          </div>
+          {!readOnly && (
+            <div className="pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLibraryOpen(true);
+                }}
+                className="text-xs font-bold h-8 px-3.5 bg-white border-slate-300 hover:bg-slate-50 text-slate-800 shadow-2xs cursor-pointer gap-1.5 mx-auto"
+              >
+                <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
+                <span>Select from Media Library</span>
+              </Button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -243,6 +217,7 @@ export function TripGalleryManager({
               key={idx}
               className="group relative aspect-4/3 rounded-xl overflow-hidden bg-slate-900 border border-slate-200 shadow-xs"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={url}
                 alt={`Gallery Photo ${idx + 1}`}
@@ -258,35 +233,36 @@ export function TripGalleryManager({
                   <button
                     type="button"
                     onClick={() => openSingleImage(url, `Gallery Image ${idx + 1}`)}
-                    className="p-1 text-white hover:text-amber-400 transition-colors"
-                    title="Zoom Image"
+                    className="p-1 bg-white/80 hover:bg-white text-slate-900 rounded-md text-xs cursor-pointer"
+                    title="Fullscreen Lightbox"
                   >
-                    <Maximize2 className="w-3.5 h-3.5" />
+                    <Maximize2 className="w-3 h-3" />
                   </button>
                 </div>
 
                 {!readOnly && (
-                  <div className="flex items-center justify-end gap-1">
-                    {idx > 0 && (
+                  <div className="flex items-center justify-between gap-1">
+                    <div className="flex items-center gap-1">
                       <button
                         type="button"
+                        disabled={idx === 0}
                         onClick={() => handleMoveImage(idx, "up")}
-                        className="p-1 bg-white/20 hover:bg-white/40 text-white rounded-md text-xs"
-                        title="Move Previous"
+                        className="p-1 bg-white/80 hover:bg-white text-slate-900 rounded-md text-xs disabled:opacity-30 cursor-pointer"
+                        title="Move Earlier"
                       >
                         <MoveUp className="w-3 h-3" />
                       </button>
-                    )}
-                    {idx < images.length - 1 && (
                       <button
                         type="button"
+                        disabled={idx === images.length - 1}
                         onClick={() => handleMoveImage(idx, "down")}
-                        className="p-1 bg-white/20 hover:bg-white/40 text-white rounded-md text-xs"
-                        title="Move Next"
+                        className="p-1 bg-white/80 hover:bg-white text-slate-900 rounded-md text-xs disabled:opacity-30 cursor-pointer"
+                        title="Move Later"
                       >
                         <MoveDown className="w-3 h-3" />
                       </button>
-                    )}
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => setImageToDelete({ index: idx, url })}
@@ -339,30 +315,42 @@ export function TripGalleryManager({
                       type="button"
                       disabled={isAlreadyInGallery}
                       onClick={() => toggleLibrarySelection(asset)}
-                      className={`group relative rounded-lg overflow-hidden border text-left transition-all block w-full ${isAlreadyInGallery
+                      className={`group relative rounded-lg overflow-hidden border text-left transition-all block w-full ${
+                        isAlreadyInGallery
                           ? "opacity-40 cursor-not-allowed border-slate-200"
                           : isSelected
-                            ? "border-amber-500 ring-2 ring-amber-500/30"
-                            : "border-slate-200 hover:border-slate-400"
-                        }`}
+                          ? "border-amber-500 ring-2 ring-amber-500/30"
+                          : "border-slate-200 hover:border-slate-400"
+                      }`}
                     >
                       <div className="relative h-24 bg-slate-800 overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={asset.url}
                           alt={asset.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         {isSelected && (
-                          <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center">
-                            <Check className="w-6 h-6 text-white bg-amber-500 rounded-full p-1 shadow-md" />
+                          <div className="absolute top-1.5 right-1.5 bg-slate-900 text-white p-1 rounded-full shadow-md z-10">
+                            <Check className="w-3 h-3 stroke-[3]" />
                           </div>
                         )}
                         {isAlreadyInGallery && (
-                          <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
-                            <span className="text-[10px] font-bold text-white bg-slate-800 px-2 py-0.5 rounded-full">
+                          <div className="absolute inset-0 bg-slate-950/60 flex items-center justify-center">
+                            <span className="text-[10px] font-bold text-white bg-slate-900/90 px-2 py-0.5 rounded">
                               Added
                             </span>
                           </div>
+                        )}
+                      </div>
+                      <div className="p-1.5 bg-white dark:bg-slate-900">
+                        <p className="text-[11px] font-bold text-slate-900 dark:text-slate-100 truncate">
+                          {asset.title}
+                        </p>
+                        {asset.category && (
+                          <p className="text-[9px] text-slate-500 truncate mt-0.5">
+                            {asset.category}
+                          </p>
                         )}
                       </div>
                     </button>
@@ -371,40 +359,46 @@ export function TripGalleryManager({
               )}
             </div>
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setIsLibraryOpen(false)}
-                className="text-xs h-8 cursor-pointer"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                onClick={handleConfirmLibrarySelection}
-                disabled={selectedUrls.length === 0}
-                className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 font-semibold shadow-xs cursor-pointer"
-              >
-                Add {selectedUrls.length} Photo(s)
-              </Button>
+            <DialogFooter className="flex items-center justify-between border-t border-slate-100 pt-3">
+              <span className="text-xs text-slate-600 font-semibold">
+                {selectedUrls.length} image(s) selected
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsLibraryOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={selectedUrls.length === 0}
+                  onClick={handleConfirmLibrarySelection}
+                  className="bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50"
+                >
+                  Add Selected Images
+                </Button>
+              </div>
             </DialogFooter>
           </div>
         </AdminModal>
       )}
 
-      {/* Confirmation Modal */}
-      <AdminConfirmModal
-        isOpen={imageToDelete !== null}
-        onClose={() => setImageToDelete(null)}
-        onConfirm={handleConfirmRemoveImage}
-        title="Remove Photo from Gallery"
-        description="Are you sure you want to remove this photo from the package gallery? This will not delete the photo from your media library."
-        confirmText="Remove Photo"
-        variant="danger"
-      />
+      {/* Delete Single Photo Confirmation */}
+      {imageToDelete && (
+        <AdminConfirmModal
+          isOpen={!!imageToDelete}
+          onClose={() => setImageToDelete(null)}
+          onConfirm={handleConfirmRemoveImage}
+          title="Remove Photo from Gallery"
+          description="Are you sure you want to remove this photo from the package gallery? You can always re-add it from the media library later."
+          confirmText="Remove Photo"
+          variant="danger"
+        />
+      )}
     </div>
   );
 }

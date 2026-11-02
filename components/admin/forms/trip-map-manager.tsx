@@ -1,21 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MapPin,
-  UploadCloud,
   FolderOpen,
   Trash2,
   Maximize2,
   Loader2,
-  RefreshCw,
-  Image as ImageIcon,
   Compass,
+  Search,
+  Check,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
-import { MediaService } from "@/lib/services/admin-service";
+import { DialogFooter } from "@/components/ui/dialog";
+import { MediaService, CategoryService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
 
 interface TripMapManagerProps {
@@ -26,6 +28,14 @@ interface TripMapManagerProps {
   packageTitle?: string;
 }
 
+interface MediaAsset {
+  id: string;
+  title: string;
+  categoryId?: string;
+  categoryName?: string;
+  url: string;
+}
+
 export function TripMapManager({
   mapImage = "",
   mapMediaId = "",
@@ -33,38 +43,100 @@ export function TripMapManager({
   readOnly = false,
   packageTitle = "Trek",
 }: TripMapManagerProps) {
-  const [isUploading, setIsUploading] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const file = files[0];
-    setIsUploading(true);
+  const [assets, setAssets] = useState<MediaAsset[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [tempSelectedAsset, setTempSelectedAsset] = useState<MediaAsset | null>(null);
 
-    try {
-      const res = await MediaService.uploadFile(file);
-      const url = res?.data?.url || (res as any)?.url;
-      const mediaId = res?.data?.id;
-      if (url || mediaId) {
-        onChange(url || "", mediaId);
-        toast.success("Trek map image uploaded successfully");
-      }
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to upload trek map image");
-    } finally {
-      setIsUploading(false);
-      e.target.value = "";
+  // Load media and categories when library modal opens
+  useEffect(() => {
+    if (isLibraryOpen) {
+      setIsLibraryLoading(true);
+      setSearchQuery("");
+      setSelectedCategory("All");
+
+      Promise.all([
+        MediaService.getAllMedia({ limit: 100 }),
+        CategoryService.getAll({ limit: 100 }),
+      ])
+        .then(([mediaRes, catRes]: [any, any]) => {
+          const mediaList = Array.isArray(mediaRes)
+            ? mediaRes
+            : Array.isArray(mediaRes?.data)
+            ? mediaRes.data
+            : [];
+          const mapped: MediaAsset[] = mediaList.map((m: any) => ({
+            id: m.id || `media-${Math.random()}`,
+            title: m.title || m.name || m.originalName || "Media Asset",
+            categoryId: m.categoryId,
+            categoryName: m.categoryName || m.category?.name || "",
+            url: m.url,
+          }));
+          setAssets(mapped);
+
+          const catList = Array.isArray(catRes)
+            ? catRes
+            : Array.isArray(catRes?.data)
+            ? catRes.data
+            : [];
+          setCategories(
+            catList.map((c: any) => ({ id: c.id, name: c.name || c.title || "" }))
+          );
+
+          // Preselect current map asset if matching URL or ID exists
+          const current = mapped.find(
+            (a) => (mapMediaId && a.id === mapMediaId) || (mapImage && a.url === mapImage)
+          );
+          setTempSelectedAsset(current || null);
+        })
+        .catch((e) => {
+          console.warn("Failed to load media for route map:", e);
+          setAssets([]);
+        })
+        .finally(() => {
+          setIsLibraryLoading(false);
+        });
+    }
+  }, [isLibraryOpen, mapImage, mapMediaId]);
+
+  const handleConfirmSelection = () => {
+    if (tempSelectedAsset) {
+      onChange(tempSelectedAsset.url, tempSelectedAsset.id);
+      setIsLibraryOpen(false);
+      toast.success("Route map selected from media library");
     }
   };
 
   const handleRemove = () => {
     onChange("", "");
-    toast.info("Trek map image removed");
+    toast.info("Route map removed");
   };
+
+  const filteredAssets = assets.filter((asset) => {
+    if (
+      selectedCategory !== "All" &&
+      asset.categoryId !== selectedCategory &&
+      asset.categoryName !== selectedCategory
+    ) {
+      return false;
+    }
+    if (
+      searchQuery.trim() &&
+      !asset.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-4">
+      {/* Header Bar */}
       <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
@@ -72,28 +144,20 @@ export function TripMapManager({
             <span>Route Map</span>
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Elevation chart or geographical route map for this adventure.
+            Elevation chart or geographical route map selected from your Media Library.
           </p>
         </div>
 
         {!readOnly && (
-          <label className="cursor-pointer shrink-0">
-            <span className="inline-flex items-center gap-1.5 h-9 px-3 text-xs font-semibold rounded-lg bg-slate-900 hover:bg-slate-800 text-white shadow-xs transition-colors cursor-pointer">
-              {isUploading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <UploadCloud className="w-3.5 h-3.5 text-amber-400" />
-              )}
-              <span>{mapImage ? "Replace Map Image" : "Upload Route Map"}</span>
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              disabled={isUploading}
-              className="hidden"
-            />
-          </label>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setIsLibraryOpen(true)}
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 px-3.5 gap-1.5 cursor-pointer shadow-xs shrink-0"
+          >
+            <FolderOpen className="w-3.5 h-3.5 text-amber-400" />
+            <span>{mapImage ? "Change Route Map" : "Browse Media Library"}</span>
+          </Button>
         )}
       </div>
 
@@ -103,11 +167,18 @@ export function TripMapManager({
           <div className="flex items-center gap-3 w-full sm:w-auto">
             {/* Compact Map Thumbnail with Lightbox click */}
             <div
-              onClick={(e) => openSingleImage(mapImage, `${packageTitle} Trek Route Map`, e.currentTarget)}
+              onClick={(e) =>
+                openSingleImage(mapImage, `${packageTitle} Trek Route Map`, e.currentTarget)
+              }
               className="relative w-36 h-20 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-950 group cursor-pointer shadow-xs"
               title="Click for Lightbox Full View"
             >
-              <img src={mapImage} alt={`${packageTitle} Trek Map`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={mapImage}
+                alt={`${packageTitle} Trek Map`}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
               <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <Maximize2 className="w-4 h-4 text-white drop-shadow-xs" />
               </div>
@@ -123,7 +194,9 @@ export function TripMapManager({
               </p>
               <button
                 type="button"
-                onClick={(e) => openSingleImage(mapImage, `${packageTitle} Trek Route Map`, e.currentTarget)}
+                onClick={(e) =>
+                  openSingleImage(mapImage, `${packageTitle} Trek Route Map`, e.currentTarget)
+                }
                 className="text-[11px] font-semibold text-slate-700 hover:text-slate-900 underline flex items-center gap-1 cursor-pointer"
               >
                 <Maximize2 className="w-3 h-3" />
@@ -134,23 +207,16 @@ export function TripMapManager({
 
           {!readOnly && (
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
-              <label className="cursor-pointer">
-                <span className="inline-flex items-center gap-1 h-8 px-2.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors">
-                  {isUploading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
-                  ) : (
-                    <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-                  )}
-                  <span>Replace</span>
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  disabled={isUploading}
-                  className="hidden"
-                />
-              </label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsLibraryOpen(true)}
+                className="text-xs font-semibold h-8 px-2.5 gap-1.5 border-slate-200 hover:bg-slate-50 cursor-pointer"
+              >
+                <FolderOpen className="w-3.5 h-3.5 text-slate-500" />
+                <span>Change</span>
+              </Button>
 
               <Button
                 type="button"
@@ -166,13 +232,171 @@ export function TripMapManager({
           )}
         </div>
       ) : (
-        <div className="p-10 text-center bg-slate-50/70 border border-dashed border-slate-200 rounded-xl space-y-2">
-          <Compass className="w-9 h-9 text-slate-300 mx-auto" />
-          <p className="text-xs font-semibold text-slate-700">No Trek Map Uploaded</p>
-          <p className="text-[11px] text-slate-400 max-w-sm mx-auto">
-            Upload a dedicated map image showing the trekking trail, elevation profile, or key waypoints.
-          </p>
+        <div
+          onClick={() => !readOnly && setIsLibraryOpen(true)}
+          className={`p-8 text-center bg-slate-50/70 border border-dashed border-slate-200 rounded-xl space-y-3 ${
+            !readOnly ? "cursor-pointer hover:bg-slate-100/60 transition-colors" : ""
+          }`}
+        >
+          <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+            <Compass className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-800">No Route Map Assigned</p>
+            <p className="text-[11px] text-slate-400 max-w-sm mx-auto mt-0.5">
+              Select an elevation profile, route topology, or waypoint map from your centralized Media Library.
+            </p>
+          </div>
+          {!readOnly && (
+            <div className="pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLibraryOpen(true);
+                }}
+                className="text-xs font-bold h-8 px-3.5 bg-white border-slate-300 hover:bg-slate-50 text-slate-800 shadow-2xs cursor-pointer gap-1.5 mx-auto"
+              >
+                <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
+                <span>Select from Media Library</span>
+              </Button>
+            </div>
+          )}
         </div>
+      )}
+
+      {/* Media Library Selector Modal */}
+      {isLibraryOpen && (
+        <AdminModal
+          isOpen={isLibraryOpen}
+          onClose={() => setIsLibraryOpen(false)}
+          title="Select Route Map from Media Library"
+          description="Browse and choose a map image asset for this package."
+          maxWidth="3xl"
+        >
+          <div className="space-y-4">
+            {/* Search & Filter Toolbar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search map images..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-9 text-xs pl-9 pr-3 rounded-md border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 transition-colors"
+                />
+              </div>
+
+              {categories.length > 0 && (
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="h-9 bg-white border border-slate-300 text-slate-900 text-xs rounded-md px-2.5 focus:outline-none focus:border-slate-900 transition-colors cursor-pointer sm:w-44"
+                >
+                  <option value="All">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {/* Media Assets Grid */}
+            <div className="max-h-80 overflow-y-auto min-h-[160px] p-1">
+              {isLibraryLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-500 text-xs">
+                  <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
+                  <span>Loading media library...</span>
+                </div>
+              ) : filteredAssets.length === 0 ? (
+                <div className="py-12 text-center text-xs text-slate-400 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                  No matching map media found in library.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                  {filteredAssets.map((asset) => {
+                    const isSelected = tempSelectedAsset?.id === asset.id;
+                    return (
+                      <div
+                        key={asset.id}
+                        onClick={() => setTempSelectedAsset(asset)}
+                        className={`group rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                          isSelected
+                            ? "border-amber-500 ring-2 ring-amber-500/30 shadow-md"
+                            : "border-slate-200 hover:border-slate-400"
+                        }`}
+                      >
+                        <div className="relative h-24 bg-slate-900 overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={asset.url}
+                            alt={asset.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 z-10">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openSingleImage(asset.url, asset.title, e.currentTarget);
+                              }}
+                              className="w-7 h-7 rounded-full bg-white text-slate-900 hover:bg-slate-100 flex items-center justify-center shadow-md cursor-pointer"
+                              title="Preview Fullscreen"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          {isSelected && (
+                            <div className="absolute top-1.5 right-1.5 bg-slate-900 text-white p-0.5 rounded-full shadow z-20">
+                              <Check className="w-3 h-3 stroke-[3]" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-1.5 bg-white">
+                          <p className="text-[11px] font-bold text-slate-900 truncate">
+                            {asset.title}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <DialogFooter className="pt-3 border-t border-slate-100 flex items-center justify-between w-full">
+              <span className="text-xs text-slate-600 font-medium">
+                {tempSelectedAsset ? `Selected: ${tempSelectedAsset.title}` : "Select a map image"}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsLibraryOpen(false)}
+                  className="text-xs font-semibold h-8"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={!tempSelectedAsset}
+                  onClick={handleConfirmSelection}
+                  className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-8 cursor-pointer disabled:opacity-50"
+                >
+                  Use Selected Map
+                </Button>
+              </div>
+            </DialogFooter>
+          </div>
+        </AdminModal>
       )}
 
       {/* Confirmation Modal */}

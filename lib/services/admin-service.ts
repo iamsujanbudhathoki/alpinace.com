@@ -569,26 +569,24 @@ function cleanPackagePayload(data: any) {
   if (Array.isArray(rest.departureDates)) payload.departureDates = rest.departureDates;
   if (Array.isArray(rest.activityIds)) payload.activityIds = rest.activityIds;
 
-  // Strict Media IDs handling (omits empty strings to avoid null type errors)
+  // Strict Media IDs handling (sets null when cleared so backend properly updates columns)
   if (Array.isArray(rest.galleryMediaIds)) {
-    const validIds = rest.galleryMediaIds.filter((id: any) => typeof id === "string" && id.trim() !== "");
-    if (validIds.length > 0) payload.galleryMediaIds = validIds;
-    else delete payload.galleryMediaIds;
+    payload.galleryMediaIds = rest.galleryMediaIds.filter((id: any) => typeof id === "string" && id.trim() !== "");
   } else {
     delete payload.galleryMediaIds;
   }
 
-  if (rest.coverMediaId !== undefined && typeof rest.coverMediaId === "string" && rest.coverMediaId.trim()) {
-    payload.coverMediaId = rest.coverMediaId.trim();
-  } else {
-    delete payload.coverMediaId;
+  if (rest.coverMediaId !== undefined) {
+    payload.coverMediaId = typeof rest.coverMediaId === "string" && rest.coverMediaId.trim() ? rest.coverMediaId.trim() : null;
   }
 
-  if (rest.mapMediaId !== undefined && typeof rest.mapMediaId === "string" && rest.mapMediaId.trim()) {
-    payload.mapMediaId = rest.mapMediaId.trim();
-  } else {
-    delete payload.mapMediaId;
+  if (rest.mapMediaId !== undefined) {
+    payload.mapMediaId = typeof rest.mapMediaId === "string" && rest.mapMediaId.trim() ? rest.mapMediaId.trim() : null;
   }
+
+  delete payload.image;
+  delete payload.mapImage;
+  delete payload.galleryImages;
 
   if (rest.isFeatured !== undefined) payload.isFeatured = Boolean(rest.isFeatured);
   if (rest.isPopular !== undefined) payload.isPopular = Boolean(rest.isPopular);

@@ -58,7 +58,7 @@ export function TripAddonsManager({
 
   const handleAdd = () => {
     const newAddon: PackageAddonItem = {
-      id: `addon-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      id: `addon-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`,
       title: "",
       description: "",
       priceUSD: 0,
@@ -76,7 +76,7 @@ export function TripAddonsManager({
       return;
     }
     const newAddon: PackageAddonItem = {
-      id: `addon-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      id: `addon-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`,
       title: preset.title,
       description: preset.description,
       priceUSD: preset.priceUSD,
@@ -96,7 +96,7 @@ export function TripAddonsManager({
       );
       if (!exists) {
         toAdd.push({
-          id: `addon-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          id: `addon-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`,
           title: preset.title,
           description: preset.description,
           priceUSD: preset.priceUSD,

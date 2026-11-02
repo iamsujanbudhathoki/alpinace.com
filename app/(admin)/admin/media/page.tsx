@@ -113,14 +113,14 @@ export default function AdminMediaPage() {
 
   const mapAsset = (m: any): MediaAsset => ({
     id: m.id,
-    title: m.title || m.name || "Media Asset",
+    title: m.title || m.name,
     categoryId: m.categoryId ?? "",
     categoryName: m.categoryName ?? "",
     category: m.categoryName ?? "",
     url: m.url,
     mimeType: m.mimeType ?? "",
     description: m.description ?? "",
-    altText: m.altText ?? m.title ?? m.name ?? "",
+    altText: m.altText ?? "",
     fileSize: m.fileSize ? `${(Number(m.fileSize) / 1024).toFixed(1)} KB` : "0 KB",
     createdAt: m.createdAt ? new Date(m.createdAt).toISOString().split("T")[0] : "",
   });
@@ -130,7 +130,7 @@ export default function AdminMediaPage() {
     try {
       const res = await CategoryService.getAll({ limit: 100, type: CategoryType.MEDIA });
       const list = Array.isArray(res) ? res : [];
-      setCategories(list.map((c: any) => ({ id: c.id, name: c.name ?? c.title ?? "" })));
+      setCategories(list.map((c: any) => ({ id: c.id, name: c.name })));
     } catch (e) {
       console.warn("Failed to load categories:", e);
     }

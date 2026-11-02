@@ -266,7 +266,7 @@ export function TripReviewsManager({ reviews = [], onChange }: TripReviewsManage
     setUploadingIndex(index);
     try {
       const res = await MediaService.uploadFile(file);
-      const uploadedUrl = res?.data?.url || (res as any)?.url;
+      const uploadedUrl = res.data?.url;
       if (uploadedUrl) {
         handleUpdateReview(index, "avatar", uploadedUrl);
         toast.success(`Photo "${file.name}" uploaded successfully!`);

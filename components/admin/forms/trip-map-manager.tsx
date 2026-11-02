@@ -128,7 +128,7 @@ export function TripMapManager({
       CategoryService.getAll({ limit: 100 })
         .then((catRes: any) => {
           const catList = Array.isArray(catRes) ? catRes : (Array.isArray(catRes?.data) ? catRes.data : []);
-          setCategories(catList.map((c: any) => ({ id: c.id, name: c.name || c.title || "" })));
+          setCategories(catList.map((c: any) => ({ id: c.id, name: c.name })));
         })
         .catch(() => {});
     }

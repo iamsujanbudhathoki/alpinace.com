@@ -23,11 +23,7 @@ export function ExpertCtaSection() {
     async function loadTeam() {
       try {
         const res = await adminTeamsApi.getPublicAll({ status: TeamMemberStatus.ACTIVE });
-        const list = Array.isArray(res)
-          ? res
-          : Array.isArray((res as any)?.items)
-          ? (res as any).items
-          : [];
+        const list = Array.isArray(res) ? res : [];
         if (list.length > 0) {
           setTeamMembers(list);
         }

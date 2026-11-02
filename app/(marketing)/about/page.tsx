@@ -67,11 +67,7 @@ export default async function AboutView() {
   let team: { name: string; role: string; desc: string; image: string; badge: string }[] = [];
   try {
     const res = await adminTeamsApi.getPublicAll({ status: TeamMemberStatus.ACTIVE });
-    const teamList = Array.isArray(res)
-      ? res
-      : Array.isArray((res as any)?.items)
-      ? (res as any).items
-      : [];
+    const teamList = Array.isArray(res) ? res : [];
 
     if (teamList.length > 0) {
       team = teamList.map((m: any) => ({

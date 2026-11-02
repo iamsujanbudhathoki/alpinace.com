@@ -129,7 +129,7 @@ export function AdminImageUpload({
       CategoryService.getAll({ limit: 100 })
         .then((res: any) => {
           const list = Array.isArray(res) ? res : [];
-          setCategories(list.map((c: any) => ({ id: c.id, name: c.name ?? c.title ?? "" })));
+          setCategories(list.map((c: any) => ({ id: c.id, name: c.name })));
         })
         .catch(() => { });
       loadMedia(1, "All");

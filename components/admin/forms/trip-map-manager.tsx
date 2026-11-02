@@ -11,6 +11,8 @@ import {
   Search,
   Check,
   Eye,
+  Plus,
+  UploadCloud,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -52,6 +54,39 @@ export function TripMapManager({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [tempSelectedAsset, setTempSelectedAsset] = useState<MediaAsset | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showModalUploader, setShowModalUploader] = useState(false);
+
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const res = await MediaService.uploadFile(file);
+      if (res.success && res.data?.url) {
+        const url = res.data.url;
+        const mediaId = res.data.id;
+        const newAsset: MediaAsset = {
+          id: mediaId,
+          title: file.name.replace(/\.[^/.]+$/, ""),
+          categoryName: "Route Maps",
+          url: url,
+        };
+        setAssets((prev) => [newAsset, ...prev.filter((a) => a.url !== url)]);
+        setTempSelectedAsset(newAsset);
+        setShowModalUploader(false);
+        toast.success(res.message || `Map "${file.name}" uploaded to media library!`);
+      } else {
+        toast.error(res?.message || "Failed to upload map image.");
+      }
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      toast.error(err?.message || "Failed to upload map image.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Load media and categories when library modal opens
   useEffect(() => {
@@ -304,7 +339,46 @@ export function TripMapManager({
                   ))}
                 </select>
               )}
+
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setShowModalUploader(!showModalUploader)}
+                className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-9 px-3 cursor-pointer shadow-xs gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{showModalUploader ? "Hide" : "Upload New"}</span>
+              </Button>
             </div>
+
+            {/* Inline Modal Uploader Box */}
+            {showModalUploader && (
+              <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-slate-50 relative cursor-pointer animate-in fade-in-0 duration-200">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadFile}
+                  disabled={isUploading}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                />
+                {isUploading ? (
+                  <div className="flex items-center justify-center gap-2 text-slate-700 font-semibold text-xs py-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
+                    <span>Uploading map image to media library...</span>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <UploadCloud className="w-5 h-5 text-slate-500 mx-auto" />
+                    <p className="text-xs font-bold text-slate-900">
+                      Drop route map image here or click to upload
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      Map will be added to your Media Library and selected automatically.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Media Assets Grid */}
             <div className="max-h-80 overflow-y-auto min-h-[160px] p-1">

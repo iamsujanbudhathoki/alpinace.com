@@ -10,6 +10,9 @@ import {
   Search,
   Trash2,
   Check,
+  Plus,
+  UploadCloud,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -44,6 +47,42 @@ export function TripGalleryManager({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
   const [selectedMediaIds, setSelectedMediaIds] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showModalUploader, setShowModalUploader] = useState(false);
+
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const res = await MediaService.uploadFile(file);
+      if (res.success && res.data?.url) {
+        const url = res.data.url;
+        const mediaId = res.data.id;
+        const newAsset: MediaAsset = {
+          id: mediaId,
+          title: file.name.replace(/\.[^/.]+$/, ""),
+          category: "General",
+          url: url,
+        };
+        setMediaAssets((prev) => [newAsset, ...prev.filter((a) => a.url !== url)]);
+        if (!selectedUrls.includes(url)) {
+          setSelectedUrls((prev) => [...prev, url]);
+          setSelectedMediaIds((prev) => [...prev, mediaId]);
+        }
+        setShowModalUploader(false);
+        toast.success(res.message || `Photo "${file.name}" uploaded to media library!`);
+      } else {
+        toast.error(res?.message || "Failed to upload photo.");
+      }
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      toast.error(err?.message || "Failed to upload photo.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Load backend media library
   useEffect(() => {
@@ -55,8 +94,8 @@ export function TripGalleryManager({
             const mapped: MediaAsset[] = items.map((m: any) => ({
               id: m.id || Math.random().toString(),
               title: m.title || m.name || m.originalName || "Media Asset",
-              url: m.url,
               category: m.categoryName || m.category?.name || m.category,
+              url: m.url,
             }));
             const seen = new Set<string>();
             const unique = mapped.filter((item) => {
@@ -288,16 +327,57 @@ export function TripGalleryManager({
           maxWidth="3xl"
         >
           <div className="space-y-4">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search media..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-9 text-xs pl-9 pr-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 dark:focus:border-slate-400 dark:focus:ring-slate-400/10 transition-colors"
-              />
+            {/* Toolbar: Search + Upload New Button */}
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search media..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-9 text-xs pl-9 pr-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900/10 dark:focus:border-slate-400 dark:focus:ring-slate-400/10 transition-colors"
+                />
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setShowModalUploader(!showModalUploader)}
+                className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs h-9 px-3 cursor-pointer shadow-xs gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{showModalUploader ? "Hide" : "Upload New"}</span>
+              </Button>
             </div>
+
+            {/* Inline Modal Uploader Box */}
+            {showModalUploader && (
+              <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-4 text-center bg-slate-50 dark:bg-slate-900/50 relative cursor-pointer animate-in fade-in-0 duration-200">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadFile}
+                  disabled={isUploading}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                />
+                {isUploading ? (
+                  <div className="flex items-center justify-center gap-2 text-slate-700 dark:text-slate-200 font-semibold text-xs py-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
+                    <span>Uploading photo to media library...</span>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <UploadCloud className="w-5 h-5 text-slate-500 mx-auto" />
+                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                      Drop photo here or click to upload
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      Photo will be added to your Media Library and selected automatically.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="max-h-80 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 gap-3 p-1">
               {filteredAssets.length === 0 ? (

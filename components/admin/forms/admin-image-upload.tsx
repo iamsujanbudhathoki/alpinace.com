@@ -447,17 +447,15 @@ export function AdminImageUpload({
                     </option>
                   ))}
                 </select>
-                {!libraryOnly && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => setShowModalUploader(!showModalUploader)}
-                    className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
-                  >
-                    <Plus className="w-3.5 h-3.5 sm:mr-1" />
-                    <span className="hidden sm:inline">{showModalUploader ? "Hide" : "Upload"}</span>
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setShowModalUploader(!showModalUploader)}
+                  className="shrink-0 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5 sm:mr-1" />
+                  <span className="hidden sm:inline">{showModalUploader ? "Hide" : "Upload"}</span>
+                </Button>
               </div>
             </div>
 

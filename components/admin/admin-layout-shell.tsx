@@ -39,6 +39,11 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
     return <div className="min-h-screen bg-slate-50">{children}</div>;
   }
 
+  const isPackageForm =
+    pathname?.startsWith("/admin/treks/") ||
+    pathname?.startsWith("/admin/tours/") ||
+    pathname?.startsWith("/admin/expeditions/");
+
   return (
     <div data-slot="admin-layout" className="h-screen w-screen overflow-hidden flex bg-slate-50/60 text-slate-900 font-sans relative">
       {/* Fixed Desktop Sidebar */}
@@ -77,7 +82,12 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
           isSidebarCollapsed={isCollapsed}
           onToggleDesktopSidebar={toggleDesktopSidebar}
         />
-        <main data-slot="admin-main" className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 bg-slate-50/60">
+        <main
+          data-slot="admin-main"
+          className={`flex-1 overflow-y-auto bg-slate-50/60 ${
+            isPackageForm ? "" : "p-4 sm:p-6 md:p-8"
+          }`}
+        >
           {children}
         </main>
       </div>

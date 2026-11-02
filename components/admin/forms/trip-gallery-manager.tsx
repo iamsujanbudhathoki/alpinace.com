@@ -1,26 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  Image as ImageIcon,
-  Trash2,
-  Eye,
-  UploadCloud,
-  FolderOpen,
-  Loader2,
-  Check,
-  Search,
-  Maximize2,
-  MoveUp,
-  MoveDown,
-} from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { AdminModal } from "@/components/admin/ui/admin-modal";
 import { AdminConfirmModal } from "@/components/admin/ui/admin-confirm-modal";
+import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { MediaService } from "@/lib/services/admin-service";
 import { openSingleImage } from "@/lib/utils/lightbox";
+import {
+  Check,
+  FolderOpen,
+  Image as ImageIcon,
+  Loader2,
+  Maximize2,
+  MoveDown,
+  MoveUp,
+  Search,
+  Trash2,
+  UploadCloud
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface TripGalleryManagerProps {
   images: string[];
@@ -340,13 +339,12 @@ export function TripGalleryManager({
                       type="button"
                       disabled={isAlreadyInGallery}
                       onClick={() => toggleLibrarySelection(asset)}
-                      className={`group relative rounded-lg overflow-hidden border text-left transition-all block w-full ${
-                        isAlreadyInGallery
+                      className={`group relative rounded-lg overflow-hidden border text-left transition-all block w-full ${isAlreadyInGallery
                           ? "opacity-40 cursor-not-allowed border-slate-200"
                           : isSelected
-                          ? "border-amber-500 ring-2 ring-amber-500/30"
-                          : "border-slate-200 hover:border-slate-400"
-                      }`}
+                            ? "border-amber-500 ring-2 ring-amber-500/30"
+                            : "border-slate-200 hover:border-slate-400"
+                        }`}
                     >
                       <div className="relative h-24 bg-slate-800 overflow-hidden">
                         <img

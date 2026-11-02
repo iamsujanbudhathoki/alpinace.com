@@ -621,9 +621,9 @@ export function PackageAdminForm({
   const loading = isSubmitting || localSubmitting;
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="min-h-full">
       {/* Sticky Header Bar */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 transition-all">
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs px-4 sm:px-6 md:px-8 py-3.5 sm:py-4 transition-all">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
@@ -770,8 +770,10 @@ export function PackageAdminForm({
         </div>
       </div>
 
-      {/* Main Form Body Container */}
-      <form id="package-full-form" onSubmit={handleSubmit(onFormSubmit, onFormInvalid)}>
+      {/* Scrollable Form Content Area with standard page padding */}
+      <div className="p-4 sm:p-6 md:p-8 space-y-6 pb-16">
+        {/* Main Form Body Container */}
+        <form id="package-full-form" onSubmit={handleSubmit(onFormSubmit, onFormInvalid)}>
         <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 sm:p-8 space-y-6">
           {/* Active Tab Heading */}
           <div className="border-b border-slate-100 pb-3 mb-6 flex items-center justify-between">
@@ -914,6 +916,7 @@ export function PackageAdminForm({
             )}
           </Button>
         </div>
+      </div>
       </div>
     </div>
   );
